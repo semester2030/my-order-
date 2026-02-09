@@ -1,25 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosInstance } from 'axios';
 
+const NOT_CONFIGURED_MSG =
+  'Video upload/stream is not configured. Set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN in environment.';
+
 @Injectable()
 export class CloudflareStreamService {
-  private readonly accountId: string;
-  private readonly apiToken: string;
-  private readonly client: AxiosInstance;
+  private readonly enabled: boolean;
+  private readonly accountId: string | undefined;
+  private readonly apiToken: string | undefined;
+  private readonly client: AxiosInstance | null;
 
   constructor(private configService: ConfigService) {
     this.accountId = this.configService.get<string>('CLOUDFLARE_ACCOUNT_ID');
     this.apiToken = this.configService.get<string>('CLOUDFLARE_API_TOKEN');
+    this.enabled = !!(this.accountId && this.apiToken);
 
-    // Validate configuration
-    if (!this.accountId) {
-      console.error('CLOUDFLARE_ACCOUNT_ID is not configured');
-      throw new Error('CLOUDFLARE_ACCOUNT_ID is required but not found in environment variables');
-    }
-    if (!this.apiToken) {
-      console.error('CLOUDFLARE_API_TOKEN is not configured');
-      throw new Error('CLOUDFLARE_API_TOKEN is required but not found in environment variables');
+    if (!this.enabled) {
+      console.warn('CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN not set. Video upload/stream will be disabled.');
+      this.client = null;
+      return;
     }
 
     this.client = axios.create({
@@ -32,6 +33,9 @@ export class CloudflareStreamService {
   }
 
   async initUpload(fileName: string, fileSize: number): Promise<{ uploadURL: string; uid: string }> {
+    if (!this.enabled || !this.client) {
+      throw new ServiceUnavailableException(NOT_CONFIGURED_MSG);
+    }
     // Initialize Cloudflare Stream direct upload
     // Returns both upload URL and asset ID (uid)
     try {
@@ -52,6 +56,9 @@ export class CloudflareStreamService {
   }
 
   async getAssetDetails(assetId: string) {
+    if (!this.enabled || !this.client || !this.accountId) {
+      throw new ServiceUnavailableException(NOT_CONFIGURED_MSG);
+    }
     // Get asset details from Cloudflare Stream
     // Note: After upload, video may still be processing, so we may need to retry
     try {
@@ -91,6 +98,9 @@ export class CloudflareStreamService {
   }
 
   async generateSignedURL(assetId: string, expiresIn: number = 3600): Promise<string> {
+    if (!this.enabled || !this.client) {
+      throw new ServiceUnavailableException(NOT_CONFIGURED_MSG);
+    }
     // TODO: Implement signed URL generation
     // This should generate a temporary signed URL for video playback
     try {
