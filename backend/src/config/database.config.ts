@@ -41,6 +41,8 @@ export const getDatabaseConfig = (
     password: fromUrl.password ?? configService.get<string>('DATABASE_PASSWORD', 'password'),
     database,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+    migrations: [__dirname + '/../migrations/*{.ts,.js}'],
+    migrationsTableName: 'migrations',
     synchronize: configService.get<string>('NODE_ENV') === 'development',
     logging: configService.get<string>('NODE_ENV') === 'development',
   };

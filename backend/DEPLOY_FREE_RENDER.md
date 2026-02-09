@@ -58,14 +58,8 @@ git push -u origin main
 
 ---
 
-## 6) تشغيل Migrations على القاعدة الجديدة
-بعد أول Deploy، يمكن تشغيل الـ migrations من جهازك مرة واحدة باستخدام `DATABASE_URL` الذي يعطيك Render (استخدم **External** Database URL إن رغبت الاتصال من خارج Render):
-
-```bash
-cd backend
-DATABASE_URL="postgresql://..." npm run migration:run
-```
-(أو استخدم السكربت الذي عندك لـ typeorm migrations مع نفس الرابط.)
+## 6) Migrations تُشغَّل تلقائياً عند بدء التطبيق
+الباك اند يشتغل الـ migrations تلقائياً عند كل بدء (بما في ذلك أول Deploy على Render). **لا تحتاج Shell ولا تشغيل أي أمر على جهازك.** إذا ظهر في الـ Logs سطر `Migrations completed.` فمعناه أن الجداول محدَّثة. إذا ظهر `Migrations failed:` فتحقق من صحة `DATABASE_URL` في Environment.
 
 ---
 
@@ -102,6 +96,22 @@ flutter run --release -d <device_id> --dart-define=API_BASE_URL=https://your-ser
 ```
 
 أو لبناء للتوزيع: ضع نفس الرابط في إعدادات البناء (مثلاً في CI أو في ملف env للـ release).
+
+---
+
+## استكشاف الأخطاء
+
+### "JavaScript heap out of memory" أو "No open ports detected"
+- **السبب:** أمر التشغيل كان `npm run start` (وضع التطوير) فيستهلك ذاكرة كثيرة ولا يربط المنفذ الصحيح.
+- **الحل:** في Render → خدمتك → **Settings** (أو **Environment** حسب الواجهة) تأكد أن **Start Command** هو بالضبط:
+  ```bash
+  npm run start:prod
+  ```
+  وليس `npm start` أو `nest start`. ثم **Save** واعمل **Manual Deploy**.
+- إن استمر نفاد الذاكرة، أضف في **Environment**: `NODE_OPTIONS` = `--max-old-space-size=460`
+
+### Render لا يكتشف المنفذ
+- التطبيق يربط بالفعل على `process.env.PORT`. تأكد أن Start Command هو `npm run start:prod` حتى يعمل `node dist/main` ويستمع على المنفذ الذي يعطيه Render.
 
 ---
 

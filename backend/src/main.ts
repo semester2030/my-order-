@@ -1,10 +1,24 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, RequestMethod } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DataSource } from 'typeorm';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Run pending migrations on startup (no Shell or local run needed on Render)
+  try {
+    const dataSource = app.get(DataSource);
+    const pending = await dataSource.showMigrations();
+    if (pending) {
+      await dataSource.runMigrations();
+      console.log('Migrations completed.');
+    }
+  } catch (err: any) {
+    console.error('Migrations failed:', err?.message ?? err);
+    throw err;
+  }
 
   // Set global prefix for all routes; exclude root GET so / returns health
   app.setGlobalPrefix('api', {
