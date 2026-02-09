@@ -1,0 +1,111 @@
+# نشر الباك اند مجاناً على Render (شهر–شهرين)
+
+## 1) حساب Render
+- ادخل إلى https://render.com و سجّل (مجاني).
+- اختَر **New +** → **Web Service** و **PostgreSQL** (قاعدة بيانات).
+
+---
+
+## 2) إنشاء قاعدة PostgreSQL
+- **New +** → **PostgreSQL**
+- Name: `vendor-db` (أو أي اسم)
+- Region: اختر الأقرب (مثلاً Frankfurt).
+- Free plan → **Create Database**
+- بعد الإنشاء: ادخل إلى الـ Database وانسخ **Internal Database URL** (للاستخدام من نفس Render).
+
+---
+
+## 3) ربط المشروع بـ Git (إن لم يكن مربوطاً)
+على جهازك في مجلد المشروع:
+```bash
+cd "/Users/fayez/Desktop/my order"
+git init
+git add .
+git commit -m "Initial"
+```
+ثم أنشئ repo على **GitHub** واربط:
+```bash
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git branch -M main
+git push -u origin main
+```
+
+---
+
+## 4) إنشاء Web Service على Render
+- **New +** → **Web Service**
+- Connect الـ GitHub repo (مجلد المشروع الذي فيه الباك اند).
+- إذا الباك اند في مجلد فرعي مثل `backend`:
+  - **Root Directory**: `backend`
+- إعدادات البناء:
+  - **Build Command**: `npm install && npm run build`
+  - **Start Command**: `npm run start:prod`
+- **Instance Type**: Free
+
+---
+
+## 5) متغيرات البيئة (Environment)
+في الـ Web Service → **Environment** أضف:
+
+| Key | Value |
+|-----|--------|
+| `NODE_ENV` | production |
+| `DATABASE_URL` | (الصق **Internal Database URL** من خطوة 2 — من لوحة PostgreSQL في Render) |
+| `JWT_SECRET` | (سلسلة عشوائية طويلة، مثلاً 32 حرفاً، لأمان التوكن) |
+| `PORT` | 3001 |
+
+الباك اند يدعم `DATABASE_URL` مباشرة (يُفضّل على Render).
+
+---
+
+## 6) تشغيل Migrations على القاعدة الجديدة
+بعد أول Deploy، يمكن تشغيل الـ migrations من جهازك مرة واحدة باستخدام `DATABASE_URL` الذي يعطيك Render (استخدم **External** Database URL إن رغبت الاتصال من خارج Render):
+
+```bash
+cd backend
+DATABASE_URL="postgresql://..." npm run migration:run
+```
+(أو استخدم السكربت الذي عندك لـ typeorm migrations مع نفس الرابط.)
+
+---
+
+## 7) إنشاء Web Service (الباك اند)
+- من لوحة Render: **New +** → **Web Service**
+- **Connect repository**: اختر GitHub ثم المستودع (Repo) الذي فيه مشروعك. إذا المشروع في مجلد فرعي اسمه `backend`، في **Root Directory** اكتب: `backend`
+- **Name**: مثلاً `vendor-api` أو `myorder-api`
+- **Region**: اختر **نفس منطقة القاعدة** (Oregon US West) حتى تستخدم Internal URL
+- **Branch**: `main`
+- **Runtime**: Node
+- **Build Command**: `npm install && npm run build`
+- **Start Command**: `npm run start:prod`
+- **Instance Type**: Free
+- في **Environment** (متغيرات البيئة) أضف:
+  - `NODE_ENV` = `production`
+  - `DATABASE_URL` = (الصق **Internal Database URL** من صفحة myorder-db — زر النسخ بجانبه)
+  - `JWT_SECRET` = (نص عشوائي طويل، مثلاً 32 حرف)
+  - `PORT` = `3001`
+- اضغط **Create Web Service**. انتظر حتى ينتهي الـ Build والـ Deploy.
+
+## 8) الرابط النهائي للـ API
+بعد النشر، Render يعطيك رابط مثل:
+`https://your-service-name.onrender.com`
+
+- الـ API يكون عادة: `https://your-service-name.onrender.com/api`
+- هذا الرابط يعمل من أي مكان (جوال، محاكي، جهازك).
+
+---
+
+## 8) ضبط التطبيق (Vendor App)
+شغّل التطبيق مع هذا الرابط:
+```bash
+flutter run --release -d <device_id> --dart-define=API_BASE_URL=https://your-service-name.onrender.com/api
+```
+
+أو لبناء للتوزيع: ضع نفس الرابط في إعدادات البناء (مثلاً في CI أو في ملف env للـ release).
+
+---
+
+## ملاحظات
+- الخطة المجانية: الخدمة "تنام" بعد ~15 دقيقة — أول طلب بعدها قد يأخذ 30–60 ثانية ثم يعمل طبيعي.
+- القاعدة المجانية مناسبة لتجربة شهر–شهرين؛ البيانات تُحفظ طالما لم تحذف المشروع.
+- بدائل مجانية أخرى: **Railway** (رصيد شهري)، **Fly.io** (حصة مجانية).

@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply bg-surface-warmBg text-text-primary font-sans;
+  }
+}
+
+@layer components {
+  .page-container {
+    @apply flex-1 overflow-auto min-h-screen;
+  }
+  /* تفاعل عالي: انتقالات سلسة */
+  .transition-smooth {
+    @apply transition-all duration-250 ease-out;
+  }
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-white;
+  }
+}

@@ -1,0 +1,36 @@
+name: vendor_app
+description: Vendor app - ويب فيندر (مقدم الخدمة)
+publish_to: 'none'
+# Phase 20: جاهزية النشر — حدّث version و buildNumber (بعد +) عند كل بناء للنشر.
+version: 1.0.0+2
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^2.4.9
+  go_router: ^12.1.3
+  dio: ^5.4.0
+  json_annotation: ^4.9.0
+  flutter_secure_storage: ^9.0.0
+  shared_preferences: ^2.2.2
+  equatable: ^2.0.5
+  freezed_annotation: ^2.4.1
+  image_picker: ^1.0.7
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.8
+  json_serializable: ^6.7.1
+  freezed: ^2.4.6
+  riverpod_generator: ^2.3.9
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,7 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  errors:
+    # Phase 1: avoid info noise; theme uses non-const for consistency with customer_app.
+    prefer_const_constructors: ignore
+    use_super_parameters: ignore

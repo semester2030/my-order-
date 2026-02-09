@@ -1,0 +1,23 @@
+import 'package:equatable/equatable.dart';
+import '../../../feed/domain/entities/feed_item.dart';
+
+class CartItem extends Equatable {
+  final String id;
+  final String menuItemId;
+  final MenuItem menuItem;
+  final int quantity;
+  final double price; // Price at time of adding
+
+  const CartItem({
+    required this.id,
+    required this.menuItemId,
+    required this.menuItem,
+    required this.quantity,
+    required this.price,
+  });
+
+  double get subtotal => price * quantity;
+
+  @override
+  List<Object?> get props => [id, menuItemId, menuItem, quantity, price];
+}
