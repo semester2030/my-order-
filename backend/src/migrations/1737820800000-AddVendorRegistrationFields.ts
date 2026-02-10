@@ -3,23 +3,102 @@ import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey, T
 export class AddVendorRegistrationFields1737820800000 implements MigrationInterface {
   name = 'AddVendorRegistrationFields1737820800000';
 
+  private async addColumnIfNotExists(
+    queryRunner: QueryRunner,
+    tableName: string,
+    column: TableColumn,
+  ): Promise<void> {
+    const table = await queryRunner.getTable(tableName);
+    if (table && !table.findColumnByName(column.name)) {
+      await queryRunner.addColumn(tableName, column);
+    }
+  }
+
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Create enum types
+    // Create enum types only if they don't exist (idempotent for existing DBs)
     await queryRunner.query(`
-      CREATE TYPE "vendor_status_enum" AS ENUM('pending_approval', 'under_review', 'approved', 'rejected', 'suspended');
+      DO $$ BEGIN
+        CREATE TYPE "vendor_status_enum" AS ENUM('pending_approval', 'under_review', 'approved', 'rejected', 'suspended');
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
     `);
     await queryRunner.query(`
-      CREATE TYPE "verification_status_enum" AS ENUM('pending', 'verified', 'rejected', 'expired');
+      DO $$ BEGIN
+        CREATE TYPE "verification_status_enum" AS ENUM('pending', 'verified', 'rejected', 'expired');
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
     `);
     await queryRunner.query(`
-      CREATE TYPE "certificate_type_enum" AS ENUM('health', 'municipal', 'food_safety', 'other');
+      DO $$ BEGIN
+        CREATE TYPE "certificate_type_enum" AS ENUM('health', 'municipal', 'food_safety', 'other');
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
     `);
     await queryRunner.query(`
-      CREATE TYPE "staff_role_enum" AS ENUM('owner', 'manager', 'chef', 'waiter', 'cashier', 'viewer');
+      DO $$ BEGIN
+        CREATE TYPE "staff_role_enum" AS ENUM('owner', 'manager', 'chef', 'waiter', 'cashier', 'viewer');
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
+    `);
+    await queryRunner.query(`
+      DO $$ BEGIN
+        CREATE TYPE "vendors_type_enum" AS ENUM('fine_dining', 'premium_casual', 'gourmet_desserts');
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
     `);
 
-    // Add new columns to vendors table
-    await queryRunner.addColumn(
+    // Create users table if missing (fresh DB e.g. on Render)
+    if (!(await queryRunner.hasTable('users'))) {
+      await queryRunner.createTable(
+        new Table({
+          name: 'users',
+          columns: [
+            { name: 'id', type: 'uuid', isPrimary: true, generationStrategy: 'uuid', default: 'uuid_generate_v4()' },
+            { name: 'phone', type: 'varchar', isUnique: true, isNullable: false },
+            { name: 'name', type: 'varchar', isNullable: true },
+            { name: 'email', type: 'varchar', isUnique: true, isNullable: true },
+            { name: 'pin_hash', type: 'varchar', isNullable: true },
+            { name: 'is_verified', type: 'boolean', default: false, isNullable: false },
+            { name: 'is_active', type: 'boolean', default: true, isNullable: false },
+            { name: 'created_at', type: 'timestamp', default: 'CURRENT_TIMESTAMP', isNullable: false },
+            { name: 'updated_at', type: 'timestamp', default: 'CURRENT_TIMESTAMP', isNullable: false },
+          ],
+        }),
+        true,
+      );
+    }
+
+    // Create vendors table if missing (fresh DB e.g. on Render)
+    if (!(await queryRunner.hasTable('vendors'))) {
+      await queryRunner.createTable(
+        new Table({
+          name: 'vendors',
+          columns: [
+            { name: 'id', type: 'uuid', isPrimary: true, generationStrategy: 'uuid', default: 'uuid_generate_v4()' },
+            { name: 'name', type: 'varchar', isUnique: true, isNullable: false },
+            { name: 'type', type: 'vendors_type_enum', default: "'premium_casual'", isNullable: false },
+            { name: 'description', type: 'text', isNullable: true },
+            { name: 'phone_number', type: 'varchar', isNullable: false },
+            { name: 'address', type: 'varchar', isNullable: false },
+            { name: 'city', type: 'varchar', isNullable: false },
+            { name: 'latitude', type: 'decimal', precision: 10, scale: 8, isNullable: false },
+            { name: 'longitude', type: 'decimal', precision: 11, scale: 8, isNullable: false },
+            { name: 'logo', type: 'varchar', isNullable: true },
+            { name: 'cover', type: 'varchar', isNullable: true },
+            { name: 'is_active', type: 'boolean', default: true, isNullable: false },
+            { name: 'rating', type: 'decimal', precision: 3, scale: 2, default: 0, isNullable: false },
+            { name: 'rating_count', type: 'int', default: 0, isNullable: false },
+            { name: 'created_at', type: 'timestamp', default: 'CURRENT_TIMESTAMP', isNullable: false },
+            { name: 'updated_at', type: 'timestamp', default: 'CURRENT_TIMESTAMP', isNullable: false },
+          ],
+        }),
+        true,
+      );
+    }
+
+    // Add new columns to vendors table (only if missing)
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'trade_name',
@@ -28,8 +107,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
         isNullable: true,
       }),
     );
-
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'email',
@@ -39,7 +118,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'website',
@@ -49,7 +129,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
     );
 
     // Commercial Registration
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'commercial_registration_number',
@@ -59,7 +140,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'commercial_registration_issue_date',
@@ -68,7 +150,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'commercial_registration_expiry_date',
@@ -77,7 +160,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'commercial_registration_image',
@@ -86,7 +170,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'commercial_registration_status',
@@ -97,7 +182,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
     );
 
     // Location updates
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'city',
@@ -107,7 +193,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'district',
@@ -116,7 +203,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'postal_code',
@@ -126,7 +214,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
     );
 
     // Delivery
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'delivery_fee',
@@ -138,7 +227,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'delivery_radius',
@@ -148,7 +238,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'estimated_delivery_time',
@@ -159,7 +250,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
     );
 
     // Owner Information
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'owner_name',
@@ -169,7 +261,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'owner_phone',
@@ -179,7 +272,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'owner_email',
@@ -189,7 +283,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'owner_id_number',
@@ -200,7 +295,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'owner_id_image',
@@ -210,7 +306,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'owner_nationality',
@@ -219,7 +316,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'owner_address',
@@ -229,7 +327,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
     );
 
     // Banking
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'bank_name',
@@ -238,7 +337,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'bank_account_number',
@@ -247,7 +347,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'iban',
@@ -256,7 +357,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'account_holder_name',
@@ -265,7 +367,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'bank_statement',
@@ -274,7 +377,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'swift_code',
@@ -284,7 +388,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
     );
 
     // Media
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'restaurant_images',
@@ -294,7 +399,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'restaurant_video',
@@ -304,7 +410,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
     );
 
     // Working Hours
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'working_hours',
@@ -314,7 +421,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
     );
 
     // Status
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'registration_status',
@@ -324,7 +432,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'is_accepting_orders',
@@ -335,7 +444,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
     );
 
     // Approval
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'approved_at',
@@ -344,7 +454,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'approved_by',
@@ -353,7 +464,8 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    await queryRunner.addColumn(
+    await this.addColumnIfNotExists(
+      queryRunner,
       'vendors',
       new TableColumn({
         name: 'rejection_reason',
@@ -362,8 +474,9 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
     );
 
-    // Create vendor_certificates table
-    await queryRunner.createTable(
+    // Create vendor_certificates table (only if not exists)
+    if (!(await queryRunner.hasTable('vendor_certificates'))) {
+      await queryRunner.createTable(
       new Table({
         name: 'vendor_certificates',
         columns: [
@@ -442,9 +555,27 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
       true,
     );
+      await queryRunner.createForeignKey(
+        'vendor_certificates',
+        new TableForeignKey({
+          columnNames: ['vendor_id'],
+          referencedColumnNames: ['id'],
+          referencedTableName: 'vendors',
+          onDelete: 'CASCADE',
+        }),
+      );
+      await queryRunner.createIndex(
+        'vendor_certificates',
+        new TableIndex({
+          name: 'IDX_vendor_certificates_vendor_id',
+          columnNames: ['vendor_id'],
+        }),
+      );
+    }
 
-    // Create vendor_staff table
-    await queryRunner.createTable(
+    // Create vendor_staff table (only if not exists)
+    if (!(await queryRunner.hasTable('vendor_staff'))) {
+      await queryRunner.createTable(
       new Table({
         name: 'vendor_staff',
         columns: [
@@ -515,52 +646,30 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
       }),
       true,
     );
-
-    // Add foreign keys
-    await queryRunner.createForeignKey(
-      'vendor_certificates',
-      new TableForeignKey({
-        columnNames: ['vendor_id'],
-        referencedColumnNames: ['id'],
-        referencedTableName: 'vendors',
-        onDelete: 'CASCADE',
-      }),
-    );
-
-    await queryRunner.createForeignKey(
-      'vendor_staff',
-      new TableForeignKey({
-        columnNames: ['vendor_id'],
-        referencedColumnNames: ['id'],
-        referencedTableName: 'vendors',
-        onDelete: 'CASCADE',
-      }),
-    );
-
-    // Add indexes
-    await queryRunner.createIndex(
-      'vendor_certificates',
-      new TableIndex({
-        name: 'IDX_vendor_certificates_vendor_id',
-        columnNames: ['vendor_id'],
-      }),
-    );
-
-    await queryRunner.createIndex(
-      'vendor_staff',
-      new TableIndex({
-        name: 'IDX_vendor_staff_vendor_id',
-        columnNames: ['vendor_id'],
-      }),
-    );
-
-    await queryRunner.createIndex(
-      'vendor_staff',
-      new TableIndex({
-        name: 'IDX_vendor_staff_user_id',
-        columnNames: ['user_id'],
-      }),
-    );
+      await queryRunner.createForeignKey(
+        'vendor_staff',
+        new TableForeignKey({
+          columnNames: ['vendor_id'],
+          referencedColumnNames: ['id'],
+          referencedTableName: 'vendors',
+          onDelete: 'CASCADE',
+        }),
+      );
+      await queryRunner.createIndex(
+        'vendor_staff',
+        new TableIndex({
+          name: 'IDX_vendor_staff_vendor_id',
+          columnNames: ['vendor_id'],
+        }),
+      );
+      await queryRunner.createIndex(
+        'vendor_staff',
+        new TableIndex({
+          name: 'IDX_vendor_staff_user_id',
+          columnNames: ['user_id'],
+        }),
+      );
+    }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
