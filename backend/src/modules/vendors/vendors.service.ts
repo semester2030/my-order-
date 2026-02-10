@@ -4,8 +4,10 @@ import {
   NotFoundException,
   BadRequestException,
   UnauthorizedException,
+  InternalServerErrorException,
   Inject,
   forwardRef,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThanOrEqual, LessThanOrEqual, Between } from 'typeorm';
@@ -26,6 +28,7 @@ import { JobsService } from '../jobs/jobs.service';
 @Injectable()
 export class VendorsService {
   private readonly PASSWORD_SALT_ROUNDS = 10;
+  private readonly logger = new Logger(VendorsService.name);
 
   constructor(
     @InjectRepository(Vendor)
@@ -166,40 +169,52 @@ export class VendorsService {
       })(),
     });
 
-    const savedVendor = await this.vendorRepository.save(vendor);
+    try {
+      const savedVendor = await this.vendorRepository.save(vendor);
 
-    // 6. Create user account for vendor (login by email + password)
-    const vendorUser = this.userRepository.create({
-      phone: phoneOrEmail,
-      name: (dto.ownerName?.trim() || dto.name).trim(),
-      email: dto.email.trim(),
-      pinHash: hashedPassword,
-      isVerified: false,
-      isActive: true,
-    });
+      // 6. Create user account for vendor (login by email + password)
+      const vendorUser = this.userRepository.create({
+        phone: phoneOrEmail,
+        name: (dto.ownerName?.trim() || dto.name).trim(),
+        email: dto.email.trim(),
+        pinHash: hashedPassword,
+        isVerified: false,
+        isActive: true,
+      });
 
-    await this.userRepository.save(vendorUser);
+      await this.userRepository.save(vendorUser);
 
-    // 9. Create staff record (owner role)
-    const ownerStaff = this.staffRepository.create({
-      vendorId: savedVendor.id,
-      userId: vendorUser.id,
-      role: StaffRole.OWNER,
-      permissions: ['*'], // All permissions for owner
-      isActive: true,
-      acceptedAt: new Date(),
-    });
+      // 9. Create staff record (owner role)
+      const ownerStaff = this.staffRepository.create({
+        vendorId: savedVendor.id,
+        userId: vendorUser.id,
+        role: StaffRole.OWNER,
+        permissions: ['*'], // All permissions for owner
+        isActive: true,
+        acceptedAt: new Date(),
+      });
 
-    await this.staffRepository.save(ownerStaff);
+      await this.staffRepository.save(ownerStaff);
 
-    // 10. TODO: Send notification to admin for review
-    // await this.notificationService.notifyAdminNewVendorRegistration(savedVendor);
-
-    return {
-      vendorId: savedVendor.id,
-      status: savedVendor.registrationStatus,
-      message: 'Registration submitted successfully. Your application is under review.',
-    };
+      return {
+        vendorId: savedVendor.id,
+        status: savedVendor.registrationStatus,
+        message: 'Registration submitted successfully. Your application is under review.',
+      };
+    } catch (err: any) {
+      this.logger.error(
+        `Vendor register failed: ${err?.message ?? err}`,
+        err?.stack,
+      );
+      if (err?.driverError?.detail) {
+        this.logger.error(`DB detail: ${err.driverError.detail}`);
+      }
+      throw new InternalServerErrorException(
+        err?.message?.includes('duplicate') || err?.driverError?.code === '23505'
+          ? 'Email or phone already registered.'
+          : 'Registration failed. Please try again or contact support.',
+      );
+    }
   }
 
   async getRegistrationStatus(vendorId: string): Promise<{

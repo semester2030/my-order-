@@ -419,6 +419,33 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
         isNullable: true,
       }),
     );
+    await this.addColumnIfNotExists(
+      queryRunner,
+      'vendors',
+      new TableColumn({
+        name: 'delivery_zones',
+        type: 'text',
+        isNullable: true,
+      }),
+    );
+    await this.addColumnIfNotExists(
+      queryRunner,
+      'vendors',
+      new TableColumn({
+        name: 'provider_category',
+        type: 'varchar',
+        isNullable: true,
+      }),
+    );
+    await this.addColumnIfNotExists(
+      queryRunner,
+      'vendors',
+      new TableColumn({
+        name: 'popular_cooking_add_ons',
+        type: 'jsonb',
+        isNullable: true,
+      }),
+    );
 
     // Status
     await this.addColumnIfNotExists(
@@ -695,6 +722,9 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
         'approved_at',
         'registration_status',
         'working_hours',
+        'delivery_zones',
+        'provider_category',
+        'popular_cooking_add_ons',
         'restaurant_video',
         'restaurant_images',
         'swift_code',
