@@ -9,14 +9,38 @@ import {
 export class CreateAdminRolesAndUsers1738040000000 implements MigrationInterface {
   name = 'CreateAdminRolesAndUsers1738040000000';
 
-  /** Ignore duplicate constraint/index errors (already exists). */
-  private async ignoreDuplicate<T>(fn: () => Promise<T>): Promise<void> {
-    try {
-      await fn();
-    } catch (err: any) {
-      const code = err?.driverError?.code ?? err?.code;
-      if (code !== '42710' && code !== '42P07') throw err; // duplicate_object, duplicate_table
-    }
+  /** Only add FK if it does not exist (avoids aborting the transaction). */
+  private async addForeignKeyIfNotExists(
+    queryRunner: QueryRunner,
+    table: string,
+    fk: TableForeignKey,
+  ): Promise<void> {
+    const refTable = fk.referencedTableName;
+    const rows = await queryRunner.query(
+      `SELECT 1 FROM pg_constraint c
+       JOIN pg_class t ON t.oid = c.conrelid
+       JOIN pg_namespace n ON n.oid = t.relnamespace
+       WHERE n.nspname = 'public' AND t.relname = $1 AND c.contype = 'f'
+       AND c.confrelid = (SELECT oid FROM pg_class WHERE relname = $2 AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public'))`,
+      [table, refTable],
+    );
+    if (Array.isArray(rows) && rows.length > 0) return;
+    await queryRunner.createForeignKey(table, fk);
+  }
+
+  /** Only create index if it does not exist. */
+  private async createIndexIfNotExists(
+    queryRunner: QueryRunner,
+    table: string,
+    index: TableIndex,
+  ): Promise<void> {
+    const name = index.name;
+    const rows = await queryRunner.query(
+      `SELECT 1 FROM pg_indexes WHERE schemaname = 'public' AND indexname = $1`,
+      [name],
+    );
+    if (Array.isArray(rows) && rows.length > 0) return;
+    await queryRunner.createIndex(table, index);
   }
 
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -115,34 +139,23 @@ export class CreateAdminRolesAndUsers1738040000000 implements MigrationInterface
     );
     }
 
-    await this.ignoreDuplicate(() =>
-      queryRunner.createForeignKey(
-        'admin_users',
-        new TableForeignKey({
-          columnNames: ['role_id'],
-          referencedColumnNames: ['id'],
-          referencedTableName: 'admin_roles',
-          onDelete: 'RESTRICT',
-        }),
-      ),
+    const fk = new TableForeignKey({
+      columnNames: ['role_id'],
+      referencedColumnNames: ['id'],
+      referencedTableName: 'admin_roles',
+      onDelete: 'RESTRICT',
+    });
+    await this.addForeignKeyIfNotExists(queryRunner, 'admin_users', fk);
+
+    await this.createIndexIfNotExists(
+      queryRunner,
+      'admin_users',
+      new TableIndex({ name: 'IDX_admin_users_role_id', columnNames: ['role_id'] }),
     );
-    await this.ignoreDuplicate(() =>
-      queryRunner.createIndex(
-        'admin_users',
-        new TableIndex({
-          name: 'IDX_admin_users_role_id',
-          columnNames: ['role_id'],
-        }),
-      ),
-    );
-    await this.ignoreDuplicate(() =>
-      queryRunner.createIndex(
-        'admin_users',
-        new TableIndex({
-          name: 'IDX_admin_users_email',
-          columnNames: ['email'],
-        }),
-      ),
+    await this.createIndexIfNotExists(
+      queryRunner,
+      'admin_users',
+      new TableIndex({ name: 'IDX_admin_users_email', columnNames: ['email'] }),
     );
 
     // Insert default roles only if not already present
