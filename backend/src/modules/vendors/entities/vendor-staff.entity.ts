@@ -24,8 +24,8 @@ export class VendorStaff {
   @Column({ type: 'enum', enum: StaffRole })
   role: StaffRole;
 
-  @Column({ name: 'permissions', type: 'simple-array', nullable: true })
-  permissions: string[]; // Array of permission strings
+  @Column({ name: 'permissions', type: 'text', array: true, nullable: true })
+  permissions: string[]; // PostgreSQL text[]; use array format to match DB
 
   @Column({ default: true, name: 'is_active' })
   isActive: boolean;
