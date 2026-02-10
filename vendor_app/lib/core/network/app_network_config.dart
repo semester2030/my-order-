@@ -6,11 +6,11 @@ class AppNetworkConfig {
 
   static String get baseUrl => Env.apiBaseUrl;
 
-  /// مهلة الاتصال (ميلي ثانية).
-  static const int connectTimeoutMs = 30000;
+  /// مهلة الاتصال (ميلي ثانية). 60s لاستيعاب استيقاظ Render (Free tier).
+  static const int connectTimeoutMs = 60000;
 
   /// مهلة استقبال البيانات (ميلي ثانية).
-  static const int receiveTimeoutMs = 30000;
+  static const int receiveTimeoutMs = 60000;
 
   /// مهلة الإرسال (ميلي ثانية).
   static const int sendTimeoutMs = 30000;

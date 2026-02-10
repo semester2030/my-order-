@@ -25,9 +25,10 @@ export default function VendorDetailPage() {
   const id = params?.id as string
   const [actionLoading, setActionLoading] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, mutate: revalidate } = useSWR(
     id ? [`/admin/vendors/${id}`, id] : null,
     () => fetchVendorById(id),
+    { revalidateOnFocus: true },
   )
 
   if (error) {
@@ -113,12 +114,15 @@ export default function VendorDetailPage() {
                     size="sm"
                     disabled={actionLoading}
                     onClick={async () => {
+                      setMessage(null)
                       setActionLoading(true)
                       try {
                         await approveVendor(id)
-                        mutate(`/admin/vendors/${id}`)
-                        mutate('/admin/vendors')
-                        mutate('/admin/dashboard')
+                        await Promise.all([
+                          revalidate(),
+                          mutate('/admin/vendors'),
+                          mutate('/admin/dashboard'),
+                        ])
                         setMessage('تمت الموافقة')
                       } catch (e) {
                         setMessage('فشل: ' + (e instanceof Error ? e.message : ''))
@@ -138,10 +142,12 @@ export default function VendorDetailPage() {
                       if (r === null) return
                       setActionLoading(true)
                       rejectVendor(id, r ?? '')
-                        .then(() => {
-                          mutate(`/admin/vendors/${id}`)
-                          mutate('/admin/vendors')
-                          mutate('/admin/dashboard')
+                        .then(async () => {
+                          await Promise.all([
+                            revalidate(),
+                            mutate('/admin/vendors'),
+                            mutate('/admin/dashboard'),
+                          ])
                           setMessage('تم الرفض')
                         })
                         .catch((e) => setMessage('فشل: ' + (e instanceof Error ? e.message : '')))
@@ -157,19 +163,19 @@ export default function VendorDetailPage() {
                   variant="danger"
                   size="sm"
                   disabled={actionLoading}
-                  onClick={async () => {
-                    setActionLoading(true)
-                    try {
-                      await suspendVendor(id)
-                      mutate(`/admin/vendors/${id}`)
-                      mutate('/admin/vendors')
-                      setMessage('تم الإيقاف')
-                    } catch (e) {
-                      setMessage('فشل: ' + (e instanceof Error ? e.message : ''))
-                    } finally {
-                      setActionLoading(false)
-                    }
-                  }}
+                    onClick={async () => {
+                      setMessage(null)
+                      setActionLoading(true)
+                      try {
+                        await suspendVendor(id)
+                        await Promise.all([revalidate(), mutate('/admin/vendors')])
+                        setMessage('تم الإيقاف')
+                      } catch (e) {
+                        setMessage('فشل: ' + (e instanceof Error ? e.message : ''))
+                      } finally {
+                        setActionLoading(false)
+                      }
+                    }}
                 >
                   إيقاف
                 </Button>

@@ -1,7 +1,7 @@
 /**
  * Run from backend folder: npm run create-admin
  * Creates admin_roles and admin_users tables if missing (synchronize), seeds default roles, then creates first admin user.
- * Requires: DATABASE_* env in .env
+ * Uses DATABASE_URL if set (e.g. from Render), otherwise DATABASE_HOST/PORT/USER/PASSWORD/NAME from .env
  */
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
@@ -22,13 +22,18 @@ const DEFAULT_ROLES = [
 ];
 
 async function run() {
+  const dbUrl = process.env.DATABASE_URL?.trim();
   const dataSource = new DataSource({
     type: 'postgres',
-    host: process.env.DATABASE_HOST || 'localhost',
-    port: Number(process.env.DATABASE_PORT ?? 5432),
-    username: process.env.DATABASE_USER || 'postgres',
-    password: process.env.DATABASE_PASSWORD || undefined,
-    database: process.env.DATABASE_NAME || 'customer_app',
+    ...(dbUrl
+      ? { url: dbUrl, ssl: { rejectUnauthorized: false } }
+      : {
+          host: process.env.DATABASE_HOST || 'localhost',
+          port: Number(process.env.DATABASE_PORT ?? 5432),
+          username: process.env.DATABASE_USER || 'postgres',
+          password: process.env.DATABASE_PASSWORD || undefined,
+          database: process.env.DATABASE_NAME || 'customer_app',
+        }),
     entities: [AdminRole, AdminUser],
     synchronize: true,
   });

@@ -68,7 +68,11 @@ export class VendorsService {
     restaurantImages?: any[];
   }): Promise<{ vendorId: string; status: string; message: string }> {
     const emailNorm = (dto.email || '').trim().toLowerCase();
-    if (!emailNorm) throw new BadRequestException('Email is required');
+    const passwordTrim = (dto.password || '').trim();
+    const nameTrim = (dto.name || '').trim();
+    if (!emailNorm) throw new BadRequestException('البريد الإلكتروني مطلوب.');
+    if (!passwordTrim) throw new BadRequestException('كلمة المرور مطلوبة.');
+    if (nameTrim.length < 2) throw new BadRequestException('اسم مقدم الخدمة يجب أن يكون حرفين على الأقل.');
 
     // 1. Check email uniqueness (vendor + user), case-insensitive
     const existingVendorByEmail = await this.vendorRepository
@@ -114,12 +118,12 @@ export class VendorsService {
       throw new ConflictException('Owner ID number already exists');
     }
 
-    // 4. Hash password
-    const hashedPassword = await bcrypt.hash(dto.password, this.PASSWORD_SALT_ROUNDS);
+    // 4. Hash password (use trimmed)
+    const hashedPassword = await bcrypt.hash(passwordTrim, this.PASSWORD_SALT_ROUNDS);
 
     // 5. Create vendor — required: name, email, phoneNumber, location, owner fields (use defaults when optional)
     const vendor = this.vendorRepository.create({
-      name: dto.name.trim(),
+      name: nameTrim,
       tradeName: dto.tradeName?.trim() || null,
       type: dto.type ?? VendorType.PREMIUM_CASUAL,
       description: dto.description?.trim() || null,
@@ -144,7 +148,7 @@ export class VendorsService {
       deliveryFee: dto.deliveryFee ?? 0,
       deliveryRadius: dto.deliveryRadius ?? 10,
       estimatedDeliveryTime: dto.estimatedDeliveryTime ?? 30,
-      ownerName: (dto.ownerName?.trim() || dto.name).trim(),
+      ownerName: (dto.ownerName?.trim() || nameTrim).trim(),
       ownerPhone: dto.ownerPhone?.trim() || phoneOrEmail,
       ownerEmail: dto.ownerEmail?.trim() || emailNorm,
       ownerIdNumber: ownerIdValue,
@@ -180,7 +184,7 @@ export class VendorsService {
       // 6. Create user account for vendor (login by email + password)
       const vendorUser = this.userRepository.create({
         phone: phoneOrEmail,
-        name: (dto.ownerName?.trim() || dto.name).trim(),
+        name: (dto.ownerName?.trim() || nameTrim).trim(),
         email: emailNorm,
         pinHash: hashedPassword,
         isVerified: false,

@@ -5,13 +5,24 @@ import '../network_exceptions.dart';
 
 /// يحوّل أخطاء Dio إلى [AppException] (Phase 7).
 class ErrorInterceptor extends Interceptor {
+  /// استخراج رسالة الخطأ من استجابة الباك اند إن وُجدت.
+  static String? _messageFromResponse(dynamic data) {
+    if (data is Map && data['message'] != null) {
+      final msg = data['message'];
+      return msg is String ? msg : msg.toString();
+    }
+    return null;
+  }
+
   @override
   void onError(
     DioException err,
     ErrorInterceptorHandler handler,
   ) {
     final statusCode = err.response?.statusCode ?? 0;
-    final body = err.response?.data?.toString();
+    final data = err.response?.data;
+    final backendMessage = _messageFromResponse(data);
+    final body = backendMessage ?? data?.toString();
     final exception = mapStatusCodeToException(statusCode, body);
     if (statusCode == 0 &&
         (err.type == DioExceptionType.connectionTimeout ||

@@ -50,7 +50,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final request = RegisterVendorRequest(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
-      password: _passwordController.text,
+      password: _passwordController.text.trim(),
       phoneNumber: _phoneController.text.trim().isEmpty
           ? null
           : _phoneController.text.trim(),

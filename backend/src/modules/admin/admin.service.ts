@@ -286,7 +286,15 @@ export class AdminService {
     const vendor = await this.vendorRepo.findOne({ where: { id } });
     if (!vendor) throw new NotFoundException('Vendor not found');
     if (vendor.registrationStatus !== VendorStatus.PENDING_APPROVAL && vendor.registrationStatus !== VendorStatus.UNDER_REVIEW) {
-      throw new BadRequestException(`Vendor status is ${vendor.registrationStatus}`);
+      const msg =
+        vendor.registrationStatus === VendorStatus.APPROVED
+          ? 'المورد معتمد مسبقاً'
+          : vendor.registrationStatus === VendorStatus.REJECTED
+            ? 'المورد مرفوض مسبقاً'
+            : vendor.registrationStatus === VendorStatus.SUSPENDED
+              ? 'المورد موقوف مسبقاً'
+              : `حالة المورد الحالية: ${vendor.registrationStatus}`;
+      throw new BadRequestException(msg);
     }
     const oldStatus = vendor.registrationStatus;
     vendor.registrationStatus = VendorStatus.APPROVED;

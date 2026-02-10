@@ -8,6 +8,8 @@ AppException mapStatusCodeToException(int statusCode, [String? body]) {
       return ValidationException(body ?? 'طلب غير صالح', '$statusCode');
     case 401:
       return UnauthorizedException(body ?? 'غير مصرح');
+    case 409:
+      return ValidationException(body ?? 'تعارض في البيانات');
     case 403:
       return NetworkException(body ?? 'ممنوع', '$statusCode');
     case 404:

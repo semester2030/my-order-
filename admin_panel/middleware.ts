@@ -9,6 +9,14 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get(ADMIN_TOKEN_KEY)?.value;
 
+  // الصفحة الرئيسية: إن كان مسجّل دخول → الداشبورد، وإلا → تسجيل الدخول
+  if (pathname === '/') {
+    if (token) {
+      return NextResponse.redirect(new URL(DASHBOARD_PREFIX, request.url));
+    }
+    return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
+  }
+
   const isProtected = pathname === DASHBOARD_PREFIX || pathname.startsWith(DASHBOARD_PREFIX + '/');
   const isLoginPage = pathname === LOGIN_PATH;
 
@@ -26,5 +34,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard', '/dashboard/:path*', '/auth/login'],
+  matcher: ['/', '/dashboard', '/dashboard/:path*', '/auth/login'],
 };
