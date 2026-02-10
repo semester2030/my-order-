@@ -202,17 +202,26 @@ export class VendorsService {
         message: 'Registration submitted successfully. Your application is under review.',
       };
     } catch (err: any) {
+      const code = err?.driverError?.code;
+      const detail = err?.driverError?.detail ?? err?.message;
       this.logger.error(
-        `Vendor register failed: ${err?.message ?? err}`,
+        `Vendor register failed: ${err?.message ?? err} | code=${code} | detail=${detail}`,
         err?.stack,
       );
-      if (err?.driverError?.detail) {
-        this.logger.error(`DB detail: ${err.driverError.detail}`);
+      if (err?.driverError) {
+        this.logger.error(`driverError: ${JSON.stringify(err.driverError)}`);
+      }
+      if (err?.driverError?.code === '23505') {
+        throw new InternalServerErrorException('Email or phone already registered.');
+      }
+      if (err?.driverError?.code === '42703' || (detail && String(detail).includes('column') && String(detail).includes('does not exist'))) {
+        this.logger.error('DB schema may be missing columns. Run migrations on the database.');
+        throw new InternalServerErrorException(
+          'Server database is not up to date. Please contact support.',
+        );
       }
       throw new InternalServerErrorException(
-        err?.message?.includes('duplicate') || err?.driverError?.code === '23505'
-          ? 'Email or phone already registered.'
-          : 'Registration failed. Please try again or contact support.',
+        'Registration failed. Please try again or contact support.',
       );
     }
   }
