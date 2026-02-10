@@ -67,27 +67,32 @@ export class VendorsService {
     cover?: any[];
     restaurantImages?: any[];
   }): Promise<{ vendorId: string; status: string; message: string }> {
-    // 1. Check email uniqueness (vendor + user)
-    const existingVendorByEmail = await this.vendorRepository.findOne({
-      where: { email: dto.email },
-    });
+    const emailNorm = (dto.email || '').trim().toLowerCase();
+    if (!emailNorm) throw new BadRequestException('Email is required');
+
+    // 1. Check email uniqueness (vendor + user), case-insensitive
+    const existingVendorByEmail = await this.vendorRepository
+      .createQueryBuilder('v')
+      .where('LOWER(TRIM(v.email)) = :email', { email: emailNorm })
+      .getOne();
     if (existingVendorByEmail) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException('البريد الإلكتروني مسجّل مسبقاً.');
     }
-    const existingUserByEmail = await this.userRepository.findOne({
-      where: { email: dto.email },
-    });
+    const existingUserByEmail = await this.userRepository
+      .createQueryBuilder('u')
+      .where('LOWER(TRIM(u.email)) = :email', { email: emailNorm })
+      .getOne();
     if (existingUserByEmail) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException('البريد الإلكتروني مسجّل مسبقاً.');
     }
 
-    const phoneOrEmail = dto.phoneNumber?.trim() || dto.email;
+    const phoneOrEmail = dto.phoneNumber?.trim() || emailNorm;
 
     const existingUserByPhone = await this.userRepository.findOne({
       where: { phone: phoneOrEmail },
     });
     if (existingUserByPhone) {
-      throw new ConflictException('Phone/email already registered');
+      throw new ConflictException('رقم الجوال أو البريد مستخدم مسبقاً. جرّب تسجيل الدخول أو استخدم بريداً/رقماً آخر.');
     }
 
     // 2. Optional: commercial registration uniqueness
@@ -101,7 +106,7 @@ export class VendorsService {
     }
 
     // 3. Optional: owner ID uniqueness (use email as fallback for minimal registration)
-    const ownerIdValue = dto.ownerIdNumber?.trim() || dto.email;
+    const ownerIdValue = dto.ownerIdNumber?.trim() || emailNorm;
     const existingVendorById = await this.vendorRepository.findOne({
       where: { ownerIdNumber: ownerIdValue },
     });
@@ -118,7 +123,7 @@ export class VendorsService {
       tradeName: dto.tradeName?.trim() || null,
       type: dto.type ?? VendorType.PREMIUM_CASUAL,
       description: dto.description?.trim() || null,
-      email: dto.email.trim(),
+      email: emailNorm,
       phoneNumber: phoneOrEmail,
       website: dto.website?.trim() || null,
       commercialRegistrationNumber: dto.commercialRegistrationNumber?.trim() || null,
@@ -141,7 +146,7 @@ export class VendorsService {
       estimatedDeliveryTime: dto.estimatedDeliveryTime ?? 30,
       ownerName: (dto.ownerName?.trim() || dto.name).trim(),
       ownerPhone: dto.ownerPhone?.trim() || phoneOrEmail,
-      ownerEmail: dto.ownerEmail?.trim() || dto.email.trim(),
+      ownerEmail: dto.ownerEmail?.trim() || emailNorm,
       ownerIdNumber: ownerIdValue,
       ownerIdImage: files?.ownerId?.[0]?.filename || '',
       ownerNationality: dto.ownerNationality?.trim() || null,
@@ -176,7 +181,7 @@ export class VendorsService {
       const vendorUser = this.userRepository.create({
         phone: phoneOrEmail,
         name: (dto.ownerName?.trim() || dto.name).trim(),
-        email: dto.email.trim(),
+        email: emailNorm,
         pinHash: hashedPassword,
         isVerified: false,
         isActive: true,
@@ -212,7 +217,17 @@ export class VendorsService {
         this.logger.error(`driverError: ${JSON.stringify(err.driverError)}`);
       }
       if (err?.driverError?.code === '23505') {
-        throw new InternalServerErrorException('Email or phone already registered.');
+        const detailStr = String(err?.driverError?.detail ?? '');
+        if (detailStr.includes('(name)=')) {
+          throw new ConflictException('اسم مقدم الخدمة مستخدم مسبقاً. اختر اسماً آخر أو سجّل الدخول بالحساب الحالي.');
+        }
+        if (detailStr.includes('(email)=')) {
+          throw new ConflictException('البريد الإلكتروني مسجّل مسبقاً.');
+        }
+        if (detailStr.includes('(phone') || detailStr.includes('(phone_number)')) {
+          throw new ConflictException('رقم الجوال أو البريد مسجّل مسبقاً.');
+        }
+        throw new ConflictException('البريد أو رقم الجوال مسجّل مسبقاً.');
       }
       if (err?.driverError?.code === '42703' || (detail && String(detail).includes('column') && String(detail).includes('does not exist'))) {
         this.logger.error('DB schema may be missing columns. Run migrations on the database.');

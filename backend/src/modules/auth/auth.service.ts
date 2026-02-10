@@ -2,6 +2,8 @@ import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
+  InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,6 +17,7 @@ import { VendorsService } from '../vendors/vendors.service';
 @Injectable()
 export class AuthService {
   private readonly PIN_SALT_ROUNDS = 10;
+  private readonly logger = new Logger(AuthService.name);
 
   constructor(
     private readonly jwtService: JwtService,
@@ -232,27 +235,71 @@ export class AuthService {
   }
 
   async vendorLogin(email: string, password: string) {
-    // Find user by email
-    const user = await this.userRepository.findOne({
-      where: { email },
-    });
+    try {
+      const emailNorm = (email || '').trim().toLowerCase();
+      const passwordTrim = (password || '').trim();
+      if (!emailNorm) {
+        throw new UnauthorizedException('البريد الإلكتروني مطلوب.');
+      }
+      if (!passwordTrim) {
+        throw new UnauthorizedException('كلمة المرور مطلوبة.');
+      }
+      // Find user by email (case-insensitive)
+      const user = await this.userRepository
+        .createQueryBuilder('u')
+        .where('LOWER(TRIM(u.email)) = :email', { email: emailNorm })
+        .getOne();
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
-    }
+      if (!user) {
+        throw new UnauthorizedException(
+          'البريد الإلكتروني غير مسجّل. تأكد من البريد أو سجّل حساباً جديداً.',
+        );
+      }
 
-    // Check if user is a vendor staff member
-    const vendorId = await this.vendorsService.getVendorIdByUserId(user.id);
-    if (!vendorId) {
-      throw new UnauthorizedException('User is not a vendor staff member');
-    }
+      const vendorId = await this.vendorsService.getVendorIdByUserId(user.id);
+      if (!vendorId) {
+        throw new UnauthorizedException(
+          'هذا الحساب ليس حساب مقدم خدمة. استخدم بريداً مسجلاً من تطبيق مقدم الخدمة.',
+        );
+      }
 
-    // For testing: Check if this is the test account
-    const TEST_EMAIL = 'cy-20@outlook.com';
-    const TEST_PASSWORD = 'test123456';
+      // Test account bypass
+      const TEST_EMAIL = 'cy-20@outlook.com';
+      const TEST_PASSWORD = 'test123456';
+      if (emailNorm === TEST_EMAIL.toLowerCase() && passwordTrim === TEST_PASSWORD) {
+        const payload = {
+          email: user.email,
+          sub: user.id,
+          userId: user.id,
+          vendorId,
+        };
+        const accessToken = this.jwtService.sign(payload);
+        const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
+        return {
+          accessToken,
+          refreshToken,
+          expiresIn: 3600,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name || 'Test Vendor',
+            phone: user.phone || '+966501234567',
+          },
+        };
+      }
 
-    if (email === TEST_EMAIL && password === TEST_PASSWORD) {
-      // Generate JWT tokens for test account
+      if (!user.pinHash) {
+        throw new UnauthorizedException(
+          'كلمة المرور غير مضبوطة لهذا الحساب. تواصل مع الدعم.',
+        );
+      }
+      const isPasswordValid = await bcrypt.compare(passwordTrim, user.pinHash);
+      if (!isPasswordValid) {
+        throw new UnauthorizedException(
+          'كلمة المرور غير صحيحة. تأكد من كتابة كلمة المرور بشكل صحيح.',
+        );
+      }
+
       const payload = {
         email: user.email,
         sub: user.id,
@@ -261,51 +308,28 @@ export class AuthService {
       };
       const accessToken = this.jwtService.sign(payload);
       const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
-
       return {
         accessToken,
         refreshToken,
+        expiresIn: 3600,
         user: {
           id: user.id,
           email: user.email,
-          name: user.name || 'Test Vendor',
-          phone: user.phone || '+966501234567',
+          name: user.name || 'Vendor',
+          phone: user.phone || '',
         },
       };
-    }
-
-    // For other accounts, check password hash if exists
-    // Note: In production, passwords should be hashed during registration
-    // For now, we'll allow login if user exists and is vendor staff
-    // In production, add passwordHash to User entity and verify it here
-    if (user.pinHash) {
-      const isPasswordValid = await bcrypt.compare(password, user.pinHash);
-      if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid email or password');
+    } catch (err: any) {
+      if (err instanceof UnauthorizedException) {
+        throw err;
       }
-    } else {
-      throw new UnauthorizedException('Password not set. Please contact admin.');
+      this.logger.error(
+        `vendorLogin failed: ${err?.message ?? err}`,
+        err?.stack,
+      );
+      throw new InternalServerErrorException(
+        'خطأ في الاتصال بالخادم. تحقق من الإنترنت وحاول مرة أخرى.',
+      );
     }
-
-    // Generate JWT tokens
-    const payload = {
-      email: user.email,
-      sub: user.id,
-      userId: user.id,
-      vendorId,
-    };
-    const accessToken = this.jwtService.sign(payload);
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name || 'Vendor',
-        phone: user.phone || '',
-      },
-    };
   }
 }
