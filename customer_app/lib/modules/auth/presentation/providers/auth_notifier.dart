@@ -10,16 +10,12 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   final secureStorage = ref.watch(secureStorageProvider);
   final localStorage = ref.watch(localStorageProvider);
-
-  final remoteDataSource = AuthRemoteDataSourceImpl(apiClient: apiClient);
-  final localDataSource = AuthLocalDataSourceImpl(
-    secureStorage: secureStorage,
-    localStorage: localStorage,
-  );
-
   return AuthRepositoryImpl(
-    remoteDataSource: remoteDataSource,
-    localDataSource: localDataSource,
+    remoteDataSource: AuthRemoteDataSourceImpl(apiClient: apiClient),
+    localDataSource: AuthLocalDataSourceImpl(
+      secureStorage: secureStorage,
+      localStorage: localStorage,
+    ),
   );
 });
 
@@ -38,62 +34,31 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> _checkAuthStatus() async {
     state = const AuthState.loading();
-    
-    // First check if token exists locally
     final hasLocalToken = await repository.isAuthenticated();
-    
     if (!hasLocalToken) {
       state = const AuthState.unauthenticated();
       return;
     }
-
-    // Validate token with backend
     try {
       final isValid = await repository.validateToken();
-      
       if (!isValid) {
-        // Token is invalid, clear local data (don't call backend logout)
         await repository.clearLocalData();
         state = const AuthState.unauthenticated();
         return;
       }
-
-      // Token is valid, get user
       final user = await repository.getCurrentUser();
-      if (user != null) {
-        state = AuthState.authenticated(user);
-      } else {
-        // User not found locally, clear local data
-        await repository.clearLocalData();
-        state = const AuthState.unauthenticated();
-      }
-    } catch (e) {
-      // If validation fails, clear local data and set unauthenticated
+      state = user != null ? AuthState.authenticated(user) : const AuthState.unauthenticated();
+      if (user == null) await repository.clearLocalData();
+    } catch (_) {
       await repository.clearLocalData();
       state = const AuthState.unauthenticated();
     }
   }
 
-  String? _lastOtp; // Store OTP for development mode
-
-  Future<void> requestOtp(String identifier) async {
+  Future<void> register(String name, String email, String password) async {
     state = const AuthState.loading();
     try {
-      final response = await repository.requestOtp(identifier);
-      // In development, OTP is returned in response
-      _lastOtp = response['otp'] as String?;
-      // OTP requested successfully, stay in loading or move to next screen
-    } catch (e) {
-      state = AuthState.error(e.toString());
-    }
-  }
-
-  String? getLastOtp() => _lastOtp;
-
-  Future<void> verifyOtp(String identifier, String code) async {
-    state = const AuthState.loading();
-    try {
-      final tokens = await repository.verifyOtp(identifier, code);
+      final tokens = await repository.register(name, email.trim(), password);
       if (tokens.user != null) {
         state = AuthState.authenticated(tokens.user!);
       } else {
@@ -104,20 +69,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> setPin(String pin) async {
+  Future<void> login(String email, String password) async {
     state = const AuthState.loading();
     try {
-      await repository.setPin(pin);
-      // PIN set successfully
-    } catch (e) {
-      state = AuthState.error(e.toString());
-    }
-  }
-
-  Future<void> verifyPin(String identifier, String pin) async {
-    state = const AuthState.loading();
-    try {
-      final tokens = await repository.verifyPin(identifier, pin);
+      final tokens = await repository.login(email.trim(), password);
       if (tokens.user != null) {
         state = AuthState.authenticated(tokens.user!);
       } else {

@@ -2,10 +2,8 @@ import '../entities/user_entity.dart';
 import '../../data/models/auth_tokens_dto.dart';
 
 abstract class AuthRepository {
-  Future<Map<String, dynamic>> requestOtp(String identifier);
-  Future<AuthTokensDto> verifyOtp(String identifier, String code);
-  Future<void> setPin(String pin);
-  Future<AuthTokensDto> verifyPin(String identifier, String pin);
+  Future<AuthTokensDto> register(String name, String email, String password);
+  Future<AuthTokensDto> login(String email, String password);
   Future<AuthTokensDto> refreshToken(String refreshToken);
   Future<void> logout();
   Future<void> clearLocalData();

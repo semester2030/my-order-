@@ -6,13 +6,8 @@ import 'route_names.dart';
 import 'guards.dart';
 import '../../../modules/auth/presentation/screens/splash_screen.dart';
 import '../../../modules/auth/presentation/screens/welcome_screen.dart';
-import '../../../modules/auth/presentation/screens/phone_screen.dart';
-import '../../../modules/auth/presentation/screens/email_screen.dart';
-import '../../../modules/auth/presentation/screens/otp_screen.dart';
-import '../../../modules/auth/presentation/screens/create_pin_screen.dart';
-import '../../../modules/auth/presentation/screens/enter_pin_screen.dart';
-import '../../../modules/auth/presentation/screens/login_identifier_screen.dart';
-import '../../../modules/auth/presentation/screens/security_method_screen.dart';
+import '../../../modules/auth/presentation/screens/register_screen.dart';
+import '../../../modules/auth/presentation/screens/login_screen.dart';
 import '../../../modules/categories/presentation/screens/categories_screen.dart';
 import '../../../modules/feed/presentation/screens/feed_screen.dart';
 import '../../../modules/cart/presentation/screens/cart_screen.dart';
@@ -47,13 +42,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isAuth = await authGuard.isAuthenticated();
       final isSplash = path == RouteNames.splash;
       final isAuthRoute = path == RouteNames.welcome ||
-          path == RouteNames.phoneInput ||
-          path == RouteNames.emailInput ||
-          path == RouteNames.loginIdentifier ||
-          path == RouteNames.otpVerification ||
-          path == RouteNames.securityMethod ||
-          path == RouteNames.pinSetup ||
-          path == RouteNames.pinVerification;
+          path == RouteNames.register ||
+          path == RouteNames.login;
       if (isSplash || isAuthRoute) return null;
       if (!isAuth) return RouteNames.splash;
       return null;
@@ -79,67 +69,14 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Auth routes
       GoRoute(
-        path: RouteNames.phoneInput,
-        name: 'phone-input',
-        builder: (context, state) {
-          return const PhoneScreen();
-        },
-        // No redirect - allow access always (user must login every time)
-      ),
-
-      GoRoute(
-        path: RouteNames.emailInput,
-        name: 'email-input',
-        builder: (context, state) {
-          return const EmailScreen();
-        },
+        path: RouteNames.register,
+        name: 'register',
+        builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
-        path: RouteNames.loginIdentifier,
-        name: 'login-identifier',
-        builder: (context, state) {
-          return const LoginIdentifierScreen();
-        },
-      ),
-      GoRoute(
-        path: RouteNames.otpVerification,
-        name: 'otp-verification',
-        builder: (context, state) {
-          final identifier = state.extra as String? ?? '';
-          return OtpScreen(identifier: identifier);
-        },
-      ),
-
-      GoRoute(
-        path: RouteNames.securityMethod,
-        name: 'security-method',
-        builder: (context, state) {
-          return const SecurityMethodScreen();
-        },
-        // No redirect - allow access always
-      ),
-
-      GoRoute(
-        path: RouteNames.pinSetup,
-        name: 'pin-setup',
-        builder: (context, state) {
-          return const CreatePinScreen();
-        },
-        redirect: (context, state) async {
-          return await authGuard.redirectIfNotAuthenticated(context, state);
-        },
-      ),
-
-      GoRoute(
-        path: RouteNames.pinVerification,
-        name: 'pin-verification',
-        builder: (context, state) {
-          final identifier = state.extra as String? ?? '';
-          return EnterPinScreen(identifier: identifier);
-        },
-        redirect: (context, state) async {
-          return await authGuard.redirectIfAuthenticated(context, state);
-        },
+        path: RouteNames.login,
+        name: 'login',
+        builder: (context, state) => const LoginScreen(),
       ),
 
       // Main routes (protected)

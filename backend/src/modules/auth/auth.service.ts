@@ -13,6 +13,7 @@ import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { OtpCacheService } from './services/otp-cache.service';
 import { VendorsService } from '../vendors/vendors.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +27,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly otpCacheService: OtpCacheService,
     private readonly vendorsService: VendorsService,
+    private readonly emailService: EmailService,
   ) {}
 
   async requestOtp(identifier: string) {
@@ -56,12 +58,53 @@ export class AuthService {
     }
 
     this.otpCacheService.storeOtp(trimmed, otp);
-    console.log(`OTP for ${trimmed}: ${otp}`); // Remove in production
+    this.logger.log(`OTP generated for ${trimmed}`);
+
+    if (isEmail) {
+      if (this.emailService.isConfigured()) {
+        const sent = await this.emailService.sendOtp(trimmed, otp);
+        const forceRaw = process.env.OTP_FORCE_WHITELIST ?? '';
+        const inForceList = forceRaw.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean).includes(trimmed.toLowerCase());
+        if (!sent && !inForceList) {
+          throw new InternalServerErrorException(
+            'فشل إرسال رمز التحقق إلى بريدك. حاول مرة أخرى.',
+          );
+        }
+      } else {
+        // Email service not configured - fallback for testing only
+        if (process.env.NODE_ENV === 'production') {
+          throw new InternalServerErrorException(
+            'خدمة البريد غير مهيأة. يرجى الاتصال بالدعم.',
+          );
+        }
+        const whitelistRaw = process.env.OTP_DEV_WHITELIST ?? '';
+        const whitelist = whitelistRaw
+          .split(',')
+          .map((e) => e.trim().toLowerCase())
+          .filter(Boolean);
+        const inWhitelist = whitelist.includes(trimmed.toLowerCase());
+        if (!inWhitelist) {
+          this.logger.warn(
+            `OTP for ${trimmed}: Set RESEND_API_KEY to send emails, or add to OTP_DEV_WHITELIST for testing`,
+          );
+        }
+      }
+    }
+    // Return OTP in response: (a) when email not sent, or (b) OTP_FORCE_WHITELIST (when Resend accepts but email doesn't arrive - spam/Outlook)
+    const whitelistRaw = process.env.OTP_DEV_WHITELIST ?? '';
+    const forceRaw = process.env.OTP_FORCE_WHITELIST ?? '';
+    const whitelist = whitelistRaw.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+    const forceList = forceRaw.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+    const inWhitelist = whitelist.includes(trimmed.toLowerCase());
+    const inForceList = forceList.includes(trimmed.toLowerCase());
+    const shouldReturnOtp =
+      (isEmail && !this.emailService.isConfigured() && (process.env.NODE_ENV === 'development' || inWhitelist)) ||
+      (isEmail && inForceList);
 
     return {
       message: 'OTP sent successfully',
       expiresIn: 300,
-      otp: process.env.NODE_ENV === 'development' ? otp : undefined,
+      otp: shouldReturnOtp ? otp : undefined,
     };
   }
 
@@ -232,6 +275,69 @@ export class AuthService {
       return null;
     }
     return user;
+  }
+
+  async customerRegister(name: string, email: string, password: string) {
+    const nameTrim = (name || '').trim();
+    const emailNorm = (email || '').trim().toLowerCase();
+    const passwordTrim = (password || '').trim();
+    if (!nameTrim) throw new BadRequestException('الاسم مطلوب.');
+    if (!emailNorm) throw new BadRequestException('البريد الإلكتروني مطلوب.');
+    if (!passwordTrim) throw new BadRequestException('الرمز السري مطلوب.');
+    if (passwordTrim.length < 6) throw new BadRequestException('الرمز السري يجب أن يكون 6 أحرف على الأقل.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNorm)) throw new BadRequestException('بريد إلكتروني غير صحيح.');
+
+    const existing = await this.userRepository
+      .createQueryBuilder('u')
+      .where('LOWER(TRIM(u.email)) = :email', { email: emailNorm })
+      .getOne();
+    if (existing) throw new BadRequestException('البريد مسجّل مسبقاً. سجّل الدخول أو استخدم بريداً آخر.');
+
+    const hashedPassword = await bcrypt.hash(passwordTrim, this.PIN_SALT_ROUNDS);
+    const user = await this.usersService.create({
+      phone: null,
+      email: emailNorm,
+      name: nameTrim,
+      pinHash: hashedPassword,
+      isVerified: true,
+      isActive: true,
+    });
+
+    const payload = { sub: user.id, userId: user.id, email: user.email };
+    return {
+      accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, { expiresIn: '30d' }),
+      expiresIn: 3600,
+      user: { id: user.id, email: user.email, name: user.name, phone: user.phone },
+    };
+  }
+
+  async customerLogin(email: string, password: string) {
+    const emailNorm = (email || '').trim().toLowerCase();
+    const passwordTrim = (password || '').trim();
+    if (!emailNorm) throw new UnauthorizedException('البريد الإلكتروني مطلوب.');
+    if (!passwordTrim) throw new UnauthorizedException('الرمز السري مطلوب.');
+
+    const user = await this.userRepository
+      .createQueryBuilder('u')
+      .where('LOWER(TRIM(u.email)) = :email', { email: emailNorm })
+      .getOne();
+    if (!user) throw new UnauthorizedException('البريد غير مسجّل. سجّل حساباً جديداً أولاً.');
+    if (!user.pinHash) throw new UnauthorizedException('هذا الحساب غير مضبوط. تواصل مع الدعم.');
+
+    const vendorId = await this.vendorsService.getVendorIdByUserId(user.id);
+    if (vendorId) throw new UnauthorizedException('هذا حساب مقدم خدمة. استخدم تطبيق المورد.');
+
+    const isPasswordValid = await bcrypt.compare(passwordTrim, user.pinHash);
+    if (!isPasswordValid) throw new UnauthorizedException('الرمز السري غير صحيح.');
+
+    const payload = { sub: user.id, userId: user.id, email: user.email };
+    return {
+      accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, { expiresIn: '30d' }),
+      expiresIn: 3600,
+      user: { id: user.id, email: user.email, name: user.name, phone: user.phone },
+    };
   }
 
   async vendorLogin(email: string, password: string) {

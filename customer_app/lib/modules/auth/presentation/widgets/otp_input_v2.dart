@@ -102,55 +102,67 @@ class _OtpInputV2State extends State<OtpInputV2> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        widget.length,
-        (index) => Container(
-          width: 50,
-          height: 60,
-          margin: const EdgeInsets.symmetric(horizontal: Insets.xs),
-          child: TextField(
-            controller: _controllers[index],
-            focusNode: _focusNodes[index],
-            textAlign: TextAlign.center,
-            keyboardType: TextInputType.number,
-            maxLength: 1,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
-            style: TextStyles.headlineMedium.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-            decoration: InputDecoration(
-              counterText: '',
-              filled: true,
-              fillColor: AppColors.surface,
-              border: OutlineInputBorder(
-                borderRadius: AppRadius.mdAll,
-                borderSide: BorderSide(color: AppColors.border),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: AppRadius.mdAll,
-                borderSide: BorderSide(color: AppColors.border),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: AppRadius.mdAll,
-                borderSide: const BorderSide(
-                  color: AppColors.primary,
-                  width: 2.0,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = Insets.xs * 2;
+        final totalSpacing = (widget.length - 1) * spacing;
+        final maxW = constraints.maxWidth.isFinite ? constraints.maxWidth : 320.0;
+        final availableWidth = maxW - totalSpacing;
+        final boxWidth = (availableWidth / widget.length).clamp(36.0, 56.0);
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(
+            widget.length,
+            (index) => Padding(
+              padding: EdgeInsets.only(right: index < widget.length - 1 ? spacing / 2 : 0, left: index > 0 ? spacing / 2 : 0),
+              child: Container(
+                width: boxWidth,
+                height: 60,
+                child: TextField(
+                  controller: _controllers[index],
+                  focusNode: _focusNodes[index],
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  maxLength: 1,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  style: TextStyles.headlineMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  decoration: InputDecoration(
+                    counterText: '',
+                    filled: true,
+                    fillColor: AppColors.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: AppRadius.mdAll,
+                      borderSide: BorderSide(color: AppColors.border),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: AppRadius.mdAll,
+                      borderSide: BorderSide(color: AppColors.border),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: AppRadius.mdAll,
+                      borderSide: const BorderSide(
+                        color: AppColors.primary,
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
+                  onChanged: (value) => _handleChanged(index, value),
+                  onTap: () {
+                    _controllers[index].selection = TextSelection.fromPosition(
+                      TextPosition(offset: _controllers[index].text.length),
+                    );
+                  },
                 ),
               ),
             ),
-            onChanged: (value) => _handleChanged(index, value),
-            onTap: () {
-              _controllers[index].selection = TextSelection.fromPosition(
-                TextPosition(offset: _controllers[index].text.length),
-              );
-            },
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

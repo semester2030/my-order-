@@ -31,7 +31,7 @@ class MenuItemDto {
       imageUrl: json['imageUrl'] as String?,
       videoUrl: json['videoUrl'] as String?,
       videoThumbnailUrl: json['videoThumbnailUrl'] as String?,
-      isAvailable: _toBool(json['isAvailable']),
+      isAvailable: _toBool(json['isAvailable'] ?? json['is_available']),
       category: json['category'] as String?,
     );
   }

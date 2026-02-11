@@ -59,7 +59,9 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     setState(() => _togglingId = item.id);
     final ok = await ref.read(menuNotifierProvider.notifier).toggleAvailability(item.id, isAvailable);
     if (mounted) setState(() => _togglingId = null);
-    if (ok) ref.read(menuNotifierProvider.notifier).refresh();
+    if (ok) {
+      ref.read(menuNotifierProvider.notifier).refresh();
+    }
   }
 
   @override
@@ -118,8 +120,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
         );
       }
 
-      // عرض وجبتين فقط في الشاشة مع مربع فيديو كبير
-      final displayList = result.data.take(2).toList();
+      // عرض كل الوجبات (مع إمكانية التمرير للتحميل المزيد)
+      final displayList = result.data;
       return Scaffold(
         backgroundColor: AppColors.background,
         appBar: _buildAppBar(context),

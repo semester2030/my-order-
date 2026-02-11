@@ -333,16 +333,21 @@ export class VendorsController {
   @Patch('menu/:id/availability')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Toggle menu item availability' })
+  @ApiOperation({ summary: 'Set menu item availability' })
   async toggleMenuItemAvailability(
     @Request() req: { user: User },
     @Param('id') menuItemId: string,
+    @Body() body: { isAvailable?: boolean },
   ) {
     const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
     if (!vendorId) {
       throw new NotFoundException('Vendor not found for this user');
     }
-    return this.vendorsService.toggleMenuItemAvailability(vendorId, menuItemId);
+    return this.vendorsService.setMenuItemAvailability(
+      vendorId,
+      menuItemId,
+      body.isAvailable,
+    );
   }
 
   // Vendor Analytics

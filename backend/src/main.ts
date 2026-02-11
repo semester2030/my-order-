@@ -51,6 +51,7 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}`);
   console.log(`API endpoints available at: http://localhost:${port}/api`);
+  console.log(`📧 Email (Resend): ${process.env.RESEND_API_KEY ? 'CONFIGURED' : 'NOT CONFIGURED - set RESEND_API_KEY'}`);
 }
 
 bootstrap();

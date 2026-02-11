@@ -17,6 +17,8 @@ import { SetPinDto } from './dto/set-pin.dto';
 import { VerifyPinDto } from './dto/verify-pin.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { VendorLoginDto } from './dto/vendor-login.dto';
+import { CustomerRegisterDto } from './dto/customer-register.dto';
+import { CustomerLoginDto } from './dto/customer-login.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -58,6 +60,20 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Body() dto: RefreshTokenDto) {
     return this.authService.refreshToken(dto.refreshToken);
+  }
+
+  @Post('customer/register')
+  @ApiOperation({ summary: 'Customer register (name, email, password)' })
+  @HttpCode(HttpStatus.CREATED)
+  async customerRegister(@Body() dto: CustomerRegisterDto) {
+    return this.authService.customerRegister(dto.name, dto.email, dto.password);
+  }
+
+  @Post('customer/login')
+  @ApiOperation({ summary: 'Customer login (email, password)' })
+  @HttpCode(HttpStatus.OK)
+  async customerLogin(@Body() dto: CustomerLoginDto) {
+    return this.authService.customerLogin(dto.email, dto.password);
   }
 
   @Post('vendor/login')

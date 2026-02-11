@@ -5,6 +5,7 @@ import { getDatabaseConfig } from './config/database.config.js';
 import { AppController } from './app.controller';
 
 // Modules
+import { EmailModule } from './modules/email/email.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { AddressesModule } from './modules/addresses/addresses.module';
@@ -35,6 +36,7 @@ import { AdminModule } from './modules/admin/admin.module';
       inject: [ConfigService],
     }),
     // Core modules
+    EmailModule,
     AuthModule,
     UsersModule,
     AddressesModule,

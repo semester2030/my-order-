@@ -544,18 +544,25 @@ export class VendorsService {
       orderCount: item.orderCount,
       createdAt: item.createdAt.toISOString(),
       updatedAt: item.updatedAt.toISOString(),
-      videoAssets: item.videoAssets?.map(video => ({
-        id: video.id,
-        menuItemId: video.menuItemId,
-        cloudflareAssetId: video.cloudflareAssetId,
-        playbackUrl: video.playbackUrl,
-        thumbnailUrl: video.thumbnailUrl,
-        duration: video.duration,
-        status: video.status,
-        isPrimary: video.isPrimary,
-        createdAt: video.createdAt.toISOString(),
-        updatedAt: video.updatedAt.toISOString(),
-      })) || [],
+      videoAssets: [...(item.videoAssets ?? [])]
+        .sort((a, b) => {
+          if (a.isPrimary && !b.isPrimary) return -1;
+          if (!a.isPrimary && b.isPrimary) return 1;
+          const statusOrder = (s: string) => (s === 'ready' ? 0 : s === 'processing' ? 1 : 2);
+          return statusOrder(String(a.status)) - statusOrder(String(b.status));
+        })
+        .map(video => ({
+          id: video.id,
+          menuItemId: video.menuItemId,
+          cloudflareAssetId: video.cloudflareAssetId,
+          playbackUrl: video.playbackUrl,
+          thumbnailUrl: video.thumbnailUrl,
+          duration: video.duration,
+          status: video.status,
+          isPrimary: video.isPrimary,
+          createdAt: video.createdAt.toISOString(),
+          updatedAt: video.updatedAt.toISOString(),
+        })),
     }));
   }
 
@@ -625,9 +632,13 @@ export class VendorsService {
     await this.menuItemRepository.remove(menuItem);
   }
 
-  async toggleMenuItemAvailability(
+  /**
+   * تعيين توفر الوجبة — إن وُجد isAvailable في الطلب نستخدمه، وإلا نبدّل القيمة الحالية.
+   */
+  async setMenuItemAvailability(
     vendorId: string,
     menuItemId: string,
+    isAvailable?: boolean,
   ): Promise<MenuItem> {
     const menuItem = await this.menuItemRepository.findOne({
       where: { id: menuItemId, vendorId },
@@ -637,7 +648,11 @@ export class VendorsService {
       throw new NotFoundException('Menu item not found');
     }
 
-    menuItem.isAvailable = !menuItem.isAvailable;
+    if (typeof isAvailable === 'boolean') {
+      menuItem.isAvailable = isAvailable;
+    } else {
+      menuItem.isAvailable = !menuItem.isAvailable;
+    }
     return this.menuItemRepository.save(menuItem);
   }
 

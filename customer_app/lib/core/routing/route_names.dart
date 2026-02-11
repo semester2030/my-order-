@@ -5,13 +5,8 @@ class RouteNames {
   // Auth
   static const String splash = '/';
   static const String welcome = '/welcome';
-  static const String phoneInput = '/phone-input';
-  static const String emailInput = '/email-input';
-  static const String otpVerification = '/otp-verification';
-  static const String securityMethod = '/security-method';
-  static const String pinSetup = '/pin-setup';
-  static const String pinVerification = '/pin-verification';
-  static const String loginIdentifier = '/login-identifier';
+  static const String register = '/register';
+  static const String login = '/login';
 
   // Main
   static const String home = '/home';

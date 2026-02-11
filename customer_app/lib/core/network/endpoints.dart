@@ -2,20 +2,19 @@
 class Endpoints {
   Endpoints._();
 
-  // Base URL
-  // Backend runs on port 3001, Vendor Web App runs on port 3000
-  // Note: For iOS Simulator, use 'http://localhost:3001/api' (Backend)
-  // For physical device or if localhost doesn't work, use your Mac's IP:
-  // Example: 'http://192.168.1.100:3001/api'
-  // To find your Mac's IP: Run 'ipconfig getifaddr en0' in terminal
-  static const String baseUrl = 'http://localhost:3001/api';
+  /// Base URL للـ API.
+  /// افتراضياً: localhost للتطوير (OTP + Resend يعملان محلياً).
+  /// للربط مع Render: flutter run --dart-define=API_BASE_URL=https://my-order.onrender.com/api
+  static String get baseUrl {
+    const fromEnv = String.fromEnvironment('API_BASE_URL', defaultValue: '');
+    if (fromEnv.isNotEmpty) return fromEnv;
+    return 'http://localhost:3001/api';
+  }
 
   // Auth
   static const String auth = '/auth';
-  static const String requestOtp = '$auth/otp/request';
-  static const String verifyOtp = '$auth/otp/verify';
-  static const String setPin = '$auth/pin/set';
-  static const String verifyPin = '$auth/pin/verify';
+  static const String customerRegister = '$auth/customer/register';
+  static const String customerLogin = '$auth/customer/login';
   static const String refreshToken = '$auth/refresh';
   static const String logout = '$auth/logout';
 

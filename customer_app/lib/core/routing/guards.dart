@@ -23,14 +23,10 @@ class AuthGuard {
     final isAuth = await isAuthenticated();
 
     if (!isAuth) {
-      // Check if already on auth screen
-      if (state.uri.path == RouteNames.phoneInput ||
-          state.uri.path == RouteNames.emailInput ||
-          state.uri.path == RouteNames.otpVerification ||
-          state.uri.path == RouteNames.pinVerification) {
-        return null; // Allow navigation
+      if (state.uri.path == RouteNames.register || state.uri.path == RouteNames.login) {
+        return null;
       }
-      return RouteNames.welcome; // Redirect to welcome (choose login method)
+      return RouteNames.welcome;
     }
 
     return null; // Allow navigation
@@ -44,13 +40,10 @@ class AuthGuard {
     final isAuth = await isAuthenticated();
 
     if (isAuth) {
-      // If authenticated and trying to access auth screens, redirect to home
-      if (state.uri.path == RouteNames.phoneInput ||
-          state.uri.path == RouteNames.emailInput ||
-          state.uri.path == RouteNames.otpVerification ||
-          state.uri.path == RouteNames.pinVerification ||
+      if (state.uri.path == RouteNames.register ||
+          state.uri.path == RouteNames.login ||
           state.uri.path == RouteNames.splash) {
-        return RouteNames.categories; // Redirect to categories
+        return RouteNames.categories;
       }
     }
 

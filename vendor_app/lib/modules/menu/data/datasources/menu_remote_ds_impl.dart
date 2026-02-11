@@ -59,15 +59,22 @@ class MenuRemoteDsImpl implements MenuRemoteDs {
     if (m.containsKey('video') && !m.containsKey('videoUrl')) {
       m['videoUrl'] = m['video'];
     }
-    // الباك اند يرجع videoAssets[] مع playbackUrl و thumbnailUrl — نأخذ أول فيديو.
-    if (m['videoAssets'] is List && (m['videoAssets'] as List).isNotEmpty) {
-      final first = (m['videoAssets'] as List).first;
+    // isAvailable: دعم snake_case إن رجع الباك اند is_available
+    if (m.containsKey('is_available') && !m.containsKey('isAvailable')) {
+      m['isAvailable'] = m['is_available'];
+    }
+    // الباك اند يرجع videoAssets[] أو video_assets[] مع playbackUrl/playback_url و thumbnailUrl/thumbnail_url
+    final videoAssets = m['videoAssets'] ?? m['video_assets'];
+    if (videoAssets is List && videoAssets.isNotEmpty) {
+      final first = videoAssets.first;
       if (first is Map) {
-        if (!m.containsKey('videoUrl') && first['playbackUrl'] != null) {
-          m['videoUrl'] = first['playbackUrl'] as String;
+        final playbackUrl = first['playbackUrl'] ?? first['playback_url'];
+        final thumbnailUrl = first['thumbnailUrl'] ?? first['thumbnail_url'];
+        if (!m.containsKey('videoUrl') && playbackUrl != null) {
+          m['videoUrl'] = playbackUrl is String ? playbackUrl : playbackUrl.toString();
         }
-        if (!m.containsKey('videoThumbnailUrl') && first['thumbnailUrl'] != null) {
-          m['videoThumbnailUrl'] = first['thumbnailUrl'] as String;
+        if (!m.containsKey('videoThumbnailUrl') && thumbnailUrl != null) {
+          m['videoThumbnailUrl'] = thumbnailUrl is String ? thumbnailUrl : thumbnailUrl.toString();
         }
       }
     }

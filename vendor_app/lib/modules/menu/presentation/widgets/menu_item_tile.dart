@@ -6,6 +6,7 @@ import 'package:vendor_app/core/utils/formatters.dart';
 import 'package:vendor_app/core/routing/route_names.dart';
 import 'package:vendor_app/modules/menu/domain/entities/menu_item.dart';
 import 'package:vendor_app/modules/menu/presentation/widgets/availability_switch.dart';
+import 'package:vendor_app/modules/menu/presentation/widgets/meal_video_player.dart';
 
 /// بطاقة وجبة واحدة — الفيديو في الأعلى واسم الوجبة وبيناتها في الأسفل (عرض كامل الشاشة).
 class MenuItemTile extends StatelessWidget {
@@ -30,13 +31,36 @@ class MenuItemTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // الفيديو/الصورة في الأعلى — مربع كامل عرض الشاشة
+            // الفيديو/الصورة في الأعلى — مربع كامل عرض الشاشة (قابل للتشغيل عند وجود فيديو)
             ClipRRect(
               borderRadius: AppRadius.topLG,
               child: SizedBox(
                 width: double.infinity,
                 height: 220,
-                child: _buildMediaContent(item),
+                child: GestureDetector(
+                  onTap: () => _onMediaTap(context, item),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      _buildMediaContent(item),
+                      if (item.videoUrl != null && item.videoUrl!.isNotEmpty)
+                        Center(
+                          child: Container(
+                            padding: EdgeInsets.all(Insets.md),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                              size: 48,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
             // اسم الوجبة وبيناتها في الأسفل
@@ -128,6 +152,25 @@ class MenuItemTile extends StatelessWidget {
           hasVideo ? Icons.videocam : Icons.restaurant,
           color: AppColors.textTertiary,
           size: 64,
+        ),
+      ),
+    );
+  }
+
+  void _onMediaTap(BuildContext context, MenuItem item) {
+    if (item.videoUrl == null || item.videoUrl!.isEmpty) {
+      context.push(RouteNames.menuItemEdit(item.id));
+      return;
+    }
+    showDialog(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: MealVideoPlayer(
+          videoUrl: item.videoUrl!,
+          mealName: item.name,
         ),
       ),
     );

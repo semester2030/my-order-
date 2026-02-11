@@ -53,8 +53,10 @@ git push -u origin main
 | `DATABASE_URL` | (الصق **Internal Database URL** من خطوة 2 — من لوحة PostgreSQL في Render) |
 | `JWT_SECRET` | (سلسلة عشوائية طويلة، مثلاً 32 حرفاً، لأمان التوكن) |
 | `PORT` | 3001 |
+| `RESEND_API_KEY` | (مفتاح من [resend.com](https://resend.com) لإرسال OTP بالبريد — **مطلوب للإنتاج**) |
+| `RESEND_FROM` | (اختياري) عنوان المرسل، مثال: `My Order <noreply@yourdomain.com>` |
 
-الباك اند يدعم `DATABASE_URL` مباشرة (يُفضّل على Render).
+الباك اند يدعم `DATABASE_URL` مباشرة (يُفضّل على Render). لإرسال رموز OTP للبريد، أضف `RESEND_API_KEY` — راجع `docs/OTP_SETUP.md`.
 
 ---
 
