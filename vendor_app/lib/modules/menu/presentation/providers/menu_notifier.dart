@@ -68,6 +68,22 @@ class MenuNotifier extends StateNotifier<MenuState> {
     );
   }
 
+  /// يضيف وجبة ويرجع العنصر المُنشأ (لرفع الفيديو بعده).
+  Future<MenuItem?> addItemAndReturnCreated(MenuItem item) async {
+    state = const MenuSaving();
+    final result = await _repo.addItem(item);
+    return result.when(
+      success: (created) {
+        loadMenu(page: 1);
+        return created;
+      },
+      failure: (f) {
+        state = MenuError(f.message);
+        return null;
+      },
+    );
+  }
+
   Future<bool> updateItem(MenuItem item) async {
     state = const MenuSaving();
     final result = await _repo.updateItem(item);

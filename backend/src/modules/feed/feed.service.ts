@@ -192,13 +192,13 @@ export class FeedService {
     console.log('Menu items found:', menuItems.length);
     console.log('Menu items with videos:', menuItems.filter(item => item.videoAssets && item.videoAssets.length > 0).length);
 
-    // Get primary videos for menu items
+    // Get primary videos (include READY + PROCESSING - playback URL may work for both)
     const menuItemIds = menuItems.map((item) => item.id);
     const primaryVideos = await this.videoAssetRepository.find({
       where: {
         menuItemId: In(menuItemIds),
         isPrimary: true,
-        status: VideoStatus.READY,
+        status: In([VideoStatus.READY, VideoStatus.PROCESSING]),
       },
     });
 

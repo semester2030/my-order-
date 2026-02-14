@@ -9,6 +9,7 @@ abstract class VendorsRemoteDataSource {
   Future<VendorDto> getVendor(String vendorId);
   Future<List<MenuItemDto>> getVendorMenu(String vendorId);
   Future<List<MenuItemDto>> getSignatureItems(String vendorId);
+  Future<void> createEventRequest(Map<String, dynamic> body);
 }
 
 class VendorsRemoteDataSourceImpl implements VendorsRemoteDataSource {
@@ -59,6 +60,18 @@ class VendorsRemoteDataSourceImpl implements VendorsRemoteDataSource {
       return data
           .map((json) => MenuItemDto.fromJson(json as Map<String, dynamic>))
           .toList();
+    } on DioException catch (e) {
+      if (e.error is NetworkException) {
+        throw e.error as NetworkException;
+      }
+      throw NetworkException.unknown(message: e.message ?? 'Unknown error');
+    }
+  }
+
+  @override
+  Future<void> createEventRequest(Map<String, dynamic> body) async {
+    try {
+      await apiClient.post(Endpoints.createEventRequest, data: body);
     } on DioException catch (e) {
       if (e.error is NetworkException) {
         throw e.error as NetworkException;

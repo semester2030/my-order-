@@ -26,13 +26,16 @@ class VideoPickerSheet extends StatelessWidget {
     void Function(String path)? onVideoPicked,
     bool uploadAfterPick = false,
   }) {
+    // احفظ الـ callbacks — لا تعتمد على context بعد إغلاق الشيت (قد يصبح unmounted)
+    final onImg = onImagePicked;
+    final onVid = onVideoPicked;
     return showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: AppRadius.topLG),
       builder: (ctx) => VideoPickerSheet(
-        onImagePicked: onImagePicked,
-        onVideoPicked: onVideoPicked,
+        onImagePicked: onImg,
+        onVideoPicked: onVid,
         uploadAfterPick: uploadAfterPick,
       ),
     );
@@ -66,9 +69,7 @@ class VideoPickerSheet extends StatelessWidget {
               onTap: () async {
                 Navigator.of(context).pop();
                 final file = await picker.pickImageFromGallery();
-                if (file != null && context.mounted) {
-                  onImagePicked(file.path);
-                }
+                if (file != null) onImagePicked(file.path);
               },
             ),
             ListTile(
@@ -80,9 +81,7 @@ class VideoPickerSheet extends StatelessWidget {
               onTap: () async {
                 Navigator.of(context).pop();
                 final file = await picker.pickImageFromCamera();
-                if (file != null && context.mounted) {
-                  onImagePicked(file.path);
-                }
+                if (file != null) onImagePicked(file.path);
               },
             ),
             if (onVideoPicked != null) ...[
@@ -95,9 +94,7 @@ class VideoPickerSheet extends StatelessWidget {
                 onTap: () async {
                   Navigator.of(context).pop();
                   final file = await picker.pickVideoFromGallery();
-                  if (file != null && context.mounted) {
-                    onVideoPicked!(file.path);
-                  }
+                  if (file != null) onVideoPicked!(file.path);
                 },
               ),
               ListTile(
@@ -109,9 +106,7 @@ class VideoPickerSheet extends StatelessWidget {
                 onTap: () async {
                   Navigator.of(context).pop();
                   final file = await picker.pickVideoFromCamera();
-                  if (file != null && context.mounted) {
-                    onVideoPicked!(file.path);
-                  }
+                  if (file != null) onVideoPicked!(file.path);
                 },
               ),
             ],

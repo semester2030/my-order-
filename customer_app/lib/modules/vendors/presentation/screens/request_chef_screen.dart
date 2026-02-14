@@ -4,22 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
-import '../../domain/entities/vendor.dart';
+import '../../domain/entities/vendor.dart' show Vendor, PopularCookingAddOn;
 import '../../../addresses/domain/entities/address.dart';
 import '../../../addresses/presentation/providers/address_notifier.dart';
 import '../providers/vendor_notifier.dart';
+import '../../domain/repositories/vendors_repo.dart';
+import '../../../../core/di/providers.dart';
 
-/// شاشة طلب طباخة (خدمات عند الطلب): اختيار من أطباق الطباخة + تاريخ، وقت، عدد أشخاص، مكان.
-/// المستخدم يرى ماذا تتقن الطباخة ويختار الأطباق المطلوبة بدل الكتابة.
+/// شاشة طلب طباخة أو احجز الطباخ (الطبخ الشعبي).
+/// — طبخ شعبي: الطباخ يأتي عندك ليطبخ الذبايح + طلبات جانبية (جريش، قرصان، إدامات).
+/// — طبخ منزلي: اختيار أطباق + استلام أو توصيل.
 class RequestChefScreen extends ConsumerStatefulWidget {
   final String vendorId;
+  /// فئة من الـ Feed (مثلاً popular_cooking) — تُستخدم إذا كان المورد لم يُحدّد فئته بعد.
+  final String? feedCategory;
 
   const RequestChefScreen({
     super.key,
     required this.vendorId,
+    this.feedCategory,
   });
 
   @override
@@ -86,6 +93,19 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
     });
   }
 
+  IconData _getAddOnIcon(String name) {
+    switch (name) {
+      case 'جريش':
+        return Icons.breakfast_dining;
+      case 'قرصان':
+        return Icons.cake;
+      case 'إدامات':
+        return Icons.lunch_dining;
+      default:
+        return Icons.restaurant;
+    }
+  }
+
   Future<void> _submitRequest() async {
     if (_selectedDate == null || _selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,8 +117,8 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
       return;
     }
     final isPopularCooking = ref.read(vendorNotifierProvider(widget.vendorId)).maybeWhen(
-      loaded: (Vendor v, _) => v.isPopularCooking,
-      orElse: () => false,
+      loaded: (Vendor v, _) => v.isPopularCooking || (widget.feedCategory == ProviderCategories.popularCooking),
+      orElse: () => widget.feedCategory == ProviderCategories.popularCooking,
     );
     if (isPopularCooking) {
       if (_selectedAddressId == null || _selectedAddressId!.isEmpty) {
@@ -125,14 +145,44 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      // TODO: استدعاء API إنشاء event_request مع selectedDishIds / addressId / addOns عند جاهزية الـ Backend
-      await Future.delayed(const Duration(milliseconds: 500));
+      final repo = ref.read(vendorsRepositoryProvider);
+      final vendorData = ref.read(vendorNotifierProvider(widget.vendorId)).maybeWhen(
+        loaded: (v, _) => v,
+        orElse: () => null,
+      );
+      final addOnsList = _selectedAddOnNames.map((name) {
+        PopularCookingAddOn? addOn;
+        for (final a in vendorData?.popularCookingAddOns ?? []) {
+          if (a.name == name) {
+            addOn = a;
+            break;
+          }
+        }
+        return <String, dynamic>{
+          'name': name,
+          if (addOn != null) 'price': addOn.price,
+        };
+      }).toList();
+      await repo.createEventRequest(
+        CreateEventRequestParams(
+          vendorId: widget.vendorId,
+          requestType: isPopularCooking ? 'popular_cooking' : 'home_cooking',
+          scheduledDate: '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}',
+          scheduledTime: '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}',
+          guestsCount: _guestsCount,
+          addressId: isPopularCooking ? _selectedAddressId : null,
+          addOns: addOnsList,
+          dishIds: isPopularCooking ? null : _selectedDishIds.toList(),
+          delivery: isPopularCooking ? null : _delivery,
+          notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        ),
+      );
 
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(isPopularCooking ? 'تم إرسال طلب الذبايح. سيتم الرد قريباً.' : 'تم إرسال الطلب. سيتم الرد من الطباخة قريباً.'),
+          content: Text(isPopularCooking ? 'تم حجز الطباخ. سيتم الرد قريباً.' : 'تم إرسال الطلب. سيتم الرد من الطباخة قريباً.'),
           backgroundColor: AppColors.primary,
         ),
       );
@@ -158,9 +208,17 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: vendorState.maybeWhen(
-          loaded: (Vendor v, _) => Text(v.isPopularCooking ? 'طلب ذبايح' : 'طلب طباخة'),
-          orElse: () => const Text('طلب طباخة'),
+          title: vendorState.maybeWhen(
+          loaded: (Vendor v, _) => Text(
+            (v.isPopularCooking || widget.feedCategory == ProviderCategories.popularCooking)
+                ? 'احجز الطباخ'
+                : 'طلب طباخة',
+          ),
+          orElse: () => Text(
+            widget.feedCategory == ProviderCategories.popularCooking
+                ? 'احجز الطباخ'
+                : 'طلب طباخة',
+          ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -189,7 +247,9 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
           ),
         ),
         loaded: (vendor, menuItems) {
-          final isPopularCooking = vendor.isPopularCooking;
+          // استخدام feedCategory كاحتياطي عند وصول المستخدم من Feed بفئة الطبخ الشعبي
+          final isPopularCooking = vendor.isPopularCooking ||
+              (widget.feedCategory == ProviderCategories.popularCooking);
           final availableDishes = menuItems.where((m) => m.isAvailable).toList();
           final addressState = ref.watch(addressNotifierProvider);
           final addOns = vendor.popularCookingAddOns ?? [];
@@ -200,13 +260,13 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  isPopularCooking ? 'طلب ذبايح' : 'خدمات عند الطلب',
+                  isPopularCooking ? 'احجز الطباخ' : 'خدمات عند الطلب',
                   style: TextStyles.headlineMedium,
                 ),
                 Gaps.smV,
                 Text(
                   isPopularCooking
-                      ? 'الطباخ سيأتي ليطبخ الذبايح عندك. حدد العنوان والتاريخ والوقت وعدد الأشخاص. يمكنك إضافة طلبات جانبية (جريش، قرصان، إدامات...).'
+                      ? '${vendor.name} سيأتي عندك ليطبخ الذبايح في مكانك (المنزل، المزرعة، الاستراحة). حدد العنوان والتاريخ والوقت وعدد الأشخاص.'
                       : 'اختر ما تريد من أطباق ${vendor.name}، ثم حدد التاريخ والوقت وعدد الأشخاص. لا دفع الآن — سيُرد عليك بعرض سعر أو قبول.',
                   style: TextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondary,
@@ -277,9 +337,42 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                       children: addOns.map((addOn) {
                         final isSelected = _selectedAddOnNames.contains(addOn.name);
                         return FilterChip(
+                          avatar: Icon(
+                            _getAddOnIcon(addOn.name),
+                            size: 20,
+                            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                          ),
                           label: Text('${addOn.name} — ${addOn.price.toStringAsFixed(0)} ر.س'),
                           selected: isSelected,
                           onSelected: (_) => _toggleAddOn(addOn.name),
+                          selectedColor: AppColors.primaryContainer,
+                          checkmarkColor: AppColors.primary,
+                        );
+                      }).toList(),
+                    ),
+                    Gaps.xlV,
+                  ] else ...[
+                    Text('طلبات جانبية (اختياري)', style: TextStyles.titleMedium),
+                    Gaps.smV,
+                    Text(
+                      'اضغط لاختيار الطلبات الجانبية المطلوبة:',
+                      style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                    ),
+                    Gaps.smV,
+                    Wrap(
+                      spacing: Insets.sm,
+                      runSpacing: Insets.sm,
+                      children: ['جريش', 'قرصان', 'إدامات'].map((name) {
+                        final isSelected = _selectedAddOnNames.contains(name);
+                        return FilterChip(
+                          avatar: Icon(
+                            _getAddOnIcon(name),
+                            size: 20,
+                            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                          ),
+                          label: Text(name),
+                          selected: isSelected,
+                          onSelected: (_) => _toggleAddOn(name),
                           selectedColor: AppColors.primaryContainer,
                           checkmarkColor: AppColors.primary,
                         );
@@ -464,7 +557,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                   text: isPopularCooking
                       ? (_selectedAddressId == null || _selectedAddressId!.isEmpty
                           ? 'اختر عنوان استقبال الذبايح'
-                          : 'إرسال طلب الذبايح')
+                          : 'احجز الطباخ')
                       : (_selectedDishIds.isEmpty
                           ? 'اختر طبقاً واحداً على الأقل'
                           : 'إرسال الطلب'),

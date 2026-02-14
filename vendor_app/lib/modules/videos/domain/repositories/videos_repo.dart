@@ -30,6 +30,13 @@ abstract interface class VideosRepo {
     String? fileName,
     void Function(int sent, int total)? onProgress,
   });
+
+  /// رفع فيديو لصنف قائمة (server-side → Cloudflare + video_assets).
+  Future<res.Result<void, Failure>> uploadVideoForMenuItem(
+    String menuItemId,
+    String filePath, {
+    void Function(int sent, int total)? onProgress,
+  });
 }
 
 /// نتيجة init upload من الباك اند.

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../domain/entities/feed_item.dart';
 import 'view_chef_button.dart';
@@ -12,6 +13,9 @@ class DishOverlay extends StatelessWidget {
   final VoidCallback? onAddToCart;
   /// إن كانت الطباخة تقبل "خدمات عند الطلب"؛ إن false يظهر الزر معطّلاً.
   final bool acceptsCustomRequests;
+
+  bool get _isPopularCooking =>
+      item.vendor.providerCategory == ProviderCategories.popularCooking;
 
   const DishOverlay({
     super.key,
@@ -195,7 +199,7 @@ class DishOverlay extends StatelessWidget {
                   ],
                 ),
                 Gaps.lgV,
-                // CTA Buttons (عرض الطباخ + أضف للسلة)
+                // CTA: عرض الطباخ + (طبخ شعبي: احجز الطباخ | وجبات جاهزة: أضف للسلة)
                 Row(
                   children: [
                     Expanded(
@@ -210,20 +214,28 @@ class DishOverlay extends StatelessWidget {
                     Gaps.mdH,
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: onAddToCart,
+                        onPressed: _isPopularCooking
+                            ? (acceptsCustomRequests
+                                ? () => context.push(
+                                      '${RouteNames.requestChef}/${item.vendor.id}?category=popular_cooking',
+                                    )
+                                : null)
+                            : onAddToCart,
                         style: VideoOverlayTheme.ctaButtonStyle,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
-                              Icons.shopping_cart,
+                            Icon(
+                              _isPopularCooking
+                                  ? Icons.restaurant_menu
+                                  : Icons.shopping_cart,
                               size: IconSizes.xs,
                             ),
                             Gaps.xsH,
                             Flexible(
                               child: Text(
-                                'أضف للسلة',
+                                _isPopularCooking ? 'احجز الطباخ' : 'أضف للسلة',
                                 style: TextStyles.button.copyWith(
                                   fontSize: FontSizes.bodySmall,
                                 ),

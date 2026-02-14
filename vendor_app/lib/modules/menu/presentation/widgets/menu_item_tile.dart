@@ -148,10 +148,25 @@ class MenuItemTile extends StatelessWidget {
     return Container(
       color: AppColors.surfaceVariant,
       child: Center(
-        child: Icon(
-          hasVideo ? Icons.videocam : Icons.restaurant,
-          color: AppColors.textTertiary,
-          size: 64,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              hasVideo ? Icons.videocam : Icons.restaurant,
+              color: AppColors.textTertiary,
+              size: 64,
+            ),
+            if (!hasVideo) ...[
+              Gaps.smV,
+              Text(
+                'اضغط لإضافة فيديو',
+                style: TextStyles.bodySmall.copyWith(
+                  color: AppColors.textTertiary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );

@@ -41,6 +41,18 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
+    if (_selectedVideoPath == null || _selectedVideoPath!.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('الفيديو مطلوب لإضافة وجبة'),
+            backgroundColor: SemanticColors.error,
+          ),
+        );
+      }
+      return;
+    }
+
     String? imageUrl = _selectedImagePath;
     // Phase 19: رفع الصورة مع تقدّم الرفع إن كان المسار محلياً.
     if (_selectedImagePath != null && !_selectedImagePath!.startsWith('http')) {
@@ -80,8 +92,30 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
       if (result.isFailure) return;
     }
 
-    String? videoUrl;
-    if (_selectedVideoPath != null && !_selectedVideoPath!.startsWith('http')) {
+    final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
+    final item = MenuItem(
+      id: '',
+      name: _nameController.text.trim(),
+      description: _descriptionController.text.trim().isEmpty
+          ? null
+          : _descriptionController.text.trim(),
+      price: price,
+      imageUrl: imageUrl,
+      videoUrl: null, // الفيديو يُرفع بعد إنشاء الصنف
+      isAvailable: true,
+      category: null,
+    );
+
+    // 1) إنشاء الصنف أولاً (الباك اند يحفظ الفيديو في video_assets منفصل)
+    final createdItem = await ref.read(menuNotifierProvider.notifier).addItemAndReturnCreated(item);
+    if (!mounted) return;
+    if (createdItem == null) return; // فشل الإنشاء أو حدث خطأ
+
+    // 2) رفع الفيديو للصنف المُنشأ (إن وُجد)
+    final videoPath = _selectedVideoPath != null && !_selectedVideoPath!.startsWith('http')
+        ? _selectedVideoPath!
+        : null;
+    if (videoPath != null) {
       final progress = ValueNotifier<double>(0.0);
       if (mounted) {
         showDialog<void>(
@@ -98,54 +132,44 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
           ),
         );
       }
-      final resultVideo = await ref.read(videosRepoProvider).uploadFile(
-            _selectedVideoPath!,
-            onProgress: (sent, total) {
-              progress.value = total > 0 ? sent / total : 0.0;
-            },
-          );
-      if (mounted) Navigator.of(context).pop();
-      resultVideo.when(
-        success: (url) => videoUrl = url,
-        failure: (f) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(f.message), backgroundColor: SemanticColors.error),
+      try {
+        final videoResult = await ref.read(videosRepoProvider).uploadVideoForMenuItem(
+              createdItem.id,
+              videoPath,
+              onProgress: (sent, total) {
+                progress.value = total > 0 ? sent / total : 0.0;
+              },
             );
-          }
-        },
-      );
-      if (resultVideo.isFailure) return;
-    } else if (_selectedVideoPath != null) {
-      videoUrl = _selectedVideoPath;
-    }
-
-    final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
-    final item = MenuItem(
-      id: '',
-      name: _nameController.text.trim(),
-      description: _descriptionController.text.trim().isEmpty
-          ? null
-          : _descriptionController.text.trim(),
-      price: price,
-      imageUrl: imageUrl,
-      videoUrl: videoUrl,
-      isAvailable: true,
-      category: null,
-    );
-    final ok = await ref.read(menuNotifierProvider.notifier).addItem(item);
-    if (!mounted) return;
-    if (ok) {
-      ref.read(menuNotifierProvider.notifier).refresh();
-      context.pop();
-    } else {
-      final state = ref.read(menuNotifierProvider);
-      if (state is MenuError && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.message), backgroundColor: SemanticColors.error),
-        );
+        if (mounted) Navigator.of(context).pop();
+        if (videoResult.isFailure && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(videoResult.errorOrNull?.message ?? 'فشل رفع الفيديو'),
+              backgroundColor: SemanticColors.error,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        } else if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('تم رفع الفيديو بنجاح'), backgroundColor: Colors.green),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('خطأ في رفع الفيديو: ${e.toString()}'),
+              backgroundColor: SemanticColors.error,
+              duration: const Duration(seconds: 6),
+            ),
+          );
+        }
       }
     }
+
+    ref.read(menuNotifierProvider.notifier).refresh();
+    if (mounted) context.pop();
   }
 
   bool get _saving {

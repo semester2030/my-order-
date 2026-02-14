@@ -245,7 +245,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'request-chef',
         builder: (context, state) {
           final vendorId = state.pathParameters['id'] ?? '';
-          return RequestChefScreen(vendorId: vendorId);
+          final category = state.uri.queryParameters['category'];
+          return RequestChefScreen(vendorId: vendorId, feedCategory: category);
         },
         redirect: (context, state) async {
           return await authGuard.redirectIfNotAuthenticated(context, state);

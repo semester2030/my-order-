@@ -435,6 +435,13 @@ export class VendorsController {
   @Get(':id')
   @ApiOperation({ summary: 'Get vendor details' })
   async getVendor(@Param('id') id: string) {
-    return this.vendorsService.getVendor(id);
+    const vendor = await this.vendorsService.getVendor(id);
+    if (!vendor) throw new NotFoundException('Vendor not found');
+    // تضمين snake_case للتوافق مع تطبيق العميل (provider_category, popular_cooking_add_ons)
+    return {
+      ...vendor,
+      provider_category: vendor.providerCategory,
+      popular_cooking_add_ons: vendor.popularCookingAddOns,
+    };
   }
 }

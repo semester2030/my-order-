@@ -26,4 +26,23 @@ class VendorsRepositoryImpl implements VendorsRepository {
     final dtos = await remoteDataSource.getSignatureItems(vendorId);
     return VendorsMapper.mapMenuItemsFromDto(dtos);
   }
+
+  @override
+  Future<void> createEventRequest(CreateEventRequestParams params) async {
+    final body = <String, dynamic>{
+      'vendorId': params.vendorId,
+      'requestType': params.requestType,
+      'scheduledDate': params.scheduledDate,
+      'scheduledTime': params.scheduledTime,
+      'guestsCount': params.guestsCount,
+      'addOns': params.addOns.isEmpty
+          ? null
+          : params.addOns.map((e) => {'name': e['name'], if (e['price'] != null) 'price': e['price']}).toList(),
+    };
+    if (params.addressId != null) body['addressId'] = params.addressId;
+    if (params.dishIds != null && params.dishIds!.isNotEmpty) body['dishIds'] = params.dishIds;
+    if (params.delivery != null) body['delivery'] = params.delivery;
+    if (params.notes != null && params.notes!.isNotEmpty) body['notes'] = params.notes;
+    await remoteDataSource.createEventRequest(body);
+  }
 }

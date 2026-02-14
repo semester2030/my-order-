@@ -32,6 +32,15 @@ class VideosRemoteDsStub implements VideosRemoteDs {
   }
 
   @override
+  Future<void> uploadFileToCloudflareUrl(
+    String uploadUrl,
+    String filePath, {
+    void Function(int sent, int total)? onProgress,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
+
+  @override
   Future<int> getVendorVideoCount() async => 0;
 
   @override
@@ -39,4 +48,32 @@ class VideosRemoteDsStub implements VideosRemoteDs {
 
   @override
   Future<void> deleteVideo(String videoId) async {}
+
+  @override
+  Future<UploadInitDto> initUploadForMenuItem({
+    required String menuItemId,
+    required String fileName,
+    required int fileSizeBytes,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return UploadInitDto(
+      uploadId: 'stub-${DateTime.now().millisecondsSinceEpoch}',
+      uploadUrl: 'https://upload.cloudflare.com/stub',
+      cloudflareAssetId: 'stub-asset',
+    );
+  }
+
+  @override
+  Future<void> completeUploadForMenuItem({
+    required String uploadId,
+    required String menuItemId,
+    required String cloudflareAssetId,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+  }
+
+  @override
+  Future<void> uploadVideoForMenuItem(String menuItemId, String filePath, {void Function(int sent, int total)? onProgress}) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
 }

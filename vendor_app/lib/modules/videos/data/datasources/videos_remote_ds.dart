@@ -34,6 +34,13 @@ abstract interface class VideosRemoteDs {
     void Function(int sent, int total)? onProgress,
   });
 
+  /// رفع ملف إلى Cloudflare (POST multipart/form-data — field اسمه "file").
+  Future<void> uploadFileToCloudflareUrl(
+    String uploadUrl,
+    String filePath, {
+    void Function(int sent, int total)? onProgress,
+  });
+
   /// عدد مقاطع الفيديو الحالية للمورد (الحد الأقصى 20).
   Future<int> getVendorVideoCount();
 
@@ -42,6 +49,23 @@ abstract interface class VideosRemoteDs {
 
   /// حذف مقطع لتحرير مكان لإضافة جديد.
   Future<void> deleteVideo(String videoId);
+
+  /// init مع menuItemId — للرفع المباشر إلى Cloudflare (يتجنب timeout على Render).
+  Future<UploadInitDto> initUploadForMenuItem({
+    required String menuItemId,
+    required String fileName,
+    required int fileSizeBytes,
+  });
+
+  /// complete مع menuItemId و cloudflareAssetId.
+  Future<void> completeUploadForMenuItem({
+    required String uploadId,
+    required String menuItemId,
+    required String cloudflareAssetId,
+  });
+
+  /// رفع فيديو لصنف قائمة — يستخدم الرفع المباشر إلى Cloudflare (لا يمر الملف عبر Render).
+  Future<void> uploadVideoForMenuItem(String menuItemId, String filePath, {void Function(int sent, int total)? onProgress});
 }
 
 /// DTO لنتيجة init من الباك اند.
@@ -49,8 +73,10 @@ class UploadInitDto {
   const UploadInitDto({
     required this.uploadId,
     this.uploadUrl,
+    this.cloudflareAssetId,
   });
 
   final String uploadId;
   final String? uploadUrl;
+  final String? cloudflareAssetId;
 }

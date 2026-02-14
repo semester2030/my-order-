@@ -3,10 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../domain/entities/feed_item.dart';
 
-/// أزرار على يمين الفيديو (نمط تيك توك): وجبات جاهزة + خدمات عند الطلب.
+/// أزرار على يمين الفيديو (نمط تيك توك).
+/// — وجبات جاهزة: فقط لمقدمي home_cooking / grilling (وجبات جاهزة للتوصيل).
+/// — طبخ شعبي: "عرض الطباخ" + "احجز الطباخ" (الطباخ يأتي عند العميل — لا وجبات جاهزة).
 class FeedVideoSideActions extends StatelessWidget {
   final FeedItem item;
   /// إن كانت الخدمة غير متاحة يظهر الزر معطّلاً مع توضيح.
@@ -18,6 +21,9 @@ class FeedVideoSideActions extends StatelessWidget {
     this.acceptsCustomRequests = true,
   });
 
+  bool get _isPopularCooking =>
+      item.vendor.providerCategory == ProviderCategories.popularCooking;
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -26,10 +32,11 @@ class FeedVideoSideActions extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // وجبات جاهزة → صفحة الطباخ (قائمة الوجبات)
+          // وجبات جاهزة: فقط لمقدمي وجبات جاهزة (home_cooking, grilling)
+          // طبخ شعبي: "عرض الطباخ" بدلاً من "وجبات جاهزة"
           _SideActionButton(
-            icon: Icons.lunch_dining,
-            label: 'وجبات جاهزة',
+            icon: _isPopularCooking ? Icons.person_rounded : Icons.lunch_dining,
+            label: _isPopularCooking ? 'عرض الطباخ' : 'وجبات جاهزة',
             onTap: () {
               context.push(
                 '${RouteNames.vendorDetails}/${item.vendor.id}',
@@ -37,15 +44,16 @@ class FeedVideoSideActions extends StatelessWidget {
             },
           ),
           Gaps.mdV,
-          // طبخ شعبي: "طلب ذبايح" — غير ذلك: "خدمات عند الطلب"
+          // طبخ شعبي: "احجز الطباخ" — غير ذلك: "طلب طباخة" أو "خدمات عند الطلب"
           _SideActionButton(
-            icon: Icons.person_rounded,
-            label: item.vendor.isPopularCooking ? 'طلب ذبايح' : 'خدمات عند الطلب',
+            icon: Icons.restaurant_menu,
+            label: _getRequestLabel(),
             onTap: acceptsCustomRequests
                 ? () {
-                    context.push(
-                      '${RouteNames.requestChef}/${item.vendor.id}',
-                    );
+                    final uri = item.vendor.isPopularCooking
+                        ? '${RouteNames.requestChef}/${item.vendor.id}?category=popular_cooking'
+                        : '${RouteNames.requestChef}/${item.vendor.id}';
+                    context.push(uri);
                   }
                 : null,
             disabledTooltip: 'غير متوفر حالياً',
@@ -53,6 +61,14 @@ class FeedVideoSideActions extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _getRequestLabel() {
+    if (item.vendor.isPopularCooking) return 'احجز الطباخ';
+    if (item.vendor.providerCategory == ProviderCategories.privateEvents) {
+      return 'طلب مناسبة';
+    }
+    return 'طلب طباخة';
   }
 }
 

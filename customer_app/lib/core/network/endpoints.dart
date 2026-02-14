@@ -3,12 +3,12 @@ class Endpoints {
   Endpoints._();
 
   /// Base URL للـ API.
-  /// افتراضياً: localhost للتطوير (OTP + Resend يعملان محلياً).
-  /// للربط مع Render: flutter run --dart-define=API_BASE_URL=https://my-order.onrender.com/api
+  /// افتراضياً: Render (للاختبار والإنتاج).
+  /// للتطوير المحلي: flutter run --dart-define=API_BASE_URL=http://localhost:3001/api
   static String get baseUrl {
     const fromEnv = String.fromEnvironment('API_BASE_URL', defaultValue: '');
     if (fromEnv.isNotEmpty) return fromEnv;
-    return 'http://localhost:3001/api';
+    return 'https://my-order.onrender.com/api';
   }
 
   // Auth
@@ -67,6 +67,10 @@ class Endpoints {
   static const String menu = '/menu';
   static const String getVendorMenu = '$menu/vendor/{vendorId}';
   static const String getSignatureItems = '$menu/signature/{vendorId}';
+
+  // Event Requests (احجز الطباخ / طلب طباخة)
+  static const String eventRequests = '/event-requests';
+  static const String createEventRequest = eventRequests;
 
   // Videos
   static const String videos = '/videos';

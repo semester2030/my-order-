@@ -105,4 +105,22 @@ class VideosRepoImpl implements VideosRepo {
       return res.Failure(ErrorMapper.toFailure(e));
     }
   }
+
+  @override
+  Future<res.Result<void, Failure>> uploadVideoForMenuItem(
+    String menuItemId,
+    String filePath, {
+    void Function(int sent, int total)? onProgress,
+  }) async {
+    try {
+      await _remoteDs.uploadVideoForMenuItem(
+        menuItemId,
+        filePath,
+        onProgress: onProgress,
+      );
+      return res.Success(null);
+    } catch (e) {
+      return res.Failure(ErrorMapper.toFailure(e));
+    }
+  }
 }

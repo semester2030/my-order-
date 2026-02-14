@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:vendor_app/core/theme/design_system.dart';
+import 'package:vendor_app/core/utils/result.dart';
 import 'package:vendor_app/core/utils/validators.dart';
 import 'package:vendor_app/core/widgets/app_text_field.dart';
 import 'package:vendor_app/core/widgets/primary_button.dart';
@@ -11,6 +12,8 @@ import 'package:vendor_app/core/widgets/loading_view.dart';
 import 'package:vendor_app/core/di/providers.dart';
 import 'package:vendor_app/modules/menu/domain/entities/menu_item.dart';
 import 'package:vendor_app/modules/menu/presentation/providers/menu_state.dart';
+import 'package:vendor_app/modules/videos/presentation/screens/videos_screen.dart';
+import 'package:vendor_app/modules/videos/presentation/widgets/video_picker_sheet.dart';
 
 /// شاشة تعديل وجبة — ثيم موحد (Phase 10).
 class EditMenuItemScreen extends ConsumerStatefulWidget {
@@ -27,6 +30,7 @@ class _EditMenuItemScreenState extends ConsumerState<EditMenuItemScreen> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
+  bool _uploadingVideo = false;
 
   @override
   void dispose() {
@@ -75,6 +79,103 @@ class _EditMenuItemScreenState extends ConsumerState<EditMenuItemScreen> {
   bool get _saving {
     final state = ref.watch(menuNotifierProvider);
     return state is MenuSaving;
+  }
+
+  Future<void> _pickAndUploadVideo() async {
+    final countResult = await ref.read(videosRepoProvider).getVendorVideoCount();
+    final count = countResult.valueOrNull ?? 0;
+
+    if (!mounted) return;
+    if (count >= kMaxVideosPerVendor) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('الحد الأقصى $kMaxVideosPerVendor مقطع. احذف مقطعاً لإضافة جديد.'), backgroundColor: SemanticColors.error),
+      );
+      return;
+    }
+
+    VideoPickerSheet.show(
+      context,
+      onImagePicked: (_) {},
+      onVideoPicked: (path) => _uploadVideo(path),
+    );
+  }
+
+  Future<void> _uploadVideo(String filePath) async {
+    if (!mounted) return;
+    if (filePath.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('لم يتم اختيار فيديو'), backgroundColor: Colors.orange),
+      );
+      return;
+    }
+    setState(() => _uploadingVideo = true);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('جاري رفع الفيديو...'), duration: Duration(seconds: 2)),
+    );
+
+    final progress = ValueNotifier<double>(0.0);
+    if (mounted) {
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => ValueListenableBuilder<double>(
+          valueListenable: progress,
+          builder: (_, value, __) => AlertDialog(
+            title: const Text('جاري رفع الفيديو...'),
+            content: LinearProgressIndicator(
+              value: value > 0 && value <= 1 ? value : null,
+            ),
+          ),
+        ),
+      );
+    }
+
+    try {
+      final result = await ref.read(videosRepoProvider).uploadVideoForMenuItem(
+        widget.itemId,
+        filePath,
+        onProgress: (sent, total) {
+          progress.value = total > 0 ? sent / total : 0.0;
+        },
+      );
+
+      if (mounted) Navigator.of(context).pop();
+
+      if (result.isSuccess) {
+        if (mounted) {
+          ref.invalidate(menuItemByIdProvider(widget.itemId));
+          ref.read(menuNotifierProvider.notifier).refresh();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('تم رفع الفيديو بنجاح'), backgroundColor: Colors.green),
+          );
+        }
+      } else {
+        final f = result.errorOrNull;
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(f?.message ?? 'فشل رفع الفيديو'),
+              backgroundColor: SemanticColors.error,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('خطأ: ${e.toString()}'),
+            backgroundColor: SemanticColors.error,
+            duration: const Duration(seconds: 6),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _uploadingVideo = false);
+    }
   }
 
   @override
@@ -150,6 +251,12 @@ class _EditMenuItemScreenState extends ConsumerState<EditMenuItemScreen> {
                         filled: true,
                         fillColor: AppColors.surface,
                       ),
+                    ),
+                    Gaps.lgV,
+                    OutlinedButton.icon(
+                      onPressed: _uploadingVideo ? null : _pickAndUploadVideo,
+                      icon: Icon(_uploadingVideo ? Icons.hourglass_empty : Icons.video_library, color: AppColors.primary),
+                      label: Text(item.videoUrl != null && item.videoUrl!.isNotEmpty ? 'استبدال الفيديو' : 'إضافة فيديو'),
                     ),
                     Gaps.xlV,
                     PrimaryButton(

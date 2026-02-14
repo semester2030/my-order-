@@ -21,6 +21,7 @@ import { JobsModule } from './modules/jobs/jobs.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { EventRequestsModule } from './modules/event-requests/event-requests.module';
 
 @Module({
   controllers: [AppController],
@@ -52,6 +53,7 @@ import { AdminModule } from './modules/admin/admin.module';
     PaymentsModule,
     NotificationsModule,
     AdminModule,
+    EventRequestsModule,
   ],
 })
 export class AppModule {}

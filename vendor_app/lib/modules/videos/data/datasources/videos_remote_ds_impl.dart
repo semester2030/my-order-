@@ -35,6 +35,49 @@ class VideosRemoteDsImpl implements VideosRemoteDs {
     return UploadInitDto(
       uploadId: data['uploadId'] as String? ?? '',
       uploadUrl: data['uploadUrl'] as String?,
+      cloudflareAssetId: data['cloudflareAssetId'] as String?,
+    );
+  }
+
+  @override
+  Future<UploadInitDto> initUploadForMenuItem({
+    required String menuItemId,
+    required String fileName,
+    required int fileSizeBytes,
+  }) async {
+    final body = <String, dynamic>{
+      'menuItemId': menuItemId,
+      'fileName': fileName,
+      'fileSize': fileSizeBytes,
+    };
+    final response = await _dio.post<Map<String, dynamic>>(
+      Endpoints.videosUploadInit,
+      data: body,
+    );
+    final data = response.data;
+    if (data == null) {
+      throw NetworkException('استجابة فارغة من الخادم');
+    }
+    return UploadInitDto(
+      uploadId: data['uploadId'] as String? ?? '',
+      uploadUrl: data['uploadUrl'] as String?,
+      cloudflareAssetId: data['cloudflareAssetId'] as String?,
+    );
+  }
+
+  @override
+  Future<void> completeUploadForMenuItem({
+    required String uploadId,
+    required String menuItemId,
+    required String cloudflareAssetId,
+  }) async {
+    await _dio.post<void>(
+      Endpoints.videosUploadComplete,
+      data: {
+        'uploadId': uploadId,
+        'menuItemId': menuItemId,
+        'cloudflareAssetId': cloudflareAssetId,
+      },
     );
   }
 
@@ -79,6 +122,33 @@ class VideosRemoteDsImpl implements VideosRemoteDs {
   }
 
   @override
+  Future<void> uploadFileToCloudflareUrl(
+    String uploadUrl,
+    String filePath, {
+    void Function(int sent, int total)? onProgress,
+  }) async {
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw NetworkException('الملف غير موجود');
+    }
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(
+        filePath,
+        filename: filePath.split(RegExp(r'[/\\]')).last,
+      ),
+    });
+    await _dio.post<void>(
+      uploadUrl,
+      data: formData,
+      options: Options(
+        contentType: 'multipart/form-data',
+        sendTimeout: const Duration(minutes: 10),
+      ),
+      onSendProgress: onProgress,
+    );
+  }
+
+  @override
   Future<int> getVendorVideoCount() async {
     final response = await _dio.get<Map<String, dynamic>>(Endpoints.videosVendorCount);
     final data = response.data;
@@ -110,5 +180,38 @@ class VideosRemoteDsImpl implements VideosRemoteDs {
   @override
   Future<void> deleteVideo(String videoId) async {
     await _dio.delete<void>(Endpoints.videosDelete(videoId));
+  }
+
+  @override
+  Future<void> uploadVideoForMenuItem(String menuItemId, String filePath, {void Function(int sent, int total)? onProgress}) async {
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw NetworkException('الملف غير موجود');
+    }
+    final fileSize = await file.length();
+    final fileName = filePath.split(RegExp(r'[/\\]')).last;
+
+    // 1) init — طلب صغير من Render (لا يعاني timeout)
+    final init = await initUploadForMenuItem(
+      menuItemId: menuItemId,
+      fileName: fileName,
+      fileSizeBytes: fileSize,
+    );
+
+    final uploadUrl = init.uploadUrl;
+    final cloudflareAssetId = init.cloudflareAssetId ?? init.uploadId;
+    if (uploadUrl == null || uploadUrl.isEmpty) {
+      throw NetworkException('لم يُرجع الخادم رابط رفع');
+    }
+
+    // 2) رفع مباشر إلى Cloudflare (POST multipart — لا يمر عبر Render)
+    await uploadFileToCloudflareUrl(uploadUrl, filePath, onProgress: onProgress);
+
+    // 3) complete — طلب صغير من Render (يحفظ السجل في video_assets)
+    await completeUploadForMenuItem(
+      uploadId: init.uploadId,
+      menuItemId: menuItemId,
+      cloudflareAssetId: cloudflareAssetId,
+    );
   }
 }

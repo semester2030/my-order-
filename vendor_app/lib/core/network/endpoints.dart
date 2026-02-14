@@ -38,6 +38,8 @@ class Endpoints {
   // Videos / Media (حد أقصى 20 مقطع لكل طباخ)
   static const String videosUploadInit = '/videos/upload/init';
   static const String videosUploadComplete = '/videos/upload/complete';
+  /// رفع فيديو لصنف موجود (server-side upload → Cloudflare + video_assets)
+  static String videosUploadForMenuItem(String menuItemId) => '/videos/upload/$menuItemId';
   static const String videosVendorList = '/videos/vendor';
   static const String videosVendorCount = '/videos/vendor/count';
   static String videosDelete(String videoId) => '/videos/$videoId';
