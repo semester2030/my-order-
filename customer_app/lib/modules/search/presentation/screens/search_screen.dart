@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -40,13 +41,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final searchState = ref.watch(searchNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Search',
+          l.search,
           style: TextStyles.titleLarge,
         ),
       ),
@@ -77,7 +79,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ),
                     Gaps.mdV,
                     Text(
-                      'البحث عن طباخين أو وجبات',
+                      l.searchHint,
                       style: TextStyles.bodyLarge.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -90,8 +92,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 if (results.isEmpty) {
                   return EmptyState(
                     icon: Icons.search_off,
-                    title: 'No results found',
-                    message: 'Try a different search term',
+                    title: l.noResultsFound,
+                    message: l.tryDifferentSearch,
                   );
                 }
 

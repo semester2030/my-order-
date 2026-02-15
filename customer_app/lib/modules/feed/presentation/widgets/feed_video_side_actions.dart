@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/feed_item.dart';
 
 /// أزرار على يمين الفيديو (نمط تيك توك).
@@ -26,17 +27,16 @@ class FeedVideoSideActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Positioned(
       right: Insets.sm,
       bottom: 120,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // وجبات جاهزة: فقط لمقدمي وجبات جاهزة (home_cooking, grilling)
-          // طبخ شعبي: "عرض الطباخ" بدلاً من "وجبات جاهزة"
           _SideActionButton(
             icon: _isPopularCooking ? Icons.person_rounded : Icons.lunch_dining,
-            label: _isPopularCooking ? 'عرض الطباخ' : 'وجبات جاهزة',
+            label: _isPopularCooking ? l.viewChef : l.readyMeals,
             onTap: () {
               context.push(
                 '${RouteNames.vendorDetails}/${item.vendor.id}',
@@ -44,10 +44,9 @@ class FeedVideoSideActions extends StatelessWidget {
             },
           ),
           Gaps.mdV,
-          // طبخ شعبي: "احجز الطباخ" — غير ذلك: "طلب طباخة" أو "خدمات عند الطلب"
           _SideActionButton(
             icon: Icons.restaurant_menu,
-            label: _getRequestLabel(),
+            label: _getRequestLabel(l),
             onTap: acceptsCustomRequests
                 ? () {
                     final uri = item.vendor.isPopularCooking
@@ -56,19 +55,19 @@ class FeedVideoSideActions extends StatelessWidget {
                     context.push(uri);
                   }
                 : null,
-            disabledTooltip: 'غير متوفر حالياً',
+            disabledTooltip: l.unavailableNow,
           ),
         ],
       ),
     );
   }
 
-  String _getRequestLabel() {
-    if (item.vendor.isPopularCooking) return 'احجز الطباخ';
+  String _getRequestLabel(AppLocalizations l) {
+    if (item.vendor.isPopularCooking) return l.bookChef;
     if (item.vendor.providerCategory == ProviderCategories.privateEvents) {
-      return 'طلب مناسبة';
+      return l.requestEvent;
     }
-    return 'طلب طباخة';
+    return l.requestCooking;
   }
 }
 

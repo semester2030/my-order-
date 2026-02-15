@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
-import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/video/video_controller_pool.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/feed_item.dart';
 import '../providers/feed_notifier.dart';
 import '../widgets/feed_video_card.dart';
@@ -55,16 +55,17 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
             1,
           );
       if (!mounted) return;
+      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('تمت إضافة ${item.menuItem.name} إلى السلة'),
+          content: Text(l.addedToCartNamed(item.menuItem.name)),
           backgroundColor: AppColors.success,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: AppRadius.mdAll,
           ),
           action: SnackBarAction(
-            label: 'عرض السلة',
+            label: l.viewCart,
             textColor: AppColors.textInverse,
             onPressed: () {
               context.go(RouteNames.cart);
@@ -74,9 +75,10 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
       );
     } catch (e) {
       if (!mounted) return;
+      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('فشل الإضافة للسلة: ${e.toString()}'),
+          content: Text('${l.addToCartFailed}: ${e.toString()}'),
           backgroundColor: SemanticColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -88,9 +90,10 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   }
 
   Widget _buildCategoryHeader() {
+    final l = AppLocalizations.of(context);
     final categoryLabel = widget.category != null
-        ? ProviderCategories.label(widget.category!)
-        : 'اكتشف';
+        ? l.categoryLabel(widget.category!)
+        : l.discover;
     return SafeArea(
       bottom: false,
       child: Padding(
@@ -128,12 +131,13 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   }
 
   Widget _buildSortBar() {
+    final l = AppLocalizations.of(context);
     final notifier = ref.read(feedNotifierProvider.notifier);
     final currentSort = notifier.currentSortBy;
     final sortOptions = [
-      (kFeedSortDistance, 'الأقرب', Icons.near_me_outlined),
-      (kFeedSortRating, 'التقييم', Icons.star_border_rounded),
-      (kFeedSortNewest, 'الأحدث', Icons.schedule_rounded),
+      (kFeedSortDistance, l.sortByDistance, Icons.near_me_outlined),
+      (kFeedSortRating, l.sortByRating, Icons.star_border_rounded),
+      (kFeedSortNewest, l.sortByNewest, Icons.schedule_rounded),
     ];
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: Insets.sm, vertical: Insets.xs),
@@ -190,8 +194,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         ),
         loaded: (items, page, hasMore) {
           if (items.isEmpty) {
-            final categoryLabel = widget.category != null
-                ? ProviderCategories.label(widget.category!)
+            final l = AppLocalizations.of(context);
+            final catLabel = widget.category != null
+                ? l.categoryLabel(widget.category!)
                 : null;
             return Stack(
               children: [
@@ -208,9 +213,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                         ),
                         Gaps.mdV,
                         Text(
-                          categoryLabel != null
-                              ? 'لا عروض حالياً في $categoryLabel'
-                              : 'لا عروض متاحة حالياً',
+                          catLabel != null
+                              ? '${l.noOffersInCategory} $catLabel'
+                              : l.noOffersAvailable,
                           style: TextStyles.headlineMedium.copyWith(
                             color: AppColors.textTertiary,
                           ),
@@ -218,7 +223,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                         ),
                         Gaps.smV,
                         Text(
-                          'جرّب فئة أخرى أو عد لاحقاً',
+                          l.tryAnotherCategory,
                           style: TextStyles.bodyMedium.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -228,7 +233,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                         FilledButton.icon(
                           onPressed: () => context.go(RouteNames.categories),
                           icon: const Icon(Icons.grid_view_rounded, size: 20),
-                          label: const Text('العودة للفئات'),
+                          label: Text(l.backToCategories),
                           style: FilledButton.styleFrom(
                             padding: EdgeInsets.symmetric(
                               horizontal: Insets.lg,

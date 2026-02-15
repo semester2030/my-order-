@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
 
@@ -88,10 +89,10 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
       await Future.delayed(const Duration(seconds: 1));
 
       if (!mounted) return;
-
+      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Card added successfully'),
+          content: Text(l.cardAddedSuccess),
           backgroundColor: SemanticColors.success,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -103,9 +104,10 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
       context.pop();
     } catch (e) {
       if (!mounted) return;
+      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to add card: ${e.toString()}'),
+          content: Text('${l.addCardFailed}: ${e.toString()}'),
           backgroundColor: SemanticColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -124,11 +126,12 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Add Payment Card',
+          l.addPaymentCardTitle,
           style: TextStyles.titleLarge,
         ),
       ),
@@ -313,7 +316,7 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
               // Save Button
               PrimaryButton(
                 onPressed: _isSaving ? null : _handleSaveCard,
-                text: _isSaving ? 'Saving...' : 'Save Card',
+                text: _isSaving ? l.saving : l.saveCard,
                 width: double.infinity,
               ),
               Gaps.mdV,

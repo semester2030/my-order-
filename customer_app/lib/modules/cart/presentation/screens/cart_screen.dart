@@ -7,6 +7,7 @@ import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../providers/cart_notifier.dart';
 import '../widgets/cart_item_row.dart';
 import '../widgets/cart_summary.dart';
@@ -40,9 +41,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       loaded: (cart) async {
         if (cart.isEmpty) {
           if (!mounted) return;
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Cart is empty'),
+              content: Text(l10n.cartEmpty),
               backgroundColor: AppColors.warning,
             ),
           );
@@ -58,14 +60,14 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           final defaultAddress = await addressesRepo.getDefaultAddress();
           if (defaultAddress == null) {
             if (!mounted) return;
+            final l10n = AppLocalizations.of(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('Please select a delivery address first'),
+                content: Text(l10n.selectAddressFirst),
                 backgroundColor: SemanticColors.error,
                 action: SnackBarAction(
-                  label: 'Select Address',
+                  label: l10n.selectAddress,
                   onPressed: () {
-                    // Navigate to address selection
                     context.push(RouteNames.selectAddressMap);
                   },
                 ),
@@ -84,9 +86,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           );
         } catch (e) {
           if (!mounted) return;
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to create order: ${e.toString()}'),
+              content: Text('${l10n.createOrderFailed}: ${e.toString()}'),
               backgroundColor: SemanticColors.error,
             ),
           );
@@ -98,13 +101,14 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final cartState = ref.watch(cartNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Cart',
+          l10n.cart,
           style: TextStyles.headlineMedium,
         ),
         actions: [
@@ -119,21 +123,19 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     final confirm = await showDialog<bool>(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Clear Cart'),
-                        content: const Text(
-                          'Are you sure you want to clear your cart?',
-                        ),
+                        title: Text(l10n.clearCartTitle),
+                        content: Text(l10n.clearCartConfirm),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(false),
-                            child: const Text('Cancel'),
+                            child: Text(l10n.cancel),
                           ),
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(true),
                             style: TextButton.styleFrom(
                               foregroundColor: AppColors.error,
                             ),
-                            child: const Text('Clear'),
+                            child: Text(l10n.clearCart),
                           ),
                         ],
                       ),
@@ -159,9 +161,9 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           if (cart.isEmpty) {
             return EmptyState(
               icon: Icons.shopping_cart_outlined,
-              title: 'Your cart is empty',
-              message: 'Add items from the feed to get started',
-              actionText: 'Browse Feed',
+              title: l10n.cartEmptyTitle,
+              message: l10n.cartEmptyMessage,
+              actionText: l10n.browseFeed,
               onAction: () => context.go(RouteNames.categories),
             );
           }

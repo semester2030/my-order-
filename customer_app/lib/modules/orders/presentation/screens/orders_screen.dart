@@ -9,6 +9,7 @@ import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/order.dart';
 import '../../domain/entities/order_tracking.dart';
 import '../providers/orders_notifier.dart';
@@ -33,13 +34,14 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final ordersState = ref.watch(ordersNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'My Orders',
+          l10n.myOrders,
           style: TextStyles.headlineMedium,
         ),
       ),
@@ -51,9 +53,9 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           if (orders.isEmpty) {
             return EmptyState(
               icon: Icons.receipt_long_outlined,
-              title: 'No orders yet',
-              message: 'Your orders will appear here',
-              actionText: 'Browse Feed',
+              title: l10n.noOrdersYet,
+              message: l10n.ordersWillAppear,
+              actionText: l10n.browseFeed,
               onAction: () => context.go(RouteNames.categories),
             );
           }
@@ -106,27 +108,29 @@ class _OrderCard extends StatelessWidget {
     }
   }
 
-  String _getStatusText(OrderStatus status) {
+  String _getStatusText(BuildContext context, OrderStatus status) {
+    final l = AppLocalizations.of(context);
     switch (status) {
       case OrderStatus.pending:
-        return 'Pending';
+        return l.orderStatusPending;
       case OrderStatus.confirmed:
-        return 'Confirmed';
+        return l.orderStatusConfirmed;
       case OrderStatus.preparing:
-        return 'Preparing';
+        return l.orderStatusPreparing;
       case OrderStatus.ready:
-        return 'Ready';
+        return l.orderStatusReady;
       case OrderStatus.outForDelivery:
-        return 'Out for Delivery';
+        return l.orderStatusOutForDelivery;
       case OrderStatus.delivered:
-        return 'Delivered';
+        return l.orderStatusDelivered;
       case OrderStatus.cancelled:
-        return 'Cancelled';
+        return l.orderStatusCancelled;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.only(bottom: Insets.md),
       decoration: BoxDecoration(
@@ -182,7 +186,7 @@ class _OrderCard extends StatelessWidget {
                         borderRadius: AppRadius.fullAll,
                       ),
                       child: Text(
-                        _getStatusText(order.tracking.status),
+                        _getStatusText(context, order.tracking.status),
                         style: TextStyles.labelSmall.copyWith(
                           color: _getStatusColor(order.tracking.status),
                           fontWeight: FontWeight.w600,
@@ -242,7 +246,7 @@ class _OrderCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${order.items.length} ${order.items.length == 1 ? 'item' : 'items'}',
+                      '${order.items.length} ${l.itemsCount(order.items.length)}',
                       style: TextStyles.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                       ),

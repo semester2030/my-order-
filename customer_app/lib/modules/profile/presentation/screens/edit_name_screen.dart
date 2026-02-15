@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../providers/profile_notifier.dart';
 
@@ -41,11 +42,12 @@ class _EditNameScreenState extends ConsumerState<EditNameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Edit Name',
+          l.editName,
           style: TextStyles.titleLarge,
         ),
       ),
@@ -56,14 +58,14 @@ class _EditNameScreenState extends ConsumerState<EditNameScreen> {
           children: [
             Gaps.xlV,
             Text(
-              'Enter your name',
+              l.enterYourName,
               style: TextStyles.titleMedium,
             ),
             Gaps.mdV,
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
-                hintText: 'Your name',
+                hintText: l.yourNameHint,
                 hintStyle: TextStyles.bodyMedium.copyWith(
                   color: AppColors.textTertiary,
                 ),
@@ -98,7 +100,7 @@ class _EditNameScreenState extends ConsumerState<EditNameScreen> {
             Gaps.xlV,
             PrimaryButton(
               onPressed: _isSaving ? null : _handleSave,
-              text: 'Save',
+              text: l.save,
               width: double.infinity,
               isLoading: _isSaving,
             ),
@@ -111,9 +113,10 @@ class _EditNameScreenState extends ConsumerState<EditNameScreen> {
   Future<void> _handleSave() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
+      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Please enter a name'),
+        content: Text(l.pleaseEnterName),
           backgroundColor: SemanticColors.error,
         ),
       );
@@ -127,10 +130,10 @@ class _EditNameScreenState extends ConsumerState<EditNameScreen> {
     try {
       await ref.read(profileNotifierProvider.notifier).updateProfile(name: name);
       if (!mounted) return;
-
+      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Name updated successfully'),
+        content: Text(l.nameUpdatedSuccess),
           backgroundColor: SemanticColors.success,
         ),
       );
@@ -138,14 +141,14 @@ class _EditNameScreenState extends ConsumerState<EditNameScreen> {
       context.pop();
     } catch (e) {
       if (!mounted) return;
-
+      final l = AppLocalizations.of(context);
       setState(() {
         _isSaving = false;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update name: ${e.toString()}'),
+          content: Text('${l.updateNameFailed}: ${e.toString()}'),
           backgroundColor: SemanticColors.error,
         ),
       );

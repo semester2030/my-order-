@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class CheckoutButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -16,6 +17,7 @@ class CheckoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(Insets.lg),
       decoration: BoxDecoration(
@@ -34,7 +36,7 @@ class CheckoutButton extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Total',
+                      l10n.total,
                       style: TextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -55,7 +57,7 @@ class CheckoutButton extends StatelessWidget {
                     child: PrimaryButton(
                       onPressed: onPressed,
                       isLoading: isLoading,
-                      text: 'Checkout',
+                      text: l10n.checkout,
                       width: double.infinity,
                     ),
                   ),

@@ -5,12 +5,14 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: SafeArea(
@@ -31,7 +33,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 Gaps.xlV,
                 Text(
-                  'مرحباً بك في',
+                  l.welcomeTo,
                   style: TextStyles.headlineLarge.copyWith(
                     color: AppColors.textInverse,
                     fontWeight: FontWeight.bold,
@@ -40,7 +42,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 Gaps.smV,
                 Text(
-                  'My Order',
+                  l.appName,
                   style: TextStyles.displayMedium.copyWith(
                     color: AppColors.textInverse,
                     fontWeight: FontWeight.bold,
@@ -49,7 +51,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 Gaps.mdV,
                 Text(
-                  'توصيل طعام مميز',
+                  l.premiumFoodDelivery,
                   style: TextStyles.bodyLarge.copyWith(
                     color: AppColors.textInverse.withValues(alpha: 0.9),
                   ),
@@ -57,7 +59,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 Gaps.xxlV,
                 PrimaryButton(
-                  text: 'إنشاء حساب',
+                  text: l.register,
                   icon: Icons.person_add_outlined,
                   onPressed: () => context.go(RouteNames.register),
                   width: double.infinity,
@@ -75,7 +77,7 @@ class WelcomeScreen extends StatelessWidget {
                     children: [
                       const Icon(Icons.login, size: 20, color: AppColors.textInverse),
                       Gaps.smH,
-                      const Text('تسجيل الدخول'),
+                      Text(l.login),
                     ],
                   ),
                 ),

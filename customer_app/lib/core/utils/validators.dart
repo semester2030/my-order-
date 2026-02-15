@@ -57,41 +57,47 @@ class AppValidators {
     return phone(v);
   }
 
-  /// Email validator
-  static String? email(String? value) {
+  /// Email validator — pass localized messages from AppLocalizations
+  static String? email(
+    String? value, {
+    String? requiredMessage,
+    String? invalidMessage,
+  }) {
     if (value == null || value.isEmpty) {
-      return 'Email is required';
+      return requiredMessage ?? 'Email is required';
     }
-
     final emailRegex = RegExp(
       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
     );
-
     if (!emailRegex.hasMatch(value)) {
-      return 'Please enter a valid email';
-    }
-
-    return null;
-  }
-
-  /// Required field validator
-  static String? required(String? value, {String? fieldName}) {
-    if (value == null || value.isEmpty) {
-      return '${fieldName ?? 'This field'} is required';
+      return invalidMessage ?? 'Please enter a valid email';
     }
     return null;
   }
 
-  /// Minimum length validator
-  static String? minLength(String? value, int minLength, {String? fieldName}) {
+  /// Required field validator — pass localized message
+  static String? required(String? value, {String? fieldName, String? message}) {
     if (value == null || value.isEmpty) {
-      return '${fieldName ?? 'This field'} is required';
+      return message ?? '${fieldName ?? 'This field'} is required';
     }
+    return null;
+  }
 
+  /// Minimum length validator — pass localized messages
+  static String? minLength(
+    String? value,
+    int minLength, {
+    String? fieldName,
+    String? requiredMessage,
+    String? minLengthMessage,
+  }) {
+    if (value == null || value.isEmpty) {
+      return requiredMessage ?? '${fieldName ?? 'This field'} is required';
+    }
     if (value.length < minLength) {
-      return '${fieldName ?? 'This field'} must be at least $minLength characters';
+      return minLengthMessage ??
+          '${fieldName ?? 'This field'} must be at least $minLength characters';
     }
-
     return null;
   }
 

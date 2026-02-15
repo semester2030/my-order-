@@ -8,6 +8,7 @@ import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/vendor.dart' show Vendor, PopularCookingAddOn;
 import '../../../addresses/domain/entities/address.dart';
 import '../../../addresses/presentation/providers/address_notifier.dart';
@@ -107,10 +108,11 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
   }
 
   Future<void> _submitRequest() async {
+    final l = AppLocalizations.of(context);
     if (_selectedDate == null || _selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('اختر التاريخ والوقت'),
+          content: Text(l.selectDateAndTime),
           backgroundColor: AppColors.error,
         ),
       );
@@ -124,7 +126,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
       if (_selectedAddressId == null || _selectedAddressId!.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('اختر عنوان استقبال الذبايح (مكان الطبخ عندك)'),
+            content: Text(l.selectSlaughterAddress),
             backgroundColor: AppColors.error,
           ),
         );
@@ -134,7 +136,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
       if (_selectedDishIds.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('اختر طبقاً واحداً على الأقل مما تتقنه الطباخة'),
+            content: Text(l.selectAtLeastOneDish),
             backgroundColor: AppColors.error,
           ),
         );
@@ -180,9 +182,10 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
 
       if (!mounted) return;
 
+      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(isPopularCooking ? 'تم حجز الطباخ. سيتم الرد قريباً.' : 'تم إرسال الطلب. سيتم الرد من الطباخة قريباً.'),
+          content: Text(isPopularCooking ? l.chefBookedSuccess : l.orderSentSuccess),
           backgroundColor: AppColors.primary,
         ),
       );
@@ -190,9 +193,10 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
       context.go(RouteNames.orders);
     } catch (e) {
       if (!mounted) return;
+      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('فشل إرسال الطلب: ${e.toString()}'),
+          content: Text('${l.requestFailed}: ${e.toString()}'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -203,6 +207,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final vendorState = ref.watch(vendorNotifierProvider(widget.vendorId));
 
     return Scaffold(
@@ -211,13 +216,13 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
           title: vendorState.maybeWhen(
           loaded: (Vendor v, _) => Text(
             (v.isPopularCooking || widget.feedCategory == ProviderCategories.popularCooking)
-                ? 'احجز الطباخ'
-                : 'طلب طباخة',
+                ? l.bookChef
+                : l.requestCooking,
           ),
           orElse: () => Text(
             widget.feedCategory == ProviderCategories.popularCooking
-                ? 'احجز الطباخ'
-                : 'طلب طباخة',
+                ? l.bookChef
+                : l.requestCooking,
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -240,7 +245,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                 Gaps.mdV,
                 FilledButton(
                   onPressed: () => ref.read(vendorNotifierProvider(widget.vendorId).notifier).refresh(),
-                  child: const Text('إعادة المحاولة'),
+                  child: Text(l.retry),
                 ),
               ],
             ),
@@ -260,14 +265,14 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  isPopularCooking ? 'احجز الطباخ' : 'خدمات عند الطلب',
+                  isPopularCooking ? l.bookChef : l.servicesOnRequest,
                   style: TextStyles.headlineMedium,
                 ),
                 Gaps.smV,
                 Text(
                   isPopularCooking
-                      ? '${vendor.name} سيأتي عندك ليطبخ الذبايح في مكانك (المنزل، المزرعة، الاستراحة). حدد العنوان والتاريخ والوقت وعدد الأشخاص.'
-                      : 'اختر ما تريد من أطباق ${vendor.name}، ثم حدد التاريخ والوقت وعدد الأشخاص. لا دفع الآن — سيُرد عليك بعرض سعر أو قبول.',
+                      ? l.popularCookingDescWithName(vendor.name)
+                      : l.homeCookingDescWithName(vendor.name),
                   style: TextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -275,7 +280,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                 Gaps.xlV,
                 // للطبخ الشعبي: عنوان استقبال الذبايح
                 if (isPopularCooking) ...[
-                  Text('عنوان استقبال الذبايح (مكان الطبخ عندك)', style: TextStyles.titleMedium),
+                  Text(l.selectSlaughterAddress, style: TextStyles.titleMedium),
                   Gaps.smV,
                   addressState.when(
                     initial: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
@@ -293,14 +298,14 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                'لا يوجد عنوان. أضف عنواناً لاستقبال الذبايح.',
+                                l.noAddressAddOne,
                                 style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
                               ),
                               Gaps.smV,
                               FilledButton.icon(
                                 onPressed: () => context.push(RouteNames.addAddress),
                                 icon: const Icon(Icons.add_location_alt),
-                                label: const Text('إضافة عنوان'),
+                                label: Text(l.addAddress),
                               ),
                             ],
                           ),
@@ -327,9 +332,8 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                     },
                   ),
                   Gaps.xlV,
-                  // الطلبات الجانبية (جريش، قرصان، إدامات...)
                   if (addOns.isNotEmpty) ...[
-                    Text('طلبات جانبية (اختياري)', style: TextStyles.titleMedium),
+                    Text(l.sideOrdersOptional, style: TextStyles.titleMedium),
                     Gaps.smV,
                     Wrap(
                       spacing: Insets.sm,
@@ -342,7 +346,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                             size: 20,
                             color: isSelected ? AppColors.primary : AppColors.textSecondary,
                           ),
-                          label: Text('${addOn.name} — ${addOn.price.toStringAsFixed(0)} ر.س'),
+                          label: Text('${l.addOnDisplayName(addOn.name)} — ${addOn.price.toStringAsFixed(0)} ر.س'),
                           selected: isSelected,
                           onSelected: (_) => _toggleAddOn(addOn.name),
                           selectedColor: AppColors.primaryContainer,
@@ -352,17 +356,17 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                     ),
                     Gaps.xlV,
                   ] else ...[
-                    Text('طلبات جانبية (اختياري)', style: TextStyles.titleMedium),
+                    Text(l.sideOrdersOptional, style: TextStyles.titleMedium),
                     Gaps.smV,
                     Text(
-                      'اضغط لاختيار الطلبات الجانبية المطلوبة:',
+                      l.tapToSelectSideOrders,
                       style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
                     ),
                     Gaps.smV,
                     Wrap(
                       spacing: Insets.sm,
                       runSpacing: Insets.sm,
-                      children: ['جريش', 'قرصان', 'إدامات'].map((name) {
+                      children: l.addOnFallbackKeys.map((name) {
                         final isSelected = _selectedAddOnNames.contains(name);
                         return FilterChip(
                           avatar: Icon(
@@ -370,7 +374,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                             size: 20,
                             color: isSelected ? AppColors.primary : AppColors.textSecondary,
                           ),
-                          label: Text(name),
+                          label: Text(l.addOnDisplayName(name)),
                           selected: isSelected,
                           onSelected: (_) => _toggleAddOn(name),
                           selectedColor: AppColors.primaryContainer,
@@ -381,11 +385,10 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                     Gaps.xlV,
                   ],
                 ] else ...[
-                  // ماذا تتقن هذه الطباخة؟ — اختيار الأطباق (للطبخ المنزلي)
-                  Text('ماذا تريد من هذه الطباخة؟', style: TextStyles.titleMedium),
+                  Text(l.whatFromChef, style: TextStyles.titleMedium),
                   Gaps.smV,
                   Text(
-                    'اختر الأطباق المطلوبة (مثلاً: مقلوبة، حلا تمر، مكرونة بشاميل)',
+                    l.selectDishesHint,
                     style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
                   ),
                   Gaps.mdV,
@@ -402,7 +405,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                           Gaps.mdH,
                           Expanded(
                             child: Text(
-                              'لا توجد أطباق متاحة للطلب حالياً من هذه الطباخة.',
+                              l.noDishesAvailable,
                               style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
                             ),
                           ),
@@ -447,7 +450,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                   if (_selectedDishIds.isNotEmpty) ...[
                     Gaps.smV,
                     Text(
-                      'تم اختيار ${_selectedDishIds.length} طبق/أطباق',
+                      l.dishesSelectedCount(_selectedDishIds.length),
                       style: TextStyles.labelSmall.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
@@ -456,8 +459,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                   ],
                   Gaps.xlV,
                 ],
-                // عدد الأشخاص
-                Text('عدد الأشخاص', style: TextStyles.labelLarge),
+                Text(l.guestsCount, style: TextStyles.labelLarge),
                 Gaps.smV,
                 Row(
                   children: [
@@ -475,14 +477,13 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                   ],
                 ),
                 Gaps.lgV,
-                // التاريخ
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text('التاريخ', style: TextStyles.labelLarge),
+                  title: Text(l.date, style: TextStyles.labelLarge),
                   subtitle: Text(
                     _selectedDate != null
                         ? '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}'
-                        : 'اختر التاريخ',
+                        : l.selectDate,
                     style: TextStyles.bodyMedium.copyWith(
                       color: _selectedDate != null ? AppColors.textPrimary : AppColors.textSecondary,
                     ),
@@ -491,14 +492,13 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                   onTap: _pickDate,
                 ),
                 Gaps.smV,
-                // الوقت
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text('وقت البدء', style: TextStyles.labelLarge),
+                  title: Text(l.startTime, style: TextStyles.labelLarge),
                   subtitle: Text(
                     _selectedTime != null
                         ? _selectedTime!.format(context)
-                        : 'اختر الوقت',
+                        : l.selectTime,
                     style: TextStyles.bodyMedium.copyWith(
                       color: _selectedTime != null ? AppColors.textPrimary : AppColors.textSecondary,
                     ),
@@ -507,15 +507,14 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                   onTap: _pickTime,
                 ),
                 Gaps.lgV,
-                // استلام الطلب أو توصيل الطلب — للطبخ المنزلي فقط
                 if (!isPopularCooking) ...[
-                  Text('كيف تريد استلام الطلب؟', style: TextStyles.labelLarge),
+                  Text(l.howToReceive, style: TextStyles.labelLarge),
                   Gaps.smV,
                   Row(
                     children: [
                       Expanded(
                         child: FilterChip(
-                          label: const Text('استلام الطلب'),
+                          label: Text(l.pickupOrder),
                           selected: !_delivery,
                           onSelected: (_) => setState(() => _delivery = false),
                         ),
@@ -523,7 +522,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                       Gaps.smH,
                       Expanded(
                         child: FilterChip(
-                          label: const Text('توصيل الطلب'),
+                          label: Text(l.deliveryOrder),
                           selected: _delivery,
                           onSelected: (_) => setState(() => _delivery = true),
                         ),
@@ -532,15 +531,15 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                   ),
                   Gaps.smV,
                   Text(
-                    _delivery ? 'سيتم توصيل الطلب إلى عنوانك' : 'استلام الطلب من عند الطباخ (الطباخ يطبخ في بيته)',
+                    _delivery ? l.deliveryToAddress : l.pickupFromChef,
                     style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
                   ),
                   Gaps.xlV,
                 ],
                 AppTextField(
                   controller: _notesController,
-                  label: 'ملاحظات إضافية (اختياري)',
-                  hint: isPopularCooking ? 'مثال: عدد الذبايح، تفضيلات الطبخ' : 'مثال: بدون بصل، حار، أدوات إضافية',
+                  label: l.additionalNotes,
+                  hint: l.notesHint(isPopularCooking),
                   maxLines: 2,
                 ),
                 Gaps.xxlV,
@@ -556,11 +555,11 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                   isLoading: _isSubmitting,
                   text: isPopularCooking
                       ? (_selectedAddressId == null || _selectedAddressId!.isEmpty
-                          ? 'اختر عنوان استقبال الذبايح'
-                          : 'احجز الطباخ')
+                          ? l.selectSlaughterAddressBtn
+                          : l.bookChef)
                       : (_selectedDishIds.isEmpty
-                          ? 'اختر طبقاً واحداً على الأقل'
-                          : 'إرسال الطلب'),
+                          ? l.selectOneDishMin
+                          : l.sendRequest),
                 ),
               ],
             ),

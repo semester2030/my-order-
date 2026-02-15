@@ -4,17 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/di/providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Settings',
+          l10n.settings,
           style: TextStyles.titleLarge,
         ),
       ),
@@ -25,127 +28,128 @@ class SettingsScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // App Settings Section
               Text(
-                'App Settings',
+                l10n.appSettings,
                 style: TextStyles.titleMedium.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),
               Gaps.mdV,
-              // Notifications
               _SettingsTile(
                 icon: Icons.notifications_outlined,
-                title: 'Notifications',
-                subtitle: 'Manage notification preferences',
+                title: l10n.notifications,
+                subtitle: l10n.manageNotifications,
                 onTap: () {
-                  // TODO: Navigate to notifications settings
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Notifications settings coming soon'),
+                      content: Text(l10n.comingSoon),
                       backgroundColor: AppColors.info,
                     ),
                   );
                 },
               ),
               Gaps.smV,
-              // Language
               _SettingsTile(
                 icon: Icons.language_outlined,
-                title: 'Language',
-                subtitle: 'Change app language',
-                onTap: () {
-                  // TODO: Navigate to language settings
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Language settings coming soon'),
-                      backgroundColor: AppColors.info,
-                    ),
-                  );
-                },
+                title: l10n.language,
+                subtitle: l10n.changeLanguage,
+                onTap: () => _showLanguageSheet(context, ref),
               ),
               Gaps.smV,
-              // Theme
               _SettingsTile(
                 icon: Icons.dark_mode_outlined,
-                title: 'Theme',
-                subtitle: 'Light / Dark mode',
+                title: l10n.theme,
+                subtitle: l10n.lightDarkMode,
                 onTap: () {
-                  // TODO: Navigate to theme settings
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Theme settings coming soon'),
+                      content: Text(l10n.comingSoon),
                       backgroundColor: AppColors.info,
                     ),
                   );
                 },
               ),
               Gaps.xlV,
-              // About Section
               Text(
-                'About',
+                l10n.about,
                 style: TextStyles.titleMedium.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),
               Gaps.mdV,
-              // Help & Support
               _SettingsTile(
                 icon: Icons.help_outline,
-                title: 'Help & Support',
-                subtitle: 'Get help and contact support',
+                title: l10n.helpSupport,
+                subtitle: l10n.getHelp,
                 onTap: () {
-                  // TODO: Navigate to help screen
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Help & Support coming soon'),
-                      backgroundColor: AppColors.info,
-                    ),
+                    SnackBar(content: Text(l10n.comingSoon), backgroundColor: AppColors.info),
                   );
                 },
               ),
               Gaps.smV,
-              // Terms & Conditions
               _SettingsTile(
                 icon: Icons.description_outlined,
-                title: 'Terms & Conditions',
-                subtitle: 'Read our terms and conditions',
+                title: l10n.termsConditions,
+                subtitle: l10n.readTerms,
                 onTap: () {
-                  // TODO: Navigate to terms screen
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Terms & Conditions coming soon'),
-                      backgroundColor: AppColors.info,
-                    ),
+                    SnackBar(content: Text(l10n.comingSoon), backgroundColor: AppColors.info),
                   );
                 },
               ),
               Gaps.smV,
-              // Privacy Policy
               _SettingsTile(
                 icon: Icons.privacy_tip_outlined,
-                title: 'Privacy Policy',
-                subtitle: 'Read our privacy policy',
+                title: l10n.privacyPolicy,
+                subtitle: l10n.readPrivacy,
                 onTap: () {
-                  // TODO: Navigate to privacy policy screen
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Privacy Policy coming soon'),
-                      backgroundColor: AppColors.info,
-                    ),
+                    SnackBar(content: Text(l10n.comingSoon), backgroundColor: AppColors.info),
                   );
                 },
               ),
               Gaps.smV,
-              // App Version
               _SettingsTile(
                 icon: Icons.info_outline,
-                title: 'App Version',
+                title: l10n.appVersion,
                 subtitle: '1.0.0',
                 onTap: null,
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showLanguageSheet(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: AppRadius.topLG,
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(l10n.languageAr),
+              onTap: () {
+                ref.read(localeProvider.notifier).setLocale(const Locale('ar'));
+                if (ctx.mounted) Navigator.of(ctx).pop();
+              },
+            ),
+            ListTile(
+              title: Text(l10n.languageEn),
+              onTap: () {
+                ref.read(localeProvider.notifier).setLocale(const Locale('en'));
+                if (ctx.mounted) Navigator.of(ctx).pop();
+              },
+            ),
+          ],
         ),
       ),
     );

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../domain/entities/vendor.dart';
@@ -27,7 +28,8 @@ class VendorScreen extends ConsumerStatefulWidget {
 }
 
 class _VendorScreenState extends ConsumerState<VendorScreen> {
-  String _selectedCategory = 'الكل';
+  /// Keys: 'all' | 'signature' | 'regular'
+  String _selectedCategoryKey = 'all';
 
   @override
   void dispose() {
@@ -55,13 +57,18 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
   }
 
   Widget _buildVendorContent(Vendor vendor, List<MenuItem> menuItems) {
-    final filteredItems = _selectedCategory == 'الكل'
+    final l = AppLocalizations.of(context);
+    final filteredItems = _selectedCategoryKey == 'all'
         ? menuItems
-        : _selectedCategory == 'Signature'
+        : _selectedCategoryKey == 'signature'
             ? menuItems.where((item) => item.isSignature).toList()
             : menuItems.where((item) => !item.isSignature).toList();
 
-    final categories = ['الكل', 'Signature', 'عادي'];
+    final categoryOptions = [
+      ('all', l.all),
+      ('signature', l.signature),
+      ('regular', l.regular),
+    ];
 
     return CustomScrollView(
       slivers: [
@@ -107,7 +114,7 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
                     ),
                     Gaps.smH,
                     Text(
-                      '(${vendor.ratingCount} reviews)',
+                      l.reviewsCountWithNumber(vendor.ratingCount),
                       style: TextStyles.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -124,7 +131,7 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
                           borderRadius: AppRadius.smAll,
                         ),
                         child: Text(
-                          'يقبل الطلبات',
+                          l.acceptingOrders,
                           style: TextStyles.bodySmall.copyWith(
                             color: SemanticColors.success,
                           ),
@@ -146,7 +153,7 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
                           Icon(Icons.ramen_dining, size: 14, color: AppColors.primary),
                           Gaps.xsH,
                           Text(
-                            'طباخ منزلي',
+                            l.homeChef,
                             style: TextStyles.bodySmall.copyWith(
                               color: AppColors.primary,
                             ),
@@ -212,7 +219,7 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
                     );
                   },
                   icon: Icon(Icons.reviews, size: IconSizes.sm),
-                  label: const Text('المراجعات'),
+                  label: Text(l.reviewsCountLabel),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: Insets.lg,
@@ -235,37 +242,36 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'الوجبات المتاحة',
+                  l.availableMeals,
                   style: TextStyles.titleMedium,
                 ),
                 Gaps.smV,
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: categories.map((category) {
-                  final isSelected = _selectedCategory == category;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: Insets.sm),
-                    child: FilterChip(
-                      label: Text(category),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        if (selected) {
-                          setState(() {
-                            _selectedCategory = category;
-                          });
-                        }
-                      },
-                      selectedColor: AppColors.primaryContainer,
-                      checkmarkColor: AppColors.primary,
-                      labelStyle: TextStyles.bodyMedium.copyWith(
-                        color: isSelected
-                            ? AppColors.primary
-                            : AppColors.textPrimary,
-                      ),
-                    ),
-                  );
-                }).toList(),
+                    children: categoryOptions.map((opt) {
+                      final (key, label) = opt;
+                      final isSelected = _selectedCategoryKey == key;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: Insets.sm),
+                        child: FilterChip(
+                          label: Text(label),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            if (selected) {
+                              setState(() => _selectedCategoryKey = key);
+                            }
+                          },
+                          selectedColor: AppColors.primaryContainer,
+                          checkmarkColor: AppColors.primary,
+                          labelStyle: TextStyles.bodyMedium.copyWith(
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
               ],
@@ -287,7 +293,7 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
                   ),
                   Gaps.mdV,
                   Text(
-                    'لا توجد وجبات متاحة حالياً',
+                    l.noMealsAvailable,
                     style: TextStyles.bodyLarge.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -320,10 +326,11 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
   }
 
   Future<void> _handleAddToCart(MenuItem item) async {
+    final l = AppLocalizations.of(context);
     if (!item.isAvailable) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${item.name} is not available'),
+          content: Text(l.itemNotAvailable(item.name)),
           backgroundColor: SemanticColors.error,
         ),
       );
@@ -336,7 +343,7 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${item.name} added to cart'),
+          content: Text(l.itemAddedToCart(item.name)),
           backgroundColor: SemanticColors.success,
         ),
       );
@@ -345,7 +352,7 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to add to cart: ${e.toString()}'),
+          content: Text('${l.addToCartFailed}: ${e.toString()}'),
           backgroundColor: SemanticColors.error,
         ),
       );

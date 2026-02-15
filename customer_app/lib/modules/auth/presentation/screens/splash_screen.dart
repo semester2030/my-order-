@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../providers/auth_notifier.dart';
 import '../../utils/navigation_helper.dart';
 
@@ -73,6 +74,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Center(
@@ -90,7 +92,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ),
             Gaps.xlV,
             Text(
-              'My Order',
+              l.appName,
               style: TextStyles.displayLarge.copyWith(
                 color: AppColors.textInverse,
                 fontWeight: FontWeight.bold,
@@ -98,7 +100,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ),
             Gaps.mdV,
             Text(
-              'Premium Food Delivery',
+              l.splashTagline,
               style: TextStyles.bodyMedium.copyWith(
                 color: AppColors.textInverse.withValues(alpha: 0.9),
               ),

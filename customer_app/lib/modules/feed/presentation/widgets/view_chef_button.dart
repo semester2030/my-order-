@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/theme/design_system.dart' as components;
+import '../../../../core/localization/app_localizations.dart';
 
 /// زر عرض صفحة الطباخ/مقدم الخدمة (بدل View Restaurant — هوية طبخ منزلي).
 class ViewChefButton extends StatelessWidget {
@@ -15,6 +16,7 @@ class ViewChefButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return OutlinedButton(
       onPressed: onTap,
       style: components.ButtonTheme.outlined.copyWith(
@@ -43,7 +45,7 @@ class ViewChefButton extends StatelessWidget {
           Gaps.xsH,
           Flexible(
             child: Text(
-              'عرض الطباخ',
+              l.viewChef,
               style: TextStyles.button.copyWith(
                 color: AppColors.textInverse,
                 fontSize: FontSizes.bodySmall,

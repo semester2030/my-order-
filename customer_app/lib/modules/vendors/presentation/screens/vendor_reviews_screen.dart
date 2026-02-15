@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -21,20 +22,21 @@ class VendorReviewsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final vendorState = ref.watch(vendorNotifierProvider(vendorId));
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Reviews',
+          l.reviews,
           style: TextStyles.titleLarge,
         ),
       ),
       body: vendorState.when(
         initial: () => const LoadingView(),
         loading: () => const LoadingView(),
-        loaded: (vendor, menuItems) => _buildReviewsContent(context, vendor),
+        loaded: (vendor, menuItems) => _buildReviewsContent(context, vendor, l),
         error: (message) => ErrorState(
           message: message,
           onRetry: () {
@@ -45,22 +47,19 @@ class VendorReviewsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildReviewsContent(BuildContext context, Vendor vendor) {
-    // TODO: Replace with actual reviews from API
-    // For now, show empty state or mock reviews
-    final reviews = <_Review>[]; // Empty list - will be populated from API
+  Widget _buildReviewsContent(
+      BuildContext context, Vendor vendor, AppLocalizations l) {
+    final reviews = <_Review>[];
 
     return Column(
       children: [
-        // Vendor header
         VendorHeader(vendor: vendor),
-        // Reviews section
         Expanded(
           child: reviews.isEmpty
               ? EmptyState(
                   icon: Icons.reviews_outlined,
-                  title: 'No reviews yet',
-                  message: 'Be the first to review ${vendor.name}',
+                  title: l.noReviewsYet,
+                  message: l.beFirstToReview(vendor.name),
                 )
               : ListView.builder(
                   padding: const EdgeInsets.all(Insets.lg),

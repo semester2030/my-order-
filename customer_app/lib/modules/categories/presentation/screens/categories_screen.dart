@@ -6,6 +6,7 @@ import '../../../../core/theme/design_system.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/constants/provider_categories.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 /// Single screen: four category icons. Tapping one opens Feed with that category.
 /// No duplicate screens or widgets — icons built inline.
@@ -18,11 +19,12 @@ class CategoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(
-          'اختر الخدمة',
+          l.selectService,
           style: TextStyles.headlineSmall.copyWith(color: AppColors.textPrimary),
         ),
         backgroundColor: AppColors.surface,
@@ -77,6 +79,7 @@ class _CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Material(
       color: AppColors.surfaceElevated,
       borderRadius: BorderRadius.circular(AppRadius.md),
@@ -91,7 +94,7 @@ class _CategoryTile extends StatelessWidget {
               Icon(icon, size: IconSizes.xxl, color: AppColors.primary),
               Gaps.smV,
               Text(
-                ProviderCategories.label(category),
+                l.categoryLabel(category),
                 textAlign: TextAlign.center,
                 style: TextStyles.titleMedium.copyWith(color: AppColors.textPrimary),
               ),

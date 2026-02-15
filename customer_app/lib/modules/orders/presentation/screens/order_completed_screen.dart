@@ -8,6 +8,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/order.dart';
 import '../providers/order_details_notifier.dart';
 import '../widgets/rating_stars.dart';
@@ -54,6 +55,7 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
   }
 
   Widget _buildCompletedContent(BuildContext context, Order order) {
+    final l = AppLocalizations.of(context);
     return Column(
       children: [
         Expanded(
@@ -82,13 +84,13 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
                 Gaps.xlV,
                 // Title
                 Text(
-                  'Order Delivered!',
+                  l.orderDelivered,
                   style: TextStyles.headlineLarge,
                   textAlign: TextAlign.center,
                 ),
                 Gaps.mdV,
                 Text(
-                  'Thank you for your order',
+                  l.thankYouForOrder,
                   style: TextStyles.bodyLarge.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -109,7 +111,7 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Order Number',
+                            l.orderNumberLabel,
                             style: TextStyles.bodyMedium.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -130,7 +132,7 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Total',
+                            l.total,
                             style: TextStyles.bodyMedium.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -162,7 +164,7 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'Rate Your Experience',
+                        l.rateYourExperience,
                         style: TextStyles.titleMedium,
                       ),
                       Gaps.mdV,
@@ -179,7 +181,7 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
                       Gaps.lgV,
                       TextField(
                         decoration: InputDecoration(
-                          hintText: 'Write a review (optional)',
+                          hintText: l.writeReviewHint,
                           hintStyle: TextStyles.bodyMedium.copyWith(
                             color: AppColors.textTertiary,
                           ),
@@ -233,7 +235,7 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
               children: [
                 PrimaryButton(
                   onPressed: _rating > 0 && !_isSubmitting ? _handleSubmitRating : null,
-                  text: 'Submit Rating',
+                  text: l.submitRating,
                   width: double.infinity,
                   isLoading: _isSubmitting,
                 ),
@@ -243,7 +245,7 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
                     context.go(RouteNames.categories);
                   },
                   child: Text(
-                    'Skip for Now',
+                    l.skipForNow,
                     style: TextStyles.button.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -282,10 +284,10 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
 
       if (!mounted) return;
 
-      // Show success message
+      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Thank you for your feedback!'),
+          content: Text(l.thankYouForFeedback),
           backgroundColor: SemanticColors.success,
         ),
       );
@@ -299,9 +301,10 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
         _isSubmitting = false;
       });
 
+      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to submit rating: ${e.toString()}'),
+          content: Text('${l.ratingSubmitFailed}: ${e.toString()}'),
           backgroundColor: SemanticColors.error,
         ),
       );

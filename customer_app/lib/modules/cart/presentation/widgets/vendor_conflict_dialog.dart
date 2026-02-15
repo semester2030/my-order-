@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/secondary_button.dart';
 
@@ -15,6 +16,7 @@ class VendorConflictDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: AppRadius.lgAll,
@@ -31,14 +33,13 @@ class VendorConflictDialog extends StatelessWidget {
             ),
             Gaps.lgV,
             Text(
-              'Different Vendor',
+              l.differentVendor,
               style: TextStyles.headlineMedium,
               textAlign: TextAlign.center,
             ),
             Gaps.smV,
             Text(
-              'Your cart contains items from a different vendor. '
-              'Would you like to clear your cart and add this item?',
+              l.cartDifferentVendorMessage,
               style: TextStyles.bodyMedium.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -50,7 +51,7 @@ class VendorConflictDialog extends StatelessWidget {
                 Expanded(
                   child: SecondaryButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    text: 'Cancel',
+                    text: l.cancel,
                   ),
                 ),
                 Gaps.mdH,
@@ -59,7 +60,7 @@ class VendorConflictDialog extends StatelessWidget {
                     onPressed: () {
                       onClearAndAdd?.call();
                     },
-                    text: 'Clear & Add',
+                    text: l.clearAndAdd,
                   ),
                 ),
               ],

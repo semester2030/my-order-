@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/profile.dart';
 
 bool _isEmail(String s) => s.contains('@');
@@ -16,6 +17,7 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(Insets.xl),
       decoration: BoxDecoration(
@@ -44,7 +46,7 @@ class ProfileHeader extends StatelessWidget {
           Gaps.lgV,
           // Name
           Text(
-            profile.name ?? 'User',
+            profile.name ?? l.user,
             style: TextStyles.headlineMedium,
           ),
           if (profile.contact.isNotEmpty) ...[
@@ -57,14 +59,14 @@ class ProfileHeader extends StatelessWidget {
             ),
             if (_isEmail(profile.contact))
               Text(
-                'البريد الإلكتروني',
+                l.emailLabel,
                 style: TextStyles.bodySmall.copyWith(
                   color: AppColors.textSecondary,
                 ),
               )
             else
               Text(
-                'رقم الجوال',
+                l.phoneLabel,
                 style: TextStyles.bodySmall.copyWith(
                   color: AppColors.textSecondary,
                 ),

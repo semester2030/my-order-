@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/design_system.dart';
 
 class DriverContactBar extends StatelessWidget {
@@ -19,8 +20,9 @@ class DriverContactBar extends StatelessWidget {
   Future<void> _callDriver(BuildContext context) async {
     if (driverPhone == null || driverPhone!.isEmpty) {
       if (context.mounted) {
+        final l = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Driver phone number is not available')),
+          SnackBar(content: Text(l.driverPhoneNotAvailable)),
         );
       }
       return;
@@ -31,14 +33,16 @@ class DriverContactBar extends StatelessWidget {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else if (context.mounted) {
+        final l = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cannot open phone dialer')),
+          SnackBar(content: Text(l.cannotOpenDialer)),
         );
       }
     } catch (_) {
       if (context.mounted) {
+        final l = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not start call')),
+          SnackBar(content: Text(l.couldNotStartCall)),
         );
       }
     }
@@ -49,6 +53,7 @@ class DriverContactBar extends StatelessWidget {
     if (driverId == null) {
       return const SizedBox.shrink();
     }
+    final l = AppLocalizations.of(context);
 
     return Container(
       padding: const EdgeInsets.all(Insets.md),
@@ -76,7 +81,7 @@ class DriverContactBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Driver Assigned',
+                  l.driverAssigned,
                   style: TextStyles.bodySmall.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -85,7 +90,7 @@ class DriverContactBar extends StatelessWidget {
                 Text(
                   driverName != null && driverName!.isNotEmpty
                       ? driverName!
-                      : 'Contact your driver',
+                      : l.contactYourDriver,
                   style: TextStyles.bodyLarge.copyWith(
                     fontWeight: FontWeight.w600,
                   ),

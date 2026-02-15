@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/address.dart';
 
 class AddressTile extends StatelessWidget {
@@ -22,6 +23,7 @@ class AddressTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return InkWell(
       onTap: onTap,
       borderRadius: AppRadius.mdAll,
@@ -71,7 +73,7 @@ class AddressTile extends StatelessWidget {
                       borderRadius: AppRadius.smAll,
                     ),
                     child: Text(
-                      'Default',
+                      l.defaultAddress,
                       style: TextStyles.bodySmall.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
@@ -88,7 +90,7 @@ class AddressTile extends StatelessWidget {
             if (address.building != null) ...[
               Gaps.xsV,
               Text(
-                'Building ${address.building}',
+                '${l.buildingLabel} ${address.building}',
                 style: TextStyles.bodySmall.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -97,7 +99,7 @@ class AddressTile extends StatelessWidget {
             if (address.apartment != null) ...[
               Gaps.xsV,
               Text(
-                'Apartment ${address.apartment}',
+                '${l.apartmentLabel} ${address.apartment}',
                 style: TextStyles.bodySmall.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -119,7 +121,7 @@ class AddressTile extends StatelessWidget {
                     TextButton(
                       onPressed: onSetDefault,
                       child: Text(
-                        'Set Default',
+                        l.setDefault,
                         style: TextStyles.bodySmall.copyWith(
                           color: AppColors.primary,
                         ),

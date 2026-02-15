@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/cart.dart';
 
 class CartSummary extends StatelessWidget {
@@ -71,13 +72,13 @@ class CartSummary extends StatelessWidget {
           ],
           // Summary
           _SummaryRow(
-            label: 'Subtotal',
+            label: AppLocalizations.of(context).subtotal,
             value: '${cart.subtotal.toStringAsFixed(2)} SAR',
             style: TextStyles.bodyMedium,
           ),
           Gaps.smV,
           _SummaryRow(
-            label: 'Delivery Fee',
+            label: AppLocalizations.of(context).deliveryFee,
             value: '${cart.deliveryFee.toStringAsFixed(2)} SAR',
             style: TextStyles.bodyMedium,
           ),
@@ -85,7 +86,7 @@ class CartSummary extends StatelessWidget {
           const Divider(color: AppColors.warmDivider),
           Gaps.mdV,
           _SummaryRow(
-            label: 'Total',
+            label: AppLocalizations.of(context).total,
             value: '${cart.total.toStringAsFixed(2)} SAR',
             style: TextStyles.headlineMedium.copyWith(
               color: AppColors.primary,

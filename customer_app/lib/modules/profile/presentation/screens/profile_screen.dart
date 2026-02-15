@@ -8,6 +8,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_notifier.dart';
 import '../providers/profile_notifier.dart';
 import '../widgets/profile_header.dart';
@@ -18,13 +19,14 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final profileState = ref.watch(profileNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Profile',
+          l10n.profile,
           style: TextStyles.titleLarge,
         ),
       ),
@@ -44,6 +46,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   static Widget _buildProfileContent(BuildContext context, WidgetRef ref, profile) {
+    final l10n = AppLocalizations.of(context);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -58,8 +61,8 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 ProfileTile(
                   icon: Icons.person_outline,
-                  title: 'Edit Name',
-                  subtitle: profile.name ?? 'Not set',
+                  title: l10n.editName,
+                  subtitle: profile.name ?? l10n.notSet,
                   onTap: () {
                     context.push(RouteNames.editProfile);
                   },
@@ -67,8 +70,8 @@ class ProfileScreen extends ConsumerWidget {
                 Gaps.mdV,
                 ProfileTile(
                   icon: Icons.location_on_outlined,
-                  title: 'My Addresses',
-                  subtitle: 'Manage delivery addresses',
+                  title: l10n.myAddresses,
+                  subtitle: l10n.manageAddresses,
                   onTap: () {
                     context.push(RouteNames.addresses);
                   },
@@ -76,8 +79,8 @@ class ProfileScreen extends ConsumerWidget {
                 Gaps.mdV,
                 ProfileTile(
                   icon: Icons.edit_location_outlined,
-                  title: 'Change Address',
-                  subtitle: 'Update your delivery address',
+                  title: l10n.changeAddress,
+                  subtitle: l10n.updateAddress,
                   onTap: () {
                     context.push(RouteNames.selectAddressMap);
                   },
@@ -85,8 +88,8 @@ class ProfileScreen extends ConsumerWidget {
                 Gaps.mdV,
                 ProfileTile(
                   icon: Icons.payment_outlined,
-                  title: 'Payment Methods',
-                  subtitle: 'Add and manage payment cards',
+                  title: l10n.paymentMethods,
+                  subtitle: l10n.managePaymentCards,
                   onTap: () {
                     context.push(RouteNames.paymentMethods);
                   },
@@ -94,8 +97,8 @@ class ProfileScreen extends ConsumerWidget {
                 Gaps.mdV,
                 ProfileTile(
                   icon: Icons.receipt_long_outlined,
-                  title: 'My Orders',
-                  subtitle: 'View order history',
+                  title: l10n.myOrders,
+                  subtitle: l10n.viewOrderHistory,
                   onTap: () {
                     context.go(RouteNames.orders);
                   },
@@ -103,8 +106,8 @@ class ProfileScreen extends ConsumerWidget {
                 Gaps.mdV,
                 ProfileTile(
                   icon: Icons.settings_outlined,
-                  title: 'Settings',
-                  subtitle: 'App settings and preferences',
+                  title: l10n.settings,
+                  subtitle: l10n.appSettings,
                   onTap: () {
                     context.push(RouteNames.settings);
                   },
@@ -114,7 +117,7 @@ class ProfileScreen extends ConsumerWidget {
                 OutlinedButton.icon(
                   onPressed: () => _handleLogout(context, ref),
                   icon: Icon(Icons.logout, size: IconSizes.md),
-                  label: Text('Logout'),
+                  label: Text(l10n.logout),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: Insets.lg,
@@ -133,22 +136,23 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   static void _handleLogout(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(
-          'Logout',
+          l10n.logout,
           style: TextStyles.titleMedium,
         ),
         content: Text(
-          'Are you sure you want to logout?',
+          l10n.logoutConfirm,
           style: TextStyles.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text(
-              'Cancel',
+              l10n.cancel,
               style: TextStyles.button.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -163,7 +167,7 @@ class ProfileScreen extends ConsumerWidget {
               }
             },
             child: Text(
-              'Logout',
+              l10n.logout,
               style: TextStyles.button.copyWith(
                 color: SemanticColors.error,
               ),

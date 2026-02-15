@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../network/api_client.dart';
+import '../localization/locale_notifier.dart';
 import '../storage/secure_storage.dart';
 import '../storage/local_storage.dart';
 import '../../modules/cart/domain/repositories/cart_repo.dart';
@@ -32,6 +34,9 @@ final secureStorageProvider = Provider<SecureStorage>((ref) {
 final localStorageProvider = Provider<LocalStorage>((ref) {
   return LocalStorage();
 });
+
+/// اللغة المختارة (ar / en) — تُحمّل من التخزين وتُحدّث عند التبديل.
+final localeProvider = NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
 
 final apiClientProvider = Provider<ApiClient>((ref) {
   final secureStorage = ref.watch(secureStorageProvider);

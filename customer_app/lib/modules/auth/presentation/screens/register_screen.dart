@@ -8,6 +8,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../providers/auth_notifier.dart';
 import '../../utils/navigation_helper.dart';
 
@@ -65,6 +66,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -84,36 +86,50 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Gaps.xxlV,
-                Text('إنشاء حساب', style: TextStyles.displayMedium),
+                Text(l.register, style: TextStyles.displayMedium),
                 Gaps.smV,
                 Text(
-                  'الاسم، البريد الإلكتروني، والرمز السري',
+                  l.registerSubtitle,
                   style: TextStyles.bodyLarge.copyWith(color: AppColors.textSecondary),
                 ),
                 Gaps.xxlV,
                 AppTextField(
                   controller: _nameController,
-                  label: 'الاسم',
-                  hint: 'أدخل اسمك',
-                  validator: (v) => AppValidators.minLength(v, 2, fieldName: 'الاسم'),
+                  label: l.name,
+                  hint: l.nameHint,
+                  validator: (v) => AppValidators.minLength(
+                    v,
+                    2,
+                    requiredMessage: l.validatorFieldRequiredNamed(l.name),
+                    minLengthMessage: l.validatorMinLength(l.name, 2),
+                  ),
                   prefixIcon: const Icon(Icons.person_outline, color: AppColors.primary),
                 ),
                 Gaps.lgV,
                 AppTextField(
                   controller: _emailController,
-                  label: 'البريد الإلكتروني',
-                  hint: 'example@email.com',
+                  label: l.email,
+                  hint: l.emailHint,
                   keyboardType: TextInputType.emailAddress,
-                  validator: AppValidators.email,
+                  validator: (v) => AppValidators.email(
+                    v,
+                    requiredMessage: l.validatorEmailRequired,
+                    invalidMessage: l.validatorEmailInvalid,
+                  ),
                   prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
                 ),
                 Gaps.lgV,
                 AppTextField(
                   controller: _passwordController,
-                  label: 'الرمز السري',
-                  hint: '6 أحرف على الأقل',
+                  label: l.password,
+                  hint: l.passwordMinHint,
                   obscureText: _obscurePassword,
-                  validator: (v) => AppValidators.minLength(v, 6, fieldName: 'الرمز السري'),
+                  validator: (v) => AppValidators.minLength(
+                    v,
+                    6,
+                    requiredMessage: l.validatorFieldRequiredNamed(l.password),
+                    minLengthMessage: l.validatorMinLength(l.password, 6),
+                  ),
                   prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -127,13 +143,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 PrimaryButton(
                   onPressed: _isLoading ? null : _register,
                   isLoading: _isLoading,
-                  text: 'تسجيل',
+                  text: l.registerButton,
                 ),
                 Gaps.lgV,
                 TextButton(
                   onPressed: () => context.go(RouteNames.login),
                   child: Text(
-                    'لديك حساب؟ تسجيل الدخول',
+                    l.haveAccountLogin,
                     style: TextStyles.bodyMedium.copyWith(color: AppColors.primary),
                   ),
                 ),

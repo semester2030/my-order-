@@ -8,6 +8,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/order.dart';
 import '../providers/order_details_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -44,6 +45,7 @@ class OrderConfirmationScreen extends ConsumerWidget {
   }
 
   Widget _buildConfirmationContent(BuildContext context, Order order) {
+    final l = AppLocalizations.of(context);
     return Column(
       children: [
         Expanded(
@@ -72,13 +74,13 @@ class OrderConfirmationScreen extends ConsumerWidget {
                 Gaps.xlV,
                 // Title
                 Text(
-                  'Order Confirmed!',
+                  l.orderConfirmed,
                   style: TextStyles.headlineLarge,
                   textAlign: TextAlign.center,
                 ),
                 Gaps.mdV,
                 Text(
-                  'Your order has been placed successfully',
+                  l.orderPlacedSuccess,
                   style: TextStyles.bodyLarge.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -96,7 +98,7 @@ class OrderConfirmationScreen extends ConsumerWidget {
                   child: Column(
                     children: [
                       Text(
-                        'Order Number',
+                        l.orderNumberLabel,
                         style: TextStyles.bodyMedium.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -117,12 +119,13 @@ class OrderConfirmationScreen extends ConsumerWidget {
                 _VendorInfoCard(vendor: order.vendor),
                 Gaps.lgV,
                 // Order summary
-                _OrderSummaryCard(order: order),
+                _OrderSummaryCard(order: order, l: l),
                 Gaps.lgV,
                 // Delivery info
                 _DeliveryInfoCard(
                   address: order.address,
                   estimatedDeliveryTime: order.tracking.estimatedDeliveryTime,
+                  l: l,
                 ),
               ],
             ),
@@ -146,7 +149,7 @@ class OrderConfirmationScreen extends ConsumerWidget {
                       '${RouteNames.orderDetails}/${order.id}',
                     );
                   },
-                  text: 'Track Order',
+                  text: l.trackOrder,
                   width: double.infinity,
                 ),
                 Gaps.mdV,
@@ -155,7 +158,7 @@ class OrderConfirmationScreen extends ConsumerWidget {
                     context.go(RouteNames.categories);
                   },
                   child: Text(
-                    'Back to Feed',
+                    l.backToFeed,
                     style: TextStyles.button.copyWith(
                       color: AppColors.primary,
                     ),
@@ -260,9 +263,11 @@ class _VendorInfoCard extends StatelessWidget {
 
 class _OrderSummaryCard extends StatelessWidget {
   final Order order;
+  final AppLocalizations l;
 
   const _OrderSummaryCard({
     required this.order,
+    required this.l,
   });
 
   @override
@@ -278,7 +283,7 @@ class _OrderSummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Order Summary',
+            l.orderSummary,
             style: TextStyles.titleMedium,
           ),
           Gaps.mdV,
@@ -311,19 +316,19 @@ class _OrderSummaryCard extends StatelessWidget {
           Gaps.mdV,
           // Totals
           _SummaryRow(
-            label: 'Subtotal',
+            label: l.subtotal,
             value: '${order.subtotal.toStringAsFixed(2)} SAR',
           ),
           Gaps.smV,
           _SummaryRow(
-            label: 'Delivery Fee',
+            label: l.deliveryFee,
             value: '${order.deliveryFee.toStringAsFixed(2)} SAR',
           ),
           Gaps.mdV,
           const Divider(color: AppColors.warmDivider),
           Gaps.mdV,
           _SummaryRow(
-            label: 'Total',
+            label: l.total,
             value: '${order.total.toStringAsFixed(2)} SAR',
             style: TextStyles.titleMedium.copyWith(
               color: AppColors.primary,
@@ -370,10 +375,12 @@ class _SummaryRow extends StatelessWidget {
 class _DeliveryInfoCard extends StatelessWidget {
   final Address address;
   final DateTime? estimatedDeliveryTime;
+  final AppLocalizations l;
 
   const _DeliveryInfoCard({
     required this.address,
     this.estimatedDeliveryTime,
+    required this.l,
   });
 
   @override
@@ -397,7 +404,7 @@ class _DeliveryInfoCard extends StatelessWidget {
               ),
               Gaps.smH,
               Text(
-                'Delivery Address',
+                l.deliveryAddress,
                 style: TextStyles.titleMedium,
               ),
             ],
@@ -410,7 +417,7 @@ class _DeliveryInfoCard extends StatelessWidget {
           if (address.building != null) ...[
             Gaps.xsV,
             Text(
-              'Building ${address.building}',
+              '${l.buildingLabel} ${address.building}',
               style: TextStyles.bodySmall.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -419,7 +426,7 @@ class _DeliveryInfoCard extends StatelessWidget {
           if (address.apartment != null) ...[
             Gaps.xsV,
             Text(
-              'Apartment ${address.apartment}',
+              '${l.apartmentLabel} ${address.apartment}',
               style: TextStyles.bodySmall.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -445,7 +452,7 @@ class _DeliveryInfoCard extends StatelessWidget {
                 ),
                 Gaps.smH,
                 Text(
-                  'Estimated Delivery',
+                  l.estimatedDelivery,
                   style: TextStyles.bodyMedium,
                 ),
                 const Spacer(),

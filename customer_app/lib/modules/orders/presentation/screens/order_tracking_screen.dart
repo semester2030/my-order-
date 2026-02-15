@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../domain/entities/order.dart';
@@ -39,6 +40,7 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final orderId = widget.orderId;
     final orderState = ref.watch(orderDetailsNotifierProvider(orderId));
 
@@ -70,7 +72,7 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Order Tracking',
+          l.orderTracking,
           style: TextStyles.headlineMedium,
         ),
       ),
@@ -88,16 +90,16 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Order info card
-                _OrderInfoCard(order: order),
+                _OrderInfoCard(order: order, l: l),
                 Gaps.lgV,
                 // Order items
-                _OrderItemsCard(order: order),
+                _OrderItemsCard(order: order, l: l),
                 Gaps.lgV,
                 // Delivery address
-                _DeliveryAddressCard(order: order),
+                _DeliveryAddressCard(order: order, l: l),
                 Gaps.lgV,
                 // Order summary
-                _OrderSummaryCard(order: order),
+                _OrderSummaryCard(order: order, l: l),
                 Gaps.lgV,
                 // Tracking map
                 if (order.tracking.driverLatitude != null &&
@@ -119,13 +121,13 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                 Gaps.lgV,
                 // Timeline
                 Text(
-                  'Order Status',
+                  l.orderStatusLabel,
                   style: TextStyles.headlineSmall,
                 ),
                 if (order.tracking.status == OrderStatus.outForDelivery) ...[
                   Gaps.xsV,
                   Text(
-                    'Status updates automatically. Pull down to refresh now.',
+                    l.statusAutoRefresh,
                     style: TextStyles.bodySmall.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -154,7 +156,7 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Estimated Delivery',
+                                l.estimatedDelivery,
                                 style: TextStyles.bodySmall.copyWith(
                                   color: AppColors.textSecondary,
                                 ),
@@ -192,7 +194,7 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                             Gaps.smH,
                             Expanded(
                               child: Text(
-                                'Order delivered',
+                                l.orderDeliveredLabel,
                                 style: TextStyles.titleLarge.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -213,7 +215,7 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                         ],
                         Gaps.lgV,
                         Text(
-                          'Confirm you received your order and rate the experience.',
+                          l.confirmReceivedRate,
                           style: TextStyles.bodyMedium.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -226,7 +228,7 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                               '${RouteNames.rating}/${order.id}',
                             ),
                             icon: const Icon(Icons.check_circle_outline),
-                            label: const Text('I received my order – Rate now'),
+                            label: Text(l.receivedRateNow),
                             style: FilledButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                             ),
@@ -254,8 +256,9 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
 
 class _OrderInfoCard extends StatelessWidget {
   final Order order;
+  final AppLocalizations l;
 
-  const _OrderInfoCard({required this.order});
+  const _OrderInfoCard({required this.order, required this.l});
 
   @override
   Widget build(BuildContext context) {
@@ -319,8 +322,9 @@ class _OrderInfoCard extends StatelessWidget {
 
 class _OrderItemsCard extends StatelessWidget {
   final Order order;
+  final AppLocalizations l;
 
-  const _OrderItemsCard({required this.order});
+  const _OrderItemsCard({required this.order, required this.l});
 
   @override
   Widget build(BuildContext context) {
@@ -335,7 +339,7 @@ class _OrderItemsCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Order Items (${order.items.length})',
+            l.orderItemsCount(order.items.length),
             style: TextStyles.titleMedium.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -384,7 +388,7 @@ class _OrderItemsCard extends StatelessWidget {
                           ),
                           Gaps.xsV,
                           Text(
-                            'Quantity: ${item.quantity}',
+                            l.quantityLabel(item.quantity),
                             style: TextStyles.bodySmall.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -410,8 +414,9 @@ class _OrderItemsCard extends StatelessWidget {
 
 class _DeliveryAddressCard extends StatelessWidget {
   final Order order;
+  final AppLocalizations l;
 
-  const _DeliveryAddressCard({required this.order});
+  const _DeliveryAddressCard({required this.order, required this.l});
 
   @override
   Widget build(BuildContext context) {
@@ -434,7 +439,7 @@ class _DeliveryAddressCard extends StatelessWidget {
               ),
               Gaps.smH,
               Text(
-                'Delivery Address',
+                l.deliveryAddress,
                 style: TextStyles.titleMedium.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -456,7 +461,7 @@ class _DeliveryAddressCard extends StatelessWidget {
           if (order.address.building != null) ...[
             Gaps.xsV,
             Text(
-              'Building: ${order.address.building}',
+              '${l.buildingLabel}: ${order.address.building}',
               style: TextStyles.bodySmall.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -465,7 +470,7 @@ class _DeliveryAddressCard extends StatelessWidget {
           if (order.address.floor != null) ...[
             Gaps.xsV,
             Text(
-              'Floor: ${order.address.floor}',
+              l.floorWithValue(order.address.floor.toString()),
               style: TextStyles.bodySmall.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -474,7 +479,7 @@ class _DeliveryAddressCard extends StatelessWidget {
           if (order.address.apartment != null) ...[
             Gaps.xsV,
             Text(
-              'Apartment: ${order.address.apartment}',
+              '${l.apartmentLabel}: ${order.address.apartment}',
               style: TextStyles.bodySmall.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -495,8 +500,9 @@ class _DeliveryAddressCard extends StatelessWidget {
 
 class _OrderSummaryCard extends StatelessWidget {
   final Order order;
+  final AppLocalizations l;
 
-  const _OrderSummaryCard({required this.order});
+  const _OrderSummaryCard({required this.order, required this.l});
 
   @override
   Widget build(BuildContext context) {
@@ -511,7 +517,7 @@ class _OrderSummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Order Summary',
+            l.orderSummaryLabel,
             style: TextStyles.titleMedium.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -521,7 +527,7 @@ class _OrderSummaryCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Subtotal',
+                l.subtotal,
                 style: TextStyles.bodyMedium,
               ),
               Text(
@@ -535,7 +541,7 @@ class _OrderSummaryCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Delivery Fee',
+                l.deliveryFee,
                 style: TextStyles.bodyMedium,
               ),
               Text(
@@ -551,7 +557,7 @@ class _OrderSummaryCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total',
+                l.total,
                 style: TextStyles.titleMedium.copyWith(
                   fontWeight: FontWeight.bold,
                 ),

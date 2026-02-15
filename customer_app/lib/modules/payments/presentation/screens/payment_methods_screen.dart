@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
+import '../../../../core/localization/app_localizations.dart';
 
 class PaymentMethodsScreen extends ConsumerStatefulWidget {
   const PaymentMethodsScreen({super.key});
@@ -17,11 +18,12 @@ class PaymentMethodsScreen extends ConsumerStatefulWidget {
 class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Payment Methods',
+          l10n.paymentMethods,
           style: TextStyles.titleLarge,
         ),
       ),
@@ -31,13 +33,12 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Add Card Button
             ElevatedButton.icon(
               onPressed: () {
                 context.push(RouteNames.addCard);
               },
               icon: Icon(Icons.add_card),
-              label: Text('Add Payment Card'),
+              label: Text(l10n.addPaymentCard),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: Insets.lg,
@@ -48,44 +49,39 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
               ),
             ),
             Gaps.xlV,
-            // Payment Methods List
             Text(
-              'Saved Payment Methods',
+              l10n.savedPaymentMethods,
               style: TextStyles.titleMedium.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
             Gaps.mdV,
-            // Apple Pay
             _PaymentMethodCard(
               icon: Icons.apple,
               title: 'Apple Pay',
-              subtitle: 'Connected',
+              subtitle: l10n.connected,
               onTap: () {
                 // TODO: Manage Apple Pay
               },
             ),
             Gaps.smV,
-            // Mada
             _PaymentMethodCard(
               icon: Icons.credit_card,
               title: 'Mada',
-              subtitle: 'No cards saved',
+              subtitle: l10n.noCardsSaved,
               onTap: () {
                 context.push(RouteNames.addCard);
               },
             ),
             Gaps.smV,
-            // STC Pay
             _PaymentMethodCard(
               icon: Icons.account_balance_wallet,
               title: 'STC Pay',
-              subtitle: 'Not connected',
+              subtitle: l10n.notConnected,
               onTap: () {
-                // TODO: Connect STC Pay
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('STC Pay connection coming soon'),
+                    content: Text(l10n.comingSoon),
                     backgroundColor: AppColors.info,
                   ),
                 );

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/menu_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -17,6 +18,7 @@ class MenuItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return InkWell(
       onTap: menuItem.isAvailable ? onTap : null,
       borderRadius: AppRadius.mdAll,
@@ -97,7 +99,7 @@ class MenuItemTile extends StatelessWidget {
                             borderRadius: AppRadius.smAll,
                           ),
                           child: Text(
-                            'Signature',
+                            l.signature,
                             style: TextStyles.bodySmall.copyWith(
                               color: AppColors.accent,
                               fontWeight: FontWeight.w600,
@@ -139,7 +141,7 @@ class MenuItemTile extends StatelessWidget {
                             borderRadius: AppRadius.smAll,
                           ),
                           child: Text(
-                            'Unavailable',
+                            l.notAvailable,
                             style: TextStyles.bodySmall.copyWith(
                               color: AppColors.textTertiary,
                             ),

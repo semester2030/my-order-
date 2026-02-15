@@ -8,6 +8,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../providers/auth_notifier.dart';
 import '../../utils/navigation_helper.dart';
 
@@ -62,6 +63,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -81,28 +83,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Gaps.xxlV,
-                Text('تسجيل الدخول', style: TextStyles.displayMedium),
+                Text(l.login, style: TextStyles.displayMedium),
                 Gaps.smV,
                 Text(
-                  'أدخل بريدك والرمز السري',
+                  l.loginSubtitle,
                   style: TextStyles.bodyLarge.copyWith(color: AppColors.textSecondary),
                 ),
                 Gaps.xxlV,
                 AppTextField(
                   controller: _emailController,
-                  label: 'البريد الإلكتروني',
-                  hint: 'example@email.com',
+                  label: l.email,
+                  hint: l.emailHint,
                   keyboardType: TextInputType.emailAddress,
-                  validator: AppValidators.email,
+                  validator: (v) => AppValidators.email(
+                    v,
+                    requiredMessage: l.validatorEmailRequired,
+                    invalidMessage: l.validatorEmailInvalid,
+                  ),
                   prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
                 ),
                 Gaps.lgV,
                 AppTextField(
                   controller: _passwordController,
-                  label: 'الرمز السري',
-                  hint: 'أدخل الرمز السري',
+                  label: l.password,
+                  hint: l.passwordHint,
                   obscureText: _obscurePassword,
-                  validator: (v) => AppValidators.required(v, fieldName: 'الرمز السري'),
+                  validator: (v) =>
+                      AppValidators.required(v, message: l.validatorFieldRequiredNamed(l.password)),
                   prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -116,13 +123,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 PrimaryButton(
                   onPressed: _isLoading ? null : _login,
                   isLoading: _isLoading,
-                  text: 'دخول',
+                  text: l.loginButton,
                 ),
                 Gaps.lgV,
                 TextButton(
                   onPressed: () => context.go(RouteNames.register),
                   child: Text(
-                    'ليس لديك حساب؟ إنشاء حساب',
+                    l.noAccountCreateOne,
                     style: TextStyles.bodyMedium.copyWith(color: AppColors.primary),
                   ),
                 ),

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/feed_item.dart';
 import 'view_chef_button.dart';
 
@@ -26,6 +27,7 @@ class DishOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return SafeArea(
       child: Column(
         children: [
@@ -190,7 +192,7 @@ class DishOverlay extends StatelessWidget {
                           borderRadius: AppRadius.fullAll,
                         ),
                         child: Text(
-                          'Signature',
+                          l.signature,
                           style: TextStyles.labelSmall.copyWith(
                             color: AppColors.textInverse,
                           ),
@@ -235,7 +237,7 @@ class DishOverlay extends StatelessWidget {
                             Gaps.xsH,
                             Flexible(
                               child: Text(
-                                _isPopularCooking ? 'احجز الطباخ' : 'أضف للسلة',
+                                _isPopularCooking ? l.bookChef : l.addToCart,
                                 style: TextStyles.button.copyWith(
                                   fontSize: FontSizes.bodySmall,
                                 ),

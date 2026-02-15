@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/design_system.dart';
 import '../routing/route_names.dart';
+import '../localization/app_localizations.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -42,6 +43,7 @@ class AppBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final currentRoute = GoRouterState.of(context).uri.path;
     final selectedIndex = _getIndexForRoute(currentRoute);
 
@@ -53,26 +55,26 @@ class AppBottomNavigationBar extends StatelessWidget {
       unselectedItemColor: AppColors.textTertiary,
       selectedLabelStyle: TextStyles.labelMedium,
       unselectedLabelStyle: TextStyles.labelSmall,
-      items: const [
+      items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'اكتشف',
+          icon: const Icon(Icons.home),
+          label: l10n.discover,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart),
-          label: 'Cart',
+          icon: const Icon(Icons.shopping_cart),
+          label: l10n.cart,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.receipt),
-          label: 'Orders',
+          icon: const Icon(Icons.receipt),
+          label: l10n.orders,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.payment),
-          label: 'Payment',
+          icon: const Icon(Icons.payment),
+          label: l10n.payment,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
+          icon: const Icon(Icons.person),
+          label: l10n.profile,
         ),
       ],
     );

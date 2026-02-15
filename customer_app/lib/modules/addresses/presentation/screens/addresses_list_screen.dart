@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
@@ -30,13 +31,14 @@ class _AddressesListScreenState extends ConsumerState<AddressesListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final addressState = ref.watch(addressNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'My Addresses',
+          l.myAddresses,
           style: TextStyles.titleLarge,
         ),
         actions: [
@@ -45,7 +47,7 @@ class _AddressesListScreenState extends ConsumerState<AddressesListScreen> {
             onPressed: () {
               context.push(RouteNames.selectAddressMap);
             },
-            tooltip: 'Add new address',
+            tooltip: l.addNewAddress,
           ),
         ],
       ),
@@ -57,9 +59,9 @@ class _AddressesListScreenState extends ConsumerState<AddressesListScreen> {
           if (addresses.isEmpty) {
             return EmptyState(
               icon: Icons.location_on_outlined,
-              title: 'No addresses saved',
-              message: 'Add your first delivery address',
-              actionText: 'Add Address',
+              title: l.noAddressesSaved,
+              message: l.addFirstAddress,
+              actionText: l.addAddress,
               onAction: () {
                 context.push(RouteNames.selectAddressMap);
               },
@@ -92,18 +94,18 @@ class _AddressesListScreenState extends ConsumerState<AddressesListScreen> {
                       context: context,
                       builder: (context) => AlertDialog(
                         title: Text(
-                          'Delete Address',
+                          l.deleteAddress,
                           style: TextStyles.titleMedium,
                         ),
                         content: Text(
-                          'Are you sure you want to delete this address?',
+                          l.deleteAddressConfirm,
                           style: TextStyles.bodyMedium,
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(false),
                             child: Text(
-                              'Cancel',
+                              l.cancel,
                               style: TextStyles.button.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -112,7 +114,7 @@ class _AddressesListScreenState extends ConsumerState<AddressesListScreen> {
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(true),
                             child: Text(
-                              'Delete',
+                              l.delete,
                               style: TextStyles.button.copyWith(
                                 color: SemanticColors.error,
                               ),
@@ -128,7 +130,7 @@ class _AddressesListScreenState extends ConsumerState<AddressesListScreen> {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Address deleted successfully'),
+                              content: Text(l.addressDeletedSuccess),
                               backgroundColor: SemanticColors.success,
                             ),
                           );
@@ -137,7 +139,7 @@ class _AddressesListScreenState extends ConsumerState<AddressesListScreen> {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Failed to delete address: ${e.toString()}'),
+                              content: Text('${l.deleteAddressFailed}: ${e.toString()}'),
                               backgroundColor: SemanticColors.error,
                             ),
                           );
@@ -153,7 +155,7 @@ class _AddressesListScreenState extends ConsumerState<AddressesListScreen> {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Default address updated'),
+                                  content: Text(l.defaultAddressUpdated),
                                   backgroundColor: SemanticColors.success,
                                 ),
                               );
@@ -162,7 +164,7 @@ class _AddressesListScreenState extends ConsumerState<AddressesListScreen> {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Failed to set default address: ${e.toString()}'),
+                                  content: Text('${l.setDefaultAddressFailed}: ${e.toString()}'),
                                   backgroundColor: SemanticColors.error,
                                 ),
                               );
@@ -186,7 +188,7 @@ class _AddressesListScreenState extends ConsumerState<AddressesListScreen> {
           context.push(RouteNames.selectAddressMap);
         },
         icon: Icon(Icons.add),
-        label: Text('Add Address'),
+        label: Text(l.addAddress),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textOnPrimary,
       ),
