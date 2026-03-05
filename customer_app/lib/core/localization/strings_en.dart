@@ -45,7 +45,6 @@ class StringsEn {
   static const String whenDoYouWantOrder = 'When do you want your order?';
   static const String readyNow = 'Ready now';
   static const String scheduledFor = 'At a specific time';
-  static const String selectTime = 'Select time';
   static const String continueToPayment = 'Continue to payment';
 
   // Orders

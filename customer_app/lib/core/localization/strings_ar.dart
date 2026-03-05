@@ -45,7 +45,6 @@ class StringsAr {
   static const String whenDoYouWantOrder = 'متى تريد الطلب؟';
   static const String readyNow = 'جاهز الآن';
   static const String scheduledFor = 'في وقت محدد';
-  static const String selectTime = 'اختر الوقت';
   static const String continueToPayment = 'متابعة للدفع';
 
   // الطلبات

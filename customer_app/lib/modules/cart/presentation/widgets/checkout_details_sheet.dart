@@ -22,6 +22,9 @@ class CheckoutDetailsSheet extends StatefulWidget {
     required this.onContinue,
   });
 
+  @override
+  State<CheckoutDetailsSheet> createState() => _CheckoutDetailsSheetState();
+
   static Future<void> show(
     BuildContext context, {
     required Address? defaultAddress,

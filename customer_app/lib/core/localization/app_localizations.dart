@@ -84,7 +84,6 @@ class AppLocalizations {
   String get readyNow => isAr ? StringsAr.readyNow : StringsEn.readyNow;
   String get scheduledFor =>
       isAr ? StringsAr.scheduledFor : StringsEn.scheduledFor;
-  String get selectTime => isAr ? StringsAr.selectTime : StringsEn.selectTime;
   String get continueToPayment =>
       isAr ? StringsAr.continueToPayment : StringsEn.continueToPayment;
 
