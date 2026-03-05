@@ -23,6 +23,7 @@ class AppLocalizations {
   bool get isEn => locale.languageCode == 'en';
 
   String get appTitle => isAr ? StringsAr.appTitle : StringsEn.appTitle;
+  String get splashTagline => isAr ? StringsAr.splashTagline : StringsEn.splashTagline;
   String get dashboard => isAr ? StringsAr.dashboard : StringsEn.dashboard;
   String get orders => isAr ? StringsAr.orders : StringsEn.orders;
   String get menu => isAr ? StringsAr.menu : StringsEn.menu;

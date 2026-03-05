@@ -82,7 +82,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Gaps.xlV,
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(80),
+                    child: Image.asset(
+                      'assets/images/logo.jpeg',
+                      width: 180,
+                      height: 180,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Icon(
+                        Icons.restaurant,
+                        size: 180,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ),
+                Gaps.lgV,
                 Text(
                   'تسجيل مقدم خدمة جديد',
                   style: TextStyles.headlineMedium.copyWith(

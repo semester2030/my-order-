@@ -11,6 +11,8 @@ class OrderDto {
     required this.createdAt,
     this.items = const [],
     this.notes,
+    this.requestedReadyAt,
+    this.orderType,
   });
 
   final String id;
@@ -21,6 +23,8 @@ class OrderDto {
   final String createdAt;
   final List<OrderItemDto> items;
   final String? notes;
+  final String? requestedReadyAt;
+  final String? orderType;
 
   factory OrderDto.fromJson(Map<String, dynamic> json) {
     final itemsRaw = json['items'];
@@ -39,6 +43,8 @@ class OrderDto {
       createdAt: _toString(json['createdAt']),
       items: itemsList,
       notes: json['notes'] as String?,
+      requestedReadyAt: json['requestedReadyAt'] as String?,
+      orderType: json['orderType'] as String?,
     );
   }
 
@@ -66,6 +72,8 @@ class OrderDto {
       'createdAt': createdAt,
       'items': items.map((e) => e.toJson()).toList(),
       'notes': notes,
+      'requestedReadyAt': requestedReadyAt,
+      'orderType': orderType,
     };
   }
 }

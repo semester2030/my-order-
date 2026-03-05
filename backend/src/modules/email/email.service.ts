@@ -20,7 +20,7 @@ export class EmailService {
     }
     this.from =
       this.configService.get<string>('RESEND_FROM') ??
-      'My Order <onboarding@resend.dev>';
+      'مطبخ البيت <onboarding@resend.dev>';
   }
 
   isConfigured(): boolean {
@@ -34,7 +34,7 @@ export class EmailService {
     }
 
     try {
-      const subject = 'رمز التحقق - My Order';
+      const subject = 'رمز التحقق - مطبخ البيت';
       const html = `
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">

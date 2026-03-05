@@ -57,7 +57,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
-      title: 'My Order',
+      title: locale.languageCode == 'ar' ? 'مطبخ البيت' : 'Home Kitchen',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: DarkTheme.darkTheme,

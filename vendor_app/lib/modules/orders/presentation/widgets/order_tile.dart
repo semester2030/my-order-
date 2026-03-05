@@ -7,6 +7,12 @@ import 'package:vendor_app/core/utils/formatters.dart';
 import 'package:vendor_app/modules/orders/domain/entities/order.dart';
 import 'package:vendor_app/modules/orders/presentation/widgets/order_status_chip.dart';
 
+String _formatRequestedTime(String iso) {
+  final dt = DateTime.tryParse(iso);
+  if (dt == null) return iso;
+  return 'مطلوب الساعة ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+}
+
 /// عنصر قائمة طلب — ثيم موحد (Phase 9).
 class OrderTile extends StatelessWidget {
   const OrderTile({
@@ -54,6 +60,17 @@ class OrderTile extends StatelessWidget {
                         color: AppColors.textTertiary,
                       ),
                     ),
+                    if (order.requestedReadyAt != null &&
+                        order.requestedReadyAt!.isNotEmpty) ...[
+                      Gaps.xsV,
+                      Text(
+                        _formatRequestedTime(order.requestedReadyAt!),
+                        style: TextStyles.bodySmall.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

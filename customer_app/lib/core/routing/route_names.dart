@@ -32,6 +32,8 @@ class RouteNames {
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String editProfile = '/edit-profile';
+  static const String privacyPolicy = '/privacy-policy';
+  static const String terms = '/terms';
 
   // Search
   static const String search = '/search';

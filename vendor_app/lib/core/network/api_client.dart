@@ -5,10 +5,11 @@ import 'interceptors/auth_interceptor.dart';
 import 'interceptors/error_interceptor.dart';
 import 'interceptors/logging_interceptor.dart';
 import 'interceptors/refresh_interceptor.dart';
+import 'interceptors/retry_interceptor.dart';
 import '../storage/secure_storage.dart';
 import '../config/env.dart';
 
-/// عميل HTTP مبني على Dio — Phase 7؛ Phase 17: + refresh عند 401.
+/// عميل HTTP مبني على Dio — Phase 7؛ Phase 17: + refresh عند 401؛ + Retry لاستقرار الاتصال مع Render.
 Dio createApiClient(SecureStorage secureStorage) {
   final dio = Dio(
     BaseOptions(
@@ -27,6 +28,7 @@ Dio createApiClient(SecureStorage secureStorage) {
     ErrorInterceptor(),
     RefreshInterceptor(dio, secureStorage),
     if (Env.isDebug) LoggingInterceptor(),
+    RetryInterceptor(maxRetries: 3, retryDelay: const Duration(seconds: 2)),
   ]);
   return dio;
 }

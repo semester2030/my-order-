@@ -3,7 +3,7 @@ export type Lang = 'ar' | 'en'
 export const translations = {
   ar: {
     // عام
-    appName: 'لوحة مقدم الخدمة',
+    appName: 'شيف مطبخ البيت',
     logout: 'تسجيل الخروج',
     search: 'بحث الطلبات والمنيو...',
     vendor: 'مقدم الخدمة',
@@ -230,7 +230,7 @@ export const translations = {
     english: 'English',
   },
   en: {
-    appName: 'Vendor Dashboard',
+    appName: 'Home Kitchen Chef',
     logout: 'Logout',
     search: 'Search orders, menu items...',
     vendor: 'Vendor',

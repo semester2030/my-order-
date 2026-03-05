@@ -2,7 +2,8 @@
 class StringsAr {
   StringsAr._();
 
-  static const String appTitle = 'Vendor App';
+  static const String appTitle = 'شيف مطبخ البيت';
+  static const String splashTagline = 'تطبيق الطباخ ومقدم الخدمة';
   static const String dashboard = 'لوحة التحكم';
   static const String orders = 'الطلبات';
   static const String menu = 'الوجبات';

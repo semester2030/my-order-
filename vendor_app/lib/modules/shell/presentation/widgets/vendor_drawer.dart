@@ -40,12 +40,33 @@ class VendorDrawer extends ConsumerWidget {
           children: [
             Padding(
               padding: EdgeInsets.all(Insets.lg),
-              child: Text(
-                'Vendor App',
-                style: TextStyles.headlineSmall.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(28),
+                    child: Image.asset(
+                      'assets/images/logo.jpeg',
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Icon(
+                        Icons.restaurant,
+                        size: 56,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: Insets.md),
+                  Expanded(
+                    child: Text(
+                      l10n.appTitle,
+                      style: TextStyles.headlineSmall.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Divider(height: 1, color: AppColors.divider),

@@ -2,7 +2,8 @@
 class StringsEn {
   StringsEn._();
 
-  static const String appTitle = 'Vendor App';
+  static const String appTitle = 'Home Kitchen Chef';
+  static const String splashTagline = 'Chef & Service Provider App';
   static const String dashboard = 'Dashboard';
   static const String orders = 'Orders';
   static const String menu = 'Menu';

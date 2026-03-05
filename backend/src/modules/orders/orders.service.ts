@@ -59,7 +59,7 @@ export class OrdersService {
    * Create order from cart
    */
   async createOrder(userId: string, dto: CreateOrderDto) {
-    const { addressId, notes } = dto;
+    const { addressId, notes, requestedReadyAt, orderType } = dto;
 
     // Get user cart
     const cart = await this.cartRepository.findOne({
@@ -88,6 +88,19 @@ export class OrdersService {
       throw new BadRequestException('Address is not active');
     }
 
+    let requestedReadyAtDate: Date | null = null;
+    if (orderType === 'scheduled' && requestedReadyAt) {
+      requestedReadyAtDate = new Date(requestedReadyAt);
+      if (isNaN(requestedReadyAtDate.getTime())) {
+        throw new BadRequestException('Invalid requestedReadyAt format');
+      }
+      if (requestedReadyAtDate <= new Date()) {
+        throw new BadRequestException('Requested time must be in the future');
+      }
+    } else if (orderType === 'scheduled' && !requestedReadyAt) {
+      throw new BadRequestException('requestedReadyAt is required for scheduled orders');
+    }
+
     // Generate order number
     const orderNumber = await this.generateOrderNumber();
 
@@ -102,6 +115,8 @@ export class OrdersService {
       deliveryFee: cart.deliveryFee,
       total: cart.total,
       estimatedDeliveryTime: this.calculateETA(),
+      requestedReadyAt: requestedReadyAtDate ?? null,
+      orderType: orderType ?? 'ready_now',
     });
 
     const savedOrder = await this.orderRepository.save(order);
@@ -163,6 +178,8 @@ export class OrdersService {
       deliveryFee: parseFloat(order.deliveryFee.toString()),
       total: parseFloat(order.total.toString()),
       estimatedDeliveryTime: order.estimatedDeliveryTime,
+      requestedReadyAt: order.requestedReadyAt ?? undefined,
+      orderType: order.orderType ?? undefined,
       createdAt: order.createdAt,
     }));
   }
@@ -221,6 +238,8 @@ export class OrdersService {
       deliveryFee: parseFloat(order.deliveryFee.toString()),
       total: parseFloat(order.total.toString()),
       estimatedDeliveryTime: order.estimatedDeliveryTime,
+      requestedReadyAt: order.requestedReadyAt ?? undefined,
+      orderType: order.orderType ?? undefined,
       deliveredAt: order.deliveredAt,
       driverId: order.driverId,
       driverPhone: order.driver?.phoneNumber ?? null,

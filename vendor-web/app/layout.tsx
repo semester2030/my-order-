@@ -3,7 +3,7 @@ import './globals.css'
 import { Providers } from './providers'
 
 export const metadata: Metadata = {
-  title: 'لوحة مقدم الخدمة - My Order',
+  title: 'شيف مطبخ البيت - لوحة الويب',
   description: 'إدارة الطلبات والقائمة والتحليلات',
 }
 

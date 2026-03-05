@@ -22,14 +22,14 @@ class WelcomeScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: AppColors.textInverse,
-                    borderRadius: AppRadius.fullAll,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(110),
+                  child: Image.asset(
+                    'assets/images/icons/logo.jpeg',
+                    width: 220,
+                    height: 220,
+                    fit: BoxFit.cover,
                   ),
-                  child: const Icon(Icons.restaurant, size: 70, color: AppColors.primary),
                 ),
                 Gaps.xlV,
                 Text(

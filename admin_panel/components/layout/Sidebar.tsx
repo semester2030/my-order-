@@ -66,7 +66,7 @@ export function Sidebar() {
           <LayoutDashboard className="h-5 w-5" />
         </div>
         <span className="text-base font-bold tracking-tight text-white">
-          لوحة الإدارة
+          مطبخ البيت — لوحة الإدارة
         </span>
       </div>
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">

@@ -9,8 +9,8 @@ import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/feed_item.dart';
 
 /// أزرار على يمين الفيديو (نمط تيك توك).
-/// — وجبات جاهزة: فقط لمقدمي home_cooking / grilling (وجبات جاهزة للتوصيل).
-/// — طبخ شعبي: "عرض الطباخ" + "احجز الطباخ" (الطباخ يأتي عند العميل — لا وجبات جاهزة).
+/// — الطبخ المنزلي: وجبات جاهزة فقط (أضف للسلة) — لا يطلب الطباخ، يطلب الوجبة فقط.
+/// — الطبخ الشعبي + الشوي: "احجز الطباخ" — الطباخ يأتي عند العميل.
 class FeedVideoSideActions extends StatelessWidget {
   final FeedItem item;
   /// إن كانت الخدمة غير متاحة يظهر الزر معطّلاً مع توضيح.
@@ -24,6 +24,14 @@ class FeedVideoSideActions extends StatelessWidget {
 
   bool get _isPopularCooking =>
       item.vendor.providerCategory == ProviderCategories.popularCooking;
+
+  /// الطباخ يُطلب فقط في الطبخ الشعبي والشوي — لا في الطبخ المنزلي.
+  bool get _showRequestChefButton {
+    final cat = item.vendor.providerCategory;
+    return cat == ProviderCategories.popularCooking ||
+        cat == ProviderCategories.grilling ||
+        cat == ProviderCategories.privateEvents;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,20 +51,22 @@ class FeedVideoSideActions extends StatelessWidget {
               );
             },
           ),
-          Gaps.mdV,
-          _SideActionButton(
-            icon: Icons.restaurant_menu,
-            label: _getRequestLabel(l),
-            onTap: acceptsCustomRequests
-                ? () {
-                    final uri = item.vendor.isPopularCooking
-                        ? '${RouteNames.requestChef}/${item.vendor.id}?category=popular_cooking'
-                        : '${RouteNames.requestChef}/${item.vendor.id}';
-                    context.push(uri);
-                  }
-                : null,
-            disabledTooltip: l.unavailableNow,
-          ),
+          if (_showRequestChefButton) ...[
+            Gaps.mdV,
+            _SideActionButton(
+              icon: Icons.restaurant_menu,
+              label: _getRequestLabel(l),
+              onTap: acceptsCustomRequests
+                  ? () {
+                      final uri = item.vendor.isPopularCooking
+                          ? '${RouteNames.requestChef}/${item.vendor.id}?category=popular_cooking'
+                          : '${RouteNames.requestChef}/${item.vendor.id}';
+                      context.push(uri);
+                    }
+                  : null,
+              disabledTooltip: l.unavailableNow,
+            ),
+          ],
         ],
       ),
     );
@@ -64,6 +74,9 @@ class FeedVideoSideActions extends StatelessWidget {
 
   String _getRequestLabel(AppLocalizations l) {
     if (item.vendor.isPopularCooking) return l.bookChef;
+    if (item.vendor.providerCategory == ProviderCategories.grilling) {
+      return l.bookChef;
+    }
     if (item.vendor.providerCategory == ProviderCategories.privateEvents) {
       return l.requestEvent;
     }

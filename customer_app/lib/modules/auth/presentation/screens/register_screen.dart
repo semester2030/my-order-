@@ -85,7 +85,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Gaps.xxlV,
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(80),
+                    child: Image.asset(
+                      'assets/images/icons/logo.jpeg',
+                      width: 180,
+                      height: 180,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Icon(
+                        Icons.restaurant,
+                        size: 180,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ),
+                Gaps.lgV,
                 Text(l.register, style: TextStyles.displayMedium),
                 Gaps.smV,
                 Text(

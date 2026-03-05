@@ -2,10 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/routing/route_names.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -92,22 +94,14 @@ class SettingsScreen extends ConsumerWidget {
                 icon: Icons.description_outlined,
                 title: l10n.termsConditions,
                 subtitle: l10n.readTerms,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.comingSoon), backgroundColor: AppColors.info),
-                  );
-                },
+                onTap: () => context.push(RouteNames.terms),
               ),
               Gaps.smV,
               _SettingsTile(
                 icon: Icons.privacy_tip_outlined,
                 title: l10n.privacyPolicy,
                 subtitle: l10n.readPrivacy,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.comingSoon), backgroundColor: AppColors.info),
-                  );
-                },
+                onTap: () => context.push(RouteNames.privacyPolicy),
               ),
               Gaps.smV,
               _SettingsTile(

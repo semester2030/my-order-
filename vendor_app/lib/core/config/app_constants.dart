@@ -3,7 +3,7 @@ class AppConstants {
   AppConstants._();
 
   /// Application display name.
-  static const String appName = 'Vendor App';
+  static const String appName = 'شيف مطبخ البيت';
 
   /// Default request timeout in seconds.
   static const int defaultTimeoutSeconds = 30;

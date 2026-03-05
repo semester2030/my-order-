@@ -42,6 +42,11 @@ class StringsEn {
   static const String addToCart = 'Add to Cart';
   static const String addedToCart = 'Added to cart';
   static const String viewCart = 'View Cart';
+  static const String whenDoYouWantOrder = 'When do you want your order?';
+  static const String readyNow = 'Ready now';
+  static const String scheduledFor = 'At a specific time';
+  static const String selectTime = 'Select time';
+  static const String continueToPayment = 'Continue to payment';
 
   // Orders
   static const String noOrdersYet = 'No orders yet';
@@ -96,9 +101,9 @@ class StringsEn {
   static const String registerButton = 'Sign Up';
   static const String haveAccountLogin = 'Have an account? Login';
   static const String welcomeTo = 'Welcome to';
-  static const String appName = 'My Order';
-  static const String premiumFoodDelivery = 'Premium Food Delivery';
-  static const String splashTagline = 'Premium Food Delivery';
+  static const String appName = 'Home Kitchen';
+  static const String premiumFoodDelivery = 'Authentic Home Cooking Delivery';
+  static const String splashTagline = 'Home-made food to your door';
 
   // Validators
   static const String validatorFieldRequired = 'This field is required';
@@ -300,4 +305,80 @@ class StringsEn {
   static const String couldNotStartCall = 'Could not start call';
   static const String driverAssigned = 'Driver Assigned';
   static const String contactYourDriver = 'Contact your driver';
+
+  // === Legal (Privacy Policy & Terms) ===
+  static const String legalLastUpdated = 'Last updated: January 2026';
+
+  // Privacy Policy — applies to customers and service providers
+  static const String privacySection1Title = '1. Data We Collect';
+  static const String privacySection1Body =
+      'We collect data necessary to provide the service. For customers: phone number, email, name, delivery address, and payment data (stored securely via payment processors). For service providers: registration data, kitchen info, images/videos, and meal prices.';
+  static const String privacySection2Title = '2. Use of Data';
+  static const String privacySection2Body =
+      'We use your data to: process orders and connect customers with providers, communicate with you, improve the service, display content (e.g. chef videos), and comply with the law.';
+  static const String privacySection3Title = '3. Data Sharing';
+  static const String privacySection3Body =
+      'We do not sell your data. We share it only with: service providers (for orders) or customers (to fulfill orders), delivery partners if any, and payment processors. We may share aggregated (non-identifying) data for statistical purposes.';
+  static const String privacySection4Title = '4. Security';
+  static const String privacySection4Body =
+      'We protect your data with encrypted connections (HTTPS), secure token storage, and we never store passwords in plain text. We recommend not sharing login credentials with anyone.';
+  static const String privacySection5Title = '5. Your Rights';
+  static const String privacySection5Body =
+      'You may request access, correction, or deletion of your data by contacting us. We may retain some data for legal obligations or dispute resolution.';
+  static const String privacySection6Title = '6. Contact';
+  static const String privacySection6Body =
+      'For privacy inquiries: support@homekitchen.app (or the email specified in the app).';
+
+  // Terms & Conditions — applies to customers and service providers (chefs)
+  static const String termsSection1Title = '1. Acceptance';
+  static const String termsSection1Body =
+      'By using the Home Kitchen app (whether as a customer or as a service provider/chef), you agree to these terms. If you do not agree, please do not use the app.';
+
+  static const String termsSection2Title = '2. Platform & Services Definition';
+  static const String termsSection2Body =
+      'Home Kitchen is an electronic platform connecting: (a) customers seeking home-cooked food, and (b) service providers (home chefs) who produce cooking from their homes or provide cooking services at customers\' locations. We offer: ready meals from chefs, popular cooking (chef comes to cook at your place), private events, and grilling. We are an intermediary only — we do not produce food nor control its content.';
+
+  static const String termsSection3Title = '3. Who These Terms Apply To';
+  static const String termsSection3Body =
+      'These terms apply to: (a) Customers: those who order meals or cooking services through the app. (b) Service Providers: registered home chefs who offer ready meals, on-demand cooking, or event catering. Both parties are bound by these terms.';
+
+  static const String termsSection4Title = '4. Platform Liability';
+  static const String termsSection4Body =
+      'Home Kitchen is an intermediary platform. We do not guarantee food quality or safety — responsibility lies with the service provider. We verify provider registration but do not control food preparation. Any dispute regarding quality or safety is resolved between customer and provider; we assist in mediation when needed.';
+
+  static const String termsSection5Title = '5. Service Provider (Chef) Responsibility';
+  static const String termsSection5Body =
+      'The service provider is responsible for: food safety and quality, compliance with local health regulations, accuracy of displayed information (prices, ingredients, availability), timely order fulfillment, and handling complaints. The provider is assumed to hold any required permits or licenses for their activity.';
+
+  static const String termsSection6Title = '6. Customer Responsibility';
+  static const String termsSection6Body =
+      'The customer is responsible for: accuracy of their data and delivery address, timely payment, receiving the order or welcoming the provider at the agreed place and time, and reporting any issue promptly. Confirmed orders are binding.';
+
+  static const String termsSection7Title = '7. Food Safety & Quality';
+  static const String termsSection7Body =
+      'Food prepared from homes is under the service provider\'s responsibility. We recommend customers check ratings and reviews. In case of allergies or health conditions, the customer is responsible for informing the provider. The platform is not liable for any harm resulting from food consumption.';
+
+  static const String termsSection8Title = '8. Payment & Fees';
+  static const String termsSection8Body =
+      'Displayed prices are final unless otherwise stated. We may deduct fees or commissions from service providers. Payment is made through the methods available in the app. For events or on-demand cooking, a deposit or price agreement may be required before execution.';
+
+  static const String termsSection9Title = '9. Cancellation & Refunds';
+  static const String termsSection9Body =
+      'Cancellation policy depends on the service type and cancellation timing. For ready meals: specified per order. For events and on-demand cooking: agreed with the service provider. Refunds follow platform and provider policy. Repeated unjustified cancellations may result in account suspension.';
+
+  static const String termsSection10Title = '10. Dispute Resolution';
+  static const String termsSection10Body =
+      'In case of dispute between customer and provider, we act as mediator to resolve the conflict. The platform\'s decision is final for platform-related disputes. For legal disputes: these terms are governed by the laws of the Kingdom of Saudi Arabia, and the competent courts are Saudi courts.';
+
+  static const String termsSection11Title = '11. Account Termination';
+  static const String termsSection11Body =
+      'The platform may suspend or terminate any account for violation of these terms, unacceptable behavior, or fraud. Users may request account closure at any time. Upon closure, data necessary for legal obligations is retained per the privacy policy.';
+
+  static const String termsSection12Title = '12. Modifications';
+  static const String termsSection12Body =
+      'We reserve the right to modify these terms. We will notify you of material changes via the app or email. Your continued use of the app after modification constitutes acceptance of the new terms.';
+
+  static const String termsSection13Title = '13. Contact';
+  static const String termsSection13Body =
+      'For inquiries and complaints: support@homekitchen.app (or the email specified in the app). We commit to responding within a reasonable time.';
 }

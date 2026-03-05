@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Vendor App</string>
+	<string>شيف مطبخ البيت</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,6 +45,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- أذونات الكاميرا والمعرض لرفع صور الوجبات والفيديوهات -->
+	<key>NSCameraUsageDescription</key>
+	<string>نحتاج الوصول للكاميرا لالتقاط صور الوجبات ورفع فيديوهات التعريف بمطبخك.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>نحتاج الوصول للمعرض لاختيار صور الوجبات ورفع فيديوهات التعريف بمطبخك.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>نحتاج الإذن لحفظ الصور والفيديوهات في المعرض.</string>
 	<!-- تعطيل Impeller على الجهاز الفعلي قد يمنع تعطل DartInit/شاشة بيضاء -->
 	<key>FLTEnableImpeller</key>
 	<false/>

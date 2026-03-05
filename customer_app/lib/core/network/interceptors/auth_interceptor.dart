@@ -61,6 +61,8 @@ class AuthInterceptor extends Interceptor {
           // Create a new Dio instance to avoid circular dependency
           final dio = Dio(BaseOptions(
             baseUrl: err.requestOptions.baseUrl,
+            connectTimeout: const Duration(seconds: 60),
+            receiveTimeout: const Duration(seconds: 60),
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',

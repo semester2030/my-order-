@@ -14,6 +14,8 @@ class Order with EquatableMixin {
     required this.createdAt,
     this.items = const [],
     this.notes,
+    this.requestedReadyAt,
+    this.orderType,
   });
 
   final String id;
@@ -24,7 +26,9 @@ class Order with EquatableMixin {
   final DateTime createdAt;
   final List<OrderItem> items;
   final String? notes;
+  final String? requestedReadyAt;
+  final String? orderType;
 
   @override
-  List<Object?> get props => [id, customerName, customerPhone, status, totalAmount, createdAt, items, notes];
+  List<Object?> get props => [id, customerName, customerPhone, status, totalAmount, createdAt, items, notes, requestedReadyAt, orderType];
 }

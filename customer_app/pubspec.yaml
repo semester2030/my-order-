@@ -44,8 +44,8 @@ dependencies:
   # Biometrics
   local_auth: ^2.1.6
 
-  # Payments
-  flutter_pay: ^1.0.0
+  # Payments — معطّل مؤقتاً (flutter_pay قديم ويسبب أخطاء Android)
+  # flutter_pay: ^1.0.0
 
   # Utils
   intl: ^0.20.2
@@ -58,6 +58,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.14.4
   
   # Code Generation
   build_runner: ^2.4.7
@@ -75,14 +76,20 @@ flutter:
     - assets/icons/custom_icons/
     - assets/lottie/
 
-  # Fonts commented out - files not available
-  # fonts:
-  #   - family: Montserrat
-  #     fonts:
-  #       - asset: assets/fonts/Montserrat/Montserrat-Regular.ttf
-  #       - asset: assets/fonts/Montserrat/Montserrat-Medium.ttf
-  #         weight: 500
-  #       - asset: assets/fonts/Montserrat/Montserrat-SemiBold.ttf
-  #         weight: 600
-  #       - asset: assets/fonts/Montserrat/Montserrat-Bold.ttf
-  #         weight: 700
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo/Cairo-Regular.ttf
+        - asset: assets/fonts/Cairo/Cairo-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Cairo/Cairo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Cairo/Cairo-Bold.ttf
+          weight: 700
+
+# أيقونة التطبيق — مطبخ البيت
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icons/logo.jpeg"
+  remove_alpha_ios: true

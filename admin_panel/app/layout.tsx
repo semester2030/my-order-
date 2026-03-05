@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Admin Panel — منصة الإدارة',
+  title: 'مطبخ البيت — لوحة الإدارة',
   description: 'موافقات، تشغيل، مراقبة، تحكم، منع تلاعب، وسجلات',
 }
 

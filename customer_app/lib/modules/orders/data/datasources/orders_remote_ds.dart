@@ -5,7 +5,12 @@ import '../../../../core/errors/network_exceptions.dart';
 import '../models/order_dto.dart';
 
 abstract class OrdersRemoteDataSource {
-  Future<OrderDto> createOrder(String addressId, {String? notes});
+  Future<OrderDto> createOrder(
+    String addressId, {
+    String? notes,
+    String? requestedReadyAt,
+    String? orderType,
+  });
   Future<List<OrderDto>> getOrders();
   Future<OrderDto> getOrderDetails(String orderId);
   Future<void> cancelOrder(String orderId);
@@ -17,13 +22,20 @@ class OrdersRemoteDataSourceImpl implements OrdersRemoteDataSource {
   OrdersRemoteDataSourceImpl({required this.apiClient});
 
   @override
-  Future<OrderDto> createOrder(String addressId, {String? notes}) async {
+  Future<OrderDto> createOrder(
+    String addressId, {
+    String? notes,
+    String? requestedReadyAt,
+    String? orderType,
+  }) async {
     try {
       final response = await apiClient.post(
         Endpoints.createOrder,
         data: {
           'addressId': addressId,
           if (notes != null) 'notes': notes,
+          if (requestedReadyAt != null) 'requestedReadyAt': requestedReadyAt,
+          if (orderType != null) 'orderType': orderType,
         },
       );
       return OrderDto.fromJson(response.data as Map<String, dynamic>);

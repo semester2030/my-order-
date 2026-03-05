@@ -179,6 +179,9 @@ export class Vendor {
   @Column({ name: 'provider_category', nullable: true })
   providerCategory: string | null;
 
+  @Column({ name: 'min_preparation_minutes', type: 'int', nullable: true })
+  minPreparationMinutes: number | null;
+
   /** للطبخ الشعبي: خدمات إضافية (جريش، قرصان، ادامات…) — JSON: [{ name, price }] */
   @Column({ name: 'popular_cooking_add_ons', type: 'jsonb', nullable: true })
   popularCookingAddOns: { name: string; price: number }[] | null;

@@ -137,6 +137,13 @@ export class CartService {
     // Get or create cart
     const cart = await this.getOrCreateCart(userId);
 
+    // If cart has no items but vendorId is set (stale/orphaned), reset it
+    const hasItems = cart.items && cart.items.length > 0;
+    if (!hasItems && cart.vendorId) {
+      cart.vendorId = null;
+      await this.cartRepository.save(cart);
+    }
+
     // Single vendor enforcement
     if (cart.vendorId && cart.vendorId !== menuItem.vendorId) {
       throw new ConflictException(
@@ -251,6 +258,12 @@ export class CartService {
     });
 
     await this.calculateCartTotals(cart);
+
+    // Reset vendor when cart becomes empty (fixes "different vendor" error on empty cart)
+    if (!cart.items || cart.items.length === 0) {
+      cart.vendorId = null;
+      await this.cartRepository.save(cart);
+    }
 
     return {
       message: 'Item removed from cart successfully',

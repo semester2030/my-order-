@@ -9,8 +9,18 @@ class OrdersRepositoryImpl implements OrdersRepository {
   OrdersRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Order> createOrder(String addressId, {String? notes}) async {
-    final dto = await remoteDataSource.createOrder(addressId, notes: notes);
+  Future<Order> createOrder(
+    String addressId, {
+    String? notes,
+    String? requestedReadyAt,
+    String? orderType,
+  }) async {
+    final dto = await remoteDataSource.createOrder(
+      addressId,
+      notes: notes,
+      requestedReadyAt: requestedReadyAt,
+      orderType: orderType,
+    );
     return OrdersMapper.mapOrderFromDto(dto);
   }
 

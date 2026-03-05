@@ -87,6 +87,12 @@ class OrdersRemoteDsImpl implements OrdersRemoteDs {
         m['customerPhone'] = user['phoneNumber'] ?? user['phone'];
       }
     }
+    if (m.containsKey('requested_ready_at') && !m.containsKey('requestedReadyAt')) {
+      m['requestedReadyAt'] = m['requested_ready_at'];
+    }
+    if (m.containsKey('order_type') && !m.containsKey('orderType')) {
+      m['orderType'] = m['order_type'];
+    }
     if (m['items'] is List) {
       final items = (m['items'] as List).map<Map<String, dynamic>>((e) {
         if (e is! Map<String, dynamic>) return <String, dynamic>{};

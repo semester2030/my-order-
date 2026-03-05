@@ -30,6 +30,8 @@ class OrdersMapper {
       createdAt: DateTime.tryParse(dto.createdAt) ?? DateTime.now(),
       items: dto.items.map(toOrderItem).toList(),
       notes: dto.notes,
+      requestedReadyAt: dto.requestedReadyAt,
+      orderType: dto.orderType,
     );
   }
 

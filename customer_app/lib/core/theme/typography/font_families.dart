@@ -1,13 +1,9 @@
 /// Font families used in the app
+/// Cairo: خط عربي ممتاز يدعم العربية والإنجليزية
 class FontFamilies {
   FontFamilies._();
 
-  // Primary font - Using system default until Montserrat fonts are added
-  // static const String primary = 'Montserrat';
-  // Using empty string to fallback to system default font
-  static const String primary = ''; // Empty string uses system default font
-  
-  // Fallback fonts
+  static const String primary = 'Cairo';
   static const String fallback = 'Roboto';
   static const String system = 'System';
 }

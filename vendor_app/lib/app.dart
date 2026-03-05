@@ -17,7 +17,7 @@ class VendorApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
-      title: 'Vendor App',
+      title: 'شيف مطبخ البيت',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: DarkTheme.darkTheme,

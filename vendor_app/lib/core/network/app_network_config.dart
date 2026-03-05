@@ -12,6 +12,6 @@ class AppNetworkConfig {
   /// مهلة استقبال البيانات (ميلي ثانية).
   static const int receiveTimeoutMs = 60000;
 
-  /// مهلة الإرسال (ميلي ثانية).
-  static const int sendTimeoutMs = 30000;
+  /// مهلة الإرسال (ميلي ثانية). 60s لاستيعاب Render cold start.
+  static const int sendTimeoutMs = 60000;
 }

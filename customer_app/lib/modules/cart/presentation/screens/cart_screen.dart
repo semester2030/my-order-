@@ -12,6 +12,7 @@ import '../providers/cart_notifier.dart';
 import '../widgets/cart_item_row.dart';
 import '../widgets/cart_summary.dart';
 import '../widgets/checkout_button.dart';
+import '../widgets/checkout_details_sheet.dart';
 import '../../../../core/di/providers.dart';
 
 class CartScreen extends ConsumerStatefulWidget {
@@ -33,7 +34,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
   Future<void> _handleCheckout() async {
     if (!mounted) return;
-    
+
     final cartState = ref.read(cartNotifierProvider);
     await cartState.when(
       initial: () async {},
@@ -51,49 +52,48 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           return;
         }
 
-        // Create order from cart
-        try {
-          final ordersRepo = ref.read(ordersRepositoryProvider);
-          final addressesRepo = ref.read(addressesRepositoryProvider);
-          
-          // Get default address
-          final defaultAddress = await addressesRepo.getDefaultAddress();
-          if (defaultAddress == null) {
-            if (!mounted) return;
-            final l10n = AppLocalizations.of(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.selectAddressFirst),
-                backgroundColor: SemanticColors.error,
-                action: SnackBarAction(
-                  label: l10n.selectAddress,
-                  onPressed: () {
-                    context.push(RouteNames.selectAddressMap);
-                  },
+        final addressesRepo = ref.read(addressesRepositoryProvider);
+        final defaultAddress = await addressesRepo.getDefaultAddress();
+
+        if (!mounted) return;
+        await CheckoutDetailsSheet.show(
+          context,
+          defaultAddress: defaultAddress,
+          onSelectAddress: () {
+            Navigator.of(context).pop();
+            context.push(RouteNames.selectAddressMap);
+          },
+          onContinue: ({
+            required String addressId,
+            String? notes,
+            String? requestedReadyAt,
+            String? orderType,
+          }) async {
+            try {
+              final ordersRepo = ref.read(ordersRepositoryProvider);
+              final order = await ordersRepo.createOrder(
+                addressId,
+                notes: notes,
+                requestedReadyAt: requestedReadyAt,
+                orderType: orderType,
+              );
+              if (!mounted) return;
+              context.push(
+                '${RouteNames.payment}/${order.id}',
+                extra: {'amount': order.total},
+              );
+            } catch (e) {
+              if (!mounted) return;
+              final l10n = AppLocalizations.of(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('${l10n.createOrderFailed}: ${e.toString()}'),
+                  backgroundColor: SemanticColors.error,
                 ),
-              ),
-            );
-            return;
-          }
-          
-          final order = await ordersRepo.createOrder(defaultAddress.id);
-          
-          // Navigate to payment screen
-          if (!mounted) return;
-          context.push(
-            '${RouteNames.payment}/${order.id}',
-            extra: {'amount': order.total},
-          );
-        } catch (e) {
-          if (!mounted) return;
-          final l10n = AppLocalizations.of(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${l10n.createOrderFailed}: ${e.toString()}'),
-              backgroundColor: SemanticColors.error,
-            ),
-          );
-        }
+              );
+            }
+          },
+        );
       },
       error: (_) async {},
     );

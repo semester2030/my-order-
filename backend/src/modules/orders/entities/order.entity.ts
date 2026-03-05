@@ -66,6 +66,12 @@ export class Order {
   @Column({ nullable: true, name: 'estimated_delivery_time' })
   estimatedDeliveryTime: Date;
 
+  @Column({ nullable: true, name: 'requested_ready_at', type: 'timestamptz' })
+  requestedReadyAt: Date | null;
+
+  @Column({ nullable: true, name: 'order_type', default: 'ready_now' })
+  orderType: string | null;
+
   @Column({ nullable: true, name: 'delivered_at' })
   deliveredAt: Date;
 

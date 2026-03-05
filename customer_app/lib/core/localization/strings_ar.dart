@@ -42,6 +42,11 @@ class StringsAr {
   static const String addToCart = 'أضف للسلة';
   static const String addedToCart = 'تمت الإضافة إلى السلة';
   static const String viewCart = 'عرض السلة';
+  static const String whenDoYouWantOrder = 'متى تريد الطلب؟';
+  static const String readyNow = 'جاهز الآن';
+  static const String scheduledFor = 'في وقت محدد';
+  static const String selectTime = 'اختر الوقت';
+  static const String continueToPayment = 'متابعة للدفع';
 
   // الطلبات
   static const String noOrdersYet = 'لا توجد طلبات بعد';
@@ -96,9 +101,9 @@ class StringsAr {
   static const String registerButton = 'تسجيل';
   static const String haveAccountLogin = 'لديك حساب؟ تسجيل الدخول';
   static const String welcomeTo = 'مرحباً بك في';
-  static const String appName = 'My Order';
-  static const String premiumFoodDelivery = 'توصيل طعام مميز';
-  static const String splashTagline = 'Premium Food Delivery';
+  static const String appName = 'مطبخ البيت';
+  static const String premiumFoodDelivery = 'توصيل طعام منزلي أصيل';
+  static const String splashTagline = 'طعام منزلي إلى بابك';
 
   // Validators
   static const String validatorFieldRequired = 'هذا الحقل مطلوب';
@@ -299,4 +304,80 @@ class StringsAr {
   static const String couldNotStartCall = 'تعذر بدء المكالمة';
   static const String driverAssigned = 'تم تعيين السائق';
   static const String contactYourDriver = 'تواصل مع السائق';
+
+  // === Legal (سياسة الخصوصية والشروط) ===
+  static const String legalLastUpdated = 'آخر تحديث: يناير 2026';
+
+  // سياسة الخصوصية — تطبق على العملاء ومقدمي الخدمة
+  static const String privacySection1Title = '١. البيانات التي نجمعها';
+  static const String privacySection1Body =
+      'نجمع البيانات اللازمة لتقديم الخدمة. للعملاء: رقم الهاتف، البريد الإلكتروني، الاسم، عنوان التوصيل، وبيانات الدفع (تُخزّن بشكل آمن عبر معالجات الدفع). لمقدمي الخدمة: بيانات التسجيل، معلومات المطبخ، الصور والفيديوهات، وأسعار الوجبات.';
+  static const String privacySection2Title = '٢. استخدام البيانات';
+  static const String privacySection2Body =
+      'نستخدم بياناتك لـ: تنفيذ الطلبات وربط العملاء بمقدمي الخدمة، التواصل معك، تحسين الخدمة، عرض المحتوى (مثل فيديوهات الطباخين)، والامتثال للقانون.';
+  static const String privacySection3Title = '٣. مشاركة البيانات';
+  static const String privacySection3Body =
+      'لا نبيع بياناتك. نشاركها فقط مع: مقدمي الخدمة (للطلبات) أو العملاء (لتنفيذ الطلب)، شركات التوصيل إن وُجدت، ومعالجات الدفع. قد نشارك بيانات مجمعة (بدون تعريف) لأغراض إحصائية.';
+  static const String privacySection4Title = '٤. الأمان';
+  static const String privacySection4Body =
+      'نحمي بياناتك بتشفير الاتصال (HTTPS)، تخزين آمن للتوكنات، ولا نخزن كلمات المرور بصيغة نصية. نوصي بعدم مشاركة بيانات الدخول مع أي شخص.';
+  static const String privacySection5Title = '٥. حقوقك';
+  static const String privacySection5Body =
+      'يمكنك طلب الوصول لبياناتك أو تصحيحها أو حذفها عبر التواصل معنا. قد نحتفظ ببعض البيانات للالتزامات القانونية أو حل النزاعات.';
+  static const String privacySection6Title = '٦. التواصل';
+  static const String privacySection6Body =
+      'لأي استفسار عن الخصوصية: support@homekitchen.app (أو البريد المحدد في التطبيق).';
+
+  // الشروط والأحكام — تطبق على العملاء ومقدمي الخدمة (الطباخين)
+  static const String termsSection1Title = '١. قبول الشروط';
+  static const String termsSection1Body =
+      'باستخدام تطبيق مطبخ البيت (سواء كعميل أو كمقدم خدمة/طباخ)، فإنك توافق على هذه الشروط. إن لم توافق، يرجى عدم استخدام التطبيق.';
+
+  static const String termsSection2Title = '٢. تعريف المنصة والخدمات';
+  static const String termsSection2Body =
+      'مطبخ البيت منصة إلكترونية تربط بين: (أ) العملاء الراغبين في طلب طعام منزلي، و(ب) مقدمي الخدمة (الطباخين المنزليين) الذين ينتجون طبخاً من بيوتهم أو يقدمون خدمات طبخ داخل منازل العملاء. نقدم: وجبات جاهزة من الطباخين، طبخ شعبي (الطباخ يأتي ليطبخ في مكانك)، مناسبات خاصة، وشوي. نحن وسيط فقط — لا ننتج الطعام ولا نتحكم بمحتواه.';
+
+  static const String termsSection3Title = '٣. من يخاطب هذه الشروط';
+  static const String termsSection3Body =
+      'هذه الشروط تخاطب: (أ) العملاء: من يطلبون وجبات أو خدمات طبخ عبر التطبيق. (ب) مقدمي الخدمة: الطباخون المنزليون المسجلون الذين يقدمون وجبات جاهزة أو خدمات طبخ عند الطلب أو للمناسبات. كلا الطرفين ملزمان بهذه الشروط.';
+
+  static const String termsSection4Title = '٤. مسؤولية المنصة';
+  static const String termsSection4Body =
+      'مطبخ البيت منصة وسيطة. لا نضمن جودة الطعام أو سلامته — المسؤولية تقع على مقدم الخدمة. نحن نتحقق من تسجيل مقدمي الخدمة ولا نتحكم بطريقة إعداد الطعام. أي نزاع متعلق بالجودة أو السلامة يُحل بين العميل ومقدم الخدمة، ونحن نساعد في التوسط عند الحاجة.';
+
+  static const String termsSection5Title = '٥. مسؤولية مقدم الخدمة (الطباخ)';
+  static const String termsSection5Body =
+      'مقدم الخدمة مسؤول عن: سلامة وجودة الطعام المُعد، الالتزام بالأنظمة الصحية المحلية، صحة المعلومات المعروضة (الأسعار، المكونات، التوفر)، تنفيذ الطلبات في الوقت المحدد، والتعامل مع الشكاوى. يُفترض أن مقدم الخدمة يملك التصاريح أو التراخيص المطلوبة لمزاولة النشاط إن وجدت.';
+
+  static const String termsSection6Title = '٦. مسؤولية العميل';
+  static const String termsSection6Body =
+      'العميل مسؤول عن: صحة بياناته وعنوان التوصيل، الدفع في الوقت المحدد، استلام الطلب أو استقبال مقدم الخدمة في المكان والوقت المتفق عليه، وإبلاغنا بأي مشكلة فور حدوثها. الطلبات المؤكدة تُعتبر ملزمة.';
+
+  static const String termsSection7Title = '٧. سلامة الطعام والجودة';
+  static const String termsSection7Body =
+      'الطعام المُعد من المنازل يخضع لمسؤولية مقدم الخدمة. نوصي العملاء بالتحقق من التقييمات والمراجعات. في حال وجود حساسية أو ظروف صحية، يتحمل العميل مسؤولية إبلاغ مقدم الخدمة. المنصة لا تتحمل مسؤولية أي ضرر ناتج عن استهلاك الطعام.';
+
+  static const String termsSection8Title = '٨. الدفع والرسوم';
+  static const String termsSection8Body =
+      'الأسعار المعروضة نهائية ما لم يُذكر غير ذلك. قد نخصم رسوماً أو عمولات من مقدمي الخدمة. الدفع يتم عبر الطرق المتاحة في التطبيق. في حال طلبات المناسبات أو الطبخ عند الطلب، قد يُطلب دفعة مقدمة أو اتفاق على السعر قبل التنفيذ.';
+
+  static const String termsSection9Title = '٩. الإلغاء والاسترداد';
+  static const String termsSection9Body =
+      'تخضع سياسة الإلغاء لطبيعة الخدمة ووقت الإلغاء. للوجبات الجاهزة: يُحدد مع كل طلب. للمناسبات والطبخ عند الطلب: يُتفق عليه مع مقدم الخدمة. الاسترداد يتم وفق سياسة المنصة ومقدم الخدمة. الإلغاء المتكرر دون مبرر قد يؤدي لتعليق الحساب.';
+
+  static const String termsSection10Title = '١٠. حل النزاعات';
+  static const String termsSection10Body =
+      'في حال نزاع بين عميل ومقدم خدمة، نعمل كوسيط لتسوية الخلاف. القرار النهائي للمنصة في النزاعات المتعلقة بالمنصة. للنزاعات القانونية: تخضع هذه الشروط لقوانين المملكة العربية السعودية، وتكون المحاكم المختصة فيها هي المحاكم السعودية.';
+
+  static const String termsSection11Title = '١١. إنهاء الحساب';
+  static const String termsSection11Body =
+      'يحق للمنصة تعليق أو إنهاء أي حساب في حال مخالفة هذه الشروط أو السلوك غير المقبول أو الغش. يحق للمستخدم طلب إغلاق حسابه في أي وقت. عند الإغلاق، تبقى البيانات اللازمة للالتزامات القانونية وفق سياسة الخصوصية.';
+
+  static const String termsSection12Title = '١٢. التعديلات';
+  static const String termsSection12Body =
+      'نحتفظ بحق تعديل هذه الشروط. سنُعلمك بالتغييرات الجوهرية عبر التطبيق أو البريد. استمرارك في استخدام التطبيق بعد التعديل يُعتبر موافقة على الشروط الجديدة.';
+
+  static const String termsSection13Title = '١٣. التواصل';
+  static const String termsSection13Body =
+      'للاستفسارات والشكاوى: support@homekitchen.app (أو البريد المحدد في التطبيق). نلتزم بالرد خلال فترة معقولة.';
 }

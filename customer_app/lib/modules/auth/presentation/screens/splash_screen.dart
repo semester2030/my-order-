@@ -29,9 +29,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _checkAuthAndNavigate() async {
     if (_hasNavigated || !mounted) return;
-    await Future.delayed(const Duration(seconds: 2));
-    if (!mounted || _hasNavigated) return;
-
+    // لا انتظار ثابت — التحقق فوراً بعد 500ms من initState
     var authState = ref.read(authNotifierProvider);
     int waitCount = 0;
     bool isResolved = authState.when(
@@ -41,7 +39,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       unauthenticated: () => true,
       error: (_) => true,
     );
-    while (!isResolved && waitCount < 50) {
+    // انتظار حتى 90 ثانية لاستيعاب Render cold start
+    while (!isResolved && waitCount < 900) {
       await Future.delayed(const Duration(milliseconds: 100));
       if (!mounted || _hasNavigated) return;
       authState = ref.read(authNotifierProvider);
@@ -81,14 +80,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: AppColors.textInverse,
-                borderRadius: AppRadius.fullAll,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(110),
+              child: Image.asset(
+                'assets/images/icons/logo.jpeg',
+                width: 220,
+                height: 220,
+                fit: BoxFit.cover,
               ),
-              child: const Icon(Icons.restaurant, size: 60, color: AppColors.primary),
             ),
             Gaps.xlV,
             Text(

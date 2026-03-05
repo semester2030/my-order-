@@ -25,6 +25,7 @@ import '../../../modules/vendors/presentation/screens/request_chef_screen.dart';
 import '../../../modules/profile/presentation/screens/profile_screen.dart';
 import '../../../modules/profile/presentation/screens/edit_name_screen.dart';
 import '../../../modules/profile/presentation/screens/settings_screen.dart';
+import '../../../modules/profile/presentation/screens/legal_content_screen.dart';
 import '../../../modules/addresses/presentation/screens/addresses_list_screen.dart';
 import '../../../modules/payments/presentation/screens/payment_methods_screen.dart';
 import '../../../modules/search/presentation/screens/search_screen.dart';
@@ -291,6 +292,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'settings',
         builder: (context, state) {
           return const SettingsScreen();
+        },
+        redirect: (context, state) async {
+          return await authGuard.redirectIfNotAuthenticated(context, state);
+        },
+      ),
+      GoRoute(
+        path: RouteNames.privacyPolicy,
+        name: 'privacy-policy',
+        builder: (context, state) {
+          return const LegalContentScreen(type: LegalContentType.privacy);
+        },
+        redirect: (context, state) async {
+          return await authGuard.redirectIfNotAuthenticated(context, state);
+        },
+      ),
+      GoRoute(
+        path: RouteNames.terms,
+        name: 'terms',
+        builder: (context, state) {
+          return const LegalContentScreen(type: LegalContentType.terms);
         },
         redirect: (context, state) async {
           return await authGuard.redirectIfNotAuthenticated(context, state);
