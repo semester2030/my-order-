@@ -307,7 +307,7 @@ class _StatusChip extends StatelessWidget {
     Color color;
     switch (status) {
       case 'pending':
-        label = 'قيد الانتظار';
+        label = l10n.eventStatusPending;
         color = SemanticColors.warning;
         break;
       case 'accepted':

@@ -193,11 +193,11 @@ class _EditEventOfferScreenState extends ConsumerState<EditEventOfferScreen> {
                     filled: true,
                     fillColor: AppColors.surface,
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'buffet', child: Text('buffet')),
-                    DropdownMenuItem(value: 'desserts', child: Text('desserts')),
-                    DropdownMenuItem(value: 'drinks', child: Text('drinks')),
-                    DropdownMenuItem(value: 'staff', child: Text('staff')),
+                  items: [
+                    DropdownMenuItem(value: 'buffet', child: Text(l10n.eventOfferBuffet)),
+                    DropdownMenuItem(value: 'desserts', child: Text(l10n.eventOfferDesserts)),
+                    DropdownMenuItem(value: 'drinks', child: Text(l10n.eventOfferDrinks)),
+                    DropdownMenuItem(value: 'staff', child: Text(l10n.eventOfferStaff)),
                   ],
                   onChanged: (v) => setState(() => _serviceType = v ?? 'buffet'),
                 ),
@@ -211,14 +211,12 @@ class _EditEventOfferScreenState extends ConsumerState<EditEventOfferScreen> {
                     filled: true,
                     fillColor: AppColors.surface,
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'wedding', child: Text('wedding')),
-                    DropdownMenuItem(
-                        value: 'graduation', child: Text('graduation')),
-                    DropdownMenuItem(value: 'henna', child: Text('henna')),
-                    DropdownMenuItem(
-                        value: 'engagement', child: Text('engagement')),
-                    DropdownMenuItem(value: 'other', child: Text('other')),
+                  items: [
+                    DropdownMenuItem(value: 'wedding', child: Text(l10n.eventTypeWedding)),
+                    DropdownMenuItem(value: 'graduation', child: Text(l10n.eventTypeGraduation)),
+                    DropdownMenuItem(value: 'henna', child: Text(l10n.eventTypeHenna)),
+                    DropdownMenuItem(value: 'engagement', child: Text(l10n.eventTypeEngagement)),
+                    DropdownMenuItem(value: 'other', child: Text(l10n.eventTypeOther)),
                   ],
                   onChanged: (v) => setState(() => _eventType = v ?? 'wedding'),
                 ),

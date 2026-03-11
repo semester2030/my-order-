@@ -126,6 +126,7 @@ class StringsAr {
   static const String noEventRequests = 'لا توجد طلبات';
   static const String accept = 'قبول';
   static const String reject = 'رفض';
+  static const String eventStatusPending = 'قيد الانتظار';
   static const String eventType = 'نوع المناسبة';
   static const String serviceType = 'نوع الخدمة';
   static const String titleOptional = 'العنوان — اختياري';

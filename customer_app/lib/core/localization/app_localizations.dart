@@ -300,6 +300,8 @@ class AppLocalizations {
       isPopularCooking
           ? (isAr ? StringsAr.notesHintPopular : StringsEn.notesHintPopular)
           : (isAr ? StringsAr.notesHintHome : StringsEn.notesHintHome);
+  String get notesHintHome =>
+      isAr ? StringsAr.notesHintHome : StringsEn.notesHintHome;
   String get selectSlaughterAddressBtn =>
       isAr ? StringsAr.selectSlaughterAddressBtn : StringsEn.selectSlaughterAddressBtn;
   String get sendRequest => isAr ? StringsAr.sendRequest : StringsEn.sendRequest;

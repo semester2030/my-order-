@@ -166,6 +166,7 @@ class AppLocalizations {
   String get noEventRequests => isAr ? StringsAr.noEventRequests : StringsEn.noEventRequests;
   String get accept => isAr ? StringsAr.accept : StringsEn.accept;
   String get reject => isAr ? StringsAr.reject : StringsEn.reject;
+  String get eventStatusPending => isAr ? StringsAr.eventStatusPending : StringsEn.eventStatusPending;
   String get eventType => isAr ? StringsAr.eventType : StringsEn.eventType;
   String get serviceType => isAr ? StringsAr.serviceType : StringsEn.serviceType;
   String get titleOptional => isAr ? StringsAr.titleOptional : StringsEn.titleOptional;

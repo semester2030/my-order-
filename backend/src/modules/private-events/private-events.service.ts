@@ -28,6 +28,11 @@ export class PrivateEventsService {
   }
 
   async createEventOffer(vendorId: string, dto: CreateEventOfferDto): Promise<EventOffer> {
+    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+    if (!vendor) throw new NotFoundException('المقدم غير موجود');
+    if (vendor.providerCategory !== 'private_events') {
+      throw new ForbiddenException('هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط');
+    }
     const offer = this.eventOfferRepository.create({
       vendorId,
       serviceType: dto.serviceType,
@@ -44,6 +49,11 @@ export class PrivateEventsService {
   }
 
   async updateEventOffer(vendorId: string, offerId: string, dto: Partial<CreateEventOfferDto>): Promise<EventOffer> {
+    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+    if (!vendor) throw new NotFoundException('المقدم غير موجود');
+    if (vendor.providerCategory !== 'private_events') {
+      throw new ForbiddenException('هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط');
+    }
     const offer = await this.eventOfferRepository.findOne({ where: { id: offerId, vendorId } });
     if (!offer) throw new NotFoundException('العرض غير موجود');
     if (dto.serviceType != null) offer.serviceType = dto.serviceType;
@@ -59,11 +69,21 @@ export class PrivateEventsService {
   }
 
   async deleteEventOffer(vendorId: string, offerId: string): Promise<void> {
+    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+    if (!vendor) throw new NotFoundException('المقدم غير موجود');
+    if (vendor.providerCategory !== 'private_events') {
+      throw new ForbiddenException('هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط');
+    }
     const result = await this.eventOfferRepository.delete({ id: offerId, vendorId });
     if (result.affected === 0) throw new NotFoundException('العرض غير موجود');
   }
 
   async getVendorEventOffersForManagement(vendorId: string): Promise<EventOffer[]> {
+    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+    if (!vendor) throw new NotFoundException('المقدم غير موجود');
+    if (vendor.providerCategory !== 'private_events') {
+      throw new ForbiddenException('هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط');
+    }
     return this.eventOfferRepository.find({
       where: { vendorId },
       order: { serviceType: 'ASC', eventType: 'ASC' },

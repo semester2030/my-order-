@@ -126,6 +126,7 @@ class StringsEn {
   static const String noEventRequests = 'No requests';
   static const String accept = 'Accept';
   static const String reject = 'Reject';
+  static const String eventStatusPending = 'Pending';
   static const String eventType = 'Event Type';
   static const String serviceType = 'Service Type';
   static const String titleOptional = 'Title — optional';
