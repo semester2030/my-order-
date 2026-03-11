@@ -12,6 +12,7 @@ abstract class FeedRemoteDataSource {
     String? category,
     String? sortBy,
     String? city,
+    int? maxDistance,
   });
 }
 
@@ -28,6 +29,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     String? category,
     String? sortBy,
     String? city,
+    int? maxDistance,
   }) async {
     try {
       final queryParameters = <String, dynamic>{
@@ -46,6 +48,9 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       }
       if (city != null && city.isNotEmpty) {
         queryParameters['city'] = city;
+      }
+      if (maxDistance != null && maxDistance > 0) {
+        queryParameters['maxDistance'] = maxDistance;
       }
 
       final response = await apiClient.get(

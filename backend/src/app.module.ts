@@ -22,6 +22,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { EventRequestsModule } from './modules/event-requests/event-requests.module';
+import { PrivateEventsModule } from './modules/private-events/private-events.module';
 
 @Module({
   controllers: [AppController],
@@ -54,6 +55,7 @@ import { EventRequestsModule } from './modules/event-requests/event-requests.mod
     NotificationsModule,
     AdminModule,
     EventRequestsModule,
+    PrivateEventsModule,
   ],
 })
 export class AppModule {}

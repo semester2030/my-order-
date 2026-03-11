@@ -44,6 +44,15 @@ class Endpoints {
   static const String videosVendorCount = '/videos/vendor/count';
   static String videosDelete(String videoId) => '/videos/$videoId';
 
+  // المناسبات الخاصة
+  static const String vendorsEventOffers = '/vendors/event-offers';
+  static String vendorEventOfferById(String id) => '/vendors/event-offers/$id';
+  static const String vendorsPrivateEventRequests = '/vendors/private-event-requests';
+  static String vendorPrivateEventRequestAccept(String id) =>
+      '/vendors/private-event-requests/$id/accept';
+  static String vendorPrivateEventRequestReject(String id) =>
+      '/vendors/private-event-requests/$id/reject';
+
   // Health (optional)
   static const String health = '/health';
 }

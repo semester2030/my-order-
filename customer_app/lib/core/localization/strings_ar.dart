@@ -114,16 +114,25 @@ class StringsAr {
   // === Feed ===
   static const String viewChef = 'عرض الطباخ';
   static const String readyMeals = 'وجبات جاهزة';
+  static const String readyMealsTooltip = 'عرض قائمة الوجبات الجاهزة بأسعار ثابتة';
   static const String bookChef = 'احجز الطباخ';
-  static const String requestCooking = 'طلب طباخة';
+  static const String requestCooking = 'اطلب وجبتك المخصصة';
+  static const String requestCookingTooltip = 'اطلب طبخة غير موجودة في القائمة';
   static const String requestEvent = 'طلب مناسبة';
   static const String unavailableNow = 'غير متوفر حالياً';
   static const String signature = 'Signature';
   static const String sortByDistance = 'الأقرب';
   static const String sortByRating = 'التقييم';
   static const String sortByNewest = 'الأحدث';
+  static const String distanceWithin = 'ضمن';
+  static const String allDistances = 'كل المسافات';
+  static String distanceKm(int km) => '$km كم';
+  static const String filters = 'الفلاتر';
+  static const String sortBy = 'الترتيب';
+  static const String maxDistanceKm = 'المسافة (كم)';
   static const String noOffersInCategory = 'لا عروض حالياً في';
   static const String noOffersAvailable = 'لا عروض متاحة حالياً';
+  static String noVendorsWithinKm(int km) => 'لا توجد طباخات ضمن $km كم من موقعك. جرّب زيادة نطاق المسافة.';
   static const String tryAnotherCategory = 'جرّب فئة أخرى أو عد لاحقاً';
   static const String backToCategories = 'العودة للفئات';
   static String addedToCartNamed(String name) => 'تمت إضافة $name إلى السلة';
@@ -139,14 +148,15 @@ class StringsAr {
   static const String selectDateAndTime = 'اختر التاريخ والوقت';
   static const String selectSlaughterAddress = 'اختر عنوان استقبال الذبايح (مكان الطبخ عندك)';
   static const String selectAtLeastOneDish = 'اختر طبقاً واحداً على الأقل مما تتقنه الطباخة';
+  static const String enterOrSelectDish = 'اكتب ما تريد أو اختر من القائمة';
   static const String chefBookedSuccess = 'تم حجز الطباخ. سيتم الرد قريباً.';
   static const String orderSentSuccess = 'تم إرسال الطلب. سيتم الرد من الطباخة قريباً.';
   static const String requestFailed = 'فشل إرسال الطلب';
   static const String servicesOnRequest = 'خدمات عند الطلب';
   static const String popularCookingDesc = 'سيأتي عندك ليطبخ الذبايح في مكانك (المنزل، المزرعة، الاستراحة). حدد العنوان والتاريخ والوقت وعدد الأشخاص.';
-  static const String homeCookingDesc = 'اختر ما تريد من أطباق، ثم حدد التاريخ والوقت وعدد الأشخاص. لا دفع الآن — سيُرد عليك بعرض سعر أو قبول.';
+  static const String homeCookingDesc = 'اطلب ما تريد من مقدم الخدمة — حدد التاريخ والوقت وعدد الأشخاص. لا دفع الآن — سيُرد عليك بعرض سعر أو قبول.';
   static String popularCookingDescWithName(String name) => '$name سيأتي عندك ليطبخ الذبايح في مكانك (المنزل، المزرعة، الاستراحة). حدد العنوان والتاريخ والوقت وعدد الأشخاص.';
-  static String homeCookingDescWithName(String name) => 'اختر ما تريد من أطباق $name، ثم حدد التاريخ والوقت وعدد الأشخاص. لا دفع الآن — سيُرد عليك بعرض سعر أو قبول.';
+  static String homeCookingDescWithName(String name) => 'اطلب ما تريد من $name — حدد التاريخ والوقت وعدد الأشخاص. لا دفع الآن — سيُرد عليك بعرض سعر أو قبول.';
   static const String noAddressAddOne = 'لا يوجد عنوان. أضف عنواناً لاستقبال الذبايح.';
   static const String addAddress = 'إضافة عنوان';
   static const String sideOrdersOptional = 'طلبات جانبية (اختياري)';
@@ -156,6 +166,9 @@ class StringsAr {
   static const String addOnIdamat = 'إدامات';
   static const String whatFromChef = 'ماذا تريد من هذه الطباخة؟';
   static const String selectDishesHint = 'اختر الأطباق المطلوبة (مثلاً: مقلوبة، حلا تمر، مكرونة بشاميل)';
+  static const String whatDoYouWant = 'ماذا تريد؟';
+  static const String whatDoYouWantHint = 'اكتب ما تريد من مقدم الخدمة — مثال: كبسة لحم، إدام، سلطة لـ ٥ أشخاص';
+  static const String enterWhatYouWant = 'اختر من القائمة أو اكتب ما تريد';
   static const String noDishesAvailable = 'لا توجد أطباق متاحة للطلب حالياً من هذه الطباخة.';
   static String dishesSelectedCount(int n) => 'تم اختيار $n طبق/أطباق';
   static const String guestsCount = 'عدد الأشخاص';
@@ -174,6 +187,23 @@ class StringsAr {
   static const String selectSlaughterAddressBtn = 'اختر عنوان استقبال الذبايح';
   static const String sendRequest = 'إرسال الطلب';
   static const String selectOneDishMin = 'اختر طبقاً واحداً على الأقل';
+
+  // === المناسبات الخاصة ===
+  static const String requestPrivateEvent = 'طلب مناسبة';
+  static const String eventTypeLabel = 'نوع المناسبة';
+  static const String eventTypeWedding = 'حفل زواج';
+  static const String eventTypeGraduation = 'حفل تخرج';
+  static const String eventTypeHenna = 'حفل ملكة';
+  static const String eventTypeEngagement = 'خطوبة';
+  static const String eventTypeOther = 'أخرى';
+  static const String servicesNeeded = 'الخدمات المطلوبة';
+  static const String serviceBuffet = 'بوفيه مفتوح';
+  static const String serviceDesserts = 'حلويات';
+  static const String serviceDrinks = 'عصائر ومشروبات';
+  static const String serviceStaff = 'مقدمي خدمة (ندل)';
+  static const String selectEventAddress = 'عنوان المناسبة';
+  static const String privateEventRequestSuccess = 'تم إرسال الطلب. سيتم الرد من مقدم الخدمة قريباً.';
+  static const String selectAtLeastOneService = 'اختر خدمة واحدة على الأقل';
 
   // === Orders ===
   static const String orderStatusPending = 'قيد الانتظار';

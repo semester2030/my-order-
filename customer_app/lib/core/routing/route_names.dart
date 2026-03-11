@@ -41,6 +41,7 @@ class RouteNames {
   // Vendors / Providers (Chef)
   static const String vendorDetails = '/vendor-details';
   static const String requestChef = '/request-chef';
+  static const String requestPrivateEvent = '/request-private-event';
 
   // Payments
   static const String checkout = '/checkout';

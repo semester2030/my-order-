@@ -114,16 +114,25 @@ class StringsEn {
   // === Feed ===
   static const String viewChef = 'View Chef';
   static const String readyMeals = 'Ready Meals';
+  static const String readyMealsTooltip = 'View ready meals with fixed prices';
   static const String bookChef = 'Book Chef';
-  static const String requestCooking = 'Request Cooking';
+  static const String requestCooking = 'Order Your Custom Meal';
+  static const String requestCookingTooltip = 'Request a dish not on the menu';
   static const String requestEvent = 'Request Event';
   static const String unavailableNow = 'Unavailable now';
   static const String signature = 'Signature';
   static const String sortByDistance = 'Nearest';
   static const String sortByRating = 'Rating';
   static const String sortByNewest = 'Newest';
+  static const String distanceWithin = 'Within';
+  static const String allDistances = 'All distances';
+  static String distanceKm(int km) => '$km km';
+  static const String filters = 'Filters';
+  static const String sortBy = 'Sort by';
+  static const String maxDistanceKm = 'Distance (km)';
   static const String noOffersInCategory = 'No offers in';
   static const String noOffersAvailable = 'No offers available';
+  static String noVendorsWithinKm(int km) => 'No vendors within $km km of your location. Try increasing the distance range.';
   static const String tryAnotherCategory = 'Try another category or come back later';
   static const String backToCategories = 'Back to Categories';
   static String addedToCartNamed(String name) => 'Added $name to cart';
@@ -139,14 +148,15 @@ class StringsEn {
   static const String selectDateAndTime = 'Select date and time';
   static const String selectSlaughterAddress = 'Select slaughter reception address (where cooking will take place)';
   static const String selectAtLeastOneDish = 'Select at least one dish this chef prepares';
+  static const String enterOrSelectDish = 'Write what you want or select from the menu';
   static const String chefBookedSuccess = 'Chef booked. You will hear back soon.';
   static const String orderSentSuccess = 'Request sent. The chef will respond soon.';
   static const String requestFailed = 'Failed to send request';
   static const String servicesOnRequest = 'Services on Request';
   static const String popularCookingDesc = 'Will come to your location to cook (home, farm, retreat). Set address, date, time and number of guests.';
-  static const String homeCookingDesc = 'Select dishes you want, then set date, time and number of guests. No payment now — you will receive a quote or acceptance.';
+  static const String homeCookingDesc = 'Order what you want from the provider — set date, time and number of guests. No payment now — you will receive a quote or acceptance.';
   static String popularCookingDescWithName(String name) => '$name will come to your location to cook (home, farm, retreat). Set address, date, time and number of guests.';
-  static String homeCookingDescWithName(String name) => 'Select dishes from $name, then set date, time and number of guests. No payment now — you will receive a quote or acceptance.';
+  static String homeCookingDescWithName(String name) => 'Order what you want from $name — set date, time and number of guests. No payment now — you will receive a quote or acceptance.';
   static const String noAddressAddOne = 'No address. Add an address for slaughter reception.';
   static const String addAddress = 'Add Address';
   static const String sideOrdersOptional = 'Side orders (optional)';
@@ -156,6 +166,9 @@ class StringsEn {
   static const String addOnIdamat = 'Idamat';
   static const String whatFromChef = 'What do you want from this chef?';
   static const String selectDishesHint = 'Select the dishes you want (e.g. maqluba, hala tamr, macarona bechamel)';
+  static const String whatDoYouWant = 'What do you want?';
+  static const String whatDoYouWantHint = 'Write what you want from the provider — e.g.: lamb kabsa, idam, salad for 5 people';
+  static const String enterWhatYouWant = 'Select from menu or write what you want';
   static const String noDishesAvailable = 'No dishes available for order from this chef.';
   static String dishesSelectedCount(int n) => '$n dish(es) selected';
   static const String guestsCount = 'Number of guests';
@@ -174,6 +187,23 @@ class StringsEn {
   static const String selectSlaughterAddressBtn = 'Select slaughter address';
   static const String sendRequest = 'Send Request';
   static const String selectOneDishMin = 'Select at least one dish';
+
+  // === Private Events ===
+  static const String requestPrivateEvent = 'Request Event';
+  static const String eventTypeLabel = 'Event Type';
+  static const String eventTypeWedding = 'Wedding';
+  static const String eventTypeGraduation = 'Graduation';
+  static const String eventTypeHenna = 'Henna';
+  static const String eventTypeEngagement = 'Engagement';
+  static const String eventTypeOther = 'Other';
+  static const String servicesNeeded = 'Services Needed';
+  static const String serviceBuffet = 'Open Buffet';
+  static const String serviceDesserts = 'Desserts';
+  static const String serviceDrinks = 'Drinks & Juices';
+  static const String serviceStaff = 'Service Staff (Waiters)';
+  static const String selectEventAddress = 'Event Address';
+  static const String privateEventRequestSuccess = 'Request sent. The provider will respond soon.';
+  static const String selectAtLeastOneService = 'Select at least one service';
 
   // === Orders ===
   static const String orderStatusPending = 'Pending';

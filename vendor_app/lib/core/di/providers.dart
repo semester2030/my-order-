@@ -71,6 +71,16 @@ import '../../modules/videos/data/datasources/videos_remote_ds.dart';
 import '../../modules/videos/data/datasources/videos_remote_ds_impl.dart';
 import '../../modules/videos/data/repositories/videos_repo_impl.dart';
 import '../../modules/videos/domain/repositories/videos_repo.dart';
+import '../../modules/event_offers/data/datasources/event_offers_remote_ds.dart';
+import '../../modules/event_offers/data/datasources/event_offers_remote_ds_impl.dart';
+import '../../modules/event_offers/data/repositories/event_offers_repo_impl.dart';
+import '../../modules/event_offers/domain/repositories/event_offers_repo.dart';
+import '../../modules/event_offers/presentation/providers/event_offers_notifier.dart';
+import '../../modules/event_offers/presentation/providers/event_offers_state.dart';
+import '../../modules/event_requests/data/datasources/event_requests_remote_ds.dart';
+import '../../modules/event_requests/data/datasources/event_requests_remote_ds_impl.dart';
+import '../../modules/event_requests/presentation/providers/event_requests_notifier.dart';
+import '../../modules/event_requests/presentation/providers/event_requests_state.dart';
 import '../utils/result.dart';
 
 /// Router provider (Phase 7: redirect guard for protected routes).
@@ -305,4 +315,33 @@ final videosRemoteDsProvider = Provider<VideosRemoteDs>((ref) {
 final videosRepoProvider = Provider<VideosRepo>((ref) {
   final ds = ref.watch(videosRemoteDsProvider);
   return VideosRepoImpl(ds);
+});
+
+/// Event offers (المناسبات الخاصة) — للمقدمين private_events.
+final eventOffersRemoteDsProvider = Provider<EventOffersRemoteDs>((ref) {
+  final dio = ref.watch(apiClientProvider);
+  return EventOffersRemoteDsImpl(dio);
+});
+
+final eventOffersRepoProvider = Provider<EventOffersRepo>((ref) {
+  final ds = ref.watch(eventOffersRemoteDsProvider);
+  return EventOffersRepoImpl(ds);
+});
+
+final eventOffersNotifierProvider =
+    StateNotifierProvider<EventOffersNotifier, EventOffersState>((ref) {
+  final repo = ref.watch(eventOffersRepoProvider);
+  return EventOffersNotifier(repo);
+});
+
+/// Event requests (طلبات المناسبات) — للمقدمين private_events.
+final eventRequestsRemoteDsProvider = Provider<EventRequestsRemoteDs>((ref) {
+  final dio = ref.watch(apiClientProvider);
+  return EventRequestsRemoteDsImpl(dio);
+});
+
+final eventRequestsNotifierProvider =
+    StateNotifierProvider<EventRequestsNotifier, EventRequestsState>((ref) {
+  final ds = ref.watch(eventRequestsRemoteDsProvider);
+  return EventRequestsNotifier(ds);
 });

@@ -107,4 +107,31 @@ class StringsAr {
   static const String uploadingImage = 'جاري رفع الصورة...';
   static const String uploadingVideo = 'جاري رفع الفيديو...';
   static const String retry = 'إعادة المحاولة';
+
+  // المناسبات الخاصة
+  static const String eventOffers = 'عروض المناسبات';
+  static const String eventRequests = 'طلبات المناسبات';
+  static const String eventOfferBuffet = 'بوفيه';
+  static const String eventOfferDesserts = 'حلويات';
+  static const String eventOfferDrinks = 'مشروبات';
+  static const String eventOfferStaff = 'طاقم';
+  static const String eventTypeWedding = 'حفل زواج';
+  static const String eventTypeGraduation = 'حفل تخرج';
+  static const String eventTypeHenna = 'حفل ملكة';
+  static const String eventTypeEngagement = 'خطوبة';
+  static const String eventTypeOther = 'أخرى';
+  static const String addEventOffer = 'إضافة عرض';
+  static const String editEventOffer = 'تعديل العرض';
+  static const String noEventOffers = 'لا توجد عروض';
+  static const String noEventRequests = 'لا توجد طلبات';
+  static const String accept = 'قبول';
+  static const String reject = 'رفض';
+  static const String eventType = 'نوع المناسبة';
+  static const String serviceType = 'نوع الخدمة';
+  static const String titleOptional = 'العنوان — اختياري';
+  static const String minGuests = 'الحد الأدنى للضيوف';
+  static const String maxGuests = 'الحد الأقصى للضيوف';
+  static const String pricePerPersonOptional = 'السعر للفرد (ر.س) — اختياري';
+  static const String priceTotalOptional = 'السعر الإجمالي (ر.س) — اختياري';
+  static String guestsCount(int n) => '$n ضيوف';
 }

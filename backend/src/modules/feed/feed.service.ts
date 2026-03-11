@@ -98,7 +98,7 @@ export class FeedService {
    * Get feed items with algorithm
    */
   async getFeed(userId: string, query: GetFeedDto) {
-    const { page = 1, limit = 10, vendorType, category, sortBy = 'distance', city } = query;
+    const { page = 1, limit = 10, vendorType, category, sortBy = 'distance', city, maxDistance } = query;
     const skip = (page - 1) * limit;
 
     console.log('Feed request:', { userId, page, limit, vendorType, category, sortBy, city });
@@ -237,6 +237,13 @@ export class FeedService {
         };
       })
       .filter((item): item is FeedItem => item !== null)
+      .filter((item) => {
+        // فلتر المسافة: إظهار الطباخات ضمن النطاق المحدد فقط
+        if (maxDistance != null && (item.distance ?? Infinity) > maxDistance) {
+          return false;
+        }
+        return true;
+      })
       .sort((a, b) => {
         // Signature items first when applicable
         if (a.menuItem.isSignature !== b.menuItem.isSignature) {

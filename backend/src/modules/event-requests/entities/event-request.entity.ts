@@ -56,9 +56,13 @@ export class EventRequest {
   @Column({ type: 'jsonb', nullable: true, name: 'add_ons' })
   addOns: { name: string; price?: number }[] | null;
 
-  /** للطبخ المنزلي: معرّفات الأطباق المختارة */
+  /** للطبخ المنزلي: معرّفات الأطباق المختارة من القائمة */
   @Column({ type: 'jsonb', nullable: true, name: 'dish_ids' })
   dishIds: string[] | null;
+
+  /** للطبخ المنزلي: أطباق مخصصة بنص حر (مثال: كبسة لحم، إدام، سلطة) */
+  @Column({ type: 'text', nullable: true, name: 'custom_dish_names' })
+  customDishNames: string | null;
 
   /** للطبخ المنزلي: true = توصيل، false = استلام */
   @Column({ default: false, nullable: true })

@@ -26,5 +26,6 @@ abstract class FeedRepository {
     String? category,
     String? sortBy,
     String? city,
+    int? maxDistance,
   });
 }

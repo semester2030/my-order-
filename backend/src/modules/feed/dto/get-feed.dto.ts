@@ -1,9 +1,13 @@
-import { IsOptional, IsInt, Min, Max, IsIn, IsString } from 'class-validator';
+import { IsOptional, IsInt, Min, Max, IsIn, IsString, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export const FEED_SORT_VALUES = ['distance', 'rating', 'newest'] as const;
 export type FeedSortBy = (typeof FEED_SORT_VALUES)[number];
+
+/** مسافات الفلتر (كم) */
+export const FEED_MAX_DISTANCE_VALUES = [5, 10, 15, 25] as const;
+export type FeedMaxDistance = (typeof FEED_MAX_DISTANCE_VALUES)[number];
 
 export class GetFeedDto {
   @ApiPropertyOptional({ example: 1, description: 'Page number', default: 1 })
@@ -42,4 +46,15 @@ export class GetFeedDto {
   @IsOptional()
   @IsString()
   city?: string;
+
+  @ApiPropertyOptional({
+    example: 10,
+    description: 'Maximum distance in km (5, 10, 15, 25). Show only vendors within this radius.',
+    enum: FEED_MAX_DISTANCE_VALUES,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @IsIn(FEED_MAX_DISTANCE_VALUES)
+  maxDistance?: FeedMaxDistance;
 }

@@ -23,6 +23,10 @@ import '../../modules/side_orders/presentation/screens/side_orders_screen.dart';
 import '../../modules/staff/presentation/screens/add_staff_screen.dart';
 import '../../modules/staff/presentation/screens/edit_staff_screen.dart';
 import '../../modules/shell/presentation/screens/shell_screen.dart';
+import '../../modules/event_offers/presentation/screens/event_offers_screen.dart';
+import '../../modules/event_offers/presentation/screens/add_event_offer_screen.dart';
+import '../../modules/event_offers/presentation/screens/edit_event_offer_screen.dart';
+import '../../modules/event_requests/presentation/screens/event_requests_screen.dart';
 
 /// Builds GoRouter for Vendor App (Phase 7: + redirect guards).
 GoRouter createAppRouter(Ref ref) {
@@ -45,7 +49,10 @@ GoRouter createAppRouter(Ref ref) {
           path == RouteNames.analytics ||
           path == RouteNames.videos ||
           path == RouteNames.editProfile ||
-          path == RouteNames.changePassword;
+          path == RouteNames.changePassword ||
+          path == RouteNames.eventOffers ||
+          path.startsWith('${RouteNames.eventOffers}/') ||
+          path == RouteNames.eventRequests;
       if (!isProtected) return null;
       try {
         final secureStorage = ref.read(secureStorageProvider);
@@ -211,6 +218,41 @@ GoRouter createAppRouter(Ref ref) {
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
           child: const VideosScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.eventOffers,
+        name: 'eventOffers',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const EventOffersScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.eventOffersAdd,
+        name: 'eventOffersAdd',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const AddEventOfferScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/event-offers/:id/edit',
+        name: 'eventOfferEdit',
+        pageBuilder: (context, state) {
+          final id = state.pathParameters['id'] ?? '';
+          return MaterialPage<void>(
+            key: state.pageKey,
+            child: EditEventOfferScreen(offerId: id),
+          );
+        },
+      ),
+      GoRoute(
+        path: RouteNames.eventRequests,
+        name: 'eventRequests',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const EventRequestsScreen(),
         ),
       ),
     ],

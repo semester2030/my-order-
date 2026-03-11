@@ -107,4 +107,31 @@ class StringsEn {
   static const String uploadingImage = 'Uploading image...';
   static const String uploadingVideo = 'Uploading video...';
   static const String retry = 'Retry';
+
+  // المناسبات الخاصة
+  static const String eventOffers = 'Event Offers';
+  static const String eventRequests = 'Event Requests';
+  static const String eventOfferBuffet = 'Buffet';
+  static const String eventOfferDesserts = 'Desserts';
+  static const String eventOfferDrinks = 'Drinks';
+  static const String eventOfferStaff = 'Staff';
+  static const String eventTypeWedding = 'Wedding';
+  static const String eventTypeGraduation = 'Graduation';
+  static const String eventTypeHenna = 'Henna';
+  static const String eventTypeEngagement = 'Engagement';
+  static const String eventTypeOther = 'Other';
+  static const String addEventOffer = 'Add Offer';
+  static const String editEventOffer = 'Edit Offer';
+  static const String noEventOffers = 'No offers';
+  static const String noEventRequests = 'No requests';
+  static const String accept = 'Accept';
+  static const String reject = 'Reject';
+  static const String eventType = 'Event Type';
+  static const String serviceType = 'Service Type';
+  static const String titleOptional = 'Title — optional';
+  static const String minGuests = 'Min Guests';
+  static const String maxGuests = 'Max Guests';
+  static const String pricePerPersonOptional = 'Price per person (SAR) — optional';
+  static const String priceTotalOptional = 'Total price (SAR) — optional';
+  static String guestsCount(int n) => '$n guests';
 }

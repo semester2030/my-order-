@@ -17,8 +17,10 @@ export class EventRequestsService {
         throw new BadRequestException('عنوان استقبال الذبايح مطلوب للطبخ الشعبي');
       }
     } else {
-      if (!dto.dishIds?.length) {
-        throw new BadRequestException('اختر طبقاً واحداً على الأقل');
+      const hasDishes = (dto.dishIds?.length ?? 0) > 0;
+      const hasCustomDishes = !!dto.customDishNames?.trim();
+      if (!hasDishes && !hasCustomDishes) {
+        throw new BadRequestException('اكتب ما تريد أو اختر من القائمة');
       }
     }
 
@@ -32,6 +34,7 @@ export class EventRequestsService {
       guestsCount: dto.guestsCount ?? 1,
       addOns: dto.addOns?.length ? dto.addOns : null,
       dishIds: dto.dishIds?.length ? dto.dishIds : null,
+      customDishNames: dto.customDishNames?.trim() || null,
       delivery: dto.requestType === EventRequestType.HOME_COOKING ? dto.delivery ?? false : null,
       notes: dto.notes?.trim() || null,
       status: EventRequestStatus.PENDING,

@@ -24,4 +24,10 @@ class RouteNames {
   static const String videos = '/videos';
   static const String editProfile = '/edit-profile';
   static const String changePassword = '/change-password';
+
+  // المناسبات الخاصة (للمقدمين private_events)
+  static const String eventOffers = '/event-offers';
+  static const String eventOffersAdd = '/event-offers/add';
+  static String eventOfferEdit(String id) => '/event-offers/$id/edit';
+  static const String eventRequests = '/event-requests';
 }

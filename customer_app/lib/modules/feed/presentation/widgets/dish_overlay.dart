@@ -136,7 +136,7 @@ class DishOverlay extends StatelessWidget {
                               fontSize: FontSizes.labelSmall,
                             ),
                           ),
-                          if (item.distance != null) ...[
+                          if (item.distance != null && item.distance! <= 100) ...[
                             Gaps.xsH,
                             Text(
                               '• ${item.distance!.toStringAsFixed(1)} km',

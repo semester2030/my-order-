@@ -22,6 +22,7 @@ import '../../../modules/addresses/presentation/screens/select_address_map_scree
 import '../../../modules/vendors/presentation/screens/vendor_screen.dart';
 import '../../../modules/vendors/presentation/screens/vendor_reviews_screen.dart';
 import '../../../modules/vendors/presentation/screens/request_chef_screen.dart';
+import '../../../modules/vendors/presentation/screens/request_private_event_screen.dart';
 import '../../../modules/profile/presentation/screens/profile_screen.dart';
 import '../../../modules/profile/presentation/screens/edit_name_screen.dart';
 import '../../../modules/profile/presentation/screens/settings_screen.dart';
@@ -248,6 +249,17 @@ final routerProvider = Provider<GoRouter>((ref) {
           final vendorId = state.pathParameters['id'] ?? '';
           final category = state.uri.queryParameters['category'];
           return RequestChefScreen(vendorId: vendorId, feedCategory: category);
+        },
+        redirect: (context, state) async {
+          return await authGuard.redirectIfNotAuthenticated(context, state);
+        },
+      ),
+      GoRoute(
+        path: '${RouteNames.requestPrivateEvent}/:id',
+        name: 'request-private-event',
+        builder: (context, state) {
+          final vendorId = state.pathParameters['id'] ?? '';
+          return RequestPrivateEventScreen(vendorId: vendorId);
         },
         redirect: (context, state) async {
           return await authGuard.redirectIfNotAuthenticated(context, state);

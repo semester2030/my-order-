@@ -10,6 +10,8 @@ abstract class VendorsRemoteDataSource {
   Future<List<MenuItemDto>> getVendorMenu(String vendorId);
   Future<List<MenuItemDto>> getSignatureItems(String vendorId);
   Future<void> createEventRequest(Map<String, dynamic> body);
+  Future<List<Map<String, dynamic>>> getVendorEventOffers(String vendorId);
+  Future<void> createPrivateEventRequest(Map<String, dynamic> body);
 }
 
 class VendorsRemoteDataSourceImpl implements VendorsRemoteDataSource {
@@ -72,6 +74,32 @@ class VendorsRemoteDataSourceImpl implements VendorsRemoteDataSource {
   Future<void> createEventRequest(Map<String, dynamic> body) async {
     try {
       await apiClient.post(Endpoints.createEventRequest, data: body);
+    } on DioException catch (e) {
+      if (e.error is NetworkException) {
+        throw e.error as NetworkException;
+      }
+      throw NetworkException.unknown(message: e.message ?? 'Unknown error');
+    }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getVendorEventOffers(String vendorId) async {
+    try {
+      final response = await apiClient.get(Endpoints.vendorEventOffers(vendorId));
+      final List<dynamic> data = response.data as List<dynamic>;
+      return data.map((e) => e as Map<String, dynamic>).toList();
+    } on DioException catch (e) {
+      if (e.error is NetworkException) {
+        throw e.error as NetworkException;
+      }
+      throw NetworkException.unknown(message: e.message ?? 'Unknown error');
+    }
+  }
+
+  @override
+  Future<void> createPrivateEventRequest(Map<String, dynamic> body) async {
+    try {
+      await apiClient.post(Endpoints.privateEventRequests, data: body);
     } on DioException catch (e) {
       if (e.error is NetworkException) {
         throw e.error as NetworkException;

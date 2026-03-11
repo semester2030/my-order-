@@ -10,6 +10,7 @@ import { Order } from '../orders/entities/order.entity';
 import { MenuItem } from '../menu/entities/menu-item.entity';
 import { UsersModule } from '../users/users.module';
 import { JobsModule } from '../jobs/jobs.module';
+import { PrivateEventsModule } from '../private-events/private-events.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { JobsModule } from '../jobs/jobs.module';
     ]),
     UsersModule,
     forwardRef(() => JobsModule),
+    PrivateEventsModule,
   ],
   controllers: [VendorsController],
   providers: [VendorsService],

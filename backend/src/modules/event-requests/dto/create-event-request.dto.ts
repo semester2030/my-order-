@@ -36,6 +36,11 @@ export class CreateEventRequestDto {
   @IsArray()
   dishIds?: string[];
 
+  /** أطباق مخصصة بنص حر — العميل يكتب ما يريد (كبسة، إدام، سلطة...) */
+  @IsOptional()
+  @IsString()
+  customDishNames?: string;
+
   @IsOptional()
   @IsBoolean()
   delivery?: boolean;

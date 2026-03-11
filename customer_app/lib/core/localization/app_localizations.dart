@@ -177,18 +177,30 @@ class AppLocalizations {
   // Feed
   String get viewChef => isAr ? StringsAr.viewChef : StringsEn.viewChef;
   String get readyMeals => isAr ? StringsAr.readyMeals : StringsEn.readyMeals;
+  String get readyMealsTooltip =>
+      isAr ? StringsAr.readyMealsTooltip : StringsEn.readyMealsTooltip;
   String get bookChef => isAr ? StringsAr.bookChef : StringsEn.bookChef;
   String get requestCooking => isAr ? StringsAr.requestCooking : StringsEn.requestCooking;
+  String get requestCookingTooltip =>
+      isAr ? StringsAr.requestCookingTooltip : StringsEn.requestCookingTooltip;
   String get requestEvent => isAr ? StringsAr.requestEvent : StringsEn.requestEvent;
   String get unavailableNow => isAr ? StringsAr.unavailableNow : StringsEn.unavailableNow;
   String get signature => isAr ? StringsAr.signature : StringsEn.signature;
   String get sortByDistance => isAr ? StringsAr.sortByDistance : StringsEn.sortByDistance;
   String get sortByRating => isAr ? StringsAr.sortByRating : StringsEn.sortByRating;
+  String get distanceWithin => isAr ? StringsAr.distanceWithin : StringsEn.distanceWithin;
+  String get allDistances => isAr ? StringsAr.allDistances : StringsEn.allDistances;
+  String distanceKm(int km) => isAr ? StringsAr.distanceKm(km) : StringsEn.distanceKm(km);
+  String get filters => isAr ? StringsAr.filters : StringsEn.filters;
+  String get sortByLabel => isAr ? StringsAr.sortBy : StringsEn.sortBy;
+  String get maxDistanceKm => isAr ? StringsAr.maxDistanceKm : StringsEn.maxDistanceKm;
   String get sortByNewest => isAr ? StringsAr.sortByNewest : StringsEn.sortByNewest;
   String get noOffersInCategory =>
       isAr ? StringsAr.noOffersInCategory : StringsEn.noOffersInCategory;
   String get noOffersAvailable =>
       isAr ? StringsAr.noOffersAvailable : StringsEn.noOffersAvailable;
+  String noVendorsWithinKm(int km) =>
+      isAr ? StringsAr.noVendorsWithinKm(km) : StringsEn.noVendorsWithinKm(km);
   String get tryAnotherCategory =>
       isAr ? StringsAr.tryAnotherCategory : StringsEn.tryAnotherCategory;
   String get backToCategories =>
@@ -256,6 +268,14 @@ class AppLocalizations {
       isAr ? StringsAr.whatFromChef : StringsEn.whatFromChef;
   String get selectDishesHint =>
       isAr ? StringsAr.selectDishesHint : StringsEn.selectDishesHint;
+  String get whatDoYouWant =>
+      isAr ? StringsAr.whatDoYouWant : StringsEn.whatDoYouWant;
+  String get whatDoYouWantHint =>
+      isAr ? StringsAr.whatDoYouWantHint : StringsEn.whatDoYouWantHint;
+  String get enterWhatYouWant =>
+      isAr ? StringsAr.enterWhatYouWant : StringsEn.enterWhatYouWant;
+  String get enterOrSelectDish =>
+      isAr ? StringsAr.enterOrSelectDish : StringsEn.enterOrSelectDish;
   String get noDishesAvailable =>
       isAr ? StringsAr.noDishesAvailable : StringsEn.noDishesAvailable;
   String dishesSelectedCount(int n) =>
@@ -285,6 +305,36 @@ class AppLocalizations {
   String get sendRequest => isAr ? StringsAr.sendRequest : StringsEn.sendRequest;
   String get selectOneDishMin =>
       isAr ? StringsAr.selectOneDishMin : StringsEn.selectOneDishMin;
+  String get requestPrivateEvent =>
+      isAr ? StringsAr.requestPrivateEvent : StringsEn.requestPrivateEvent;
+  String get eventTypeLabel =>
+      isAr ? StringsAr.eventTypeLabel : StringsEn.eventTypeLabel;
+  String get eventTypeWedding =>
+      isAr ? StringsAr.eventTypeWedding : StringsEn.eventTypeWedding;
+  String get eventTypeGraduation =>
+      isAr ? StringsAr.eventTypeGraduation : StringsEn.eventTypeGraduation;
+  String get eventTypeHenna =>
+      isAr ? StringsAr.eventTypeHenna : StringsEn.eventTypeHenna;
+  String get eventTypeEngagement =>
+      isAr ? StringsAr.eventTypeEngagement : StringsEn.eventTypeEngagement;
+  String get eventTypeOther =>
+      isAr ? StringsAr.eventTypeOther : StringsEn.eventTypeOther;
+  String get servicesNeeded =>
+      isAr ? StringsAr.servicesNeeded : StringsEn.servicesNeeded;
+  String get serviceBuffet =>
+      isAr ? StringsAr.serviceBuffet : StringsEn.serviceBuffet;
+  String get serviceDesserts =>
+      isAr ? StringsAr.serviceDesserts : StringsEn.serviceDesserts;
+  String get serviceDrinks =>
+      isAr ? StringsAr.serviceDrinks : StringsEn.serviceDrinks;
+  String get serviceStaff =>
+      isAr ? StringsAr.serviceStaff : StringsEn.serviceStaff;
+  String get selectEventAddress =>
+      isAr ? StringsAr.selectEventAddress : StringsEn.selectEventAddress;
+  String get privateEventRequestSuccess =>
+      isAr ? StringsAr.privateEventRequestSuccess : StringsEn.privateEventRequestSuccess;
+  String get selectAtLeastOneService =>
+      isAr ? StringsAr.selectAtLeastOneService : StringsEn.selectAtLeastOneService;
 
   // Orders
   String get orderStatusPending =>

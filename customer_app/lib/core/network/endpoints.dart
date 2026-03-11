@@ -72,6 +72,10 @@ class Endpoints {
   static const String eventRequests = '/event-requests';
   static const String createEventRequest = eventRequests;
 
+  // Private Event Requests (المناسبات الخاصة)
+  static const String privateEventRequests = '/private-event-requests';
+  static String vendorEventOffers(String vendorId) => '$vendors/$vendorId/event-offers';
+
   // Videos
   static const String videos = '/videos';
   static const String uploadInit = '$videos/upload/init';

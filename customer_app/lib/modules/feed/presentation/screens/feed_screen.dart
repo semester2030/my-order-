@@ -130,44 +130,179 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     );
   }
 
-  Widget _buildSortBar() {
+  void _openFilterSheet() {
+    final l = AppLocalizations.of(context);
+    final notifier = ref.read(feedNotifierProvider.notifier);
+    final distanceValues = [null, ...kFeedMaxDistanceOptions];
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: AppRadius.topLG,
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            final currentSort = notifier.currentSortBy;
+            final currentMaxDist = notifier.currentMaxDistance;
+            final distIndex = currentMaxDist == null
+                ? 0
+                : (kFeedMaxDistanceOptions.indexOf(currentMaxDist) + 1);
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.all(Insets.lg),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.tune_rounded, color: AppColors.primary, size: 24),
+                        Gaps.smH,
+                        Text(l.filters, style: TextStyles.titleLarge),
+                      ],
+                    ),
+                    Gaps.lgV,
+                    Text(l.sortByLabel, style: TextStyles.labelLarge.copyWith(color: AppColors.textSecondary)),
+                    Gaps.smV,
+                    Row(
+                      children: [
+                        _buildSortChip(setModalState, notifier, l, kFeedSortDistance, l.sortByDistance, Icons.near_me_outlined, currentSort),
+                        Gaps.smH,
+                        _buildSortChip(setModalState, notifier, l, kFeedSortRating, l.sortByRating, Icons.star_border_rounded, currentSort),
+                        Gaps.smH,
+                        _buildSortChip(setModalState, notifier, l, kFeedSortNewest, l.sortByNewest, Icons.schedule_rounded, currentSort),
+                      ],
+                    ),
+                    Gaps.xlV,
+                    Text(l.maxDistanceKm, style: TextStyles.labelLarge.copyWith(color: AppColors.textSecondary)),
+                    Gaps.smV,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton.filled(
+                          onPressed: distIndex > 0
+                              ? () {
+                                  final newVal = distanceValues[distIndex - 1];
+                                  notifier.setMaxDistance(newVal);
+                                  setModalState(() {});
+                                }
+                              : null,
+                          icon: Icon(Icons.remove, color: distIndex > 0 ? AppColors.primary : AppColors.disabled),
+                          style: IconButton.styleFrom(
+                            backgroundColor: AppColors.primaryContainer,
+                            disabledBackgroundColor: AppColors.disabledContainer,
+                          ),
+                        ),
+                        Gaps.mdH,
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: Insets.lg, vertical: Insets.md),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceVariant,
+                            borderRadius: AppRadius.mdAll,
+                          ),
+                          child: Text(
+                            currentMaxDist == null ? l.allDistances : l.distanceKm(currentMaxDist),
+                            style: TextStyles.titleMedium,
+                          ),
+                        ),
+                        Gaps.mdH,
+                        IconButton.filled(
+                          onPressed: distIndex < distanceValues.length - 1
+                              ? () {
+                                  final newVal = distanceValues[distIndex + 1];
+                                  notifier.setMaxDistance(newVal);
+                                  setModalState(() {});
+                                }
+                              : null,
+                          icon: Icon(Icons.add, color: distIndex < distanceValues.length - 1 ? AppColors.primary : AppColors.disabled),
+                          style: IconButton.styleFrom(
+                            backgroundColor: AppColors.primaryContainer,
+                            disabledBackgroundColor: AppColors.disabledContainer,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Gaps.lgV,
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSortChip(
+    void Function(void Function()) setModalState,
+    FeedNotifier notifier,
+    AppLocalizations l,
+    String value,
+    String label,
+    IconData icon,
+    String? currentSort,
+  ) {
+    final isSelected = currentSort == value || (currentSort == null && value == kFeedSortDistance);
+    return Expanded(
+      child: FilterChip(
+        avatar: Icon(icon, size: 18, color: isSelected ? AppColors.primary : AppColors.textSecondary),
+        label: Text(label, style: TextStyles.labelMedium),
+        selected: isSelected,
+        onSelected: (_) {
+          notifier.setSortBy(value);
+          setModalState(() {});
+        },
+        selectedColor: AppColors.primaryContainer,
+        checkmarkColor: AppColors.primary,
+      ),
+    );
+  }
+
+  Widget _buildFilterButton() {
     final l = AppLocalizations.of(context);
     final notifier = ref.read(feedNotifierProvider.notifier);
     final currentSort = notifier.currentSortBy;
-    final sortOptions = [
-      (kFeedSortDistance, l.sortByDistance, Icons.near_me_outlined),
-      (kFeedSortRating, l.sortByRating, Icons.star_border_rounded),
-      (kFeedSortNewest, l.sortByNewest, Icons.schedule_rounded),
-    ];
+    final currentMaxDist = notifier.currentMaxDistance;
+    final hasActiveFilter = currentMaxDist != null;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: Insets.sm, vertical: Insets.xs),
-      child: Row(
-        children: sortOptions.map((opt) {
-          final (value, label, icon) = opt;
-          final isSelected = currentSort == value || (currentSort == null && value == kFeedSortDistance);
-          return Padding(
-            padding: EdgeInsets.only(left: Insets.xs),
-            child: FilterChip(
-              label: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, size: 16, color: isSelected ? AppColors.primary : AppColors.textInverse),
-                  SizedBox(width: Insets.xs),
-                  Text(label, style: TextStyles.labelMedium.copyWith(color: isSelected ? AppColors.primary : AppColors.textInverse)),
-                ],
+      child: InkWell(
+        onTap: _openFilterSheet,
+        borderRadius: AppRadius.fullAll,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: Insets.md, vertical: Insets.sm),
+          decoration: BoxDecoration(
+            color: Colors.black38,
+            borderRadius: AppRadius.fullAll,
+            border: Border.all(color: hasActiveFilter ? AppColors.primary : Colors.white24),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.tune_rounded,
+                size: 20,
+                color: hasActiveFilter ? AppColors.primary : AppColors.textInverse,
               ),
-              selected: isSelected,
-              onSelected: (_) {
-                notifier.setSortBy(value);
-              },
-              backgroundColor: Colors.black38,
-              selectedColor: AppColors.surface,
-              checkmarkColor: AppColors.primary,
-              side: BorderSide(color: isSelected ? AppColors.primary : Colors.white24),
-              padding: EdgeInsets.symmetric(horizontal: Insets.sm, vertical: Insets.xs),
-            ),
-          );
-        }).toList(),
+              Gaps.smV,
+              Text(
+                currentMaxDist != null
+                    ? '${l.sortByDistance} • ${l.distanceKm(currentMaxDist)}'
+                    : (currentSort == kFeedSortRating
+                        ? l.sortByRating
+                        : currentSort == kFeedSortNewest
+                            ? l.sortByNewest
+                            : l.sortByDistance),
+                style: TextStyles.labelMedium.copyWith(
+                  color: hasActiveFilter ? AppColors.primary : AppColors.textInverse,
+                ),
+              ),
+              Gaps.xsH,
+              Icon(Icons.keyboard_arrow_down, size: 20, color: AppColors.textInverse),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -195,9 +330,16 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         loaded: (items, page, hasMore) {
           if (items.isEmpty) {
             final l = AppLocalizations.of(context);
+            final notifier = ref.read(feedNotifierProvider.notifier);
+            final maxDist = notifier.currentMaxDistance;
             final catLabel = widget.category != null
                 ? l.categoryLabel(widget.category!)
                 : null;
+            final emptyTitle = maxDist != null
+                ? l.noVendorsWithinKm(maxDist)
+                : (catLabel != null
+                    ? '${l.noOffersInCategory} $catLabel'
+                    : l.noOffersAvailable);
             return Stack(
               children: [
                 Center(
@@ -206,16 +348,14 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.lunch_dining,
+                        Icon(
+                          maxDist != null ? Icons.location_off_outlined : Icons.lunch_dining,
                           size: 64,
                           color: AppColors.textTertiary,
                         ),
                         Gaps.mdV,
                         Text(
-                          catLabel != null
-                              ? '${l.noOffersInCategory} $catLabel'
-                              : l.noOffersAvailable,
+                          emptyTitle,
                           style: TextStyles.headlineMedium.copyWith(
                             color: AppColors.textTertiary,
                           ),
@@ -223,24 +363,37 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                         ),
                         Gaps.smV,
                         Text(
-                          l.tryAnotherCategory,
+                          maxDist != null ? l.allDistances : l.tryAnotherCategory,
                           style: TextStyles.bodyMedium.copyWith(
                             color: AppColors.textSecondary,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         Gaps.lgV,
-                        FilledButton.icon(
-                          onPressed: () => context.go(RouteNames.categories),
-                          icon: const Icon(Icons.grid_view_rounded, size: 20),
-                          label: Text(l.backToCategories),
-                          style: FilledButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: Insets.lg,
-                              vertical: Insets.sm,
+                        if (maxDist != null)
+                          FilledButton.icon(
+                            onPressed: () => notifier.setMaxDistance(null),
+                            icon: const Icon(Icons.location_on_outlined, size: 20),
+                            label: Text(l.allDistances),
+                            style: FilledButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: Insets.lg,
+                                vertical: Insets.sm,
+                              ),
+                            ),
+                          )
+                        else
+                          FilledButton.icon(
+                            onPressed: () => context.go(RouteNames.categories),
+                            icon: const Icon(Icons.grid_view_rounded, size: 20),
+                            label: Text(l.backToCategories),
+                            style: FilledButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: Insets.lg,
+                                vertical: Insets.sm,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -290,9 +443,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                   children: [
                     if (widget.category != null) _buildCategoryHeader(),
                     if (widget.category == null)
-                      SafeArea(bottom: false, child: _buildSortBar())
+                      SafeArea(bottom: false, child: _buildFilterButton())
                     else
-                      _buildSortBar(),
+                      _buildFilterButton(),
                   ],
                 ),
               ),

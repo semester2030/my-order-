@@ -37,11 +37,16 @@ import { UpdateStaffDto } from './dto/update-staff.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { User } from '../users/entities/user.entity';
 import { OrderStatus } from '../orders/entities/order.entity';
+import { PrivateEventsService } from '../private-events/private-events.service';
+import { CreateEventOfferDto } from '../private-events/dto/create-event-offer.dto';
 
 @ApiTags('vendors')
 @Controller('vendors')
 export class VendorsController {
-  constructor(private readonly vendorsService: VendorsService) {}
+  constructor(
+    private readonly vendorsService: VendorsService,
+    private readonly privateEventsService: PrivateEventsService,
+  ) {}
 
   @Post('register')
   @ApiOperation({ summary: 'Register new vendor' })
@@ -430,6 +435,103 @@ export class VendorsController {
       throw new NotFoundException('Vendor not found for this user');
     }
     await this.vendorsService.removeStaff(vendorId, staffId);
+  }
+
+  // المناسبات الخاصة — عروض المقدم
+  @Get('event-offers')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'عروض المناسبات الخاصة (للمقدم)' })
+  async getMyEventOffers(@Request() req: { user: User }) {
+    const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
+    if (!vendorId) throw new NotFoundException('Vendor not found');
+    return this.privateEventsService.getVendorEventOffersForManagement(vendorId);
+  }
+
+  @Post('event-offers')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'إضافة عرض مناسبة' })
+  @HttpCode(HttpStatus.CREATED)
+  async createEventOffer(
+    @Request() req: { user: User },
+    @Body() dto: CreateEventOfferDto,
+  ) {
+    const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
+    if (!vendorId) throw new NotFoundException('Vendor not found');
+    return this.privateEventsService.createEventOffer(vendorId, dto);
+  }
+
+  @Put('event-offers/:offerId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'تحديث عرض مناسبة' })
+  async updateEventOffer(
+    @Request() req: { user: User },
+    @Param('offerId') offerId: string,
+    @Body() dto: CreateEventOfferDto,
+  ) {
+    const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
+    if (!vendorId) throw new NotFoundException('Vendor not found');
+    return this.privateEventsService.updateEventOffer(vendorId, offerId, dto);
+  }
+
+  @Delete('event-offers/:offerId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'حذف عرض مناسبة' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteEventOffer(
+    @Request() req: { user: User },
+    @Param('offerId') offerId: string,
+  ) {
+    const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
+    if (!vendorId) throw new NotFoundException('Vendor not found');
+    await this.privateEventsService.deleteEventOffer(vendorId, offerId);
+  }
+
+  @Get('private-event-requests')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'طلبات المناسبات الواردة للمقدم' })
+  async getPrivateEventRequests(@Request() req: { user: User }) {
+    const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
+    if (!vendorId) throw new NotFoundException('Vendor not found');
+    return this.privateEventsService.findPrivateEventRequestsByVendor(vendorId);
+  }
+
+  @Post('private-event-requests/:requestId/accept')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'قبول طلب مناسبة' })
+  @HttpCode(HttpStatus.OK)
+  async acceptPrivateEventRequest(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+  ) {
+    const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
+    if (!vendorId) throw new NotFoundException('Vendor not found');
+    return this.privateEventsService.updatePrivateEventRequestStatus(vendorId, requestId, 'accepted');
+  }
+
+  @Post('private-event-requests/:requestId/reject')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'رفض طلب مناسبة' })
+  @HttpCode(HttpStatus.OK)
+  async rejectPrivateEventRequest(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+  ) {
+    const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
+    if (!vendorId) throw new NotFoundException('Vendor not found');
+    return this.privateEventsService.updatePrivateEventRequestStatus(vendorId, requestId, 'rejected');
+  }
+
+  @Get(':id/event-offers')
+  @ApiOperation({ summary: 'عروض المناسبات للمقدم (عام)' })
+  async getVendorEventOffers(@Param('id') id: string) {
+    return this.privateEventsService.getVendorEventOffers(id);
   }
 
   @Get(':id')

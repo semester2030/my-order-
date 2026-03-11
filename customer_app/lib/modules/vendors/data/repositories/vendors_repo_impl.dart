@@ -41,8 +41,35 @@ class VendorsRepositoryImpl implements VendorsRepository {
     };
     if (params.addressId != null) body['addressId'] = params.addressId;
     if (params.dishIds != null && params.dishIds!.isNotEmpty) body['dishIds'] = params.dishIds;
+    if (params.customDishNames != null && params.customDishNames!.trim().isNotEmpty) body['customDishNames'] = params.customDishNames!.trim();
     if (params.delivery != null) body['delivery'] = params.delivery;
     if (params.notes != null && params.notes!.isNotEmpty) body['notes'] = params.notes;
     await remoteDataSource.createEventRequest(body);
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getVendorEventOffers(String vendorId) async {
+    return remoteDataSource.getVendorEventOffers(vendorId);
+  }
+
+  @override
+  Future<void> createPrivateEventRequest(CreatePrivateEventRequestParams params) async {
+    final body = <String, dynamic>{
+      'vendorId': params.vendorId,
+      'eventType': params.eventType,
+      'eventDate': params.eventDate,
+      'eventTime': params.eventTime,
+      'guestsCount': params.guestsCount,
+      'services': params.services
+          .map((s) => {
+                'serviceType': s.serviceType,
+                'guestsCount': s.guestsCount,
+                if (s.notes != null && s.notes!.isNotEmpty) 'notes': s.notes,
+              })
+          .toList(),
+    };
+    if (params.addressId != null) body['addressId'] = params.addressId;
+    if (params.notes != null && params.notes!.isNotEmpty) body['notes'] = params.notes;
+    await remoteDataSource.createPrivateEventRequest(body);
   }
 }

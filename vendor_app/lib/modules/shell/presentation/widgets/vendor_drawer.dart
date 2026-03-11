@@ -29,6 +29,14 @@ class VendorDrawer extends ConsumerWidget {
     return false;
   }
 
+  static bool _showPrivateEvents(WidgetRef ref) {
+    final state = ref.watch(profileNotifierProvider);
+    if (state is ProfileLoaded) {
+      return state.profile.providerCategory == 'private_events';
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -152,6 +160,30 @@ class VendorDrawer extends ConsumerWidget {
                 onTap: () {
                   Navigator.of(context).pop();
                   context.push(RouteNames.sideOrders);
+                },
+              ),
+            ],
+            if (VendorDrawer._showPrivateEvents(ref)) ...[
+              ListTile(
+                leading: Icon(Icons.celebration, color: AppColors.textSecondary, size: IconSizes.md),
+                title: Text(
+                  l10n.eventOffers,
+                  style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.push(RouteNames.eventOffers);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.mail_outline, color: AppColors.textSecondary, size: IconSizes.md),
+                title: Text(
+                  l10n.eventRequests,
+                  style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.push(RouteNames.eventRequests);
                 },
               ),
             ],

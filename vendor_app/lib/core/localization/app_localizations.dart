@@ -148,6 +148,33 @@ class AppLocalizations {
   String get videoMealLabel => isAr ? StringsAr.videoMealLabel : StringsEn.videoMealLabel;
   String get delete => isAr ? StringsAr.delete : StringsEn.delete;
 
+  // المناسبات الخاصة
+  String get eventOffers => isAr ? StringsAr.eventOffers : StringsEn.eventOffers;
+  String get eventRequests => isAr ? StringsAr.eventRequests : StringsEn.eventRequests;
+  String get eventOfferBuffet => isAr ? StringsAr.eventOfferBuffet : StringsEn.eventOfferBuffet;
+  String get eventOfferDesserts => isAr ? StringsAr.eventOfferDesserts : StringsEn.eventOfferDesserts;
+  String get eventOfferDrinks => isAr ? StringsAr.eventOfferDrinks : StringsEn.eventOfferDrinks;
+  String get eventOfferStaff => isAr ? StringsAr.eventOfferStaff : StringsEn.eventOfferStaff;
+  String get eventTypeWedding => isAr ? StringsAr.eventTypeWedding : StringsEn.eventTypeWedding;
+  String get eventTypeGraduation => isAr ? StringsAr.eventTypeGraduation : StringsEn.eventTypeGraduation;
+  String get eventTypeHenna => isAr ? StringsAr.eventTypeHenna : StringsEn.eventTypeHenna;
+  String get eventTypeEngagement => isAr ? StringsAr.eventTypeEngagement : StringsEn.eventTypeEngagement;
+  String get eventTypeOther => isAr ? StringsAr.eventTypeOther : StringsEn.eventTypeOther;
+  String get addEventOffer => isAr ? StringsAr.addEventOffer : StringsEn.addEventOffer;
+  String get editEventOffer => isAr ? StringsAr.editEventOffer : StringsEn.editEventOffer;
+  String get noEventOffers => isAr ? StringsAr.noEventOffers : StringsEn.noEventOffers;
+  String get noEventRequests => isAr ? StringsAr.noEventRequests : StringsEn.noEventRequests;
+  String get accept => isAr ? StringsAr.accept : StringsEn.accept;
+  String get reject => isAr ? StringsAr.reject : StringsEn.reject;
+  String get eventType => isAr ? StringsAr.eventType : StringsEn.eventType;
+  String get serviceType => isAr ? StringsAr.serviceType : StringsEn.serviceType;
+  String get titleOptional => isAr ? StringsAr.titleOptional : StringsEn.titleOptional;
+  String get minGuests => isAr ? StringsAr.minGuests : StringsEn.minGuests;
+  String get maxGuests => isAr ? StringsAr.maxGuests : StringsEn.maxGuests;
+  String get pricePerPersonOptional => isAr ? StringsAr.pricePerPersonOptional : StringsEn.pricePerPersonOptional;
+  String get priceTotalOptional => isAr ? StringsAr.priceTotalOptional : StringsEn.priceTotalOptional;
+  String guestsCount(int n) => isAr ? StringsAr.guestsCount(n) : StringsEn.guestsCount(n);
+
   static const List<Locale> supportedLocales = [
     Locale('ar'),
     Locale('en'),

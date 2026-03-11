@@ -23,6 +23,9 @@ const String kFeedSortDistance = 'distance';
 const String kFeedSortRating = 'rating';
 const String kFeedSortNewest = 'newest';
 
+/// مسافات الفلتر (كم) — يجب أن تطابق الـ backend
+const List<int> kFeedMaxDistanceOptions = [5, 10, 15, 25];
+
 class FeedNotifier extends StateNotifier<FeedState> {
   final FeedRepository repository;
   int _currentPage = 1;
@@ -31,6 +34,7 @@ class FeedNotifier extends StateNotifier<FeedState> {
   String? _category;
   String? _sortBy;
   String? _city;
+  int? _maxDistance;
   List<FeedItem> _items = [];
 
   FeedNotifier(this.repository) : super(const FeedState.initial()) {
@@ -63,6 +67,7 @@ class FeedNotifier extends StateNotifier<FeedState> {
         category: _category,
         sortBy: _sortBy,
         city: _city,
+        maxDistance: _maxDistance,
       );
 
       if (refresh) {
@@ -118,6 +123,12 @@ class FeedNotifier extends StateNotifier<FeedState> {
     loadFeed(refresh: true);
   }
 
+  void setMaxDistance(int? km) {
+    _maxDistance = km;
+    loadFeed(refresh: true);
+  }
+
   String? get currentSortBy => _sortBy;
   String? get currentCity => _city;
+  int? get currentMaxDistance => _maxDistance;
 }
