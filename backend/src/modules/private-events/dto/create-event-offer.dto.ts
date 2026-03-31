@@ -1,6 +1,16 @@
-import { IsString, IsNumber, Min, IsOptional, IsBoolean, IsIn } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  Min,
+  IsOptional,
+  IsBoolean,
+  IsIn,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { EVENT_SERVICE_TYPES, EVENT_TYPES } from '../entities/event-offer.entity';
+import {
+  EVENT_SERVICE_TYPES,
+  EVENT_TYPES,
+} from '../entities/event-offer.entity';
 
 export class CreateEventOfferDto {
   @ApiProperty({ enum: EVENT_SERVICE_TYPES })

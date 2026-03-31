@@ -90,7 +90,7 @@ export default function OrderDetailPage() {
                 <dd><Badge variant="default">{statusLabel[status] ?? status}</Badge></dd>
               </div>
               <div className="flex justify-between items-center py-1 border-b border-divider">
-                <dt className="text-text-secondary font-medium">المطعم</dt>
+                <dt className="text-text-secondary font-medium">مقدّم الخدمة</dt>
                 <dd className="text-text-primary">{String(vendor?.name ?? o.vendorId ?? '-')}</dd>
               </div>
               <div className="flex justify-between items-center py-1">

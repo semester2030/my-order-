@@ -47,7 +47,7 @@ export default function VendorsPage() {
   if (error) {
     return (
       <>
-        <PageHeader title="المطاعم" description="قائمة المطاعم" />
+        <PageHeader title="مقدّمو الخدمة" description="قائمة مقدّمي الخدمة" />
         <div className="rounded-card border border-error/30 bg-error/10 px-4 py-3 text-text-primary">
           فشل تحميل البيانات: {error.message}
         </div>
@@ -71,12 +71,12 @@ export default function VendorsPage() {
   return (
     <>
       <PageHeader
-        title="المطاعم / مقدمي الخدمة"
-        description="قائمة المطاعم — فلاتر حسب الحالة والفئة"
+        title="مقدّمو الخدمة"
+        description="طبّاخون منزلي/شعبي، شواء، مناسبات — فلاتر حسب الحالة والفئة"
       />
       <Card>
         <CardHeader
-          title="قائمة المطاعم"
+          title="قائمة مقدّمي الخدمة"
           description={`إجمالي: ${total}`}
           action={
             <div className="flex flex-wrap items-center gap-2">
@@ -115,7 +115,7 @@ export default function VendorsPage() {
               جاري التحميل...
             </div>
           ) : items.length === 0 ? (
-            <EmptyState title="لا مطاعم" description="لا توجد مطاعم تطابق الفلتر" />
+            <EmptyState title="لا نتائج" description="لا يوجد مقدّمو خدمة يطابقون الفلتر" />
           ) : (
             <Table>
               <TableHeader>

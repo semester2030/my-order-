@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import useSWR from 'swr'
 import { cn } from '@/lib/cn'
-import { clearAdminToken } from '@/lib/api/client'
+import { adminMe, clearAdminToken, adminLogout } from '@/lib/api/client'
 import {
   LayoutDashboard,
   Store,
@@ -19,12 +20,13 @@ import {
   Settings,
   FileText,
   LogOut,
+  UserCog,
 } from 'lucide-react'
 
-const navItems: { href: string; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+const baseNavItems: { href: string; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { href: '/dashboard', label: 'لوحة التحكم', icon: LayoutDashboard },
-  { href: '/vendors', label: 'المطاعم', icon: Store },
-  { href: '/vendors/applications', label: 'طلبات المطاعم', icon: FileCheck },
+  { href: '/vendors', label: 'مقدّمو الخدمة', icon: Store },
+  { href: '/vendors/applications', label: 'طلبات التسجيل', icon: FileCheck },
   { href: '/drivers', label: 'السائقون', icon: Users },
   { href: '/drivers/applications', label: 'طلبات السائقين', icon: UserCheck },
   { href: '/orders', label: 'الطلبات', icon: ShoppingBag },
@@ -40,8 +42,23 @@ const navItems: { href: string; label: string; icon: React.ComponentType<{ class
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const { data: me } = useSWR('admin-me', adminMe)
 
-  const handleLogout = () => {
+  const navItems =
+    me?.role === 'super_admin'
+      ? [
+          baseNavItems[0],
+          { href: '/team', label: 'فريق الإدارة', icon: UserCog },
+          ...baseNavItems.slice(1),
+        ]
+      : baseNavItems
+
+  const handleLogout = async () => {
+    try {
+      await adminLogout()
+    } catch {
+      /* يُنظَّف الجلسة محلياً حتى لو فشل الطلب */
+    }
     clearAdminToken()
     router.push('/auth/login')
     router.refresh()

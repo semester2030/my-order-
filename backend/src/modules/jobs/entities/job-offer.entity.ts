@@ -87,7 +87,12 @@ export class JobOffer {
   })
   deliveryLongitude: number;
 
-  @Column({ name: 'estimated_distance', type: 'decimal', precision: 10, scale: 2 })
+  @Column({
+    name: 'estimated_distance',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+  })
   estimatedDistance: number; // in kilometers
 
   @Column({ name: 'estimated_duration', type: 'int' })

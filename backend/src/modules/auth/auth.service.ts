@@ -64,7 +64,11 @@ export class AuthService {
       if (this.emailService.isConfigured()) {
         const sent = await this.emailService.sendOtp(trimmed, otp);
         const forceRaw = process.env.OTP_FORCE_WHITELIST ?? '';
-        const inForceList = forceRaw.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean).includes(trimmed.toLowerCase());
+        const inForceList = forceRaw
+          .split(',')
+          .map((e) => e.trim().toLowerCase())
+          .filter(Boolean)
+          .includes(trimmed.toLowerCase());
         if (!sent && !inForceList) {
           throw new InternalServerErrorException(
             'فشل إرسال رمز التحقق إلى بريدك. حاول مرة أخرى.',
@@ -93,12 +97,20 @@ export class AuthService {
     // Return OTP in response: (a) when email not sent, or (b) OTP_FORCE_WHITELIST (when Resend accepts but email doesn't arrive - spam/Outlook)
     const whitelistRaw = process.env.OTP_DEV_WHITELIST ?? '';
     const forceRaw = process.env.OTP_FORCE_WHITELIST ?? '';
-    const whitelist = whitelistRaw.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
-    const forceList = forceRaw.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+    const whitelist = whitelistRaw
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean);
+    const forceList = forceRaw
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean);
     const inWhitelist = whitelist.includes(trimmed.toLowerCase());
     const inForceList = forceList.includes(trimmed.toLowerCase());
     const shouldReturnOtp =
-      (isEmail && !this.emailService.isConfigured() && (process.env.NODE_ENV === 'development' || inWhitelist)) ||
+      (isEmail &&
+        !this.emailService.isConfigured() &&
+        (process.env.NODE_ENV === 'development' || inWhitelist)) ||
       (isEmail && inForceList);
 
     return {
@@ -233,7 +245,9 @@ export class AuthService {
       const payload = this.jwtService.verify(refreshToken);
 
       // Verify user still exists
-      const user = await this.usersService.findById(payload.sub || payload.userId);
+      const user = await this.usersService.findById(
+        payload.sub || payload.userId,
+      );
 
       if (!user || !user.isActive) {
         throw new UnauthorizedException('User not found or inactive');
@@ -284,16 +298,26 @@ export class AuthService {
     if (!nameTrim) throw new BadRequestException('الاسم مطلوب.');
     if (!emailNorm) throw new BadRequestException('البريد الإلكتروني مطلوب.');
     if (!passwordTrim) throw new BadRequestException('الرمز السري مطلوب.');
-    if (passwordTrim.length < 6) throw new BadRequestException('الرمز السري يجب أن يكون 6 أحرف على الأقل.');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNorm)) throw new BadRequestException('بريد إلكتروني غير صحيح.');
+    if (passwordTrim.length < 6)
+      throw new BadRequestException(
+        'الرمز السري يجب أن يكون 6 أحرف على الأقل.',
+      );
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNorm))
+      throw new BadRequestException('بريد إلكتروني غير صحيح.');
 
     const existing = await this.userRepository
       .createQueryBuilder('u')
       .where('LOWER(TRIM(u.email)) = :email', { email: emailNorm })
       .getOne();
-    if (existing) throw new BadRequestException('البريد مسجّل مسبقاً. سجّل الدخول أو استخدم بريداً آخر.');
+    if (existing)
+      throw new BadRequestException(
+        'البريد مسجّل مسبقاً. سجّل الدخول أو استخدم بريداً آخر.',
+      );
 
-    const hashedPassword = await bcrypt.hash(passwordTrim, this.PIN_SALT_ROUNDS);
+    const hashedPassword = await bcrypt.hash(
+      passwordTrim,
+      this.PIN_SALT_ROUNDS,
+    );
     const user = await this.usersService.create({
       phone: null,
       email: emailNorm,
@@ -308,7 +332,12 @@ export class AuthService {
       accessToken: this.jwtService.sign(payload),
       refreshToken: this.jwtService.sign(payload, { expiresIn: '30d' }),
       expiresIn: 3600,
-      user: { id: user.id, email: user.email, name: user.name, phone: user.phone },
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        phone: user.phone,
+      },
     };
   }
 
@@ -322,21 +351,34 @@ export class AuthService {
       .createQueryBuilder('u')
       .where('LOWER(TRIM(u.email)) = :email', { email: emailNorm })
       .getOne();
-    if (!user) throw new UnauthorizedException('البريد غير مسجّل. سجّل حساباً جديداً أولاً.');
-    if (!user.pinHash) throw new UnauthorizedException('هذا الحساب غير مضبوط. تواصل مع الدعم.');
+    if (!user)
+      throw new UnauthorizedException(
+        'البريد غير مسجّل. سجّل حساباً جديداً أولاً.',
+      );
+    if (!user.pinHash)
+      throw new UnauthorizedException('هذا الحساب غير مضبوط. تواصل مع الدعم.');
 
     const vendorId = await this.vendorsService.getVendorIdByUserId(user.id);
-    if (vendorId) throw new UnauthorizedException('هذا حساب مقدم خدمة. استخدم تطبيق المورد.');
+    if (vendorId)
+      throw new UnauthorizedException(
+        'هذا حساب مقدم خدمة. استخدم تطبيق المورد.',
+      );
 
     const isPasswordValid = await bcrypt.compare(passwordTrim, user.pinHash);
-    if (!isPasswordValid) throw new UnauthorizedException('الرمز السري غير صحيح.');
+    if (!isPasswordValid)
+      throw new UnauthorizedException('الرمز السري غير صحيح.');
 
     const payload = { sub: user.id, userId: user.id, email: user.email };
     return {
       accessToken: this.jwtService.sign(payload),
       refreshToken: this.jwtService.sign(payload, { expiresIn: '30d' }),
       expiresIn: 3600,
-      user: { id: user.id, email: user.email, name: user.name, phone: user.phone },
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        phone: user.phone,
+      },
     };
   }
 
@@ -372,7 +414,10 @@ export class AuthService {
       // Test account bypass
       const TEST_EMAIL = 'cy-20@outlook.com';
       const TEST_PASSWORD = 'test123456';
-      if (emailNorm === TEST_EMAIL.toLowerCase() && passwordTrim === TEST_PASSWORD) {
+      if (
+        emailNorm === TEST_EMAIL.toLowerCase() &&
+        passwordTrim === TEST_PASSWORD
+      ) {
         const payload = {
           email: user.email,
           sub: user.id,
@@ -380,7 +425,9 @@ export class AuthService {
           vendorId,
         };
         const accessToken = this.jwtService.sign(payload);
-        const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
+        const refreshToken = this.jwtService.sign(payload, {
+          expiresIn: '30d',
+        });
         return {
           accessToken,
           refreshToken,

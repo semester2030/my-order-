@@ -74,7 +74,7 @@ export default function DashboardPage() {
           icon={ShoppingBag}
         />
         <StatCard
-          title="مطاعم بانتظار الموافقة"
+          title="مقدّمو خدمة بانتظار الموافقة"
           value={String(data.vendorsPendingCount)}
           icon={Store}
         />
@@ -146,7 +146,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader
             title="بانتظار الموافقة"
-            description="مطاعم وسائقون"
+            description="مقدّمو خدمة وسائقون"
           />
           <CardBody className="space-y-2">
             <Link
@@ -154,7 +154,7 @@ export default function DashboardPage() {
               className="flex items-center justify-between rounded-button border border-divider bg-surface px-4 py-3 transition-smooth hover:bg-primary-container/40 hover:border-primary/20"
             >
               <span className="text-sm font-semibold text-text-primary">
-                طلبات المطاعم
+                طلبات تسجيل مقدّمي الخدمة
               </span>
               <Badge variant="primary">{data.vendorsPendingCount ?? 0}</Badge>
             </Link>

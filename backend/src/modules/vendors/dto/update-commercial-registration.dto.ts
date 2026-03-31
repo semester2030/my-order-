@@ -1,14 +1,11 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsDateString,
-  IsEnum,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { VerificationStatus } from '../enums';
 
 export class UpdateCommercialRegistrationDto {
-  @ApiProperty({ example: 'CR1234567890', description: 'Commercial registration number' })
+  @ApiProperty({
+    example: 'CR1234567890',
+    description: 'Commercial registration number',
+  })
   @IsString()
   @IsNotEmpty()
   commercialRegistrationNumber: string;

@@ -53,7 +53,10 @@ export class DriversController {
 
   @Post('register/step3/:driverId')
   @ApiOperation({ summary: 'Register driver - Step 3: Insurance & Banking' })
-  @ApiResponse({ status: 200, description: 'Additional info submitted successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Additional info submitted successfully',
+  })
   @ApiResponse({ status: 404, description: 'Driver not found' })
   async registerStep3(
     @Param('driverId') driverId: string,
@@ -103,7 +106,10 @@ export class DriversController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update driver availability (online/offline)' })
-  @ApiResponse({ status: 200, description: 'Availability updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Availability updated successfully',
+  })
   @ApiResponse({ status: 403, description: 'Driver not approved' })
   async updateAvailability(
     @Request() req: any,
@@ -125,10 +131,7 @@ export class DriversController {
   @ApiOperation({ summary: 'Update FCM token for push notifications' })
   @ApiResponse({ status: 200, description: 'FCM token updated successfully' })
   @ApiResponse({ status: 404, description: 'Driver not found' })
-  async updateFcmToken(
-    @Request() req: any,
-    @Body() dto: UpdateFcmTokenDto,
-  ) {
+  async updateFcmToken(@Request() req: any, @Body() dto: UpdateFcmTokenDto) {
     const userId = req.user.id;
     const driver = await this.driversService.getDriverByUserId(userId);
 

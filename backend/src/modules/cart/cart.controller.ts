@@ -47,7 +47,10 @@ export class CartController {
 
   @Delete('remove/:id')
   @ApiOperation({ summary: 'Remove cart item' })
-  async removeCartItem(@Request() req: { user: User }, @Param('id') id: string) {
+  async removeCartItem(
+    @Request() req: { user: User },
+    @Param('id') id: string,
+  ) {
     return this.cartService.removeCartItem(req.user.id, id);
   }
 

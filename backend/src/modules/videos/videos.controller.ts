@@ -15,7 +15,12 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { VideosService } from './videos.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { VendorsService } from '../vendors/vendors.service';
@@ -33,7 +38,8 @@ export class VideosController {
 
   private async getVendorId(req: { user: User }): Promise<string> {
     const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
-    if (!vendorId) throw new NotFoundException('Vendor not found for this user');
+    if (!vendorId)
+      throw new NotFoundException('Vendor not found for this user');
     return vendorId;
   }
 
@@ -94,7 +100,9 @@ export class VideosController {
 
   // Dynamic route must come AFTER specific routes
   @Post('upload/:menuItemId')
-  @ApiOperation({ summary: 'Upload video file (server-side upload to avoid CORS)' })
+  @ApiOperation({
+    summary: 'Upload video file (server-side upload to avoid CORS)',
+  })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('video', {
@@ -107,7 +115,10 @@ export class VideosController {
         if (file.mimetype.startsWith('video/')) {
           cb(null, true);
         } else {
-          cb(new Error('Invalid file type. Only video files are allowed.'), false);
+          cb(
+            new Error('Invalid file type. Only video files are allowed.'),
+            false,
+          );
         }
       },
     }),
@@ -134,7 +145,10 @@ export class VideosController {
   @Delete(':videoId')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a video (to free a slot for a new one)' })
-  async deleteVideo(@Request() req: { user: User }, @Param('videoId') videoId: string) {
+  async deleteVideo(
+    @Request() req: { user: User },
+    @Param('videoId') videoId: string,
+  ) {
     const vendorId = await this.getVendorId(req);
     await this.videosService.deleteVideo(videoId, vendorId);
   }

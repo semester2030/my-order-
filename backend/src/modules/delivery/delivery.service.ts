@@ -60,7 +60,11 @@ export class DeliveryService {
   /**
    * Update driver location (for active delivery)
    */
-  async updateLocation(orderId: string, driverId: string, dto: UpdateLocationDto) {
+  async updateLocation(
+    orderId: string,
+    driverId: string,
+    dto: UpdateLocationDto,
+  ) {
     const order = await this.orderRepository.findOne({
       where: { id: orderId },
     });

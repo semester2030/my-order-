@@ -7,7 +7,10 @@ export class ConfirmPaymentDto {
   @IsNotEmpty()
   paymentId: string;
 
-  @ApiProperty({ example: 'txn_123456', description: 'Transaction ID from gateway' })
+  @ApiProperty({
+    example: 'txn_123456',
+    description: 'Transaction ID from gateway',
+  })
   @IsString()
   @IsNotEmpty()
   transactionId: string;

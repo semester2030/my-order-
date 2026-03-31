@@ -5,6 +5,8 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
+import { AdminUsersController } from './admin-users.controller';
+import { AdminUsersService } from './admin-users.service';
 import { AdminAuthController } from './admin-auth.controller';
 import { AdminAuthService } from './admin-auth.service';
 import { AdminJwtStrategy } from './strategies/admin-jwt.strategy';
@@ -40,8 +42,23 @@ import { Payment } from '../payments/entities/payment.entity';
       inject: [ConfigService],
     }),
   ],
-  controllers: [AdminController, AdminAuthController],
-  providers: [AdminService, AdminAuthService, AuditService, AdminJwtStrategy, AdminJwtGuard, RolesGuard],
-  exports: [AdminService, AdminAuthService, AuditService, AdminJwtGuard, RolesGuard],
+  controllers: [AdminController, AdminAuthController, AdminUsersController],
+  providers: [
+    AdminService,
+    AdminUsersService,
+    AdminAuthService,
+    AuditService,
+    AdminJwtStrategy,
+    AdminJwtGuard,
+    RolesGuard,
+  ],
+  exports: [
+    AdminService,
+    AdminUsersService,
+    AdminAuthService,
+    AuditService,
+    AdminJwtGuard,
+    RolesGuard,
+  ],
 })
 export class AdminModule {}

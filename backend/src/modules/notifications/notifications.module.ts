@@ -7,10 +7,7 @@ import { DriverNotificationsService } from './driver/driver-notifications.servic
 import { Driver } from '../drivers/entities/driver.entity';
 
 @Module({
-  imports: [
-    FcmModule,
-    TypeOrmModule.forFeature([Driver]),
-  ],
+  imports: [FcmModule, TypeOrmModule.forFeature([Driver])],
   controllers: [NotificationsController],
   providers: [NotificationsService, DriverNotificationsService],
   exports: [NotificationsService, DriverNotificationsService],

@@ -7,17 +7,26 @@ export class CreateOrderDto {
   @IsNotEmpty()
   addressId: string;
 
-  @ApiPropertyOptional({ example: 'Special instructions', description: 'Order notes' })
+  @ApiPropertyOptional({
+    example: 'Special instructions',
+    description: 'Order notes',
+  })
   @IsOptional()
   @IsString()
   notes?: string;
 
-  @ApiPropertyOptional({ example: '2025-01-29T14:00:00.000Z', description: 'When customer wants order ready (ISO string)' })
+  @ApiPropertyOptional({
+    example: '2025-01-29T14:00:00.000Z',
+    description: 'When customer wants order ready (ISO string)',
+  })
   @IsOptional()
   @IsString()
   requestedReadyAt?: string;
 
-  @ApiPropertyOptional({ example: 'ready_now', description: 'ready_now | scheduled' })
+  @ApiPropertyOptional({
+    example: 'ready_now',
+    description: 'ready_now | scheduled',
+  })
   @IsOptional()
   @IsIn(['ready_now', 'scheduled'])
   orderType?: 'ready_now' | 'scheduled';

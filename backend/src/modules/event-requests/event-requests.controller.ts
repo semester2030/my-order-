@@ -1,4 +1,11 @@
-import { Controller, Post, Get, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { EventRequestsService } from './event-requests.service';
 import { CreateEventRequestDto } from './dto/create-event-request.dto';
@@ -14,7 +21,10 @@ export class EventRequestsController {
 
   @Post()
   @ApiOperation({ summary: 'Create event request (احجز الطباخ / طلب طباخة)' })
-  async create(@Request() req: { user: User }, @Body() dto: CreateEventRequestDto) {
+  async create(
+    @Request() req: { user: User },
+    @Body() dto: CreateEventRequestDto,
+  ) {
     return this.eventRequestsService.create(req.user.id, dto);
   }
 

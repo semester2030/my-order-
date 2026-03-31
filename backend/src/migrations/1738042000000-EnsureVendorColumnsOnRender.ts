@@ -26,7 +26,8 @@ export class EnsureVendorColumnsOnRender1738042000000 implements MigrationInterf
     `);
   }
 
-  public async down(_queryRunner: QueryRunner): Promise<void> {
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    void queryRunner;
     // No-op: dropping columns could break existing data; re-run up() is idempotent
   }
 }

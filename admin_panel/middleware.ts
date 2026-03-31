@@ -3,36 +3,43 @@ import type { NextRequest } from 'next/server';
 
 const ADMIN_TOKEN_KEY = 'admin_token';
 const LOGIN_PATH = '/auth/login';
-const DASHBOARD_PREFIX = '/dashboard';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get(ADMIN_TOKEN_KEY)?.value;
 
-  // الصفحة الرئيسية: إن كان مسجّل دخول → الداشبورد، وإلا → تسجيل الدخول
+  /** طلبات البروكسي إلى Nest — لا نفرض كوكي هنا؛ التحقق بالـ Bearer على السيرفر */
+  if (pathname === '/api' || pathname.startsWith('/api/')) {
+    return NextResponse.next();
+  }
+
   if (pathname === '/') {
     if (token) {
-      return NextResponse.redirect(new URL(DASHBOARD_PREFIX, request.url));
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
     return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
   }
 
-  const isProtected = pathname === DASHBOARD_PREFIX || pathname.startsWith(DASHBOARD_PREFIX + '/');
-  const isLoginPage = pathname === LOGIN_PATH;
+  const isLoginPage =
+    pathname === LOGIN_PATH || pathname.startsWith(`${LOGIN_PATH}/`);
 
-  if (isProtected && !token) {
+  if (isLoginPage) {
+    if (token) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+    return NextResponse.next();
+  }
+
+  if (!token) {
     const loginUrl = new URL(LOGIN_PATH, request.url);
     loginUrl.searchParams.set('from', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (isLoginPage && token) {
-    return NextResponse.redirect(new URL(DASHBOARD_PREFIX, request.url));
-  }
-
   return NextResponse.next();
 }
 
+/** يطابق كل المسارات ما عدا أصول Next الثابتة — حتى تُحمى /audit_logs و /team وغيرها */
 export const config = {
-  matcher: ['/', '/dashboard', '/dashboard/:path*', '/auth/login'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

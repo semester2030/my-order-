@@ -5,7 +5,6 @@ import { Vendor } from '../vendors/entities/vendor.entity';
 import { MenuItem } from '../menu/entities/menu-item.entity';
 import { VideoAsset } from '../menu/entities/video-asset.entity';
 import { Address } from '../addresses/entities/address.entity';
-import { User } from '../users/entities/user.entity';
 import { GetFeedDto } from './dto/get-feed.dto';
 import { VendorType } from '../vendors/entities/vendor.entity';
 import { VideoStatus } from '../menu/entities/video-asset.entity';
@@ -68,10 +67,14 @@ export class FeedService {
     vendorLon: number,
     userLat: number,
     userLon: number,
-    deliveryZones?: string[],
   ): boolean {
     // Simple distance-based check (can be enhanced with zone IDs later)
-    const distance = this.calculateDistance(vendorLat, vendorLon, userLat, userLon);
+    const distance = this.calculateDistance(
+      vendorLat,
+      vendorLon,
+      userLat,
+      userLon,
+    );
     return distance <= this.MAX_DELIVERY_DISTANCE;
   }
 
@@ -98,10 +101,26 @@ export class FeedService {
    * Get feed items with algorithm
    */
   async getFeed(userId: string, query: GetFeedDto) {
-    const { page = 1, limit = 10, vendorType, category, sortBy = 'distance', city, maxDistance } = query;
+    const {
+      page = 1,
+      limit = 10,
+      vendorType,
+      category,
+      sortBy = 'distance',
+      city,
+      maxDistance,
+    } = query;
     const skip = (page - 1) * limit;
 
-    console.log('Feed request:', { userId, page, limit, vendorType, category, sortBy, city });
+    console.log('Feed request:', {
+      userId,
+      page,
+      limit,
+      vendorType,
+      category,
+      sortBy,
+      city,
+    });
 
     // Get user address
     const userAddress = await this.getUserAddress(userId);
@@ -121,7 +140,10 @@ export class FeedService {
       isAcceptingOrders: true,
     };
 
-    if (vendorType && Object.values(VendorType).includes(vendorType as VendorType)) {
+    if (
+      vendorType &&
+      Object.values(VendorType).includes(vendorType as VendorType)
+    ) {
       vendorWhere.type = vendorType;
     }
     if (category && category.trim()) {
@@ -139,7 +161,16 @@ export class FeedService {
       relations: ['menuItems'],
     });
 
-    console.log('Found vendors:', vendors.length, vendors.map(v => ({ id: v.id, name: v.name, isActive: v.isActive, isAcceptingOrders: v.isAcceptingOrders })));
+    console.log(
+      'Found vendors:',
+      vendors.length,
+      vendors.map((v) => ({
+        id: v.id,
+        name: v.name,
+        isActive: v.isActive,
+        isAcceptingOrders: v.isAcceptingOrders,
+      })),
+    );
 
     // Filter vendors by delivery zone
     // TEMPORARILY DISABLED FOR TESTING - Allow all vendors regardless of distance
@@ -149,14 +180,16 @@ export class FeedService {
     //     vendor.longitude,
     //     userAddress.latitude,
     //     userAddress.longitude,
-    //     vendor.deliveryZones,
     //   ),
     // );
-    
+
     // For testing: Allow all vendors (no distance restriction)
     const eligibleVendors = vendors;
 
-    console.log('Eligible vendors after distance filter (DISABLED FOR TESTING):', eligibleVendors.length);
+    console.log(
+      'Eligible vendors after distance filter (DISABLED FOR TESTING):',
+      eligibleVendors.length,
+    );
 
     if (eligibleVendors.length === 0) {
       console.log('No eligible vendors found');
@@ -190,7 +223,12 @@ export class FeedService {
     });
 
     console.log('Menu items found:', menuItems.length);
-    console.log('Menu items with videos:', menuItems.filter(item => item.videoAssets && item.videoAssets.length > 0).length);
+    console.log(
+      'Menu items with videos:',
+      menuItems.filter(
+        (item) => item.videoAssets && item.videoAssets.length > 0,
+      ).length,
+    );
 
     // Get primary videos (include READY + PROCESSING - playback URL may work for both)
     const menuItemIds = menuItems.map((item) => item.id);

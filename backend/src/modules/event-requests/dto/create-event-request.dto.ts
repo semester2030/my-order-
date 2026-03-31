@@ -1,4 +1,13 @@
-import { IsEnum, IsString, IsOptional, IsArray, IsBoolean, IsNumber, Min, IsUUID } from 'class-validator';
+import {
+  IsEnum,
+  IsString,
+  IsOptional,
+  IsArray,
+  IsBoolean,
+  IsNumber,
+  Min,
+  IsUUID,
+} from 'class-validator';
 import { EventRequestType } from '../entities/event-request.entity';
 
 export class AddOnDto {

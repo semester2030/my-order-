@@ -8,9 +8,13 @@ export class VerifyPinDto {
   })
   @IsString()
   @IsNotEmpty()
-  @ValidateIf((o) => typeof o.identifier === 'string' && !o.identifier.includes('@'))
+  @ValidateIf(
+    (o) => typeof o.identifier === 'string' && !o.identifier.includes('@'),
+  )
   @Matches(/^[0-9]{10,15}$/, { message: 'Phone must be 10-15 digits' })
-  @ValidateIf((o) => typeof o.identifier === 'string' && o.identifier.includes('@'))
+  @ValidateIf(
+    (o) => typeof o.identifier === 'string' && o.identifier.includes('@'),
+  )
   @Matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, { message: 'Invalid email format' })
   identifier: string;
 

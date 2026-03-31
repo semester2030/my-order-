@@ -88,7 +88,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
-  async logout(@Request() req: { user: User }) {
+  async logout() {
     return this.authService.logout();
   }
 }

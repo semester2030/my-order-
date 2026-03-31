@@ -65,7 +65,10 @@ export class JobsController {
   @ApiOperation({ summary: 'Reject job' })
   @ApiResponse({ status: 200, description: 'Job rejected' })
   @ApiResponse({ status: 404, description: 'Job not found' })
-  async rejectJob(@Request() req: any, @Param('jobOfferId') jobOfferId: string) {
+  async rejectJob(
+    @Request() req: any,
+    @Param('jobOfferId') jobOfferId: string,
+  ) {
     const userId = req.user.id;
     return this.jobsService.rejectJob(jobOfferId, userId);
   }

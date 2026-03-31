@@ -49,7 +49,9 @@ export class MenuItem {
   updatedAt: Date;
 
   // Relations
-  @ManyToOne(() => Vendor, (vendor) => vendor.menuItems, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Vendor, (vendor) => vendor.menuItems, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'vendor_id' })
   vendor: Vendor;
 

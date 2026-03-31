@@ -11,9 +11,7 @@ import {
  * video_assets, orders, order_items, payments, carts, cart_items, drivers.
  * Idempotent: each table is created only if it does not exist; enums use duplicate_object handling.
  */
-export class CreateOrdersMenuAndRelatedTables1738043000000
-  implements MigrationInterface
-{
+export class CreateOrdersMenuAndRelatedTables1738043000000 implements MigrationInterface {
   name = 'CreateOrdersMenuAndRelatedTables1738043000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -149,7 +147,10 @@ export class CreateOrdersMenuAndRelatedTables1738043000000
       );
       await queryRunner.createIndex(
         'addresses',
-        new TableIndex({ name: 'IDX_addresses_user_id', columnNames: ['user_id'] }),
+        new TableIndex({
+          name: 'IDX_addresses_user_id',
+          columnNames: ['user_id'],
+        }),
       );
     }
 
@@ -413,11 +414,17 @@ export class CreateOrdersMenuAndRelatedTables1738043000000
       );
       await queryRunner.createIndex(
         'orders',
-        new TableIndex({ name: 'IDX_orders_vendor_id', columnNames: ['vendor_id'] }),
+        new TableIndex({
+          name: 'IDX_orders_vendor_id',
+          columnNames: ['vendor_id'],
+        }),
       );
       await queryRunner.createIndex(
         'orders',
-        new TableIndex({ name: 'IDX_orders_user_id', columnNames: ['user_id'] }),
+        new TableIndex({
+          name: 'IDX_orders_user_id',
+          columnNames: ['user_id'],
+        }),
       );
     }
 
@@ -702,13 +709,28 @@ export class CreateOrdersMenuAndRelatedTables1738043000000
               generationStrategy: 'uuid',
               default: 'uuid_generate_v4()',
             },
-            { name: 'user_id', type: 'uuid', isNullable: false, isUnique: true },
+            {
+              name: 'user_id',
+              type: 'uuid',
+              isNullable: false,
+              isUnique: true,
+            },
             { name: 'full_name', type: 'varchar', isNullable: true },
-            { name: 'national_id', type: 'varchar', isNullable: false, isUnique: true },
+            {
+              name: 'national_id',
+              type: 'varchar',
+              isNullable: false,
+              isUnique: true,
+            },
             { name: 'date_of_birth', type: 'date', isNullable: true },
             { name: 'gender', type: 'varchar', isNullable: true },
             { name: 'nationality', type: 'varchar', isNullable: true },
-            { name: 'license_number', type: 'varchar', isNullable: true, isUnique: true },
+            {
+              name: 'license_number',
+              type: 'varchar',
+              isNullable: true,
+              isUnique: true,
+            },
             {
               name: 'license_type',
               type: 'license_type_enum',
@@ -716,7 +738,11 @@ export class CreateOrdersMenuAndRelatedTables1738043000000
             },
             { name: 'license_issue_date', type: 'date', isNullable: true },
             { name: 'license_expiry_date', type: 'date', isNullable: true },
-            { name: 'license_issuing_authority', type: 'varchar', isNullable: true },
+            {
+              name: 'license_issuing_authority',
+              type: 'varchar',
+              isNullable: true,
+            },
             { name: 'license_photo_front', type: 'text', isNullable: true },
             { name: 'license_photo_back', type: 'text', isNullable: true },
             {
@@ -728,22 +754,55 @@ export class CreateOrdersMenuAndRelatedTables1738043000000
             { name: 'vehicle_model', type: 'varchar', isNullable: true },
             { name: 'vehicle_year', type: 'int', isNullable: true },
             { name: 'vehicle_color', type: 'varchar', isNullable: true },
-            { name: 'plate_number', type: 'varchar', isNullable: true, isUnique: true },
+            {
+              name: 'plate_number',
+              type: 'varchar',
+              isNullable: true,
+              isUnique: true,
+            },
             { name: 'plate_region', type: 'varchar', isNullable: true },
-            { name: 'vehicle_registration_number', type: 'varchar', isNullable: true },
-            { name: 'vehicle_registration_expiry', type: 'date', isNullable: true },
+            {
+              name: 'vehicle_registration_number',
+              type: 'varchar',
+              isNullable: true,
+            },
+            {
+              name: 'vehicle_registration_expiry',
+              type: 'date',
+              isNullable: true,
+            },
             { name: 'vehicle_photo', type: 'text', isNullable: true },
-            { name: 'vehicle_authorization_photo', type: 'text', isNullable: true },
+            {
+              name: 'vehicle_authorization_photo',
+              type: 'text',
+              isNullable: true,
+            },
             { name: 'insurance_company', type: 'varchar', isNullable: true },
-            { name: 'insurance_policy_number', type: 'varchar', isNullable: true },
+            {
+              name: 'insurance_policy_number',
+              type: 'varchar',
+              isNullable: true,
+            },
             { name: 'insurance_start_date', type: 'date', isNullable: true },
             { name: 'insurance_expiry_date', type: 'date', isNullable: true },
-            { name: 'insurance_coverage_type', type: 'varchar', isNullable: true },
+            {
+              name: 'insurance_coverage_type',
+              type: 'varchar',
+              isNullable: true,
+            },
             { name: 'insurance_photo', type: 'text', isNullable: true },
             { name: 'phone_number', type: 'varchar', isNullable: false },
             { name: 'email', type: 'varchar', isNullable: true },
-            { name: 'emergency_contact_name', type: 'varchar', isNullable: true },
-            { name: 'emergency_contact_phone', type: 'varchar', isNullable: true },
+            {
+              name: 'emergency_contact_name',
+              type: 'varchar',
+              isNullable: true,
+            },
+            {
+              name: 'emergency_contact_phone',
+              type: 'varchar',
+              isNullable: true,
+            },
             { name: 'address', type: 'jsonb', isNullable: true },
             { name: 'bank_name', type: 'varchar', isNullable: true },
             { name: 'account_number', type: 'varchar', isNullable: true },
@@ -772,7 +831,11 @@ export class CreateOrdersMenuAndRelatedTables1738043000000
               default: false,
               isNullable: false,
             },
-            { name: 'privacy_accepted_at', type: 'timestamp', isNullable: true },
+            {
+              name: 'privacy_accepted_at',
+              type: 'timestamp',
+              isNullable: true,
+            },
             {
               name: 'background_check_consent',
               type: 'boolean',
@@ -797,40 +860,76 @@ export class CreateOrdersMenuAndRelatedTables1738043000000
               default: false,
               isNullable: false,
             },
-            { name: 'identity_verified_at', type: 'timestamp', isNullable: true },
+            {
+              name: 'identity_verified_at',
+              type: 'timestamp',
+              isNullable: true,
+            },
             { name: 'identity_verified_by', type: 'varchar', isNullable: true },
-            { name: 'identity_rejection_reason', type: 'text', isNullable: true },
+            {
+              name: 'identity_rejection_reason',
+              type: 'text',
+              isNullable: true,
+            },
             {
               name: 'license_verified',
               type: 'boolean',
               default: false,
               isNullable: false,
             },
-            { name: 'license_verified_at', type: 'timestamp', isNullable: true },
-            { name: 'license_rejection_reason', type: 'text', isNullable: true },
+            {
+              name: 'license_verified_at',
+              type: 'timestamp',
+              isNullable: true,
+            },
+            {
+              name: 'license_rejection_reason',
+              type: 'text',
+              isNullable: true,
+            },
             {
               name: 'vehicle_verified',
               type: 'boolean',
               default: false,
               isNullable: false,
             },
-            { name: 'vehicle_verified_at', type: 'timestamp', isNullable: true },
-            { name: 'vehicle_rejection_reason', type: 'text', isNullable: true },
+            {
+              name: 'vehicle_verified_at',
+              type: 'timestamp',
+              isNullable: true,
+            },
+            {
+              name: 'vehicle_rejection_reason',
+              type: 'text',
+              isNullable: true,
+            },
             {
               name: 'insurance_verified',
               type: 'boolean',
               default: false,
               isNullable: false,
             },
-            { name: 'insurance_verified_at', type: 'timestamp', isNullable: true },
-            { name: 'insurance_rejection_reason', type: 'text', isNullable: true },
+            {
+              name: 'insurance_verified_at',
+              type: 'timestamp',
+              isNullable: true,
+            },
+            {
+              name: 'insurance_rejection_reason',
+              type: 'text',
+              isNullable: true,
+            },
             {
               name: 'background_check_passed',
               type: 'boolean',
               default: false,
               isNullable: false,
             },
-            { name: 'background_check_date', type: 'timestamp', isNullable: true },
+            {
+              name: 'background_check_date',
+              type: 'timestamp',
+              isNullable: true,
+            },
             {
               name: 'status',
               type: 'driver_status_enum',
@@ -859,7 +958,11 @@ export class CreateOrdersMenuAndRelatedTables1738043000000
               scale: 8,
               isNullable: true,
             },
-            { name: 'last_location_update', type: 'timestamp', isNullable: true },
+            {
+              name: 'last_location_update',
+              type: 'timestamp',
+              isNullable: true,
+            },
             { name: 'fcm_token', type: 'varchar', isNullable: true },
             { name: 'profile_photo', type: 'text', isNullable: true },
             { name: 'languages', type: 'text', isNullable: true },
@@ -890,7 +993,10 @@ export class CreateOrdersMenuAndRelatedTables1738043000000
       );
       await queryRunner.createIndex(
         'drivers',
-        new TableIndex({ name: 'IDX_drivers_user_id', columnNames: ['user_id'] }),
+        new TableIndex({
+          name: 'IDX_drivers_user_id',
+          columnNames: ['user_id'],
+        }),
       );
     }
 
@@ -916,7 +1022,8 @@ export class CreateOrdersMenuAndRelatedTables1738043000000
     }
   }
 
-  public async down(_queryRunner: QueryRunner): Promise<void> {
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    void queryRunner;
     // Down not implemented: dropping tables would delete data.
     // Re-running up() is idempotent; use a new migration to drop if ever needed.
   }

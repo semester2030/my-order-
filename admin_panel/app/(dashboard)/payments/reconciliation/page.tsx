@@ -14,7 +14,7 @@ import {
 
 export default function ReconciliationPage() {
   const rows = [
-    { id: 1, period: 'يناير ٢٠٢٥', vendor: 'مطعم الشرق', amount: '٤٬٢٠٠ ر.س', status: 'مُصالح' },
+    { id: 1, period: 'يناير ٢٠٢٥', vendor: 'مطبخ أم سارة', amount: '٤٬٢٠٠ ر.س', status: 'مُصالح' },
     { id: 2, period: 'يناير ٢٠٢٥', vendor: 'بيت البيتزا', amount: '٢٬٨٠٠ ر.س', status: 'معلق' },
   ]
 
@@ -22,7 +22,7 @@ export default function ReconciliationPage() {
     <>
       <PageHeader
         title="المصالحة"
-        description="مصالحة المدفوعات مع المطاعم والسائقين"
+        description="مصالحة المدفوعات مع مقدّمي الخدمة والسائقين"
         children={
           <Link href="/payments">
             <Button variant="outline" size="sm">العودة للمدفوعات</Button>

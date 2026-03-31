@@ -19,7 +19,7 @@ import { User } from '../users/entities/user.entity';
 import { RegisterVendorDto } from './dto/register-vendor.dto';
 import { UpdateVendorProfileDto } from './dto/update-vendor-profile.dto';
 import { AddCertificateDto } from './dto/add-certificate.dto';
-import { VendorStatus, VerificationStatus, StaffRole, CertificateType } from './enums';
+import { VendorStatus, VerificationStatus, StaffRole } from './enums';
 import { Order } from '../orders/entities/order.entity';
 import { OrderStatus } from '../orders/entities/order.entity';
 import { MenuItem } from '../menu/entities/menu-item.entity';
@@ -60,19 +60,25 @@ export class VendorsService {
     });
   }
 
-  async register(dto: RegisterVendorDto, files?: {
-    commercialRegistration?: any[];
-    ownerId?: any[];
-    logo?: any[];
-    cover?: any[];
-    restaurantImages?: any[];
-  }): Promise<{ vendorId: string; status: string; message: string }> {
+  async register(
+    dto: RegisterVendorDto,
+    files?: {
+      commercialRegistration?: any[];
+      ownerId?: any[];
+      logo?: any[];
+      cover?: any[];
+      restaurantImages?: any[];
+    },
+  ): Promise<{ vendorId: string; status: string; message: string }> {
     const emailNorm = (dto.email || '').trim().toLowerCase();
     const passwordTrim = (dto.password || '').trim();
     const nameTrim = (dto.name || '').trim();
     if (!emailNorm) throw new BadRequestException('البريد الإلكتروني مطلوب.');
     if (!passwordTrim) throw new BadRequestException('كلمة المرور مطلوبة.');
-    if (nameTrim.length < 2) throw new BadRequestException('اسم مقدم الخدمة يجب أن يكون حرفين على الأقل.');
+    if (nameTrim.length < 2)
+      throw new BadRequestException(
+        'اسم مقدم الخدمة يجب أن يكون حرفين على الأقل.',
+      );
 
     // 1. Check email uniqueness (vendor + user), case-insensitive
     const existingVendorByEmail = await this.vendorRepository
@@ -96,16 +102,22 @@ export class VendorsService {
       where: { phone: phoneOrEmail },
     });
     if (existingUserByPhone) {
-      throw new ConflictException('رقم الجوال أو البريد مستخدم مسبقاً. جرّب تسجيل الدخول أو استخدم بريداً/رقماً آخر.');
+      throw new ConflictException(
+        'رقم الجوال أو البريد مستخدم مسبقاً. جرّب تسجيل الدخول أو استخدم بريداً/رقماً آخر.',
+      );
     }
 
     // 2. Optional: commercial registration uniqueness
     if (dto.commercialRegistrationNumber?.trim()) {
       const existingVendorByReg = await this.vendorRepository.findOne({
-        where: { commercialRegistrationNumber: dto.commercialRegistrationNumber.trim() },
+        where: {
+          commercialRegistrationNumber: dto.commercialRegistrationNumber.trim(),
+        },
       });
       if (existingVendorByReg) {
-        throw new ConflictException('Commercial registration number already exists');
+        throw new ConflictException(
+          'Commercial registration number already exists',
+        );
       }
     }
 
@@ -119,7 +131,10 @@ export class VendorsService {
     }
 
     // 4. Hash password (use trimmed)
-    const hashedPassword = await bcrypt.hash(passwordTrim, this.PASSWORD_SALT_ROUNDS);
+    const hashedPassword = await bcrypt.hash(
+      passwordTrim,
+      this.PASSWORD_SALT_ROUNDS,
+    );
 
     // 5. Create vendor — required: name, email, phoneNumber, location, owner fields (use defaults when optional)
     const vendor = this.vendorRepository.create({
@@ -130,14 +145,16 @@ export class VendorsService {
       email: emailNorm,
       phoneNumber: phoneOrEmail,
       website: dto.website?.trim() || null,
-      commercialRegistrationNumber: dto.commercialRegistrationNumber?.trim() || null,
+      commercialRegistrationNumber:
+        dto.commercialRegistrationNumber?.trim() || null,
       commercialRegistrationIssueDate: dto.commercialRegistrationIssueDate
         ? new Date(dto.commercialRegistrationIssueDate)
         : null,
       commercialRegistrationExpiryDate: dto.commercialRegistrationExpiryDate
         ? new Date(dto.commercialRegistrationExpiryDate)
         : null,
-      commercialRegistrationImage: files?.commercialRegistration?.[0]?.filename || null,
+      commercialRegistrationImage:
+        files?.commercialRegistration?.[0]?.filename || null,
       commercialRegistrationStatus: VerificationStatus.PENDING,
       latitude: dto.latitude ?? 0,
       longitude: dto.longitude ?? 0,
@@ -208,7 +225,8 @@ export class VendorsService {
       return {
         vendorId: savedVendor.id,
         status: savedVendor.registrationStatus,
-        message: 'Registration submitted successfully. Your application is under review.',
+        message:
+          'Registration submitted successfully. Your application is under review.',
       };
     } catch (err: any) {
       const code = err?.driverError?.code;
@@ -223,18 +241,30 @@ export class VendorsService {
       if (err?.driverError?.code === '23505') {
         const detailStr = String(err?.driverError?.detail ?? '');
         if (detailStr.includes('(name)=')) {
-          throw new ConflictException('اسم مقدم الخدمة مستخدم مسبقاً. اختر اسماً آخر أو سجّل الدخول بالحساب الحالي.');
+          throw new ConflictException(
+            'اسم مقدم الخدمة مستخدم مسبقاً. اختر اسماً آخر أو سجّل الدخول بالحساب الحالي.',
+          );
         }
         if (detailStr.includes('(email)=')) {
           throw new ConflictException('البريد الإلكتروني مسجّل مسبقاً.');
         }
-        if (detailStr.includes('(phone') || detailStr.includes('(phone_number)')) {
+        if (
+          detailStr.includes('(phone') ||
+          detailStr.includes('(phone_number)')
+        ) {
           throw new ConflictException('رقم الجوال أو البريد مسجّل مسبقاً.');
         }
         throw new ConflictException('البريد أو رقم الجوال مسجّل مسبقاً.');
       }
-      if (err?.driverError?.code === '42703' || (detail && String(detail).includes('column') && String(detail).includes('does not exist'))) {
-        this.logger.error('DB schema may be missing columns. Run migrations on the database.');
+      if (
+        err?.driverError?.code === '42703' ||
+        (detail &&
+          String(detail).includes('column') &&
+          String(detail).includes('does not exist'))
+      ) {
+        this.logger.error(
+          'DB schema may be missing columns. Run migrations on the database.',
+        );
         throw new InternalServerErrorException(
           'Server database is not up to date. Please contact support.',
         );
@@ -261,11 +291,16 @@ export class VendorsService {
     }
 
     const messages = {
-      [VendorStatus.PENDING_APPROVAL]: 'Your registration is pending review. We will contact you soon.',
-      [VendorStatus.UNDER_REVIEW]: 'Your registration is under review. Please wait for approval.',
-      [VendorStatus.APPROVED]: 'Your registration has been approved. You can now log in.',
-      [VendorStatus.REJECTED]: 'Your registration has been rejected. Please contact support.',
-      [VendorStatus.SUSPENDED]: 'Your account has been suspended. Please contact support.',
+      [VendorStatus.PENDING_APPROVAL]:
+        'Your registration is pending review. We will contact you soon.',
+      [VendorStatus.UNDER_REVIEW]:
+        'Your registration is under review. Please wait for approval.',
+      [VendorStatus.APPROVED]:
+        'Your registration has been approved. You can now log in.',
+      [VendorStatus.REJECTED]:
+        'Your registration has been rejected. Please contact support.',
+      [VendorStatus.SUSPENDED]:
+        'Your account has been suspended. Please contact support.',
     };
 
     return {
@@ -303,12 +338,16 @@ export class VendorsService {
     if (dto.district !== undefined) vendor.district = dto.district;
     if (dto.postalCode !== undefined) vendor.postalCode = dto.postalCode;
     if (dto.deliveryFee !== undefined) vendor.deliveryFee = dto.deliveryFee;
-    if (dto.deliveryRadius !== undefined) vendor.deliveryRadius = dto.deliveryRadius;
-    if (dto.estimatedDeliveryTime !== undefined) vendor.estimatedDeliveryTime = dto.estimatedDeliveryTime;
+    if (dto.deliveryRadius !== undefined)
+      vendor.deliveryRadius = dto.deliveryRadius;
+    if (dto.estimatedDeliveryTime !== undefined)
+      vendor.estimatedDeliveryTime = dto.estimatedDeliveryTime;
     if (dto.workingHours !== undefined) vendor.workingHours = dto.workingHours;
-    if (dto.isAcceptingOrders !== undefined) vendor.isAcceptingOrders = dto.isAcceptingOrders;
+    if (dto.isAcceptingOrders !== undefined)
+      vendor.isAcceptingOrders = dto.isAcceptingOrders;
     if (dto.isActive !== undefined) vendor.isActive = dto.isActive;
-    if (dto.popularCookingAddOns !== undefined) vendor.popularCookingAddOns = dto.popularCookingAddOns;
+    if (dto.popularCookingAddOns !== undefined)
+      vendor.popularCookingAddOns = dto.popularCookingAddOns;
 
     return this.vendorRepository.save(vendor);
   }
@@ -328,7 +367,10 @@ export class VendorsService {
 
     // Verify current password
     if (user.pinHash) {
-      const isPasswordValid = await bcrypt.compare(currentPassword, user.pinHash);
+      const isPasswordValid = await bcrypt.compare(
+        currentPassword,
+        user.pinHash,
+      );
       if (!isPasswordValid) {
         throw new UnauthorizedException('Current password is incorrect');
       }
@@ -442,7 +484,9 @@ export class VendorsService {
     }
 
     if (order.status !== OrderStatus.PENDING) {
-      throw new BadRequestException('Order cannot be accepted. Invalid status.');
+      throw new BadRequestException(
+        'Order cannot be accepted. Invalid status.',
+      );
     }
 
     order.status = OrderStatus.CONFIRMED;
@@ -452,7 +496,7 @@ export class VendorsService {
   async rejectOrder(
     vendorId: string,
     orderId: string,
-    reason: string,
+    _reason: string,
   ): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { id: orderId, vendorId },
@@ -463,11 +507,14 @@ export class VendorsService {
     }
 
     if (order.status !== OrderStatus.PENDING) {
-      throw new BadRequestException('Order cannot be rejected. Invalid status.');
+      throw new BadRequestException(
+        'Order cannot be rejected. Invalid status.',
+      );
     }
 
     order.status = OrderStatus.CANCELLED;
-    // TODO: Store rejection reason in order notes or separate field
+    void _reason;
+    // TODO: Persist rejection reason on order when a notes/reason column exists
     return this.orderRepository.save(order);
   }
 
@@ -530,14 +577,15 @@ export class VendorsService {
       order: { createdAt: 'DESC' },
       relations: ['videoAssets'], // Include video assets
     });
-    
+
     // Transform to ensure price is number and format videoAssets
-    return menuItems.map(item => ({
+    return menuItems.map((item) => ({
       id: item.id,
       vendorId: item.vendorId,
       name: item.name,
       description: item.description,
-      price: typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+      price:
+        typeof item.price === 'string' ? parseFloat(item.price) : item.price,
       image: item.image,
       isSignature: item.isSignature,
       isAvailable: item.isAvailable,
@@ -548,10 +596,11 @@ export class VendorsService {
         .sort((a, b) => {
           if (a.isPrimary && !b.isPrimary) return -1;
           if (!a.isPrimary && b.isPrimary) return 1;
-          const statusOrder = (s: string) => (s === 'ready' ? 0 : s === 'processing' ? 1 : 2);
+          const statusOrder = (s: string) =>
+            s === 'ready' ? 0 : s === 'processing' ? 1 : 2;
           return statusOrder(String(a.status)) - statusOrder(String(b.status));
         })
-        .map(video => ({
+        .map((video) => ({
           id: video.id,
           menuItemId: video.menuItemId,
           cloudflareAssetId: video.cloudflareAssetId,
@@ -659,7 +708,7 @@ export class VendorsService {
   // Vendor Analytics
   async getVendorAnalytics(vendorId: string, startDate?: Date, endDate?: Date) {
     const whereConditions: any = { vendorId };
-    
+
     if (startDate && endDate) {
       whereConditions.createdAt = Between(startDate, endDate);
     } else if (startDate) {
@@ -678,12 +727,21 @@ export class VendorsService {
       .filter((o) => o.status === OrderStatus.DELIVERED)
       .reduce((sum, o) => sum + parseFloat(o.total.toString()), 0);
 
-    const pendingOrders = orders.filter((o) => o.status === OrderStatus.PENDING).length;
-    const preparingOrders = orders.filter((o) => o.status === OrderStatus.PREPARING).length;
-    const readyOrders = orders.filter((o) => o.status === OrderStatus.READY).length;
+    const pendingOrders = orders.filter(
+      (o) => o.status === OrderStatus.PENDING,
+    ).length;
+    const preparingOrders = orders.filter(
+      (o) => o.status === OrderStatus.PREPARING,
+    ).length;
+    const readyOrders = orders.filter(
+      (o) => o.status === OrderStatus.READY,
+    ).length;
 
     // Top menu items
-    const itemCounts: Record<string, { name: string; count: number; revenue: number }> = {};
+    const itemCounts: Record<
+      string,
+      { name: string; count: number; revenue: number }
+    > = {};
     orders.forEach((order) => {
       if (order.items) {
         order.items.forEach((item) => {
@@ -696,7 +754,8 @@ export class VendorsService {
             };
           }
           itemCounts[menuItemId].count += item.quantity;
-          itemCounts[menuItemId].revenue += parseFloat(item.price.toString()) * item.quantity;
+          itemCounts[menuItemId].revenue +=
+            parseFloat(item.price.toString()) * item.quantity;
         });
       }
     });
@@ -736,7 +795,9 @@ export class VendorsService {
     },
   ): Promise<VendorStaff> {
     // Check if user exists
-    let user = await this.userRepository.findOne({ where: { email: data.email } });
+    let user = await this.userRepository.findOne({
+      where: { email: data.email },
+    });
 
     if (!user) {
       // Create new user account for staff
@@ -754,7 +815,9 @@ export class VendorsService {
     });
 
     if (existingStaff) {
-      throw new ConflictException('Staff member already exists for this vendor');
+      throw new ConflictException(
+        'Staff member already exists for this vendor',
+      );
     }
 
     const staff = this.staffRepository.create({

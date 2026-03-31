@@ -87,7 +87,7 @@ export default function OrdersLivePage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>الطلب</TableHead>
-                  <TableHead>المطعم</TableHead>
+                  <TableHead>مقدّم الخدمة</TableHead>
                   <TableHead>الحالة</TableHead>
                   <TableHead>المبلغ</TableHead>
                   <TableHead>التاريخ</TableHead>

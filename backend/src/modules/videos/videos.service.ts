@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
@@ -36,12 +41,17 @@ export class VideosService {
   }
 
   /** التأكد أن المورد لم يصل للحد الأقصى قبل إضافة فيديو جديد */
-  async ensureVendorCanAddVideo(menuItemId: string, vendorId: string): Promise<void> {
+  async ensureVendorCanAddVideo(
+    menuItemId: string,
+    vendorId: string,
+  ): Promise<void> {
     const menuItem = await this.menuItemRepository.findOne({
       where: { id: menuItemId, vendorId },
     });
     if (!menuItem) {
-      throw new NotFoundException('MenuItem not found or not owned by this vendor');
+      throw new NotFoundException(
+        'MenuItem not found or not owned by this vendor',
+      );
     }
     const count = await this.getVendorVideoCount(vendorId);
     if (count >= MAX_VIDEOS_PER_VENDOR) {
@@ -51,7 +61,12 @@ export class VideosService {
     }
   }
 
-  async initUpload(menuItemId: string, fileName: string, fileSize: number, vendorId: string) {
+  async initUpload(
+    menuItemId: string,
+    fileName: string,
+    fileSize: number,
+    vendorId: string,
+  ) {
     await this.ensureVendorCanAddVideo(menuItemId, vendorId);
     // Validate file size (max 500MB)
     if (fileSize > 500 * 1024 * 1024) {
@@ -81,23 +96,24 @@ export class VideosService {
     await this.ensureVendorCanAddVideo(menuItemId, vendorId);
     // Wait a bit for Cloudflare to process the video after upload
     // Videos may take a few seconds to be ready
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     // Get asset details from Cloudflare (with retry logic)
     let assetDetails;
     let retries = 3;
     while (retries > 0) {
       try {
-        assetDetails = await this.cloudflareStreamService.getAssetDetails(
-          cloudflareAssetId,
-        );
+        assetDetails =
+          await this.cloudflareStreamService.getAssetDetails(cloudflareAssetId);
         break;
       } catch (error) {
         retries--;
         if (retries === 0) {
           // If still failing, use default values and set status to PROCESSING
           // We'll construct a default playback URL - Cloudflare will process it
-          const accountId = this.configService.get<string>('CLOUDFLARE_ACCOUNT_ID') || 'unknown';
+          const accountId =
+            this.configService.get<string>('CLOUDFLARE_ACCOUNT_ID') ||
+            'unknown';
           assetDetails = {
             playbackUrl: `https://customer-${accountId}.cloudflarestream.com/${cloudflareAssetId}/manifest/video.m3u8`,
             thumbnailUrl: null,
@@ -105,7 +121,7 @@ export class VideosService {
           };
         } else {
           // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise((resolve) => setTimeout(resolve, 2000));
         }
       }
     }
@@ -129,7 +145,8 @@ export class VideosService {
     }
 
     // Determine status - if duration is 0, video is still processing
-    const status = assetDetails.duration > 0 ? VideoStatus.READY : VideoStatus.PROCESSING;
+    const status =
+      assetDetails.duration > 0 ? VideoStatus.READY : VideoStatus.PROCESSING;
 
     // Convert duration to integer (round to nearest second)
     // Cloudflare returns decimal duration, but database expects integer
@@ -151,7 +168,11 @@ export class VideosService {
     return savedVideoAsset;
   }
 
-  async uploadVideoFromServer(menuItemId: string, file: Express.Multer.File, vendorId: string) {
+  async uploadVideoFromServer(
+    menuItemId: string,
+    file: Express.Multer.File,
+    vendorId: string,
+  ) {
     await this.ensureVendorCanAddVideo(menuItemId, vendorId);
     console.log('Starting server-side video upload:', {
       menuItemId,
@@ -170,9 +191,16 @@ export class VideosService {
 
     // Step 2: Upload video file to Cloudflare from server (no CORS issues)
     // Cloudflare Stream direct upload requires multipart/form-data
-    console.log('Uploading video buffer to Cloudflare using multipart/form-data...');
-    console.log('Buffer size:', file.buffer.length, 'Expected size:', file.size);
-    
+    console.log(
+      'Uploading video buffer to Cloudflare using multipart/form-data...',
+    );
+    console.log(
+      'Buffer size:',
+      file.buffer.length,
+      'Expected size:',
+      file.size,
+    );
+
     try {
       // Create FormData with the video file
       // IMPORTANT: Use Buffer directly, form-data will handle it correctly
@@ -197,18 +225,25 @@ export class VideosService {
       console.log('Cloudflare upload response status:', uploadResponse.status);
       console.log('Cloudflare upload response data:', uploadResponse.data);
 
-      if (uploadResponse.status !== 200 && uploadResponse.status !== 201 && uploadResponse.status !== 204) {
-        const errorMessage = uploadResponse.data?.errors?.[0]?.message 
-          || uploadResponse.data?.message 
-          || uploadResponse.statusText 
-          || 'Unknown error';
+      if (
+        uploadResponse.status !== 200 &&
+        uploadResponse.status !== 201 &&
+        uploadResponse.status !== 204
+      ) {
+        const errorMessage =
+          uploadResponse.data?.errors?.[0]?.message ||
+          uploadResponse.data?.message ||
+          uploadResponse.statusText ||
+          'Unknown error';
         console.error('Cloudflare upload error details:', {
           status: uploadResponse.status,
           statusText: uploadResponse.statusText,
           data: uploadResponse.data,
           headers: uploadResponse.headers,
         });
-        throw new Error(`Failed to upload video to Cloudflare: ${uploadResponse.status} - ${errorMessage}`);
+        throw new Error(
+          `Failed to upload video to Cloudflare: ${uploadResponse.status} - ${errorMessage}`,
+        );
       }
 
       console.log('Video uploaded successfully to Cloudflare');
@@ -225,7 +260,7 @@ export class VideosService {
 
     // Step 3: Wait for Cloudflare to process
     console.log('Waiting for Cloudflare to process video...');
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     // Step 4: Complete upload
     console.log('Completing upload...');
@@ -233,12 +268,28 @@ export class VideosService {
   }
 
   /** قائمة كل مقاطع الفيديو للمورد (للعرض الموحد — نفس الحجم والإطار) */
-  async getVendorVideos(vendorId: string): Promise<Array<{ id: string; menuItemId: string; playbackUrl: string; thumbnailUrl: string | null; duration: number; menuItemName: string }>> {
+  async getVendorVideos(vendorId: string): Promise<
+    Array<{
+      id: string;
+      menuItemId: string;
+      playbackUrl: string;
+      thumbnailUrl: string | null;
+      duration: number;
+      menuItemName: string;
+    }>
+  > {
     const menuItems = await this.menuItemRepository.find({
       where: { vendorId },
       relations: ['videoAssets'],
     });
-    const result: Array<{ id: string; menuItemId: string; playbackUrl: string; thumbnailUrl: string | null; duration: number; menuItemName: string }> = [];
+    const result: Array<{
+      id: string;
+      menuItemId: string;
+      playbackUrl: string;
+      thumbnailUrl: string | null;
+      duration: number;
+      menuItemName: string;
+    }> = [];
     for (const mi of menuItems) {
       for (const va of mi.videoAssets || []) {
         result.push({
@@ -251,7 +302,7 @@ export class VideosService {
         });
       }
     }
-    return result.sort((a, b) => 0); // ترتيب ثابت؛ الواجهة تعرض بنفس الحجم
+    return result.sort(() => 0); // ترتيب ثابت؛ الواجهة تعرض بنفس الحجم
   }
 
   /** حذف مقطع فيديو — فقط إذا كان تابعاً لوجبة يملكها هذا المورد */
@@ -264,7 +315,9 @@ export class VideosService {
       throw new NotFoundException('Video not found');
     }
     if ((video.menuItem as MenuItem).vendorId !== vendorId) {
-      throw new ForbiddenException('You can only delete videos that belong to your menu items');
+      throw new ForbiddenException(
+        'You can only delete videos that belong to your menu items',
+      );
     }
     await this.videoAssetRepository.remove(video);
   }

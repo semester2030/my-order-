@@ -75,7 +75,12 @@ async function run() {
     isActive: true,
   });
 
-  console.log('Created admin user:', DEFAULT_EMAIL, '(password:', DEFAULT_PASSWORD + ')');
+  console.log(
+    'Created admin user:',
+    DEFAULT_EMAIL,
+    '(password:',
+    DEFAULT_PASSWORD + ')',
+  );
   await dataSource.destroy();
   process.exit(0);
 }

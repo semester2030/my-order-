@@ -1,7 +1,7 @@
 /**
  * Simple script to create test vendor account
  * Run this in a Node.js REPL or add to a migration
- * 
+ *
  * Usage:
  * import { createTestVendor } from './create-test-vendor-simple';
  * await createTestVendor(dataSource);

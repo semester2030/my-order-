@@ -12,11 +12,7 @@ export class UpdateDeliveryStatusDto {
     ],
     description: 'Delivery status',
   })
-  @IsEnum([
-    OrderStatus.OUT_FOR_DELIVERY,
-    'picked_up',
-    OrderStatus.DELIVERED,
-  ])
+  @IsEnum([OrderStatus.OUT_FOR_DELIVERY, 'picked_up', OrderStatus.DELIVERED])
   @IsNotEmpty()
   status: OrderStatus | 'picked_up';
 }

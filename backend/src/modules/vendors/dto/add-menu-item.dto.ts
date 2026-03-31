@@ -1,4 +1,12 @@
-import { IsString, IsNumber, IsOptional, IsBoolean, IsNotEmpty, Min, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsBoolean,
+  IsNotEmpty,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class AddMenuItemDto {
@@ -8,12 +16,15 @@ export class AddMenuItemDto {
   @MinLength(2)
   name: string;
 
-  @ApiPropertyOptional({ example: 'Delicious grilled chicken with herbs', description: 'Menu item description' })
+  @ApiPropertyOptional({
+    example: 'Delicious grilled chicken with herbs',
+    description: 'Menu item description',
+  })
   @IsOptional()
   @IsString()
   description?: string;
 
-  @ApiProperty({ example: 45.50, description: 'Menu item price' })
+  @ApiProperty({ example: 45.5, description: 'Menu item price' })
   @IsNumber()
   @Min(0)
   price: number;

@@ -34,13 +34,23 @@ async function bootstrap() {
     }),
   );
 
-  // CORS
-  app.enableCors();
+  // CORS — يدعم لوحة الإدارة على منفذ آخر + طلبات مع credentials عند الحاجة
+  const corsOrigins = process.env.CORS_ORIGINS?.split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  app.enableCors({
+    origin: corsOrigins?.length ? corsOrigins : true,
+    credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  });
 
   // Swagger documentation
   const config = new DocumentBuilder()
-    .setTitle('Customer API')
-    .setDescription('Premium food delivery API')
+    .setTitle('My Order API')
+    .setDescription(
+      'واجهات تطبيق العملاء ومقدّمي الخدمة: طبّاخ منزلي، طبّاخ شعبي، مقدّم شواء، مناسبات خاصة/بوفيه مفتوح. (لا يوجد نموذج «مطعم» في المنتج.)',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -51,7 +61,9 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}`);
   console.log(`API endpoints available at: http://localhost:${port}/api`);
-  console.log(`📧 Email (Resend): ${process.env.RESEND_API_KEY ? 'CONFIGURED' : 'NOT CONFIGURED - set RESEND_API_KEY'}`);
+  console.log(
+    `📧 Email (Resend): ${process.env.RESEND_API_KEY ? 'CONFIGURED' : 'NOT CONFIGURED - set RESEND_API_KEY'}`,
+  );
 }
 
 bootstrap();

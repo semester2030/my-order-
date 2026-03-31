@@ -1,7 +1,11 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EventRequest, EventRequestType, EventRequestStatus } from './entities/event-request.entity';
+import {
+  EventRequest,
+  EventRequestType,
+  EventRequestStatus,
+} from './entities/event-request.entity';
 import { CreateEventRequestDto } from './dto/create-event-request.dto';
 
 @Injectable()
@@ -11,10 +15,15 @@ export class EventRequestsService {
     private readonly eventRequestRepository: Repository<EventRequest>,
   ) {}
 
-  async create(userId: string, dto: CreateEventRequestDto): Promise<EventRequest> {
+  async create(
+    userId: string,
+    dto: CreateEventRequestDto,
+  ): Promise<EventRequest> {
     if (dto.requestType === EventRequestType.POPULAR_COOKING) {
       if (!dto.addressId?.trim()) {
-        throw new BadRequestException('عنوان استقبال الذبايح مطلوب للطبخ الشعبي');
+        throw new BadRequestException(
+          'عنوان استقبال الذبايح مطلوب للطبخ الشعبي',
+        );
       }
     } else {
       const hasDishes = (dto.dishIds?.length ?? 0) > 0;
@@ -27,7 +36,10 @@ export class EventRequestsService {
     const entity = this.eventRequestRepository.create({
       userId,
       vendorId: dto.vendorId,
-      addressId: dto.requestType === EventRequestType.POPULAR_COOKING ? dto.addressId : null,
+      addressId:
+        dto.requestType === EventRequestType.POPULAR_COOKING
+          ? dto.addressId
+          : null,
       requestType: dto.requestType,
       scheduledDate: dto.scheduledDate,
       scheduledTime: dto.scheduledTime,
@@ -35,7 +47,10 @@ export class EventRequestsService {
       addOns: dto.addOns?.length ? dto.addOns : null,
       dishIds: dto.dishIds?.length ? dto.dishIds : null,
       customDishNames: dto.customDishNames?.trim() || null,
-      delivery: dto.requestType === EventRequestType.HOME_COOKING ? dto.delivery ?? false : null,
+      delivery:
+        dto.requestType === EventRequestType.HOME_COOKING
+          ? (dto.delivery ?? false)
+          : null,
       notes: dto.notes?.trim() || null,
       status: EventRequestStatus.PENDING,
     });

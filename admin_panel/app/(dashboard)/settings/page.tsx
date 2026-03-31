@@ -30,7 +30,7 @@ export default function SettingsPage() {
           />
           <CardBody>
             <p className="text-sm text-text-secondary leading-relaxed mb-4">
-              تعيين نسب العمولة للمطاعم والسائقين ورسوم التوصيل.
+              تعيين نسب العمولة لمقدّمي الخدمة والسائقين ورسوم التوصيل.
             </p>
             <Button variant="outline" size="sm">تعديل</Button>
           </CardBody>

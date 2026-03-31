@@ -31,7 +31,7 @@ export interface SendNotificationOptions {
 
 /**
  * Firebase Cloud Messaging Service
- * 
+ *
  * Handles sending push notifications to mobile devices
  */
 @Injectable()
@@ -42,7 +42,7 @@ export class FcmService {
   constructor(private readonly configService: ConfigService) {
     FcmConfig.initialize(configService);
     this.messaging = FcmConfig.getMessaging();
-    
+
     if (!this.messaging) {
       this.logger.warn(
         'Firebase Admin not initialized. Push notifications will be disabled.',
@@ -55,7 +55,9 @@ export class FcmService {
    */
   async sendNotification(options: SendNotificationOptions): Promise<boolean> {
     if (!this.messaging) {
-      this.logger.warn('Firebase Admin not initialized. Cannot send notification.');
+      this.logger.warn(
+        'Firebase Admin not initialized. Cannot send notification.',
+      );
       return false;
     }
 
@@ -80,7 +82,8 @@ export class FcmService {
         apns: {
           headers: {
             'apns-priority': options.apns?.headers?.['apns-priority'] || '10',
-            'apns-expiration': options.apns?.headers?.['apns-expiration'] || undefined,
+            'apns-expiration':
+              options.apns?.headers?.['apns-expiration'] || undefined,
           },
           payload: {
             aps: {
@@ -99,15 +102,20 @@ export class FcmService {
       this.logger.log(`Notification sent successfully: ${response}`);
       return true;
     } catch (error) {
-      this.logger.error(`Failed to send notification: ${error.message}`, error.stack);
-      
+      this.logger.error(
+        `Failed to send notification: ${error.message}`,
+        error.stack,
+      );
+
       // Handle invalid token
-      if (error.code === 'messaging/invalid-registration-token' || 
-          error.code === 'messaging/registration-token-not-registered') {
+      if (
+        error.code === 'messaging/invalid-registration-token' ||
+        error.code === 'messaging/registration-token-not-registered'
+      ) {
         this.logger.warn(`Invalid FCM token: ${options.token}`);
         // TODO: Mark token as invalid in database
       }
-      
+
       return false;
     }
   }
@@ -119,10 +127,20 @@ export class FcmService {
     tokens: string[],
     notification: NotificationPayload,
     data?: NotificationData,
-  ): Promise<{ successCount: number; failureCount: number; invalidTokens: string[] }> {
+  ): Promise<{
+    successCount: number;
+    failureCount: number;
+    invalidTokens: string[];
+  }> {
     if (!this.messaging) {
-      this.logger.warn('Firebase Admin not initialized. Cannot send notification.');
-      return { successCount: 0, failureCount: tokens.length, invalidTokens: [] };
+      this.logger.warn(
+        'Firebase Admin not initialized. Cannot send notification.',
+      );
+      return {
+        successCount: 0,
+        failureCount: tokens.length,
+        invalidTokens: [],
+      };
     }
 
     if (tokens.length === 0) {
@@ -161,13 +179,15 @@ export class FcmService {
       };
 
       const response = await this.messaging.sendEachForMulticast(message);
-      
+
       const invalidTokens: string[] = [];
       if (response.failureCount > 0) {
         response.responses.forEach((resp, idx) => {
           if (!resp.success) {
-            if (resp.error?.code === 'messaging/invalid-registration-token' ||
-                resp.error?.code === 'messaging/registration-token-not-registered') {
+            if (
+              resp.error?.code === 'messaging/invalid-registration-token' ||
+              resp.error?.code === 'messaging/registration-token-not-registered'
+            ) {
               invalidTokens.push(tokens[idx]);
             }
           }
@@ -184,7 +204,10 @@ export class FcmService {
         invalidTokens,
       };
     } catch (error) {
-      this.logger.error(`Failed to send multicast notification: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to send multicast notification: ${error.message}`,
+        error.stack,
+      );
       return {
         successCount: 0,
         failureCount: tokens.length,
@@ -198,23 +221,30 @@ export class FcmService {
    */
   async validateToken(token: string): Promise<boolean> {
     if (!this.messaging) {
-      this.logger.warn('Firebase Admin not initialized. Cannot validate token.');
+      this.logger.warn(
+        'Firebase Admin not initialized. Cannot validate token.',
+      );
       return false;
     }
 
     try {
       // Try to send a test message (silent)
       // If token is invalid, it will throw an error
-      await this.messaging.send({
-        token,
-        data: { test: 'true' },
-        android: { priority: 'normal' },
-        apns: { headers: { 'apns-priority': '5' } },
-      }, true); // dry run
+      await this.messaging.send(
+        {
+          token,
+          data: { test: 'true' },
+          android: { priority: 'normal' },
+          apns: { headers: { 'apns-priority': '5' } },
+        },
+        true,
+      ); // dry run
       return true;
     } catch (error) {
-      if (error.code === 'messaging/invalid-registration-token' ||
-          error.code === 'messaging/registration-token-not-registered') {
+      if (
+        error.code === 'messaging/invalid-registration-token' ||
+        error.code === 'messaging/registration-token-not-registered'
+      ) {
         return false;
       }
       // Other errors might be temporary, consider token as valid
@@ -225,7 +255,9 @@ export class FcmService {
   /**
    * Convert data object to string map (FCM requirement)
    */
-  private convertDataToString(data: NotificationData): { [key: string]: string } {
+  private convertDataToString(data: NotificationData): {
+    [key: string]: string;
+  } {
     const result: { [key: string]: string } = {};
     for (const [key, value] of Object.entries(data)) {
       result[key] = String(value);

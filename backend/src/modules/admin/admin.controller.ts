@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Query, Param, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Param,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { AuditService } from './audit.service';
@@ -27,18 +36,24 @@ export class AdminController {
   }
 
   @Get('audit-logs')
-  @ApiOperation({ summary: 'Get audit logs' })
+  @ApiOperation({ summary: 'Get audit logs (with actor name/email)' })
   async getAuditLogs(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('action') action?: string,
     @Query('entityType') entityType?: string,
+    @Query('actorId') actorId?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
   ) {
     return this.auditService.findMany({
       page: page ? parseInt(page, 10) : undefined,
       limit: limit ? parseInt(limit, 10) : undefined,
       action,
       entityType,
+      actorId,
+      dateFrom,
+      dateTo,
     });
   }
 
@@ -121,7 +136,10 @@ export class AdminController {
   }
 
   @Get('disputes')
-  @ApiOperation({ summary: 'List disputes (stub — returns empty until disputes entity exists)' })
+  @ApiOperation({
+    summary:
+      'List disputes (stub — returns empty until disputes entity exists)',
+  })
   async getDisputes(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -148,7 +166,12 @@ export class AdminController {
     @Body() dto: RejectReasonDto,
     @Request() req: { user: AdminTokenPayload },
   ) {
-    return this.adminService.rejectVendor(id, dto.reason ?? '', req.user.sub, req as any);
+    return this.adminService.rejectVendor(
+      id,
+      dto.reason ?? '',
+      req.user.sub,
+      req as any,
+    );
   }
 
   @Post('vendors/:id/suspend')
@@ -176,7 +199,12 @@ export class AdminController {
     @Body() dto: RejectReasonDto,
     @Request() req: { user: AdminTokenPayload },
   ) {
-    return this.adminService.rejectDriver(id, dto.reason ?? '', req.user.sub, req as any);
+    return this.adminService.rejectDriver(
+      id,
+      dto.reason ?? '',
+      req.user.sub,
+      req as any,
+    );
   }
 
   @Post('drivers/:id/suspend')
@@ -195,7 +223,12 @@ export class AdminController {
     @Body() dto: ForceOrderStatusDto,
     @Request() req: { user: AdminTokenPayload },
   ) {
-    return this.adminService.forceOrderStatus(id, dto.status, req.user.sub, req as any);
+    return this.adminService.forceOrderStatus(
+      id,
+      dto.status,
+      req.user.sub,
+      req as any,
+    );
   }
 
   @Get('risk-flags')

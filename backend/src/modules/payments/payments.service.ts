@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Payment, PaymentStatus, PaymentMethod } from './entities/payment.entity';
+import { Payment, PaymentStatus } from './entities/payment.entity';
 import { Order, OrderStatus } from '../orders/entities/order.entity';
 import { InitiatePaymentDto } from './dto/initiate-payment.dto';
 import { ConfirmPaymentDto } from './dto/confirm-payment.dto';
@@ -42,7 +42,10 @@ export class PaymentsService {
     }
 
     // Check if order is in valid status for payment
-    if (order.status !== OrderStatus.PENDING && order.status !== OrderStatus.CONFIRMED) {
+    if (
+      order.status !== OrderStatus.PENDING &&
+      order.status !== OrderStatus.CONFIRMED
+    ) {
       throw new BadRequestException(
         `Cannot initiate payment for order with status: ${order.status}`,
       );
@@ -96,7 +99,8 @@ export class PaymentsService {
       status: savedPayment.status,
       paymentIntent: `pi_mock_${savedPayment.id}`, // Mock payment intent ID
       clientSecret: `cs_mock_${savedPayment.id}`, // Mock client secret
-      message: 'Payment initiated. Please complete payment using the provided details.',
+      message:
+        'Payment initiated. Please complete payment using the provided details.',
     };
   }
 
@@ -127,7 +131,9 @@ export class PaymentsService {
     }
 
     if (payment.status === PaymentStatus.FAILED) {
-      throw new BadRequestException('Payment has failed and cannot be confirmed');
+      throw new BadRequestException(
+        'Payment has failed and cannot be confirmed',
+      );
     }
 
     // In a real implementation, you would:

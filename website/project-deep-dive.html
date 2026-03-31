@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-root">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title data-ar="تحليل عميق — باكند وتطبيقات | مطبخ البيت" data-en="Deep dive — backend & apps | Home Kitchen">تحليل عميق — باكند وتطبيقات | مطبخ البيت</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/project-hub.css">
+  <style>
+    .deep-nav { display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center; padding:0 1rem 1rem; max-width:1000px; margin:0 auto; }
+    .deep-nav a { font-size:0.8rem; padding:0.35rem 0.65rem; border-radius:8px; background:var(--color-bg-card); border:1px solid var(--color-border); color:var(--color-primary-dark); font-weight:600; }
+    .deep-nav a:hover { border-color:var(--color-primary); }
+    .flow-box { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0.5rem; padding:1rem; margin:1rem 0; background:var(--color-bg-card); border-radius:var(--radius-lg); border:1px dashed var(--color-border); font-size:0.88rem; }
+    .flow-box .arr { color:var(--color-primary); font-weight:800; }
+    .mono-sm { font-family:ui-monospace,monospace; font-size:0.78rem; direction:ltr; text-align:left; display:block; }
+  </style>
+</head>
+<body class="hub-page">
+  <button id="lang-toggle" class="lang-toggle" type="button" aria-label="Switch language"><span id="lang-toggle-text">EN</span></button>
+  <header class="hub-topbar">
+    <a href="project-hub.html" data-ar="← المرجع التقني" data-en="← Technical hub"></a>
+    <a href="index.html" data-ar="الموقع" data-en="Marketing site"></a>
+  </header>
+  <div class="hub-title-wrap">
+    <h1 data-ar="تحليل دقيق: الباكند، العميل، المزوّد، لوحة الإدارة" data-en="Precision analysis: backend, customer, vendor, admin"></h1>
+    <p class="hub-meta" data-ar="لقطة: ٢٩ مارس ٢٠٢٦ — الأرقام من أوامر wc / find / npm run lint / dart analyze على المستودع المحلي." data-en="Snapshot: 29 Mar 2026 — from wc, find, npm run lint, dart analyze."></p>
+  </div>
+  <nav class="deep-nav" aria-label="أقسام">
+    <a href="#exec" data-ar="📊 الجدول التنفيذي" data-en="📊 Exec table"></a>
+    <a href="#link" data-ar="🔗 التكامل" data-en="🔗 Integration"></a>
+    <a href="#dup" data-ar="📑 التكرار" data-en="📑 Duplication"></a>
+    <a href="#long" data-ar="📏 الملفات الطويلة" data-en="📏 Long files"></a>
+    <a href="#lint" data-ar="⚠️ المُحلّل والأخطاء" data-en="⚠️ Lint & analyzer"></a>
+    <a href="#maint" data-ar="🛠️ الصيانة والتسليم" data-en="🛠️ Maintenance & handover"></a>
+  </nav>
+
+  <div class="hub-panel active" style="display:block;max-width:1040px">
+
+    <h2 class="hub-section-title" id="exec" data-ar="📊 الجدول التنفيذي (الأربعة)" data-en="📊 Executive table (the four)"></h2>
+    <div class="hub-table-wrap">
+      <table class="hub-table">
+        <thead>
+          <tr>
+            <th data-ar="المكوّن" data-en="Component"></th>
+            <th data-ar="المسار" data-en="Path"></th>
+            <th data-ar="ملفات*" data-en="Files*"></th>
+            <th data-ar="du -sh" data-en="du -sh"></th>
+            <th data-ar="ملاحظة دقيقة" data-en="Precision note"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🖥️ <span data-ar="الباكند" data-en="Backend"></span></td>
+            <td><code>backend/</code></td>
+            <td>259</td>
+            <td>392M</td>
+            <td data-ar="يشمل package-lock وnode_modules إن وُجدت محلياً ضمن المجلد؛ العدد بعد استبعاد node_modules/dist في find." data-en="Includes lockfile; count excludes node_modules/dist in find."></td>
+          </tr>
+          <tr>
+            <td>📱 <span data-ar="تطبيق العميل" data-en="Customer app"></span></td>
+            <td><code>customer_app/</code></td>
+            <td>1329</td>
+            <td>536M</td>
+            <td data-ar="يشمل أصول Flutter/iOS/Android؛ عدد الملفات بعد استبعاد build/.dart_tool في find." data-en="Includes mobile assets; count excludes build/.dart_tool."></td>
+          </tr>
+          <tr>
+            <td>🏪 <span data-ar="تطبيق المزوّد" data-en="Vendor app"></span></td>
+            <td><code>vendor_app/</code></td>
+            <td>453</td>
+            <td>335M</td>
+            <td data-ar="نفس ملاحظة أصول الموبايل." data-en="Same mobile asset note."></td>
+          </tr>
+          <tr>
+            <td>🛡️ <span data-ar="لوحة الإدارة" data-en="Admin panel"></span></td>
+            <td><code>admin_panel/</code></td>
+            <td>245</td>
+            <td>570M</td>
+            <td data-ar="قد يحتوي مجلد .next محلياً — يضخّم الحجم؛ للمراجعة استخدم مصدر app/ و components/ و lib/ فقط." data-en=".next may inflate size; review app/, components/, lib/."></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hub-note" data-ar="* أرقام الملفات مطابقة لمسح سابق في المرجع التقني؛ أعد تشغيل: find &lt;path&gt; -type f مع استبعاد التبعيات إن احتجت تحديثاً." data-en="* File counts match hub snapshot; re-run find with prunes to refresh."></p>
+
+    <h2 class="hub-section-title" id="link" data-ar="🔗 هل كلها مرتبطة؟ والإثبات من الكود" data-en="🔗 Are they wired? Code proof"></h2>
+    <div class="flow-box" dir="rtl">
+      <span>📱 customer_app</span><span class="arr">→</span><span><code>Endpoints.baseUrl</code></span>
+      <span class="arr">→</span><span>🖥️ Nest <code>/api/*</code></span>
+    </div>
+    <div class="hub-evidence">customer_app/lib/core/network/endpoints.dart
+static String get baseUrl { ... return 'https://my-order.onrender.com/api'; }
+// أو: --dart-define=API_BASE_URL=http://localhost:3001/api
+customer_app/lib/core/network/api_client.dart → Dio(baseUrl: Endpoints.baseUrl)</div>
+
+    <div class="flow-box" dir="rtl">
+      <span>🏪 vendor_app</span><span class="arr">→</span><span><code>Env.apiBaseUrl</code></span>
+      <span class="arr">→</span><span>🖥️ Nest <code>/api/*</code></span>
+    </div>
+    <div class="hub-evidence">vendor_app/lib/core/config/env.dart
+_defaultApiBaseUrl = 'https://my-order.onrender.com/api';
+vendor_app/lib/core/network/api_client.dart → baseUrl: AppNetworkConfig.baseUrl</div>
+
+    <div class="flow-box" dir="rtl">
+      <span>🛡️ admin_panel</span><span class="arr">→</span><span><code>NEXT_PUBLIC_API_URL</code> أو localhost</span>
+      <span class="arr">→</span><span>🖥️ Nest <code>/api/admin/*</code></span>
+    </div>
+    <div class="hub-evidence">admin_panel/lib/api/client.ts
+const DEFAULT_API_URL = 'http://localhost:3001';
+fetch(`${base}/api/admin/auth/login`, ...)</div>
+
+    <div class="hub-card">
+      <h3 data-ar="نقطة الربط في الخادم" data-en="Server binding"></h3>
+      <div class="hub-evidence">backend/src/main.ts
+app.setGlobalPrefix('api', ...);
+app.enableCors();  // مفتوح — راجع تقييد النطاقات في الإنتاج</div>
+      <p class="hub-note" data-ar="الخلاصة: التطبيقان يستهدفان نفس الجذر /api على الاستضافة الافتراضية؛ لوحة الإدارة تستدعي مسارات /api/admin/* مع Bearer من localStorage (مفتاح admin_token في client.ts)." data-en="Summary: Flutter apps hit /api on default host; admin uses /api/admin/* with Bearer from localStorage (ADMIN_TOKEN_KEY)."></p>
+    </div>
+
+    <h2 class="hub-section-title" id="dup" data-ar="📑 التكرار — نوعان (مهم)" data-en="📑 Duplication — two kinds"></h2>
+    <div class="hub-card">
+      <h3 data-ar="١) أسماء ملفات متطابقة بين العميل والمزوّد" data-en="1) Same filenames across customer & vendor"></h3>
+      <p class="hub-note" data-ar="هذا تكرار معماري متوقع (تطبيقان منفصلان): نفس الأنماط مثل orders_repo.dart، providers.dart، strings_ar.dart في كلا الشجرتين — المحتوى ليس بالضرورة بايت-بايت متطابق." data-en="Expected parallel app structure; content may differ."></p>
+      <div class="hub-evidence mono-sm">أمثلة أسماء تظهر مرتين عبر customer_app/lib و vendor_app/lib:
+orders_screen.dart · orders_repo.dart · providers.dart · strings_ar.dart · strings_en.dart
+secure_storage.dart · api_client.dart (مسارات مختلفة تحت كل lib/)</div>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="٢) أصول خطوط مكررة (إثبات حجم)" data-en="2) Duplicate font assets"></h3>
+      <p data-ar="مجلدا خط Cairo في التطبيقين يحتويان ٥ ملفات لكل منهما — تكرار حقيقي للأصول." data-en="Both apps have Cairo font folders with 5 files each — real asset duplication."></p>
+      <div class="hub-evidence">customer_app/assets/fonts/Cairo/  (5 ملفات)
+vendor_app/assets/fonts/Cairo/     (5 ملفات)</div>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="٣) ملفات مولّدة (Dart)" data-en="3) Generated Dart"></h3>
+      <p data-ar="ملفات *.freezed.dart طويلة جداً في العميل — مولّدة آلياً؛ لا تُعدّ «منطق يدوي طويل» بل مخرجات build_runner." data-en="*.freezed.dart are generated; not hand-written business logic length."></p>
+    </div>
+
+    <h2 class="hub-section-title" id="long" data-ar="📏 أطول الملفات (أسطر) — مسارات دقيقة" data-en="📏 Longest files (lines)"></h2>
+    <h3 data-ar="🖥️ backend/src (أعلى ١٢)" data-en="🖥️ backend/src (top 12)"></h3>
+    <div class="hub-table-wrap">
+      <table class="hub-table">
+        <thead><tr><th data-ar="أسطر" data-en="Lines"></th><th data-ar="مسار" data-en="Path"></th></tr></thead>
+        <tbody>
+          <tr><td>923</td><td><code>backend/src/migrations/1738043000000-CreateOrdersMenuAndRelatedTables.ts</code></td></tr>
+          <tr><td>811</td><td><code>backend/src/modules/vendors/vendors.service.ts</code></td></tr>
+          <tr><td>773</td><td><code>backend/src/migrations/1737820800000-AddVendorRegistrationFields.ts</code></td></tr>
+          <tr><td>549</td><td><code>backend/src/modules/vendors/vendors.controller.ts</code></td></tr>
+          <tr><td>483</td><td><code>backend/src/modules/admin/admin.service.ts</code></td></tr>
+          <tr><td>441</td><td><code>backend/src/modules/auth/auth.service.ts</code></td></tr>
+          <tr><td>437</td><td><code>backend/src/modules/drivers/drivers.service.ts</code></td></tr>
+          <tr><td>343</td><td><code>backend/src/modules/jobs/jobs.service.ts</code></td></tr>
+          <tr><td>313</td><td><code>backend/src/modules/drivers/entities/driver.entity.ts</code></td></tr>
+          <tr><td>311</td><td><code>backend/src/modules/feed/feed.service.ts</code></td></tr>
+          <tr><td>296</td><td><code>backend/src/modules/cart/cart.service.ts</code></td></tr>
+          <tr><td>289</td><td><code>backend/src/modules/orders/orders.service.ts</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hub-note" data-ar="الهجرة والـ service الكبيرة ترفع مخاطر دمج Git — يُفضّل تقسيم خدمات البائعين لاحقاً مع اختبارات." data-en="Large migrations/services raise merge risk — consider splitting with tests."></p>
+
+    <h3 data-ar="📱 customer_app/lib (أعلى ١٠ — يدوي + مولّد)" data-en="📱 customer_app/lib top 10"></h3>
+    <div class="hub-table-wrap">
+      <table class="hub-table">
+        <thead><tr><th data-ar="أسطر" data-en="Lines"></th><th data-ar="مسار" data-en="Path"></th></tr></thead>
+        <tbody>
+          <tr><td>981</td><td><code>.../payment_state.freezed.dart</code> <span class="hub-badge hub-badge--warn" data-ar="مولّد" data-en="gen"></span></td></tr>
+          <tr><td>780</td><td><code>.../auth_state.freezed.dart</code> <span class="hub-badge hub-badge--warn" data-ar="مولّد" data-en="gen"></span></td></tr>
+          <tr><td>758</td><td><code>customer_app/lib/modules/vendors/presentation/screens/request_chef_screen.dart</code></td></tr>
+          <tr><td>664</td><td><code>.../feed_state.freezed.dart</code> <span class="hub-badge hub-badge--warn" data-ar="مولّد" data-en="gen"></span></td></tr>
+          <tr><td>578</td><td><code>.../order_tracking_screen.dart</code></td></tr>
+          <tr><td>523</td><td><code>.../request_private_event_screen.dart</code></td></tr>
+          <tr><td>523</td><td><code>.../select_address_map_screen.dart</code></td></tr>
+          <tr><td>487</td><td><code>.../feed_screen.dart</code></td></tr>
+          <tr><td>473</td><td><code>.../order_confirmation_screen.dart</code></td></tr>
+          <tr><td>454</td><td><code>.../payment_screen.dart</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 data-ar="🏪 vendor_app/lib (أعلى ١٠)" data-en="🏪 vendor_app/lib top 10"></h3>
+    <div class="hub-table-wrap">
+      <table class="hub-table">
+        <thead><tr><th data-ar="أسطر" data-en="Lines"></th><th data-ar="مسار" data-en="Path"></th></tr></thead>
+        <tbody>
+          <tr><td>349</td><td><code>vendor_app/lib/modules/orders/presentation/screens/order_detail_screen.dart</code></td></tr>
+          <tr><td>347</td><td><code>vendor_app/lib/core/di/providers.dart</code></td></tr>
+          <tr><td>340</td><td><code>.../event_requests_screen.dart</code></td></tr>
+          <tr><td>311</td><td><code>.../edit_event_offer_screen.dart</code></td></tr>
+          <tr><td>304</td><td><code>.../add_menu_item_screen.dart</code></td></tr>
+          <tr><td>281</td><td><code>.../edit_menu_item_screen.dart</code></td></tr>
+          <tr><td>261</td><td><code>.../videos_screen.dart</code></td></tr>
+          <tr><td>260</td><td><code>vendor_app/lib/core/routing/app_router.dart</code></td></tr>
+          <tr><td>253</td><td><code>.../vendor_drawer.dart</code></td></tr>
+          <tr><td>253</td><td><code>.../event_offers_screen.dart</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 data-ar="🛡️ admin_panel (مصدر — باستثناء .next)" data-en="🛡️ admin_panel source (excl. .next)"></h3>
+    <div class="hub-table-wrap">
+      <table class="hub-table">
+        <thead><tr><th data-ar="أسطر" data-en="Lines"></th><th data-ar="مسار" data-en="Path"></th></tr></thead>
+        <tbody>
+          <tr><td>308</td><td><code>admin_panel/lib/api/client.ts</code></td></tr>
+          <tr><td>196</td><td><code>admin_panel/app/(dashboard)/vendors/page.tsx</code></td></tr>
+          <tr><td>190</td><td><code>admin_panel/app/(dashboard)/vendors/[id]/page.tsx</code></td></tr>
+          <tr><td>182</td><td><code>admin_panel/app/(dashboard)/drivers/[id]/page.tsx</code></td></tr>
+          <tr><td>175</td><td><code>admin_panel/app/(dashboard)/dashboard/page.tsx</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="hub-section-title" id="lint" data-ar="⚠️ الأخطاء والتحذيرات — دليل المُحلّل" data-en="⚠️ Lint & analyzer evidence"></h2>
+    <div class="hub-card">
+      <h3 data-ar="🖥️ Backend — npm run lint (ESLint) — ٣١ خطأ" data-en="🖥️ Backend ESLint — 31 errors"></h3>
+      <p class="hub-note" data-ar="الأمر: cd backend && npm run lint — معظمها unused imports/vars و require في fcm.config.ts" data-en="Run: cd backend && npm run lint — mostly unused vars/imports + no-var-requires."></p>
+      <div class="hub-table-wrap">
+        <table class="hub-table" style="font-size:0.72rem">
+          <thead><tr><th data-ar="ملف (نسبي من backend/src)" data-en="File (under src)"></th><th data-ar="سطر" data-en="Line"></th><th>ESLint</th><th data-ar="الرسالة" data-en="Message"></th></tr></thead>
+          <tbody>
+            <tr><td><code>migrations/1738042000000-EnsureVendorColumnsOnRender.ts</code></td><td>29</td><td>no-unused-vars</td><td>_queryRunner</td></tr>
+            <tr><td><code>migrations/1738043000000-CreateOrdersMenuAndRelatedTables.ts</code></td><td>1025</td><td>no-unused-vars</td><td>_queryRunner</td></tr>
+            <tr><td><code>modules/auth/auth.controller.ts</code></td><td>91</td><td>no-unused-vars</td><td>req</td></tr>
+            <tr><td><code>modules/drivers/drivers.service.ts</code></td><td>381</td><td>no-unused-vars</td><td>adminId</td></tr>
+            <tr><td><code>modules/drivers/dto/register-driver-step1.dto.ts</code></td><td>7</td><td>no-unused-vars</td><td>IsOptional</td></tr>
+            <tr><td><code>modules/drivers/dto/register-driver-step2.dto.ts</code></td><td>9</td><td>no-unused-vars</td><td>Matches</td></tr>
+            <tr><td><code>modules/drivers/dto/register-driver-step2.dto.ts</code></td><td>10</td><td>no-unused-vars</td><td>Length</td></tr>
+            <tr><td><code>modules/drivers/entities/driver.entity.ts</code></td><td>17</td><td>no-unused-vars</td><td>VerificationStatus</td></tr>
+            <tr><td><code>modules/event-requests/event-requests.service.ts</code></td><td>3</td><td>no-unused-vars</td><td>NotFoundException</td></tr>
+            <tr><td><code>modules/feed/feed.service.ts</code></td><td>8</td><td>no-unused-vars</td><td>User</td></tr>
+            <tr><td><code>modules/feed/feed.service.ts</code></td><td>71</td><td>no-unused-vars</td><td>deliveryZones</td></tr>
+            <tr><td><code>modules/jobs/jobs.module.ts</code></td><td>1</td><td>no-unused-vars</td><td>forwardRef</td></tr>
+            <tr><td><code>modules/jobs/jobs.service.ts</code></td><td>8</td><td>no-unused-vars</td><td>LessThan</td></tr>
+            <tr><td><code>modules/jobs/jobs.service.ts</code></td><td>11</td><td>no-unused-vars</td><td>Driver</td></tr>
+            <tr><td><code>modules/notifications/fcm/fcm.config.ts</code></td><td>37</td><td>no-var-requires</td><td>Require not part of import</td></tr>
+            <tr><td><code>modules/orders/orders.service.ts</code></td><td>62</td><td>no-unused-vars</td><td>notes assigned never used</td></tr>
+            <tr><td><code>modules/payments/dto/initiate-payment.dto.ts</code></td><td>1</td><td>no-unused-vars</td><td>IsNumber</td></tr>
+            <tr><td><code>modules/payments/dto/initiate-payment.dto.ts</code></td><td>1</td><td>no-unused-vars</td><td>Min</td></tr>
+            <tr><td><code>modules/payments/payments.service.ts</code></td><td>12</td><td>no-unused-vars</td><td>PaymentMethod</td></tr>
+            <tr><td><code>modules/vendors/dto/register-vendor.dto.ts</code></td><td>22</td><td>no-unused-vars</td><td>toNumber</td></tr>
+            <tr><td><code>modules/vendors/dto/update-commercial-registration.dto.ts</code></td><td>1</td><td>no-unused-vars</td><td>IsEnum</td></tr>
+            <tr><td><code>modules/vendors/dto/update-commercial-registration.dto.ts</code></td><td>3</td><td>no-unused-vars</td><td>VerificationStatus</td></tr>
+            <tr><td><code>modules/vendors/dto/update-vendor-profile.dto.ts</code></td><td>3</td><td>no-unused-vars</td><td>IsNotEmpty</td></tr>
+            <tr><td><code>modules/vendors/dto/update-vendor-profile.dto.ts</code></td><td>12</td><td>no-unused-vars</td><td>IsDateString</td></tr>
+            <tr><td><code>modules/vendors/vendors.controller.ts</code></td><td>26</td><td>no-unused-vars</td><td>ApiBody</td></tr>
+            <tr><td><code>modules/vendors/vendors.service.ts</code></td><td>26</td><td>no-unused-vars</td><td>CertificateType</td></tr>
+            <tr><td><code>modules/vendors/vendors.service.ts</code></td><td>504</td><td>no-unused-vars</td><td>reason</td></tr>
+            <tr><td><code>modules/videos/cloudflare/cloudflare-stream.service.ts</code></td><td>38</td><td>no-unused-vars</td><td>fileName</td></tr>
+            <tr><td><code>modules/videos/cloudflare/cloudflare-stream.service.ts</code></td><td>39</td><td>no-unused-vars</td><td>fileSize</td></tr>
+            <tr><td><code>modules/videos/videos.service.ts</code></td><td>305</td><td>no-unused-vars</td><td>parameter a</td></tr>
+            <tr><td><code>modules/videos/videos.service.ts</code></td><td>305</td><td>no-unused-vars</td><td>parameter b</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hub-note" data-ar="المجموع ٣١ خطأ — مطابق لمخرجات npm run lint بتاريخ المسح." data-en="31 errors — matches npm run lint at scan time."></p>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="📱 customer_app — dart analyze — ٣٩ ملاحظة" data-en="📱 customer_app dart analyze — 39 issues"></h3>
+      <p data-ar="٢ تحذير (unused_import) + معلومات (trailing comma، deprecated Radio، BuildContext async، إلخ)" data-en="2 warnings + infos (style, deprecated Radio, context async)."></p>
+      <div class="hub-evidence">أمثلة مسارات:
+lib/app.dart — unused_import go_router
+lib/modules/vendors/.../request_chef_screen.dart — deprecated_member_use (Radio)
+lib/modules/addresses/.../addresses_list_screen.dart — use_build_context_synchronously</div>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="🏪 vendor_app — dart analyze — ١٠ ملاحظات" data-en="🏪 vendor_app — 10 issues"></h3>
+      <div class="hub-evidence">lib/main.dart — invalid_null_aware_operator (warning)
++ deprecated: Dropdown value، Switch activeColor، withOpacity (info)</div>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="🛡️ admin_panel — next lint" data-en="🛡️ admin_panel next lint"></h3>
+      <p class="hub-badge hub-badge--risk" data-ar="لم يُكمل تلقائياً" data-en="Did not complete"></p>
+      <p class="hub-note" data-ar="عند التشغيل طلب Next.js وضع ESLint تفاعلياً — يدل على أن مسار lint غير مُهيأ بالكامل في CI بدون تدخل بشري." data-en="Interactive ESLint setup prompt — CI lint needs config."></p>
+    </div>
+
+    <h2 class="hub-section-title" id="maint" data-ar="🛠️ الصيانة، التسليم لمبرمجين جدد، الجاهزية" data-en="🛠️ Maintenance & handover"></h2>
+    <div class="hub-card">
+      <h3 data-ar="هل السهولة عالية؟" data-en="Maintainability?"></h3>
+      <ul style="line-height:2;margin:0">
+        <li><span class="hub-badge hub-badge--ok">✓</span> <span data-ar="فصل وحدات Nest + مسارات واضحة /api" data-en="Nest modules + /api"></span></li>
+        <li><span class="hub-badge hub-badge--ok">✓</span> <span data-ar="Flutter منظم بـ modules تحت lib/" data-en="Flutter modules under lib/"></span></li>
+        <li><span class="hub-badge hub-badge--warn">!</span> <span data-ar="لا اختبارات .spec.ts ظاهرة في الباكند" data-en="No backend *.spec.ts"></span></li>
+        <li><span class="hub-badge hub-badge--warn">!</span> <span data-ar="٣١ خطأ ESLint في الباكند يمنع «lint نظيف» حتى الإصلاح" data-en="31 ESLint errors block clean lint"></span></li>
+        <li><span class="hub-badge hub-badge--warn">!</span> <span data-ar="CORS مفتوح — يحتاج سياسة إنتاج" data-en="Open CORS needs production policy"></span></li>
+      </ul>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="آلية تسليم مناسبة للمرحلة القادمة" data-en="Handover playbook"></h3>
+      <ol style="line-height:2;padding-right:1.25rem;margin:0">
+        <li data-ar="تشغيل محلي: backend (Nest) + Postgres + متغيرات البيئة من README backend" data-en="Local: Nest + Postgres + env from backend README"></li>
+        <li data-ar="تشغيل العميل: flutter run --dart-define=API_BASE_URL=..." data-en="Customer: flutter run with API_BASE_URL"></li>
+        <li data-ar="تشغيل المزوّد: نفس dart-define" data-en="Vendor: same dart-define"></li>
+        <li data-ar="لوحة الإدارة: NEXT_PUBLIC_API_URL + npm run dev" data-en="Admin: NEXT_PUBLIC_API_URL + dev"></li>
+        <li data-ar="إصلاح ESLint ثم إضافة CI (lint + build)" data-en="Fix ESLint then CI"></li>
+        <li data-ar="توحيد حزمة خطوط مشتركة أو git submodule لتقليل تكرار Cairo" data-en="Shared font package to dedupe Cairo"></li>
+      </ol>
+    </div>
+  </div>
+
+  <footer style="text-align:center;padding:2rem;color:var(--color-text-muted);font-size:0.85rem">
+    <p data-ar="مطبخ البيت — تحليل تقني داخلي" data-en="Home Kitchen — internal technical analysis"></p>
+  </footer>
+  <script src="js/project-hub.js"></script>
+</body>
+</html>

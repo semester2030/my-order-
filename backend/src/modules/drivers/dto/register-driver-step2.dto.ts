@@ -6,8 +6,6 @@ import {
   IsEnum,
   IsOptional,
   IsBoolean,
-  Matches,
-  Length,
 } from 'class-validator';
 import { LicenseType, VehicleType } from '../enums/driver-status.enum';
 
@@ -23,7 +21,11 @@ export class RegisterDriverStep2Dto {
   @IsNotEmpty()
   dateOfBirth: string;
 
-  @ApiProperty({ example: 'male', enum: ['male', 'female'], description: 'Gender' })
+  @ApiProperty({
+    example: 'male',
+    enum: ['male', 'female'],
+    description: 'Gender',
+  })
   @IsEnum(['male', 'female'])
   @IsNotEmpty()
   gender: 'male' | 'female';
@@ -63,12 +65,18 @@ export class RegisterDriverStep2Dto {
   @IsNotEmpty()
   licenseIssuingAuthority: string;
 
-  @ApiProperty({ example: 'https://...', description: 'License photo front URL' })
+  @ApiProperty({
+    example: 'https://...',
+    description: 'License photo front URL',
+  })
   @IsString()
   @IsNotEmpty()
   licensePhotoFront: string;
 
-  @ApiProperty({ example: 'https://...', description: 'License photo back URL' })
+  @ApiProperty({
+    example: 'https://...',
+    description: 'License photo back URL',
+  })
   @IsString()
   @IsNotEmpty()
   licensePhotoBack: string;
@@ -113,12 +121,18 @@ export class RegisterDriverStep2Dto {
   @IsNotEmpty()
   plateRegion: string;
 
-  @ApiProperty({ example: 'REG123456', description: 'Vehicle registration number' })
+  @ApiProperty({
+    example: 'REG123456',
+    description: 'Vehicle registration number',
+  })
   @IsString()
   @IsNotEmpty()
   vehicleRegistrationNumber: string;
 
-  @ApiProperty({ example: '2025-01-01', description: 'Vehicle registration expiry' })
+  @ApiProperty({
+    example: '2025-01-01',
+    description: 'Vehicle registration expiry',
+  })
   @IsDateString()
   @IsNotEmpty()
   vehicleRegistrationExpiry: string;
@@ -147,7 +161,10 @@ export class RegisterDriverStep2Dto {
   @IsNotEmpty()
   emergencyContactName: string;
 
-  @ApiProperty({ example: '0501234567', description: 'Emergency contact phone' })
+  @ApiProperty({
+    example: '0501234567',
+    description: 'Emergency contact phone',
+  })
   @IsString()
   @IsNotEmpty()
   emergencyContactPhone: string;

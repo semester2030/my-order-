@@ -59,10 +59,14 @@ export class EmailService {
         html,
       });
 
-      this.logger.log(`Resend API response: data=${JSON.stringify(data)} error=${error ? JSON.stringify(error) : 'null'}`);
+      this.logger.log(
+        `Resend API response: data=${JSON.stringify(data)} error=${error ? JSON.stringify(error) : 'null'}`,
+      );
 
       if (error) {
-        this.logger.error(`Failed to send OTP email to ${to}: ${error.message}`);
+        this.logger.error(
+          `Failed to send OTP email to ${to}: ${error.message}`,
+        );
         return false;
       }
 

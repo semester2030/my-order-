@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as admin from 'firebase-admin';
 
 /**
  * Firebase Cloud Messaging Configuration
- * 
+ *
  * Setup:
  * 1. Create Firebase project
  * 2. Download service account key (JSON)
@@ -34,7 +36,11 @@ export class FcmConfig {
     }
 
     try {
-      const serviceAccount = require(serviceAccountPath);
+      const resolved = path.isAbsolute(serviceAccountPath)
+        ? serviceAccountPath
+        : path.join(process.cwd(), serviceAccountPath);
+      const raw = fs.readFileSync(resolved, 'utf8');
+      const serviceAccount = JSON.parse(raw) as admin.ServiceAccount;
 
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
@@ -43,9 +49,7 @@ export class FcmConfig {
       this.initialized = true;
       console.log('✅ Firebase Admin initialized successfully');
     } catch (error) {
-      console.warn(
-        `⚠️  Failed to initialize Firebase Admin: ${error.message}`,
-      );
+      console.warn(`⚠️  Failed to initialize Firebase Admin: ${error.message}`);
       // Don't throw - allow app to start without Firebase
     }
   }

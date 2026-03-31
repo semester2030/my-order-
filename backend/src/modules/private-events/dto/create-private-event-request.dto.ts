@@ -1,9 +1,20 @@
-import { IsString, IsUUID, IsArray, ValidateNested, IsNumber, Min, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsUUID,
+  IsArray,
+  ValidateNested,
+  IsNumber,
+  Min,
+  IsOptional,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PrivateEventServiceDto {
-  @ApiProperty({ example: 'buffet', description: 'buffet | desserts | drinks | staff' })
+  @ApiProperty({
+    example: 'buffet',
+    description: 'buffet | desserts | drinks | staff',
+  })
   @IsString()
   serviceType: string;
 
@@ -28,7 +39,10 @@ export class CreatePrivateEventRequestDto {
   @IsUUID()
   addressId?: string;
 
-  @ApiProperty({ example: 'wedding', description: 'wedding | graduation | henna | engagement | other' })
+  @ApiProperty({
+    example: 'wedding',
+    description: 'wedding | graduation | henna | engagement | other',
+  })
   @IsString()
   eventType: string;
 

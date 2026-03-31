@@ -12,7 +12,10 @@ export class UpdateOrderStatusDto {
   @IsNotEmpty()
   status: OrderStatus;
 
-  @ApiPropertyOptional({ example: 'Order is being prepared', description: 'Status note' })
+  @ApiPropertyOptional({
+    example: 'Order is being prepared',
+    description: 'Status note',
+  })
   @IsOptional()
   @IsString()
   note?: string;

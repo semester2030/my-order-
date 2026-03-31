@@ -34,7 +34,7 @@ export default function VendorDetailPage() {
   if (error) {
     return (
       <>
-        <PageHeader title="تفاصيل المطعم" description="خطأ" />
+        <PageHeader title="تفاصيل مقدّم الخدمة" description="خطأ" />
         <div className="rounded-card border border-error/30 bg-error/10 px-4 py-3 text-text-primary">
           فشل تحميل البيانات: {error.message}
         </div>
@@ -45,7 +45,7 @@ export default function VendorDetailPage() {
   if (isLoading || !data) {
     return (
       <>
-        <PageHeader title="تفاصيل المطعم" description="جاري التحميل..." />
+        <PageHeader title="تفاصيل مقدّم الخدمة" description="جاري التحميل..." />
         <div className="h-64 animate-pulse rounded-card bg-surface-variant" />
       </>
     )
@@ -57,7 +57,7 @@ export default function VendorDetailPage() {
   return (
     <>
       <PageHeader
-        title="تفاصيل المطعم"
+        title="تفاصيل مقدّم الخدمة"
         description={(v.name as string) ?? `#${id}`}
         children={
           <Link href="/vendors">

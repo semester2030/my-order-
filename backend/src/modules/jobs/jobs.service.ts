@@ -5,10 +5,9 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThan, MoreThan } from 'typeorm';
+import { Repository, MoreThan } from 'typeorm';
 import { JobOffer, JobStatus } from './entities/job-offer.entity';
 import { Order, OrderStatus } from '../orders/entities/order.entity';
-import { Driver } from '../drivers/entities/driver.entity';
 import { DriversService } from '../drivers/drivers.service';
 import { DriverNotificationsService } from '../notifications/driver/driver-notifications.service';
 
@@ -290,7 +289,9 @@ export class JobsService {
 
     // Send push notification to online drivers
     if (jobWithOrder) {
-      await this.driverNotificationsService.sendJobOfferNotification(jobWithOrder);
+      await this.driverNotificationsService.sendJobOfferNotification(
+        jobWithOrder,
+      );
     }
 
     return {

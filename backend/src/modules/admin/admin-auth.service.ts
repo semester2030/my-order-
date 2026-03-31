@@ -9,6 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { AdminUser } from './entities/admin-user.entity';
+import { AuditService } from './audit.service';
+import { AUDIT_SYSTEM_ACTOR_ID } from './constants';
 
 export const ADMIN_JWT_TYPE = 'admin';
 
@@ -30,6 +32,8 @@ export interface AdminAuthResult {
   };
 }
 
+type ReqForAudit = { ip?: string; headers?: { 'user-agent'?: string } };
+
 @Injectable()
 export class AdminAuthService {
   constructor(
@@ -37,24 +41,53 @@ export class AdminAuthService {
     private readonly adminUserRepo: Repository<AdminUser>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly auditService: AuditService,
   ) {}
 
-  async login(email: string, password: string): Promise<AdminAuthResult> {
+  async login(
+    email: string,
+    password: string,
+    req?: ReqForAudit,
+  ): Promise<AdminAuthResult> {
+    const normalized = email.toLowerCase().trim();
     const admin = await this.adminUserRepo.findOne({
-      where: { email: email.toLowerCase().trim() },
+      where: { email: normalized },
       relations: ['role'],
     });
 
+    const logFail = async (
+      entityId: string,
+      newValue: Record<string, unknown>,
+    ) => {
+      await this.auditService.log({
+        actorId: AUDIT_SYSTEM_ACTOR_ID,
+        action: 'ADMIN_LOGIN_FAILED',
+        entityType: 'admin_auth',
+        entityId,
+        newValue,
+        req,
+      });
+    };
+
     if (!admin) {
+      await logFail(normalized, { reason: 'unknown_email' });
       throw new UnauthorizedException('Invalid email or password');
     }
 
     if (!admin.isActive) {
+      await logFail(admin.id, {
+        reason: 'inactive_account',
+        email: normalized,
+      });
       throw new ForbiddenException('Account is deactivated');
     }
 
     const isPasswordValid = await bcrypt.compare(password, admin.passwordHash);
     if (!isPasswordValid) {
+      await logFail(admin.id, {
+        reason: 'invalid_password',
+        email: normalized,
+      });
       throw new UnauthorizedException('Invalid email or password');
     }
 
@@ -72,6 +105,15 @@ export class AdminAuthService {
       expiresIn: expiresInStr,
     });
 
+    await this.auditService.log({
+      actorId: admin.id,
+      action: 'ADMIN_LOGIN_SUCCESS',
+      entityType: 'admin_user',
+      entityId: admin.id,
+      newValue: { email: admin.email },
+      req,
+    });
+
     return {
       accessToken,
       expiresIn: expiresInSeconds,
@@ -84,7 +126,26 @@ export class AdminAuthService {
     };
   }
 
-  async refreshFromToken(currentTokenPayload: AdminTokenPayload): Promise<AdminAuthResult> {
+  async logout(adminId: string, req?: ReqForAudit): Promise<{ ok: true }> {
+    const admin = await this.adminUserRepo.findOne({
+      where: { id: adminId },
+    });
+    if (admin) {
+      await this.auditService.log({
+        actorId: adminId,
+        action: 'ADMIN_LOGOUT',
+        entityType: 'admin_user',
+        entityId: adminId,
+        newValue: { email: admin.email },
+        req,
+      });
+    }
+    return { ok: true };
+  }
+
+  async refreshFromToken(
+    currentTokenPayload: AdminTokenPayload,
+  ): Promise<AdminAuthResult> {
     if (currentTokenPayload.type !== ADMIN_JWT_TYPE) {
       throw new UnauthorizedException('Invalid token type');
     }

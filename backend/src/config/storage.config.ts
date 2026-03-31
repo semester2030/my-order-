@@ -25,10 +25,18 @@ export const storageConfig = {
       'video/webm',
     ];
 
-    if (allowedMimes.includes(file.mimetype) || file.mimetype.startsWith('video/')) {
+    if (
+      allowedMimes.includes(file.mimetype) ||
+      file.mimetype.startsWith('video/')
+    ) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only images, PDFs, and videos are allowed.'), false);
+      cb(
+        new Error(
+          'Invalid file type. Only images, PDFs, and videos are allowed.',
+        ),
+        false,
+      );
     }
   },
   limits: {

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { Vendor } from '../vendors/entities/vendor.entity';
@@ -100,9 +104,13 @@ export class AdminService {
     const limit = Math.min(100, Math.max(1, options.limit ?? 20));
     const skip = (page - 1) * limit;
 
-    const where: Partial<{ registrationStatus: VendorStatus; providerCategory: string | null }> = {};
+    const where: Partial<{
+      registrationStatus: VendorStatus;
+      providerCategory: string | null;
+    }> = {};
     if (options.status) where.registrationStatus = options.status;
-    if (options.category?.trim()) where.providerCategory = options.category.trim();
+    if (options.category?.trim())
+      where.providerCategory = options.category.trim();
 
     const [items, total] = await this.vendorRepo.findAndCount({
       where,
@@ -168,7 +176,9 @@ export class AdminService {
         status: d.status,
         nationalId: d.nationalId,
         createdAt: d.createdAt,
-        user: d.user ? { phone: d.user.phone ?? d.user.email ?? '', name: d.user.name } : null,
+        user: d.user
+          ? { phone: d.user.phone ?? d.user.email ?? '', name: d.user.name }
+          : null,
       })),
       total,
       page,
@@ -285,7 +295,10 @@ export class AdminService {
   async approveVendor(id: string, adminId: string, req?: ReqForAudit) {
     const vendor = await this.vendorRepo.findOne({ where: { id } });
     if (!vendor) throw new NotFoundException('Vendor not found');
-    if (vendor.registrationStatus !== VendorStatus.PENDING_APPROVAL && vendor.registrationStatus !== VendorStatus.UNDER_REVIEW) {
+    if (
+      vendor.registrationStatus !== VendorStatus.PENDING_APPROVAL &&
+      vendor.registrationStatus !== VendorStatus.UNDER_REVIEW
+    ) {
       const msg =
         vendor.registrationStatus === VendorStatus.APPROVED
           ? 'المورد معتمد مسبقاً'
@@ -313,10 +326,18 @@ export class AdminService {
       newValue: { registrationStatus: VendorStatus.APPROVED },
       req,
     });
-    return { success: true, vendor: { id: vendor.id, registrationStatus: vendor.registrationStatus } };
+    return {
+      success: true,
+      vendor: { id: vendor.id, registrationStatus: vendor.registrationStatus },
+    };
   }
 
-  async rejectVendor(id: string, reason: string, adminId: string, req?: ReqForAudit) {
+  async rejectVendor(
+    id: string,
+    reason: string,
+    adminId: string,
+    req?: ReqForAudit,
+  ) {
     const vendor = await this.vendorRepo.findOne({ where: { id } });
     if (!vendor) throw new NotFoundException('Vendor not found');
     const oldStatus = vendor.registrationStatus;
@@ -335,7 +356,10 @@ export class AdminService {
       reason: reason ?? undefined,
       req,
     });
-    return { success: true, vendor: { id: vendor.id, registrationStatus: vendor.registrationStatus } };
+    return {
+      success: true,
+      vendor: { id: vendor.id, registrationStatus: vendor.registrationStatus },
+    };
   }
 
   async suspendVendor(id: string, adminId: string, req?: ReqForAudit) {
@@ -354,14 +378,22 @@ export class AdminService {
       newValue: { registrationStatus: VendorStatus.SUSPENDED },
       req,
     });
-    return { success: true, vendor: { id: vendor.id, registrationStatus: vendor.registrationStatus } };
+    return {
+      success: true,
+      vendor: { id: vendor.id, registrationStatus: vendor.registrationStatus },
+    };
   }
 
   async approveDriver(id: string, adminId: string, req?: ReqForAudit) {
     const driver = await this.driverRepo.findOne({ where: { id } });
     if (!driver) throw new NotFoundException('Driver not found');
-    if (driver.status !== DriverStatus.PENDING && driver.status !== DriverStatus.UNDER_REVIEW) {
-      throw new BadRequestException(`Cannot approve driver. Current status: ${driver.status}`);
+    if (
+      driver.status !== DriverStatus.PENDING &&
+      driver.status !== DriverStatus.UNDER_REVIEW
+    ) {
+      throw new BadRequestException(
+        `Cannot approve driver. Current status: ${driver.status}`,
+      );
     }
     const oldStatus = driver.status;
     driver.status = DriverStatus.APPROVED;
@@ -379,7 +411,12 @@ export class AdminService {
     return { success: true, driver: { id: driver.id, status: driver.status } };
   }
 
-  async rejectDriver(id: string, reason: string, adminId: string, req?: ReqForAudit) {
+  async rejectDriver(
+    id: string,
+    reason: string,
+    adminId: string,
+    req?: ReqForAudit,
+  ) {
     const driver = await this.driverRepo.findOne({ where: { id } });
     if (!driver) throw new NotFoundException('Driver not found');
     const oldStatus = driver.status;
@@ -417,7 +454,12 @@ export class AdminService {
     return { success: true, driver: { id: driver.id, status: driver.status } };
   }
 
-  async forceOrderStatus(id: string, status: OrderStatus, adminId: string, req?: ReqForAudit) {
+  async forceOrderStatus(
+    id: string,
+    status: OrderStatus,
+    adminId: string,
+    req?: ReqForAudit,
+  ) {
     const order = await this.orderRepo.findOne({ where: { id } });
     if (!order) throw new NotFoundException('Order not found');
     const oldStatus = order.status;
@@ -438,13 +480,34 @@ export class AdminService {
     return { success: true, order: { id: order.id, status: order.status } };
   }
 
-  async getRiskFlags(): Promise<{ flags: Array<{ id: string; type: string; title: string; description: string; severity: string; entityType: string; entityId: string | null }> }> {
-    const [failedPaymentsCount, pendingVendorsCount, pendingDriversCount] = await Promise.all([
-      this.paymentRepo.count({ where: { status: PaymentStatus.FAILED } }),
-      this.vendorRepo.count({ where: { registrationStatus: VendorStatus.PENDING_APPROVAL } }),
-      this.driverRepo.count({ where: { status: DriverStatus.PENDING } }),
-    ]);
-    const flags: Array<{ id: string; type: string; title: string; description: string; severity: string; entityType: string; entityId: string | null }> = [];
+  async getRiskFlags(): Promise<{
+    flags: Array<{
+      id: string;
+      type: string;
+      title: string;
+      description: string;
+      severity: string;
+      entityType: string;
+      entityId: string | null;
+    }>;
+  }> {
+    const [failedPaymentsCount, pendingVendorsCount, pendingDriversCount] =
+      await Promise.all([
+        this.paymentRepo.count({ where: { status: PaymentStatus.FAILED } }),
+        this.vendorRepo.count({
+          where: { registrationStatus: VendorStatus.PENDING_APPROVAL },
+        }),
+        this.driverRepo.count({ where: { status: DriverStatus.PENDING } }),
+      ]);
+    const flags: Array<{
+      id: string;
+      type: string;
+      title: string;
+      description: string;
+      severity: string;
+      entityType: string;
+      entityId: string | null;
+    }> = [];
     if (failedPaymentsCount > 0) {
       flags.push({
         id: 'payment-failed-count',

@@ -59,7 +59,7 @@ export class OrdersService {
    * Create order from cart
    */
   async createOrder(userId: string, dto: CreateOrderDto) {
-    const { addressId, notes, requestedReadyAt, orderType } = dto;
+    const { addressId, requestedReadyAt, orderType } = dto;
 
     // Get user cart
     const cart = await this.cartRepository.findOne({
@@ -81,7 +81,9 @@ export class OrdersService {
     });
 
     if (!address) {
-      throw new NotFoundException('Address not found or does not belong to user');
+      throw new NotFoundException(
+        'Address not found or does not belong to user',
+      );
     }
 
     if (!address.isActive) {
@@ -98,7 +100,9 @@ export class OrdersService {
         throw new BadRequestException('Requested time must be in the future');
       }
     } else if (orderType === 'scheduled' && !requestedReadyAt) {
-      throw new BadRequestException('requestedReadyAt is required for scheduled orders');
+      throw new BadRequestException(
+        'requestedReadyAt is required for scheduled orders',
+      );
     }
 
     // Generate order number

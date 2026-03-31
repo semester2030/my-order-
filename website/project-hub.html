@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-root">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title data-ar="المرجع التقني الرسمي | مطبخ البيت" data-en="Official Technical Hub | Home Kitchen">المرجع التقني الرسمي | مطبخ البيت</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/project-hub.css">
+</head>
+<body class="hub-page">
+  <button id="lang-toggle" class="lang-toggle" type="button" aria-label="Switch language">
+    <span id="lang-toggle-text">EN</span>
+  </button>
+
+  <header class="hub-topbar">
+    <a href="index.html" data-ar="← العودة للموقع" data-en="← Back to site"></a>
+    <a href="project-deep-dive.html" data-ar="تحليل عميق (باكند + تطبيقات)" data-en="Deep dive (backend + apps)"></a>
+    <span class="hub-badge hub-badge--warn" data-ar="داخلي — لا تفهرس" data-en="Internal — noindex"></span>
+  </header>
+
+  <div class="hub-title-wrap">
+    <h1 data-ar="المرجع التقني والرسمي للمشروع" data-en="Official Project Technical Hub"></h1>
+    <p class="hub-meta" data-ar="لقطة بيانات ومسارات مأخوذة من مستودع العمل — ٢٩ مارس ٢٠٢٦. النسب التقديرية مبنية على وجود الكود والتكامل وليست شهادة جاهزية للإنتاج." data-en="Data snapshot from the workspace — 29 Mar 2026. Percentages are code-presence estimates, not production-readiness certification."></p>
+  </div>
+
+  <nav class="hub-tabs" aria-label="أقسام المرجع">
+    <button type="button" class="hub-tab active" data-panel="panel-overview" data-ar="نظرة عامة" data-en="Overview"></button>
+    <button type="button" class="hub-tab" data-panel="panel-platforms" data-ar="المنصات والملفات" data-en="Platforms & files"></button>
+    <button type="button" class="hub-tab" data-panel="panel-evidence" data-ar="الأدلة والمسارات" data-en="Evidence & paths"></button>
+    <button type="button" class="hub-tab" data-panel="panel-security" data-ar="الأمان" data-en="Security"></button>
+    <button type="button" class="hub-tab" data-panel="panel-stores" data-ar="المتاجر" data-en="App stores"></button>
+    <button type="button" class="hub-tab" data-panel="panel-ops" data-ar="الصيانة والانطلاق" data-en="Ops & launch"></button>
+  </nav>
+
+  <!-- Panel: Overview -->
+  <section id="panel-overview" class="hub-panel active" aria-labelledby="t-overview">
+    <h2 class="hub-section-title" id="t-overview" data-ar="ملخص تنفيذي" data-en="Executive summary"></h2>
+    <div class="hub-stat-grid">
+      <div class="hub-stat">
+        <div class="num">~4178</div>
+        <div class="lbl" data-ar="ملف تقريبي (باستثناء .git و node_modules و build و dist داخل الاستعلام)" data-en="Approx. files (excl. .git, node_modules, build, dist)"></div>
+      </div>
+      <div class="hub-stat">
+        <div class="num">7</div>
+        <div class="lbl" data-ar="واجهات رئيسية (موقع، باكند، ٣ تطبيقات، لوحتان ويب)" data-en="Main surfaces (site, backend, 3 apps, 2 web panels)"></div>
+      </div>
+      <div class="hub-stat">
+        <div class="num">18</div>
+        <div class="lbl" data-ar="وحدات NestJS تحت backend/src/modules" data-en="NestJS modules under backend/src/modules"></div>
+      </div>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="منهجية «الدليل القاطع» هنا" data-en="What counts as proof here"></h3>
+      <p class="hub-note" data-ar="كل رقم ملفات جُمع بأمر find على المجلد مع استبعاد مجلدات التبعيات والبناء حيث وُضح ذلك. حجم القرص (du -sh) يشمل غالباً أصول Flutter/iOS/Android داخل التطبيقات — لذلك يبدو كبيراً مقارنةً بملفات المصدر فقط. الإثبات البرمجي: مسارات الملفات المذكورة يمكن فتحها في المحرر والتحقق منها مباشرة." data-en="File counts use find with dependency/build folders pruned where noted. du -sh often includes Flutter/mobile assets inside app trees. Cited paths are verifiable in the repo."></p>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="نسب إنجاز تقديرية (شفافة)" data-en="Transparent completion estimates"></h3>
+      <p class="hub-note" data-ar="لا توجد اختبارات آلية ظاهرة (.spec.ts) في الباكند ضمن المسح. لذلك لا نعلن «جاهزية إنتاج» بنسبة ١٠٠٪. النسب أدناه تعكس وجود طبقات ووحدات وليس اكتمال ضمان الجودة." data-en="No backend *.spec.ts files were found in the scan — automated test coverage is not evidenced. Percentages reflect module/code presence, not QA sign-off."></p>
+      <p data-ar="واجهة الموقع التسويقية (HTML/CSS/JS)" data-en="Marketing website (HTML/CSS/JS)"></p>
+      <div class="hub-progress" role="presentation"><span style="width:78%"></span></div>
+      <p data-ar="واجهة خلفية NestJS + TypeORM" data-en="NestJS + TypeORM backend"></p>
+      <div class="hub-progress" role="presentation"><span style="width:72%"></span></div>
+      <p data-ar="تطبيق العميل Flutter" data-en="Customer Flutter app"></p>
+      <div class="hub-progress" role="presentation"><span style="width:62%"></span></div>
+      <p data-ar="تطبيق المزوّد Flutter" data-en="Vendor Flutter app"></p>
+      <div class="hub-progress" role="presentation"><span style="width:58%"></span></div>
+      <p data-ar="تطبيق السائق Flutter" data-en="Driver Flutter app"></p>
+      <div class="hub-progress" role="presentation"><span style="width:55%"></span></div>
+      <p data-ar="لوحة الإدارة Next.js" data-en="Admin Next.js panel"></p>
+      <div class="hub-progress" role="presentation"><span style="width:52%"></span></div>
+      <p data-ar="لوحة المزوّد على الويب Next.js" data-en="Vendor web Next.js"></p>
+      <div class="hub-progress" role="presentation"><span style="width:50%"></span></div>
+    </div>
+  </section>
+
+  <!-- Panel: Platforms -->
+  <section id="panel-platforms" class="hub-panel" aria-labelledby="t-plat">
+    <h2 class="hub-section-title" id="t-plat" data-ar="المنصات — عدد الملفات والمسارات الجذرية" data-en="Platforms — file counts & roots"></h2>
+    <div class="hub-table-wrap">
+      <table class="hub-table">
+        <thead>
+          <tr>
+            <th data-ar="المنصة" data-en="Platform"></th>
+            <th data-ar="المسار الجذر" data-en="Root path"></th>
+            <th data-ar="ملفات (تقريب)" data-en="Files (~)"></th>
+            <th data-ar="du -sh" data-en="du -sh"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-ar="الموقع التسويقي" data-en="Marketing site"></td>
+            <td><code>website/</code></td>
+            <td>27</td>
+            <td>27M <span data-ar="(معظمها assets)" data-en="(mostly assets)"></span></td>
+          </tr>
+          <tr>
+            <td data-ar="الواجهة الخلفية" data-en="Backend API"></td>
+            <td><code>backend/</code></td>
+            <td>259 <span data-ar="بدون node_modules/dist" data-en="excl. node_modules/dist"></span></td>
+            <td>392M</td>
+          </tr>
+          <tr>
+            <td data-ar="تطبيق العميل" data-en="Customer app"></td>
+            <td><code>customer_app/</code></td>
+            <td>1329 <span data-ar="بدون build/.dart_tool" data-en="excl. build/.dart_tool"></span></td>
+            <td>536M</td>
+          </tr>
+          <tr>
+            <td data-ar="تطبيق المزوّد" data-en="Vendor app"></td>
+            <td><code>vendor_app/</code></td>
+            <td>453</td>
+            <td>335M</td>
+          </tr>
+          <tr>
+            <td data-ar="تطبيق السائق" data-en="Driver app"></td>
+            <td><code>driver_app/</code></td>
+            <td>1139</td>
+            <td>676M</td>
+          </tr>
+          <tr>
+            <td data-ar="لوحة الإدارة" data-en="Admin panel"></td>
+            <td><code>admin_panel/</code></td>
+            <td>245</td>
+            <td>570M</td>
+          </tr>
+          <tr>
+            <td data-ar="ويب المزوّد" data-en="Vendor web"></td>
+            <td><code>vendor-web/</code></td>
+            <td>569</td>
+            <td>503M</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hub-note" data-ar="ملفات Dart (lib فقط): العميل ~٣١٢، المزوّد ~٢٣٨، السائق ~١٩٧. TypeScript في backend/src: ~١٨٠ ملفاً. Next: admin_panel ~٤١ ملف tsx/ts في app و components و lib؛ vendor-web ~٤١ ملفاً مماثلاً." data-en="Dart in lib/: customer ~312, vendor ~238, driver ~197. backend/src *.ts ~180. Next admin ~41 ts/tsx; vendor-web ~41."></p>
+
+    <h3 class="hub-section-title" data-ar="وحدات الخدمة في الباكند (دليل المجلدات)" data-en="Backend service modules (folder proof)"></h3>
+    <div class="hub-evidence">backend/src/modules/
+addresses · admin · auth · cart · delivery · drivers · email · event-requests · feed · jobs · menu · notifications · orders · payments · private-events · users · vendors · videos</div>
+  </section>
+
+  <!-- Panel: Evidence -->
+  <section id="panel-evidence" class="hub-panel" aria-labelledby="t-ev">
+    <h2 class="hub-section-title" id="t-ev" data-ar="إثباتات من الملفات" data-en="File-based evidence"></h2>
+
+    <button type="button" class="hub-accordion-btn" aria-expanded="false">
+      <span data-ar="الباكند — نقطة الدخول والاعتماديات الأمنية" data-en="Backend — entry & security deps"></span>
+      <span class="chev">▼</span>
+    </button>
+    <div class="hub-accordion-panel">
+      <div class="hub-evidence">backend/package.json → scripts: nest build / start:prod
+dependencies include: @nestjs/jwt, passport-jwt, bcrypt, class-validator, typeorm, pg, firebase-admin, @nestjs/throttler</div>
+      <p><code>backend/src/main.ts</code>
+        <button type="button" class="btn-copy" data-copy="backend/src/main.ts" data-ar="نسخ" data-en="Copy">نسخ</button>
+      </p>
+      <p><code>backend/src/app.module.ts</code>
+        <button type="button" class="btn-copy" data-copy="backend/src/app.module.ts" data-ar="نسخ" data-en="Copy">نسخ</button>
+      </p>
+    </div>
+
+    <button type="button" class="hub-accordion-btn" aria-expanded="false">
+      <span data-ar="تطبيق العميل — التخزين الآمن والدفعات" data-en="Customer app — secure storage & payments"></span>
+      <span class="chev">▼</span>
+    </button>
+    <div class="hub-accordion-panel">
+      <div class="hub-evidence">customer_app/pubspec.yaml
+flutter_secure_storage · dio · go_router · google_maps_flutter · local_auth
+تعليق صريح: دفع Apple/Google معطّل مؤقتاً (flutter_pay)</div>
+      <p><code>customer_app/lib/</code> — ~312 ملف Dart</p>
+    </div>
+
+    <button type="button" class="hub-accordion-btn" aria-expanded="false">
+      <span data-ar="الموقع — الصفحات القانونية" data-en="Website — legal pages"></span>
+      <span class="chev">▼</span>
+    </button>
+    <div class="hub-accordion-panel">
+      <ul style="margin:0.5rem 0 0 1.25rem;line-height:2">
+        <li><code>website/index.html</code></li>
+        <li><code>website/privacy.html</code></li>
+        <li><code>website/terms.html</code></li>
+        <li><code>website/css/styles.css</code> · <code>website/js/main.js</code></li>
+      </ul>
+    </div>
+
+    <button type="button" class="hub-accordion-btn" aria-expanded="false">
+      <span data-ar="ما لم يُوجد في المسح (فجوة دليلية)" data-en="Not found in scan (evidence gap)"></span>
+      <span class="chev">▼</span>
+    </button>
+    <div class="hub-accordion-panel">
+      <ul style="margin:0.5rem 0 0 1.25rem;line-height:2">
+        <li data-ar="لا ملفات backend/**/*.spec.ts في نتيجة البحث" data-en="No backend/**/*.spec.ts in glob search"></li>
+        <li data-ar="لا README.md في جذر المستودع (يوجد README لكل مجلد فرعي)" data-en="No root README.md (per-package READMEs exist)"></li>
+        <li data-ar="driver_app/pubspec.yaml يذكر حزمة مشتركة path معلّقة" data-en="driver_app pubspec notes shared package path commented"></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Panel: Security -->
+  <section id="panel-security" class="hub-panel" aria-labelledby="t-sec">
+    <h2 class="hub-section-title" id="t-sec" data-ar="الأمان والتشفير — ما يثبته الكود" data-en="Security — what the code shows"></h2>
+    <div class="hub-card">
+      <h3 data-ar="الخادم" data-en="Server"></h3>
+      <ul style="margin:0;line-height:2">
+        <li><span class="hub-badge hub-badge--ok">JWT</span> <code>passport-jwt</code>، <code>@nestjs/jwt</code> — <code>backend/package.json</code></li>
+        <li><span class="hub-badge hub-badge--ok">bcrypt</span> <code>backend/package.json</code></li>
+        <li><span class="hub-badge hub-badge--ok">Throttler</span> <code>@nestjs/throttler</code></li>
+        <li><span class="hub-badge hub-badge--warn">TLS</span> <span data-ar="يعتمد على استضافة الإنتاج (Reverse proxy) — ليس مضمناً في الكود وحده" data-en="Depends on production hosting / reverse proxy — not only code"></span></li>
+      </ul>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="التطبيقات" data-en="Clients"></h3>
+      <ul style="margin:0;line-height:2">
+        <li><code>flutter_secure_storage</code> — <code>customer_app/pubspec.yaml</code>، <code>vendor_app/pubspec.yaml</code>، <code>driver_app/pubspec.yaml</code></li>
+        <li><code>local_auth</code> — العميل للقياسات الحيوية</li>
+      </ul>
+    </div>
+    <p class="hub-note" data-ar="التشفير في الراحة (قاعدة البيانات، النسخ الاحتياطي) يعتمد على مزوّد السحابة وإعدادات Postgres. راجع متغيرات البيئة ولا ترفع أسراراً إلى Git." data-en="Encryption at rest for DB/backups depends on your host and Postgres config. Never commit secrets."></p>
+  </section>
+
+  <!-- Panel: Stores -->
+  <section id="panel-stores" class="hub-panel" aria-labelledby="t-store">
+    <h2 class="hub-section-title" id="t-store" data-ar="جاهزية المتاجر — بدون مبالغة" data-en="Store readiness — no hype"></h2>
+    <div class="hub-card">
+      <h3 data-ar="ما يدعم الطلب (أدلة موجودة)" data-en="Supporting evidence present"></h3>
+      <ul style="margin:0;line-height:2">
+        <li><span class="hub-badge hub-badge--ok">Privacy</span> <code>website/privacy.html</code></li>
+        <li><span class="hub-badge hub-badge--ok">Terms</span> <code>website/terms.html</code></li>
+        <li><span class="hub-badge hub-badge--ok">روابط من التذييل</span> <code>website/index.html</code></li>
+      </ul>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="مخاطر / غياب لا يعني «مخالفة» تلقائية بل متطلبات لم تُغطَّ بعد" data-en="Gaps = requirements not yet covered, not automatic violations"></h3>
+      <ul style="margin:0;line-height:2">
+        <li data-ar="سياسات أبل وجوجل تتطلب نماذج بيانات دقيقة، لقطات، سياسات محدثة، واختباراً على أجهزة حقيقية — راجع إرشادات المتجر الحالية." data-en="Apple/Google require accurate data forms, screenshots, policies, device testing — follow current store guidelines."></li>
+        <li data-ar="تعطيل مسار الدفع في العميل (تعليق pubspec) يعني أن تجربة الشراء الكاملة قد لا تكون جاهزة للمراجعة إن كان الدفع جزءاً من النطاق." data-en="Commented payment dependency suggests purchase flow may be incomplete if IAP/checkout is in scope."></li>
+        <li data-ar="الإصدارات: customer 1.0.0+1، vendor 1.0.0+2، driver 1.0.0+1 — تحقق من توافقها مع سياسة الإصدارات عند النشر." data-en="Version/build numbers in pubspec — align with release policy."></li>
+      </ul>
+    </div>
+    <p class="hub-note" data-ar="لا يمكن إصدار حكم قانوني نهائي على «المخالفات» من دون مراجعة حساب المطوّر وسياسات المتجر وقت الإرسال. هذه الصفحة تقنية فقط." data-en="No final legal/store ruling from this technical page alone."></p>
+  </section>
+
+  <!-- Panel: Ops -->
+  <section id="panel-ops" class="hub-panel" aria-labelledby="t-ops">
+    <h2 class="hub-section-title" id="t-ops" data-ar="الصيانة، المبرمجون الجدد، الانطلاق" data-en="Maintenance, onboarding, launch"></h2>
+    <div class="hub-card">
+      <h3 data-ar="سهولة الصيانة" data-en="Maintainability"></h3>
+      <p class="hub-note" data-ar="نقاط قوة: فصل واضح (Nest modules، تطبيقات Flutter منفصلة، لوحتان Next). نقاط ضعف: غياب اختبارات آلية ظاهرة في الباكند، وعدم وجود README جذري يربط المكدس كاملاً." data-en="Strengths: modular Nest, separate Flutter apps, Next panels. Weaknesses: no evident backend tests, no single root README tying the stack."></p>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="خطوات مقترحة لهذه المرحلة" data-en="Suggested next steps"></h3>
+      <ol style="margin:0;line-height:2;padding-right:1.25rem">
+        <li data-ar="إنشاء README.md في جذر المستودع يشرح التشغيل المحلي لكل جزء والمتغيرات البيئية." data-en="Add root README with local run & env vars for each part."></li>
+        <li data-ar="إضافة اختبارات وحدة/تكامل حرجة للباكند (دفعات، طلبات، صلاحيات)." data-en="Add critical backend unit/integration tests."></li>
+        <li data-ar="CI (GitHub Actions أو غيره) للبناء والlint." data-en="CI for build + lint."></li>
+        <li data-ar="قائمة تحقق متاجر: الخصوصية، الأذونات، لقطات الشاشة، سياسة الاسترداد." data-en="Store checklist: privacy, permissions, screenshots, refund policy."></li>
+        <li data-ar="مراجعة أمنية للمتغيرات السرية ودوران مفاتيح API." data-en="Secrets review & API key rotation."></li>
+      </ol>
+    </div>
+    <div class="hub-card">
+      <h3 data-ar="هل المشروع جاهز لسوق التطبيقات؟" data-en="Market-ready?"></h3>
+      <p class="hub-note" data-ar="الإجابة الصادقة: الكود يُظهر منتجاً متقدماً متعدد المنصات، لكن الجاهزية للمتجر تحتاج اختباراً مستقلّاً، سياسات محدثة، ومسار دفع/تشغيل إنتاج مثبت. استخدم هذه الصفحة كخريطة طريق لا كشهادة جاهزية." data-en="Honest answer: substantial multi-surface codebase exists; store launch still needs QA, policies, production ops, and likely payment flow completion. Use this hub as a map, not a certificate."></p>
+    </div>
+  </section>
+
+  <footer style="text-align:center;padding:2rem;color:var(--color-text-muted);font-size:0.85rem">
+    <p data-ar="مطبخ البيت — مرجع تقني داخلي" data-en="Home Kitchen — internal technical reference"></p>
+  </footer>
+
+  <script src="js/project-hub.js"></script>
+</body>
+</html>

@@ -18,7 +18,9 @@ export class CloudflareStreamService {
     this.enabled = !!(this.accountId && this.apiToken);
 
     if (!this.enabled) {
-      console.warn('CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN not set. Video upload/stream will be disabled.');
+      console.warn(
+        'CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN not set. Video upload/stream will be disabled.',
+      );
       this.client = null;
       return;
     }
@@ -32,7 +34,10 @@ export class CloudflareStreamService {
     });
   }
 
-  async initUpload(fileName: string, fileSize: number): Promise<{ uploadURL: string; uid: string }> {
+  async initUpload(
+    fileName: string,
+    fileSize: number,
+  ): Promise<{ uploadURL: string; uid: string }> {
     if (!this.enabled || !this.client) {
       throw new ServiceUnavailableException(NOT_CONFIGURED_MSG);
     }
@@ -43,6 +48,10 @@ export class CloudflareStreamService {
         maxDurationSeconds: 300, // 5 minutes max
         requireSignedURLs: false, // Set to false for direct uploads
         allowedOrigins: ['*'], // Configure based on your domain
+        meta: {
+          name: fileName,
+          reportedFileSizeBytes: String(fileSize),
+        },
       });
 
       return {
@@ -50,8 +59,13 @@ export class CloudflareStreamService {
         uid: response.data.result.uid, // This is the asset ID
       };
     } catch (error: any) {
-      console.error('Cloudflare Stream initUpload error:', error.response?.data || error.message);
-      throw new Error(`Failed to initialize upload: ${error.response?.data?.errors?.[0]?.message || error.message}`);
+      console.error(
+        'Cloudflare Stream initUpload error:',
+        error.response?.data || error.message,
+      );
+      throw new Error(
+        `Failed to initialize upload: ${error.response?.data?.errors?.[0]?.message || error.message}`,
+      );
     }
   }
 
@@ -77,27 +91,39 @@ export class CloudflareStreamService {
       }
 
       return {
-        playbackUrl: playbackUrl || `https://customer-${this.accountId}.cloudflarestream.com/${assetId}/manifest/video.m3u8`,
+        playbackUrl:
+          playbackUrl ||
+          `https://customer-${this.accountId}.cloudflarestream.com/${assetId}/manifest/video.m3u8`,
         thumbnailUrl: result.thumbnail || result.thumbnailTimestamp || null,
         duration: result.duration || 0,
       };
     } catch (error: any) {
-      console.error('Cloudflare Stream getAssetDetails error:', error.response?.data || error.message);
+      console.error(
+        'Cloudflare Stream getAssetDetails error:',
+        error.response?.data || error.message,
+      );
       // If asset is still processing, return default values
       if (error.response?.status === 404 || error.response?.status === 400) {
         // Use the account ID from config
-        const accountId = this.accountId || this.configService.get<string>('CLOUDFLARE_ACCOUNT_ID');
+        const accountId =
+          this.accountId ||
+          this.configService.get<string>('CLOUDFLARE_ACCOUNT_ID');
         return {
           playbackUrl: `https://customer-${accountId}.cloudflarestream.com/${assetId}/manifest/video.m3u8`,
           thumbnailUrl: null,
           duration: 0,
         };
       }
-      throw new Error(`Failed to get asset details: ${error.response?.data?.errors?.[0]?.message || error.message}`);
+      throw new Error(
+        `Failed to get asset details: ${error.response?.data?.errors?.[0]?.message || error.message}`,
+      );
     }
   }
 
-  async generateSignedURL(assetId: string, expiresIn: number = 3600): Promise<string> {
+  async generateSignedURL(
+    assetId: string,
+    expiresIn: number = 3600,
+  ): Promise<string> {
     if (!this.enabled || !this.client) {
       throw new ServiceUnavailableException(NOT_CONFIGURED_MSG);
     }

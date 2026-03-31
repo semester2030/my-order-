@@ -14,7 +14,6 @@ import {
   DriverStatus,
   LicenseType,
   VehicleType,
-  VerificationStatus,
 } from '../enums/driver-status.enum';
 
 @Entity('drivers')

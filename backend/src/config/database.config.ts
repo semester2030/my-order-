@@ -31,14 +31,19 @@ export const getDatabaseConfig = (
 ): TypeOrmModuleOptions => {
   const url = configService.get<string>('DATABASE_URL');
   const fromUrl = url ? parseDatabaseUrl(url) : {};
-  const database =
-    (fromUrl.database ?? configService.get<string>('DATABASE_NAME', 'customer_app')) as string;
+  const database = (fromUrl.database ??
+    configService.get<string>('DATABASE_NAME', 'customer_app')) as string;
   return {
     type: 'postgres',
-    host: fromUrl.host ?? configService.get<string>('DATABASE_HOST', 'localhost'),
+    host:
+      fromUrl.host ?? configService.get<string>('DATABASE_HOST', 'localhost'),
     port: fromUrl.port ?? configService.get<number>('DATABASE_PORT', 5432),
-    username: fromUrl.username ?? configService.get<string>('DATABASE_USER', 'postgres'),
-    password: fromUrl.password ?? configService.get<string>('DATABASE_PASSWORD', 'password'),
+    username:
+      fromUrl.username ??
+      configService.get<string>('DATABASE_USER', 'postgres'),
+    password:
+      fromUrl.password ??
+      configService.get<string>('DATABASE_PASSWORD', 'password'),
     database,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     migrations: [__dirname + '/../migrations/*{.ts,.js}'],

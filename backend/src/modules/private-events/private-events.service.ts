@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventOffer } from './entities/event-offer.entity';
@@ -19,7 +24,9 @@ export class PrivateEventsService {
   ) {}
 
   async getVendorEventOffers(vendorId: string): Promise<EventOffer[]> {
-    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+    });
     if (!vendor) throw new NotFoundException('المقدم غير موجود');
     return this.eventOfferRepository.find({
       where: { vendorId, isActive: true },
@@ -27,11 +34,18 @@ export class PrivateEventsService {
     });
   }
 
-  async createEventOffer(vendorId: string, dto: CreateEventOfferDto): Promise<EventOffer> {
-    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+  async createEventOffer(
+    vendorId: string,
+    dto: CreateEventOfferDto,
+  ): Promise<EventOffer> {
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+    });
     if (!vendor) throw new NotFoundException('المقدم غير موجود');
     if (vendor.providerCategory !== 'private_events') {
-      throw new ForbiddenException('هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط');
+      throw new ForbiddenException(
+        'هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط',
+      );
     }
     const offer = this.eventOfferRepository.create({
       vendorId,
@@ -48,19 +62,31 @@ export class PrivateEventsService {
     return this.eventOfferRepository.save(offer);
   }
 
-  async updateEventOffer(vendorId: string, offerId: string, dto: Partial<CreateEventOfferDto>): Promise<EventOffer> {
-    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+  async updateEventOffer(
+    vendorId: string,
+    offerId: string,
+    dto: Partial<CreateEventOfferDto>,
+  ): Promise<EventOffer> {
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+    });
     if (!vendor) throw new NotFoundException('المقدم غير موجود');
     if (vendor.providerCategory !== 'private_events') {
-      throw new ForbiddenException('هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط');
+      throw new ForbiddenException(
+        'هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط',
+      );
     }
-    const offer = await this.eventOfferRepository.findOne({ where: { id: offerId, vendorId } });
+    const offer = await this.eventOfferRepository.findOne({
+      where: { id: offerId, vendorId },
+    });
     if (!offer) throw new NotFoundException('العرض غير موجود');
     if (dto.serviceType != null) offer.serviceType = dto.serviceType;
     if (dto.eventType != null) offer.eventType = dto.eventType;
     if (dto.title !== undefined) offer.title = dto.title?.trim() || null;
-    if (dto.description !== undefined) offer.description = dto.description?.trim() || null;
-    if (dto.pricePerPerson !== undefined) offer.pricePerPerson = dto.pricePerPerson;
+    if (dto.description !== undefined)
+      offer.description = dto.description?.trim() || null;
+    if (dto.pricePerPerson !== undefined)
+      offer.pricePerPerson = dto.pricePerPerson;
     if (dto.priceTotal !== undefined) offer.priceTotal = dto.priceTotal;
     if (dto.minGuests != null) offer.minGuests = dto.minGuests;
     if (dto.maxGuests !== undefined) offer.maxGuests = dto.maxGuests;
@@ -69,20 +95,33 @@ export class PrivateEventsService {
   }
 
   async deleteEventOffer(vendorId: string, offerId: string): Promise<void> {
-    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+    });
     if (!vendor) throw new NotFoundException('المقدم غير موجود');
     if (vendor.providerCategory !== 'private_events') {
-      throw new ForbiddenException('هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط');
+      throw new ForbiddenException(
+        'هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط',
+      );
     }
-    const result = await this.eventOfferRepository.delete({ id: offerId, vendorId });
+    const result = await this.eventOfferRepository.delete({
+      id: offerId,
+      vendorId,
+    });
     if (result.affected === 0) throw new NotFoundException('العرض غير موجود');
   }
 
-  async getVendorEventOffersForManagement(vendorId: string): Promise<EventOffer[]> {
-    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+  async getVendorEventOffersForManagement(
+    vendorId: string,
+  ): Promise<EventOffer[]> {
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+    });
     if (!vendor) throw new NotFoundException('المقدم غير موجود');
     if (vendor.providerCategory !== 'private_events') {
-      throw new ForbiddenException('هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط');
+      throw new ForbiddenException(
+        'هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط',
+      );
     }
     return this.eventOfferRepository.find({
       where: { vendorId },
@@ -90,14 +129,21 @@ export class PrivateEventsService {
     });
   }
 
-  async createPrivateEventRequest(userId: string, dto: CreatePrivateEventRequestDto): Promise<PrivateEventRequest> {
+  async createPrivateEventRequest(
+    userId: string,
+    dto: CreatePrivateEventRequestDto,
+  ): Promise<PrivateEventRequest> {
     if (!dto.services?.length) {
       throw new BadRequestException('اختر خدمة واحدة على الأقل');
     }
-    const vendor = await this.vendorRepository.findOne({ where: { id: dto.vendorId } });
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: dto.vendorId },
+    });
     if (!vendor) throw new NotFoundException('المقدم غير موجود');
     if (vendor.providerCategory !== 'private_events') {
-      throw new BadRequestException('هذا المقدم لا يقدم خدمات المناسبات الخاصة');
+      throw new BadRequestException(
+        'هذا المقدم لا يقدم خدمات المناسبات الخاصة',
+      );
     }
     const request = this.privateEventRequestRepository.create({
       userId,
@@ -114,7 +160,9 @@ export class PrivateEventsService {
     return this.privateEventRequestRepository.save(request);
   }
 
-  async findPrivateEventRequestsByUser(userId: string): Promise<PrivateEventRequest[]> {
+  async findPrivateEventRequestsByUser(
+    userId: string,
+  ): Promise<PrivateEventRequest[]> {
     return this.privateEventRequestRepository.find({
       where: { userId },
       relations: ['vendor', 'address'],
@@ -122,7 +170,9 @@ export class PrivateEventsService {
     });
   }
 
-  async findPrivateEventRequestsByVendor(vendorId: string): Promise<PrivateEventRequest[]> {
+  async findPrivateEventRequestsByVendor(
+    vendorId: string,
+  ): Promise<PrivateEventRequest[]> {
     return this.privateEventRequestRepository.find({
       where: { vendorId },
       relations: ['user', 'address'],

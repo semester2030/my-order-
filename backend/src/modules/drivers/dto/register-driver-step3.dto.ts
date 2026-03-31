@@ -30,7 +30,10 @@ export class RegisterDriverStep3Dto {
   @IsNotEmpty()
   insuranceExpiryDate: string;
 
-  @ApiProperty({ example: 'comprehensive', description: 'Insurance coverage type' })
+  @ApiProperty({
+    example: 'comprehensive',
+    description: 'Insurance coverage type',
+  })
   @IsString()
   @IsNotEmpty()
   insuranceCoverageType: string;
@@ -56,7 +59,10 @@ export class RegisterDriverStep3Dto {
   @IsNotEmpty()
   accountHolderName: string;
 
-  @ApiPropertyOptional({ example: 'SA1234567890123456789012', description: 'IBAN' })
+  @ApiPropertyOptional({
+    example: 'SA1234567890123456789012',
+    description: 'IBAN',
+  })
   @IsString()
   @IsOptional()
   iban?: string;
@@ -67,11 +73,17 @@ export class RegisterDriverStep3Dto {
   swiftCode?: string;
 
   // Optional: Health
-  @ApiPropertyOptional({ example: false, description: 'Has medical conditions' })
+  @ApiPropertyOptional({
+    example: false,
+    description: 'Has medical conditions',
+  })
   @IsOptional()
   hasMedicalConditions?: boolean;
 
-  @ApiPropertyOptional({ example: ['diabetes'], description: 'Medical conditions' })
+  @ApiPropertyOptional({
+    example: ['diabetes'],
+    description: 'Medical conditions',
+  })
   @IsOptional()
   medicalConditions?: string[];
 
@@ -85,12 +97,18 @@ export class RegisterDriverStep3Dto {
   allergies?: string[];
 
   // Optional: Additional
-  @ApiPropertyOptional({ example: 'https://...', description: 'Profile photo URL' })
+  @ApiPropertyOptional({
+    example: 'https://...',
+    description: 'Profile photo URL',
+  })
   @IsString()
   @IsOptional()
   profilePhoto?: string;
 
-  @ApiPropertyOptional({ example: ['Arabic', 'English'], description: 'Languages' })
+  @ApiPropertyOptional({
+    example: ['Arabic', 'English'],
+    description: 'Languages',
+  })
   @IsOptional()
   languages?: string[];
 

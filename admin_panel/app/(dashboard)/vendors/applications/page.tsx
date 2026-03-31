@@ -28,7 +28,7 @@ export default function VendorApplicationsPage() {
   if (error) {
     return (
       <>
-        <PageHeader title="طلبات تسجيل المطاعم" description="مراجعة والموافقة أو الرفض" />
+        <PageHeader title="طلبات تسجيل مقدّمي الخدمة" description="مراجعة والموافقة أو الرفض" />
         <div className="rounded-card border border-error/30 bg-error/10 px-4 py-3 text-text-primary">
           فشل تحميل البيانات: {error.message}
         </div>
@@ -48,8 +48,8 @@ export default function VendorApplicationsPage() {
   return (
     <>
       <PageHeader
-        title="طلبات تسجيل المطاعم"
-        description="بيانات المطعم، المستندات. أزرار الموافقة/الرفض ستُفعّل في المرحلة 4"
+        title="طلبات تسجيل مقدّمي الخدمة"
+        description="بيانات مقدّم الخدمة والمستندات. أزرار الموافقة/الرفض ستُفعّل في المرحلة 4"
       />
       <Card>
         <CardHeader
@@ -62,12 +62,12 @@ export default function VendorApplicationsPage() {
               جاري التحميل...
             </div>
           ) : items.length === 0 ? (
-            <EmptyState title="لا طلبات معلقة" description="لا توجد طلبات مطاعم بانتظار الموافقة" />
+            <EmptyState title="لا طلبات معلقة" description="لا توجد طلبات تسجيل لمقدّمي خدمة بانتظار الموافقة" />
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>المطعم</TableHead>
+                  <TableHead>مقدّم الخدمة</TableHead>
                   <TableHead>البريد</TableHead>
                   <TableHead>تاريخ التقديم</TableHead>
                   <TableHead>الحالة</TableHead>

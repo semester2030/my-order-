@@ -9,8 +9,19 @@ import {
 } from 'typeorm';
 import { Vendor } from '../../vendors/entities/vendor.entity';
 
-export const EVENT_SERVICE_TYPES = ['buffet', 'desserts', 'drinks', 'staff'] as const;
-export const EVENT_TYPES = ['wedding', 'graduation', 'henna', 'engagement', 'other'] as const;
+export const EVENT_SERVICE_TYPES = [
+  'buffet',
+  'desserts',
+  'drinks',
+  'staff',
+] as const;
+export const EVENT_TYPES = [
+  'wedding',
+  'graduation',
+  'henna',
+  'engagement',
+  'other',
+] as const;
 
 @Entity('event_offers')
 export class EventOffer {
@@ -32,10 +43,22 @@ export class EventOffer {
   @Column({ type: 'text', nullable: true })
   description: string | null;
 
-  @Column({ name: 'price_per_person', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  @Column({
+    name: 'price_per_person',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
   pricePerPerson: number | null;
 
-  @Column({ name: 'price_total', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  @Column({
+    name: 'price_total',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
   priceTotal: number | null;
 
   @Column({ name: 'min_guests', default: 1 })

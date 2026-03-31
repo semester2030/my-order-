@@ -23,7 +23,6 @@ import {
   ApiOperation,
   ApiBearerAuth,
   ApiConsumes,
-  ApiBody,
 } from '@nestjs/swagger';
 import { VendorsService } from './vendors.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -49,7 +48,9 @@ export class VendorsController {
   ) {}
 
   @Post('register')
-  @ApiOperation({ summary: 'Register new vendor' })
+  @ApiOperation({
+    summary: 'تسجيل مقدّم خدمة (طبّاخ منزلي، شعبي، شواء، مناسبات/بوفيه)',
+  })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileFieldsInterceptor(
@@ -67,13 +68,13 @@ export class VendorsController {
   async register(
     @Body() dto: RegisterVendorDto,
     @UploadedFiles()
-      files?: {
-        commercialRegistration?: any[];
-        ownerId?: any[];
-        logo?: any[];
-        cover?: any[];
-        restaurantImages?: any[];
-      },
+    files?: {
+      commercialRegistration?: any[];
+      ownerId?: any[];
+      logo?: any[];
+      cover?: any[];
+      restaurantImages?: any[];
+    },
   ) {
     return this.vendorsService.register(dto, files);
   }
@@ -120,7 +121,11 @@ export class VendorsController {
     @Request() req: { user: User },
     @Body() dto: ChangePasswordDto,
   ) {
-    return this.vendorsService.changePassword(req.user.id, dto.currentPassword, dto.newPassword);
+    return this.vendorsService.changePassword(
+      req.user.id,
+      dto.currentPassword,
+      dto.newPassword,
+    );
   }
 
   @Post('certificates')
@@ -129,15 +134,18 @@ export class VendorsController {
   @ApiOperation({ summary: 'Add certificate' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'certificateImage', maxCount: 1 }], storageConfig),
+    FileFieldsInterceptor(
+      [{ name: 'certificateImage', maxCount: 1 }],
+      storageConfig,
+    ),
   )
   async addCertificate(
     @Request() req: { user: User },
     @Body() dto: AddCertificateDto,
     @UploadedFiles()
-      files?: {
-        certificateImage?: any[];
-      },
+    files?: {
+      certificateImage?: any[];
+    },
   ) {
     const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
     if (!vendorId) {
@@ -260,11 +268,14 @@ export class VendorsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Add menu item' })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }], storageConfig))
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'image', maxCount: 1 }], storageConfig),
+  )
   @HttpCode(HttpStatus.CREATED)
   async addMenuItem(
     @Request() req: { user: User },
-    @Body() body: {
+    @Body()
+    body: {
       name: string;
       description?: string;
       price: string;
@@ -292,11 +303,14 @@ export class VendorsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update menu item' })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }], storageConfig))
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'image', maxCount: 1 }], storageConfig),
+  )
   async updateMenuItem(
     @Request() req: { user: User },
     @Param('id') menuItemId: string,
-    @Body() body: {
+    @Body()
+    body: {
       name?: string;
       description?: string;
       price?: string;
@@ -314,8 +328,14 @@ export class VendorsController {
       description: body.description,
       price: body.price ? parseFloat(body.price) : undefined,
       image: files?.image?.[0]?.filename,
-      isSignature: body.isSignature !== undefined ? body.isSignature === 'true' : undefined,
-      isAvailable: body.isAvailable !== undefined ? body.isAvailable !== 'false' : undefined,
+      isSignature:
+        body.isSignature !== undefined
+          ? body.isSignature === 'true'
+          : undefined,
+      isAvailable:
+        body.isAvailable !== undefined
+          ? body.isAvailable !== 'false'
+          : undefined,
     });
   }
 
@@ -394,10 +414,7 @@ export class VendorsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Add staff member' })
   @HttpCode(HttpStatus.CREATED)
-  async addStaff(
-    @Request() req: { user: User },
-    @Body() dto: AddStaffDto,
-  ) {
+  async addStaff(@Request() req: { user: User }, @Body() dto: AddStaffDto) {
     const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
     if (!vendorId) {
       throw new NotFoundException('Vendor not found for this user');
@@ -445,7 +462,9 @@ export class VendorsController {
   async getMyEventOffers(@Request() req: { user: User }) {
     const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
     if (!vendorId) throw new NotFoundException('Vendor not found');
-    return this.privateEventsService.getVendorEventOffersForManagement(vendorId);
+    return this.privateEventsService.getVendorEventOffersForManagement(
+      vendorId,
+    );
   }
 
   @Post('event-offers')
@@ -511,7 +530,11 @@ export class VendorsController {
   ) {
     const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
     if (!vendorId) throw new NotFoundException('Vendor not found');
-    return this.privateEventsService.updatePrivateEventRequestStatus(vendorId, requestId, 'accepted');
+    return this.privateEventsService.updatePrivateEventRequestStatus(
+      vendorId,
+      requestId,
+      'accepted',
+    );
   }
 
   @Post('private-event-requests/:requestId/reject')
@@ -525,7 +548,11 @@ export class VendorsController {
   ) {
     const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
     if (!vendorId) throw new NotFoundException('Vendor not found');
-    return this.privateEventsService.updatePrivateEventRequestStatus(vendorId, requestId, 'rejected');
+    return this.privateEventsService.updatePrivateEventRequestStatus(
+      vendorId,
+      requestId,
+      'rejected',
+    );
   }
 
   @Get(':id/event-offers')

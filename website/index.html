@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="مطبخ البيت - منصة رائدة تربط بين الطباخين المنزليين والعملاء. وجبات جاهزة، طبخ شعبي، مناسبات خاصة، وشوي. طعام منزلي أصيل إلى بابك.">
+  <meta name="description" content="مطبخ البيت - منصة تربطك بأفضل الطباخين المنزليين. وجبات جاهزة، طبخ شعبي، مناسبات، وشوي. نكهة البيت في كل طبق — من الطباخ إلى مائدتك.">
   <meta name="keywords" content="مطبخ البيت، طبخ منزلي، توصيل طعام، مناسبات، ذبايح، طبخ شعبي، شوي">
-  <title>مطبخ البيت | Home Kitchen — طعام منزلي أصيل إلى بابك</title>
+  <title>مطبخ البيت | Home Kitchen — نكهة البيت في كل طبق</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
   <!-- Language Toggle -->
-  <button id="lang-toggle" class="lang-toggle" aria-label="Switch language">
+  <button id="lang-toggle" class="lang-toggle" type="button" aria-label="Switch language">
     <span id="lang-toggle-text">EN</span>
   </button>
 
@@ -21,9 +23,10 @@
   <nav class="nav" id="nav">
     <div class="nav-container">
       <a href="#hero" class="nav-logo">
+        <img src="assets/images/logo.jpeg" alt="" class="nav-logo-img" width="112" height="112" decoding="async">
         <span class="logo-text" data-ar="مطبخ البيت" data-en="Home Kitchen"></span>
       </a>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
       <ul class="nav-menu" id="nav-menu">
@@ -38,11 +41,14 @@
 
   <!-- Hero -->
   <section class="hero" id="hero">
-    <div class="hero-bg"></div>
+    <div class="hero-bg" id="hero-bg"></div>
     <div class="hero-content">
+      <div class="hero-logo-wrap">
+        <img src="assets/images/logo.jpeg" alt="" class="hero-logo-img" width="264" height="264" decoding="async">
+      </div>
       <h1 class="hero-title">
-        <span class="line" data-ar="طعام منزلي أصيل" data-en="Authentic Home Cooking"></span>
-        <span class="line accent" data-ar="إلى بابك" data-en="To Your Door"></span>
+        <span class="line" data-ar="نكهة البيت في كل طبق" data-en="Home Flavor in Every Dish"></span>
+        <span class="line accent" data-ar="من الطباخ إلى مائدتك" data-en="From Chef to Your Table"></span>
       </h1>
       <p class="hero-subtitle" data-ar="منصة تربطك بأفضل الطباخين المنزليين — وجبات جاهزة، طبخ شعبي، مناسبات، وشوي. اكتشف، اطلب، واستمتع." data-en="A platform connecting you with the best home chefs — ready meals, popular cooking, private events, and grilling. Discover, order, and enjoy."></p>
       <div class="hero-cta">
@@ -50,10 +56,10 @@
         <a href="#download" class="btn btn-outline" data-ar="حمّل التطبيق" data-en="Download App"></a>
       </div>
     </div>
-    <div class="hero-scroll">
+    <button type="button" class="hero-scroll" id="hero-scroll" aria-label="Scroll to services">
       <span data-ar="اكتشف المزيد" data-en="Discover more"></span>
       <div class="scroll-icon"></div>
-    </div>
+    </button>
   </section>
 
   <!-- About -->
@@ -80,26 +86,31 @@
     </div>
   </section>
 
-  <!-- Services - Main Section -->
+  <!-- Services -->
   <section class="section services" id="services">
     <div class="container">
       <h2 class="section-title" data-ar="خدماتنا بالتفصيل" data-en="Our Services in Detail"></h2>
       <p class="section-subtitle" data-ar="أربع فئات متخصصة تلبي كل احتياجاتك الغذائية" data-en="Four specialized categories to meet all your food needs"></p>
 
-      <!-- Service 1: Home Cooking -->
+      <!-- Service 1: Home Cooking — صورة 22، إطار 16:9 يملأه cover -->
       <article class="service-card" data-category="home_cooking">
+        <div class="service-media">
+          <img src="assets/22.png" alt="" loading="lazy" width="1024" height="1536" decoding="async">
+          <div class="service-media-overlay"> </div>
+        </div>
         <div class="service-header">
           <span class="service-badge">1</span>
           <div class="service-icon-large">🍱</div>
           <div>
             <h3 class="service-title" data-ar="الطبخ المنزلي" data-en="Home Cooking"></h3>
-            <p class="service-tagline" data-ar="وجبات جاهزة من طباخك المفضل" data-en="Ready meals from your favorite chef"></p>
+            <p class="service-tagline" data-ar="تشكيلة واسعة من الأطباق المنزلية — اختر من قائمة كل طباخ" data-en="A wide range of home-style dishes — pick from each chef's menu"></p>
           </div>
         </div>
-        <div class="service-body">
+        <button type="button" class="service-toggle" aria-expanded="true" aria-controls="service-body-1"></button>
+        <div class="service-body" id="service-body-1">
           <div class="service-detail">
             <h4 data-ar="ما هي الخدمة؟" data-en="What is it?"></h4>
-            <p data-ar="وجبات تتقنها الطباخة، معروضة في الفيديو وصفحتها. تختار من القائمة، تضيف للسلة، وتكمل الطلب. طعام منزلي طازج يُحضّر خصيصاً لك." data-en="Meals the chef excels at, showcased in video and on their page. You choose from the menu, add to cart, and complete your order. Fresh home-cooked food prepared especially for you."></p>
+            <p data-ar="وجبات متعددة على قائمة كل طباخ (مأكولات، حلويات، مشروبات…) — معروضة بالفيديو وفي صفحته. تختار عدة أطباق، تضيف للسلة، وتكمل الطلب. طعام منزلي طازج يُحضّر لك وليس طبخاً في بيتك بل جاهز للاستلام أو التوصيل." data-en="Multiple dishes on each chef's menu (meals, desserts, drinks…) — shown in video and on their page. You pick several items, add to cart, and check out. Fresh home food prepared for you; it is not cooking at your house, but ready for pickup or delivery."></p>
           </div>
           <div class="service-detail">
             <h4 data-ar="كيف تطلب؟" data-en="How to order?"></h4>
@@ -118,20 +129,25 @@
         </div>
       </article>
 
-      <!-- Service 2: Popular Cooking -->
+      <!-- Service 2: Popular Cooking — ولائم / طبخ شعبي (صورة المستخدم: مندي/كبسة) -->
       <article class="service-card" data-category="popular_cooking">
+        <div class="service-media">
+          <img src="assets/طبخ شعبي/featured.png" alt="" loading="lazy" width="1024" height="879" decoding="async">
+          <div class="service-media-overlay"> </div>
+        </div>
         <div class="service-header">
           <span class="service-badge">2</span>
           <div class="service-icon-large">👩‍🍳</div>
           <div>
             <h3 class="service-title" data-ar="الطبخ الشعبي" data-en="Popular Cooking"></h3>
-            <p class="service-tagline" data-ar="الطباخ يأتي عندك — ذبايح وولائم في مكانك" data-en="The chef comes to you — slaughters and feasts at your location"></p>
+            <p class="service-tagline" data-ar="الطباخ يطبخ في منزلك أو مزرعتك — ولائم وذبايح (طبخ على الموقد)" data-en="The chef cooks at your home or farm — feasts & slaughters (stove cooking)"></p>
           </div>
         </div>
-        <div class="service-body">
+        <button type="button" class="service-toggle" aria-expanded="true" aria-controls="service-body-2"></button>
+        <div class="service-body" id="service-body-2">
           <div class="service-detail">
             <h4 data-ar="ما هي الخدمة؟" data-en="What is it?"></h4>
-            <p data-ar="الطباخ أو الطباخة يأتي إلى مكانك — المنزل، المزرعة، أو الاستراحة — ليطبخ الذبايح والولائم. تختار الأطباق، تحدد العنوان والتاريخ والوقت وعدد الأشخاص، وترسل الطلب. لا دفع الآن — سيُرد عليك بعرض سعر أو قبول." data-en="The chef comes to your location — home, farm, or retreat — to cook slaughters and feasts. You select dishes, set the address, date, time and number of guests, and send the request. No payment now — you'll receive a quote or acceptance."></p>
+            <p data-ar="الطباخ يأتي إلى منزلك أو مزرعتك أو استراحتك لإعداد الولائم والذبايح: الطبخ الفعلي يتم على الموقد والأواني (مقلوبة، مكرونة، جريش…). الفرق عن الشوي: هنا العملية طبخ تقليدي وليست شواء على الجمر أو الشواية. تختار الأطباق والتاريخ والوقت وترسل الطلب، والطباخ يرد بعرض أو قبول." data-en="The chef comes to your home, farm, or retreat to prepare feasts and slaughters: real cooking happens on the stove and in pots (maqluba, pasta, jareesh…). Unlike grilling, this is traditional cooking—not grilling over charcoal. You choose dishes, date, and time; the chef replies with a quote or acceptance."></p>
           </div>
           <div class="service-detail">
             <h4 data-ar="كيف تحجز؟" data-en="How to book?"></h4>
@@ -153,6 +169,10 @@
 
       <!-- Service 3: Private Events -->
       <article class="service-card" data-category="private_events">
+        <div class="service-media">
+          <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1920&q=90&auto=format&fit=max" alt="" loading="lazy" width="1920" height="1080" decoding="async">
+          <div class="service-media-overlay"> </div>
+        </div>
         <div class="service-header">
           <span class="service-badge">3</span>
           <div class="service-icon-large">🎉</div>
@@ -161,7 +181,8 @@
             <p class="service-tagline" data-ar="تخرج، زواج، ولائم — كل مناسبتك في مكان واحد" data-en="Graduations, weddings, banquets — your entire event in one place"></p>
           </div>
         </div>
-        <div class="service-body">
+        <button type="button" class="service-toggle" aria-expanded="true" aria-controls="service-body-3"></button>
+        <div class="service-body" id="service-body-3">
           <div class="service-detail">
             <h4 data-ar="ما هي الخدمة؟" data-en="What is it?"></h4>
             <p data-ar="منصة لحجز وتنظيم المناسبات الكبيرة: تخرج، زواج، وليمة، عيد ميلاد، اجتماع عمل. تختار نوع المناسبة، المكان (داخل المطعم، في منزلك، أو قاعة/مزرعة)، وتُرسل طلباً. مقدم الخدمة يرد بعرض سعر أو قبول. التدفق: طلب → مراجعة → قبول → تنفيذ." data-en="A platform for booking and organizing major events: graduations, weddings, banquets, birthdays, corporate gatherings. You choose event type, venue (in-restaurant, at your home, or hall/farm), and send a request. The service provider responds with a quote or acceptance. Flow: Request → Review → Accept → Execute."></p>
@@ -183,33 +204,54 @@
         </div>
       </article>
 
-      <!-- Service 4: Grilling -->
+      <!-- Service 4: الشواء في موقع العميل -->
       <article class="service-card" data-category="grilling">
+        <div class="service-media service-media--dual">
+          <div class="service-media-cell">
+            <img src="assets/شوي/1.png" alt="" loading="lazy" width="800" height="600">
+          </div>
+          <div class="service-media-cell">
+            <img src="assets/شوي/2.png" alt="" loading="lazy" width="800" height="600">
+          </div>
+          <div class="service-media-overlay"> </div>
+        </div>
         <div class="service-header">
           <span class="service-badge">4</span>
-          <div class="service-icon-large">🔥</div>
+          <div class="service-icon-large service-icon-grill" role="img" aria-label="شواء على الجمر">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <path d="M8 20h32" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" opacity="0.4"/>
+              <path d="M10 24h28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M12 24v7M20 24v7M28 24v7M36 24v7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" opacity="0.55"/>
+              <ellipse cx="15" cy="36" rx="5" ry="3.2" fill="#E55A2B"/>
+              <ellipse cx="24" cy="37.5" rx="6" ry="3.8" fill="#FF6B35"/>
+              <ellipse cx="33" cy="36" rx="5" ry="3.2" fill="#E55A2B"/>
+              <ellipse cx="19" cy="39" rx="3.5" ry="2" fill="#f97316" opacity="0.85"/>
+              <ellipse cx="29" cy="39" rx="3.5" ry="2" fill="#f97316" opacity="0.85"/>
+            </svg>
+          </div>
           <div>
-            <h3 class="service-title" data-ar="الشوي" data-en="Grilling"></h3>
-            <p class="service-tagline" data-ar="وجبات شوي جاهزة — لحم، دجاج، سمك" data-en="Ready grilled meals — meat, chicken, fish"></p>
+            <h3 class="service-title" data-ar="الشواء" data-en="Grilling"></h3>
+            <p class="service-tagline" data-ar="طبّاخ يُجهّز ويشوّي لك في موقعك — لحم، دجاج، مأكولات بحرية، وأطباق متنوعة على الجمر أو الشواية." data-en="A chef prepares and grills at your venue—meat, chicken, seafood, and more over charcoal or the grill."></p>
           </div>
         </div>
-        <div class="service-body">
+        <button type="button" class="service-toggle" aria-expanded="true" aria-controls="service-body-4"></button>
+        <div class="service-body" id="service-body-4">
           <div class="service-detail">
             <h4 data-ar="ما هي الخدمة؟" data-en="What is it?"></h4>
-            <p data-ar="وجبات شوي جاهزة من طباخين متخصصين — لحم مشوي، دجاج، سمك، كباب، وكل ما لذ وطاب من الشواية. نفس تجربة الطبخ المنزلي: تصفح الفيديو، اختر من القائمة، أضف للسلة، واستلم أو اطلب توصيل." data-en="Ready grilled meals from specialized chefs — grilled meat, chicken, fish, kebabs, and everything delicious from the grill. Same experience as Home Cooking: browse the feed, choose from the menu, add to cart, and pick up or request delivery."></p>
+            <p data-ar="خدمة شواء تُنفَّذ في المكان الذي تختاره (منزل، مزرعة، أو استراحة). يُعدّ الطعام على الشواية أو الجمر: لحوم، دواجن، أسماك، كباب، وغيرها — وليس طبخاً على الموقد. الخدمة تنفيذ ميداني في موقعك بحسب طلبك، وليست وجبات جاهزة للاستلام فقط." data-en="On-site grilling at the location you choose (home, farm, or retreat). Food is prepared on a grill or over charcoal—meats, poultry, fish, kebabs, and more—not stove cooking. It is an on-site service tailored to your request, not only ready meals for pickup."></p>
           </div>
           <div class="service-detail">
             <h4 data-ar="كيف تطلب؟" data-en="How to order?"></h4>
             <ul>
-              <li data-ar="ادخل فئة الشوي من الشاشة الرئيسية" data-en="Enter the Grilling category from the main screen"></li>
-              <li data-ar="تصفح فيديوهات الطباخين المتخصصين بالشوي" data-en="Browse videos of grilling-specialist chefs"></li>
-              <li data-ar="اختر الوجبات وأضفها للسلة" data-en="Select meals and add to cart"></li>
-              <li data-ar="استلم من عند الطباخ أو اطلب التوصيل" data-en="Pick up from the chef or request delivery"></li>
+              <li data-ar="من الشاشة الرئيسية، ادخل فئة الشواء" data-en="From the home screen, open the Grilling category"></li>
+              <li data-ar="تصفّح فيديوهات الطبّاخين المتخصصين في الشواء" data-en="Browse videos from chefs who specialize in grilling"></li>
+              <li data-ar="حدّد موقع التنفيذ (منزلك، مزرعة، أو استراحة)" data-en="Set the service location (home, farm, or retreat)"></li>
+              <li data-ar="حدّد التاريخ والوقت وعدد الأشخاص، ثم أرسل الطلب" data-en="Set the date, time, and number of guests, then send your request"></li>
             </ul>
           </div>
           <div class="service-detail">
             <h4 data-ar="لمن هذه الخدمة؟" data-en="Who is it for?"></h4>
-            <p data-ar="محبو الشوي الذين لا يملكون شواية، من ينظمون تجمعات عائلية سريعة، محبو اللحوم المشوية الطازجة، ومن يبحثون عن بديل صحي ولذيذ للمطاعم السريعة." data-en="Grilling enthusiasts without a grill, those organizing quick family gatherings, lovers of fresh grilled meats, and anyone seeking a healthy, delicious alternative to fast food."></p>
+            <p data-ar="من يحبون الشواء الطازج في تجمعاتهم، ومن لا تتوفر لديهم شواية أو يفضّلون التفويض للطبّاخ، ومحبّي اللحوم والمأكولات المشوية، والباحثون عن تجربة أقرب للبيت من المطاعم السريعة." data-en="Anyone who loves fresh grilling at gatherings, doesn’t have a grill or prefers a chef to handle it, enjoys grilled meats and seafood, and wants a more home-style experience than fast food."></p>
           </div>
         </div>
       </article>
@@ -234,12 +276,12 @@
         <div class="step-card">
           <span class="step-num">3</span>
           <h3 data-ar="اطلب أو احجز" data-en="Order or Book"></h3>
-          <p data-ar="أضف للسلة للوجبات الجاهزة، أو أرسل طلباً للمناسبات والطبخ الشعبي" data-en="Add to cart for ready meals, or send a request for events and popular cooking"></p>
+          <p data-ar="أضف للسلة للطبخ المنزلي، أو أرسل طلب خدمة ميدانية للشواء وطبخ الولائم في الموقع والمناسبات" data-en="Add to cart for home cooking, or send an on-site request for grilling, on-site feast cooking, and private events"></p>
         </div>
         <div class="step-card">
           <span class="step-num">4</span>
           <h3 data-ar="استمتع" data-en="Enjoy"></h3>
-          <p data-ar="استلم طلبك أو استضف الطباخ — طعام منزلي أصيل" data-en="Receive your order or host the chef — authentic home cooking"></p>
+          <p data-ar="استلم طلبك أو استضف الطباخ — واستمتع بلذّة البيت" data-en="Receive your order or host the chef — enjoy true home flavor"></p>
         </div>
       </div>
     </div>
@@ -273,7 +315,7 @@
   <section class="section download" id="download">
     <div class="container">
       <h2 class="section-title" data-ar="حمّل التطبيق الآن" data-en="Download the App Now"></h2>
-      <p class="section-subtitle" data-ar="ابدأ رحلتك مع مطبخ البيت — طعام منزلي أصيل في متناول يدك" data-en="Start your journey with Home Kitchen — authentic home cooking at your fingertips"></p>
+      <p class="section-subtitle" data-ar="ابدأ رحلتك مع مطبخ البيت — لذّة البيت بين يديك" data-en="Start your journey with Home Kitchen — home-cooked goodness at your fingertips"></p>
       <div class="download-buttons">
         <a href="#" class="download-btn" data-ar="متجر التطبيقات (قريباً)" data-en="App Store (Coming Soon)">
           <span class="store-icon">🍎</span>
@@ -292,8 +334,11 @@
     <div class="container">
       <div class="footer-content">
         <div class="footer-brand">
-          <span class="logo-text" data-ar="مطبخ البيت" data-en="Home Kitchen"></span>
-          <p data-ar="طعام منزلي أصيل إلى بابك" data-en="Authentic home cooking to your door"></p>
+          <img src="assets/images/logo.jpeg" alt="" class="footer-logo-img" width="128" height="128" decoding="async">
+          <div>
+            <span class="logo-text" data-ar="مطبخ البيت" data-en="Home Kitchen"></span>
+            <p data-ar="نكهة البيت في كل طبق" data-en="Home flavor in every dish"></p>
+          </div>
         </div>
         <div class="footer-links">
           <a href="#about" data-ar="من نحن" data-en="About"></a>
@@ -301,6 +346,8 @@
           <a href="#download" data-ar="حمّل التطبيق" data-en="Download"></a>
           <a href="privacy.html" data-ar="سياسة الخصوصية" data-en="Privacy"></a>
           <a href="terms.html" data-ar="الشروط والأحكام" data-en="Terms"></a>
+          <a href="project-hub.html" data-ar="المرجع التقني" data-en="Technical hub"></a>
+          <a href="project-deep-dive.html" data-ar="تحليل عميق" data-en="Deep dive"></a>
         </div>
       </div>
       <div class="footer-bottom">
@@ -308,6 +355,8 @@
       </div>
     </div>
   </footer>
+
+  <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">↑</button>
 
   <script src="js/main.js"></script>
 </body>

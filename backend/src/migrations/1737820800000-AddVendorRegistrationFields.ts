@@ -1,4 +1,11 @@
-import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey, TableIndex } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableColumn,
+  TableForeignKey,
+  TableIndex,
+} from 'typeorm';
 
 export class AddVendorRegistrationFields1737820800000 implements MigrationInterface {
   name = 'AddVendorRegistrationFields1737820800000';
@@ -53,15 +60,51 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
         new Table({
           name: 'users',
           columns: [
-            { name: 'id', type: 'uuid', isPrimary: true, generationStrategy: 'uuid', default: 'uuid_generate_v4()' },
-            { name: 'phone', type: 'varchar', isUnique: true, isNullable: false },
+            {
+              name: 'id',
+              type: 'uuid',
+              isPrimary: true,
+              generationStrategy: 'uuid',
+              default: 'uuid_generate_v4()',
+            },
+            {
+              name: 'phone',
+              type: 'varchar',
+              isUnique: true,
+              isNullable: false,
+            },
             { name: 'name', type: 'varchar', isNullable: true },
-            { name: 'email', type: 'varchar', isUnique: true, isNullable: true },
+            {
+              name: 'email',
+              type: 'varchar',
+              isUnique: true,
+              isNullable: true,
+            },
             { name: 'pin_hash', type: 'varchar', isNullable: true },
-            { name: 'is_verified', type: 'boolean', default: false, isNullable: false },
-            { name: 'is_active', type: 'boolean', default: true, isNullable: false },
-            { name: 'created_at', type: 'timestamp', default: 'CURRENT_TIMESTAMP', isNullable: false },
-            { name: 'updated_at', type: 'timestamp', default: 'CURRENT_TIMESTAMP', isNullable: false },
+            {
+              name: 'is_verified',
+              type: 'boolean',
+              default: false,
+              isNullable: false,
+            },
+            {
+              name: 'is_active',
+              type: 'boolean',
+              default: true,
+              isNullable: false,
+            },
+            {
+              name: 'created_at',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+              isNullable: false,
+            },
+            {
+              name: 'updated_at',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+              isNullable: false,
+            },
           ],
         }),
         true,
@@ -74,22 +117,77 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
         new Table({
           name: 'vendors',
           columns: [
-            { name: 'id', type: 'uuid', isPrimary: true, generationStrategy: 'uuid', default: 'uuid_generate_v4()' },
-            { name: 'name', type: 'varchar', isUnique: true, isNullable: false },
-            { name: 'type', type: 'vendors_type_enum', default: "'premium_casual'", isNullable: false },
+            {
+              name: 'id',
+              type: 'uuid',
+              isPrimary: true,
+              generationStrategy: 'uuid',
+              default: 'uuid_generate_v4()',
+            },
+            {
+              name: 'name',
+              type: 'varchar',
+              isUnique: true,
+              isNullable: false,
+            },
+            {
+              name: 'type',
+              type: 'vendors_type_enum',
+              default: "'premium_casual'",
+              isNullable: false,
+            },
             { name: 'description', type: 'text', isNullable: true },
             { name: 'phone_number', type: 'varchar', isNullable: false },
             { name: 'address', type: 'varchar', isNullable: false },
             { name: 'city', type: 'varchar', isNullable: false },
-            { name: 'latitude', type: 'decimal', precision: 10, scale: 8, isNullable: false },
-            { name: 'longitude', type: 'decimal', precision: 11, scale: 8, isNullable: false },
+            {
+              name: 'latitude',
+              type: 'decimal',
+              precision: 10,
+              scale: 8,
+              isNullable: false,
+            },
+            {
+              name: 'longitude',
+              type: 'decimal',
+              precision: 11,
+              scale: 8,
+              isNullable: false,
+            },
             { name: 'logo', type: 'varchar', isNullable: true },
             { name: 'cover', type: 'varchar', isNullable: true },
-            { name: 'is_active', type: 'boolean', default: true, isNullable: false },
-            { name: 'rating', type: 'decimal', precision: 3, scale: 2, default: 0, isNullable: false },
-            { name: 'rating_count', type: 'int', default: 0, isNullable: false },
-            { name: 'created_at', type: 'timestamp', default: 'CURRENT_TIMESTAMP', isNullable: false },
-            { name: 'updated_at', type: 'timestamp', default: 'CURRENT_TIMESTAMP', isNullable: false },
+            {
+              name: 'is_active',
+              type: 'boolean',
+              default: true,
+              isNullable: false,
+            },
+            {
+              name: 'rating',
+              type: 'decimal',
+              precision: 3,
+              scale: 2,
+              default: 0,
+              isNullable: false,
+            },
+            {
+              name: 'rating_count',
+              type: 'int',
+              default: 0,
+              isNullable: false,
+            },
+            {
+              name: 'created_at',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+              isNullable: false,
+            },
+            {
+              name: 'updated_at',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+              isNullable: false,
+            },
           ],
         }),
         true,
@@ -504,84 +602,84 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
     // Create vendor_certificates table (only if not exists)
     if (!(await queryRunner.hasTable('vendor_certificates'))) {
       await queryRunner.createTable(
-      new Table({
-        name: 'vendor_certificates',
-        columns: [
-          {
-            name: 'id',
-            type: 'uuid',
-            isPrimary: true,
-            generationStrategy: 'uuid',
-            default: 'uuid_generate_v4()',
-          },
-          {
-            name: 'vendor_id',
-            type: 'uuid',
-            isNullable: false,
-          },
-          {
-            name: 'type',
-            type: 'certificate_type_enum',
-            isNullable: false,
-          },
-          {
-            name: 'certificate_number',
-            type: 'varchar',
-            isNullable: false,
-          },
-          {
-            name: 'issue_date',
-            type: 'date',
-            isNullable: false,
-          },
-          {
-            name: 'expiry_date',
-            type: 'date',
-            isNullable: false,
-          },
-          {
-            name: 'certificate_image',
-            type: 'varchar',
-            isNullable: false,
-          },
-          {
-            name: 'status',
-            type: 'verification_status_enum',
-            default: "'pending'",
-            isNullable: false,
-          },
-          {
-            name: 'verified_at',
-            type: 'timestamp',
-            isNullable: true,
-          },
-          {
-            name: 'verified_by',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'rejection_reason',
-            type: 'text',
-            isNullable: true,
-          },
-          {
-            name: 'created_at',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            isNullable: false,
-          },
-          {
-            name: 'updated_at',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            onUpdate: 'CURRENT_TIMESTAMP',
-            isNullable: false,
-          },
-        ],
-      }),
-      true,
-    );
+        new Table({
+          name: 'vendor_certificates',
+          columns: [
+            {
+              name: 'id',
+              type: 'uuid',
+              isPrimary: true,
+              generationStrategy: 'uuid',
+              default: 'uuid_generate_v4()',
+            },
+            {
+              name: 'vendor_id',
+              type: 'uuid',
+              isNullable: false,
+            },
+            {
+              name: 'type',
+              type: 'certificate_type_enum',
+              isNullable: false,
+            },
+            {
+              name: 'certificate_number',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'issue_date',
+              type: 'date',
+              isNullable: false,
+            },
+            {
+              name: 'expiry_date',
+              type: 'date',
+              isNullable: false,
+            },
+            {
+              name: 'certificate_image',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'status',
+              type: 'verification_status_enum',
+              default: "'pending'",
+              isNullable: false,
+            },
+            {
+              name: 'verified_at',
+              type: 'timestamp',
+              isNullable: true,
+            },
+            {
+              name: 'verified_by',
+              type: 'varchar',
+              isNullable: true,
+            },
+            {
+              name: 'rejection_reason',
+              type: 'text',
+              isNullable: true,
+            },
+            {
+              name: 'created_at',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+              isNullable: false,
+            },
+            {
+              name: 'updated_at',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+              onUpdate: 'CURRENT_TIMESTAMP',
+              isNullable: false,
+            },
+          ],
+        }),
+        true,
+      );
       await queryRunner.createForeignKey(
         'vendor_certificates',
         new TableForeignKey({
@@ -603,76 +701,76 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
     // Create vendor_staff table (only if not exists)
     if (!(await queryRunner.hasTable('vendor_staff'))) {
       await queryRunner.createTable(
-      new Table({
-        name: 'vendor_staff',
-        columns: [
-          {
-            name: 'id',
-            type: 'uuid',
-            isPrimary: true,
-            generationStrategy: 'uuid',
-            default: 'uuid_generate_v4()',
-          },
-          {
-            name: 'vendor_id',
-            type: 'uuid',
-            isNullable: false,
-          },
-          {
-            name: 'user_id',
-            type: 'uuid',
-            isUnique: true,
-            isNullable: false,
-          },
-          {
-            name: 'role',
-            type: 'staff_role_enum',
-            isNullable: false,
-          },
-          {
-            name: 'permissions',
-            type: 'text',
-            isArray: true,
-            isNullable: true,
-          },
-          {
-            name: 'is_active',
-            type: 'boolean',
-            default: true,
-            isNullable: false,
-          },
-          {
-            name: 'invited_by',
-            type: 'uuid',
-            isNullable: true,
-          },
-          {
-            name: 'invited_at',
-            type: 'timestamp',
-            isNullable: true,
-          },
-          {
-            name: 'accepted_at',
-            type: 'timestamp',
-            isNullable: true,
-          },
-          {
-            name: 'created_at',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            isNullable: false,
-          },
-          {
-            name: 'updated_at',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            onUpdate: 'CURRENT_TIMESTAMP',
-            isNullable: false,
-          },
-        ],
-      }),
-      true,
-    );
+        new Table({
+          name: 'vendor_staff',
+          columns: [
+            {
+              name: 'id',
+              type: 'uuid',
+              isPrimary: true,
+              generationStrategy: 'uuid',
+              default: 'uuid_generate_v4()',
+            },
+            {
+              name: 'vendor_id',
+              type: 'uuid',
+              isNullable: false,
+            },
+            {
+              name: 'user_id',
+              type: 'uuid',
+              isUnique: true,
+              isNullable: false,
+            },
+            {
+              name: 'role',
+              type: 'staff_role_enum',
+              isNullable: false,
+            },
+            {
+              name: 'permissions',
+              type: 'text',
+              isArray: true,
+              isNullable: true,
+            },
+            {
+              name: 'is_active',
+              type: 'boolean',
+              default: true,
+              isNullable: false,
+            },
+            {
+              name: 'invited_by',
+              type: 'uuid',
+              isNullable: true,
+            },
+            {
+              name: 'invited_at',
+              type: 'timestamp',
+              isNullable: true,
+            },
+            {
+              name: 'accepted_at',
+              type: 'timestamp',
+              isNullable: true,
+            },
+            {
+              name: 'created_at',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+              isNullable: false,
+            },
+            {
+              name: 'updated_at',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+              onUpdate: 'CURRENT_TIMESTAMP',
+              isNullable: false,
+            },
+          ],
+        }),
+        true,
+      );
       await queryRunner.createForeignKey(
         'vendor_staff',
         new TableForeignKey({
@@ -701,13 +799,22 @@ export class AddVendorRegistrationFields1737820800000 implements MigrationInterf
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Drop foreign keys
-    await queryRunner.dropForeignKey('vendor_staff', 'FK_vendor_staff_vendor_id');
-    await queryRunner.dropForeignKey('vendor_certificates', 'FK_vendor_certificates_vendor_id');
+    await queryRunner.dropForeignKey(
+      'vendor_staff',
+      'FK_vendor_staff_vendor_id',
+    );
+    await queryRunner.dropForeignKey(
+      'vendor_certificates',
+      'FK_vendor_certificates_vendor_id',
+    );
 
     // Drop indexes
     await queryRunner.dropIndex('vendor_staff', 'IDX_vendor_staff_user_id');
     await queryRunner.dropIndex('vendor_staff', 'IDX_vendor_staff_vendor_id');
-    await queryRunner.dropIndex('vendor_certificates', 'IDX_vendor_certificates_vendor_id');
+    await queryRunner.dropIndex(
+      'vendor_certificates',
+      'IDX_vendor_certificates_vendor_id',
+    );
 
     // Drop tables
     await queryRunner.dropTable('vendor_staff');

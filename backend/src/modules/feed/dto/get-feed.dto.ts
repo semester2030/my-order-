@@ -1,4 +1,12 @@
-import { IsOptional, IsInt, Min, Max, IsIn, IsString, IsNumber } from 'class-validator';
+import {
+  IsOptional,
+  IsInt,
+  Min,
+  Max,
+  IsIn,
+  IsString,
+  IsNumber,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -17,7 +25,11 @@ export class GetFeedDto {
   @Min(1)
   page?: number = 1;
 
-  @ApiPropertyOptional({ example: 10, description: 'Items per page', default: 10 })
+  @ApiPropertyOptional({
+    example: 10,
+    description: 'Items per page',
+    default: 10,
+  })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
@@ -25,11 +37,17 @@ export class GetFeedDto {
   @Max(50)
   limit?: number = 10;
 
-  @ApiPropertyOptional({ example: 'fine_dining', description: 'Filter by vendor type' })
+  @ApiPropertyOptional({
+    example: 'fine_dining',
+    description: 'Filter by vendor type',
+  })
   @IsOptional()
   vendorType?: string;
 
-  @ApiPropertyOptional({ example: 'home_cooking', description: 'Filter by provider category' })
+  @ApiPropertyOptional({
+    example: 'home_cooking',
+    description: 'Filter by provider category',
+  })
   @IsOptional()
   category?: string;
 
@@ -42,14 +60,18 @@ export class GetFeedDto {
   @IsIn(FEED_SORT_VALUES)
   sortBy?: FeedSortBy;
 
-  @ApiPropertyOptional({ example: 'الرياض', description: 'Filter by vendor city' })
+  @ApiPropertyOptional({
+    example: 'الرياض',
+    description: 'Filter by vendor city',
+  })
   @IsOptional()
   @IsString()
   city?: string;
 
   @ApiPropertyOptional({
     example: 10,
-    description: 'Maximum distance in km (5, 10, 15, 25). Show only vendors within this radius.',
+    description:
+      'Maximum distance in km (5, 10, 15, 25). Show only vendors within this radius.',
     enum: FEED_MAX_DISTANCE_VALUES,
   })
   @IsOptional()

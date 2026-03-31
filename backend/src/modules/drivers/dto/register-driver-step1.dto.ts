@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  Matches,
-  Length,
-  IsOptional,
-} from 'class-validator';
+import { IsString, IsNotEmpty, Matches, Length } from 'class-validator';
 
 export class RegisterDriverStep1Dto {
   @ApiProperty({
@@ -25,7 +19,8 @@ export class RegisterDriverStep1Dto {
   @IsString()
   @IsNotEmpty()
   @Matches(/^[0-9+\-\s()]+$/, {
-    message: 'Phone number must contain only digits, +, -, spaces, or parentheses',
+    message:
+      'Phone number must contain only digits, +, -, spaces, or parentheses',
   })
   phoneNumber: string;
 }

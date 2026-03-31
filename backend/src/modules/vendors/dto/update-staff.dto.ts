@@ -1,14 +1,27 @@
-import { IsEnum, IsString, IsOptional, IsArray, IsBoolean } from 'class-validator';
+import {
+  IsEnum,
+  IsString,
+  IsOptional,
+  IsArray,
+  IsBoolean,
+} from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { StaffRole } from '../enums';
 
 export class UpdateStaffDto {
-  @ApiPropertyOptional({ example: 'manager', enum: StaffRole, description: 'Staff role' })
+  @ApiPropertyOptional({
+    example: 'manager',
+    enum: StaffRole,
+    description: 'Staff role',
+  })
   @IsOptional()
   @IsEnum(StaffRole)
   role?: StaffRole;
 
-  @ApiPropertyOptional({ example: ['orders.view', 'orders.update'], description: 'Custom permissions' })
+  @ApiPropertyOptional({
+    example: ['orders.view', 'orders.update'],
+    description: 'Custom permissions',
+  })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })

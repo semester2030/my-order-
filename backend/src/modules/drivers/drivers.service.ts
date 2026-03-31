@@ -36,7 +36,9 @@ export class DriversService {
     });
 
     if (existingDriver) {
-      throw new ConflictException('Driver with this national ID already exists');
+      throw new ConflictException(
+        'Driver with this national ID already exists',
+      );
     }
 
     // Check if user with phone exists
@@ -266,10 +268,7 @@ export class DriversService {
   /**
    * Update driver availability (online/offline)
    */
-  async updateAvailability(
-    driverId: string,
-    dto: UpdateDriverAvailabilityDto,
-  ) {
+  async updateAvailability(driverId: string, dto: UpdateDriverAvailabilityDto) {
     const driver = await this.driverRepository.findOne({
       where: { id: driverId },
     });
@@ -376,7 +375,12 @@ export class DriversService {
   /**
    * Admin: Reject driver
    */
-  async rejectDriver(driverId: string, rejectionReason: string, adminId: string) {
+  async rejectDriver(
+    driverId: string,
+    rejectionReason: string,
+    adminId: string,
+  ) {
+    void adminId;
     const driver = await this.driverRepository.findOne({
       where: { id: driverId },
     });

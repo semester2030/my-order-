@@ -18,18 +18,16 @@ import { Type, Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { VendorType } from '../entities/vendor.entity';
 
-/** FormData sends strings; coerce to number or undefined when empty */
-function toNumber(v: unknown): number | undefined {
-  if (v === undefined || v === null || v === '') return undefined;
-  const n = Number(v);
-  return Number.isNaN(n) ? undefined : n;
-}
 /** FormData sends "true"/"false"; coerce to boolean or undefined when empty */
 function toBoolean(v: unknown): boolean | undefined {
   if (v === undefined || v === null || v === '') return undefined;
   if (typeof v === 'boolean') return v;
   const s = String(v).toLowerCase();
-  return s === 'true' || s === '1' ? true : s === 'false' || s === '0' ? false : undefined;
+  return s === 'true' || s === '1'
+    ? true
+    : s === 'false' || s === '0'
+      ? false
+      : undefined;
 }
 
 /**
@@ -38,28 +36,41 @@ function toBoolean(v: unknown): boolean | undefined {
  */
 export class RegisterVendorDto {
   // --- الضروري فقط ---
-  @ApiProperty({ example: 'مطبخ أم محمد', description: 'اسم مقدم الخدمة / المنشأة' })
+  @ApiProperty({
+    example: 'مطبخ أم محمد',
+    description: 'اسم مقدم الخدمة / المنشأة',
+  })
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
   name: string;
 
-  @ApiProperty({ example: 'vendor@example.com', description: 'البريد الإلكتروني' })
+  @ApiProperty({
+    example: 'vendor@example.com',
+    description: 'البريد الإلكتروني',
+  })
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ example: 'SecurePass123', description: 'كلمة المرور (8+ أحرف، حرف كبير وصغير ورقم)' })
+  @ApiProperty({
+    example: 'SecurePass123',
+    description: 'كلمة المرور (8+ أحرف، حرف كبير وصغير ورقم)',
+  })
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
-    message: 'Password must contain at least one lowercase, one uppercase, and one number',
+    message:
+      'Password must contain at least one lowercase, one uppercase, and one number',
   })
   password: string;
 
   // --- اختياري: باقي البيانات ---
-  @ApiPropertyOptional({ example: 'Al Baik Trading Co.', description: 'الاسم التجاري' })
+  @ApiPropertyOptional({
+    example: 'Al Baik Trading Co.',
+    description: 'الاسم التجاري',
+  })
   @IsOptional()
   @IsString()
   @MinLength(2)
@@ -77,13 +88,15 @@ export class RegisterVendorDto {
 
   @ApiPropertyOptional({
     example: 'home_cooking',
-    description: 'فئة الخدمة: home_cooking | popular_cooking | private_events | grilling',
+    description:
+      'فئة الخدمة: home_cooking | popular_cooking | private_events | grilling',
   })
   @IsOptional()
   @IsString()
   @ValidateIf((o) => o.providerCategory != null && o.providerCategory !== '')
   @Matches(/^(home_cooking|popular_cooking|private_events|grilling)$/, {
-    message: 'providerCategory must be one of: home_cooking, popular_cooking, private_events, grilling',
+    message:
+      'providerCategory must be one of: home_cooking, popular_cooking, private_events, grilling',
   })
   providerCategory?: string;
 
@@ -180,7 +193,9 @@ export class RegisterVendorDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @Matches(/^[0-9+\-\s()]*$/, { message: 'Owner phone: digits, +, -, spaces, parentheses only' })
+  @Matches(/^[0-9+\-\s()]*$/, {
+    message: 'Owner phone: digits, +, -, spaces, parentheses only',
+  })
   ownerPhone?: string;
 
   @ApiPropertyOptional()
@@ -244,7 +259,8 @@ export class RegisterVendorDto {
 
   /** للطبخ الشعبي: خدمات إضافية (جريش، قرصان، ادامات…) — JSON string: [{ name, price }] */
   @ApiPropertyOptional({
-    description: 'Popular cooking add-ons: JSON array of { name, price }. e.g. [{"name":"جريش","price":50}]',
+    description:
+      'Popular cooking add-ons: JSON array of { name, price }. e.g. [{"name":"جريش","price":50}]',
   })
   @IsOptional()
   @IsString()

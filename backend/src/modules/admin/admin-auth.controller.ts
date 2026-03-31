@@ -7,8 +7,10 @@ import {
   HttpStatus,
   UseGuards,
   Request,
+  Req,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import type { Request as ExpressRequest } from 'express';
 import { AdminAuthService, AdminTokenPayload } from './admin-auth.service';
 import { AdminLoginDto } from './dto/admin-login.dto';
 import { AdminJwtGuard } from './guards/admin-jwt.guard';
@@ -21,8 +23,26 @@ export class AdminAuthController {
   @Post('login')
   @ApiOperation({ summary: 'Admin login' })
   @HttpCode(HttpStatus.OK)
-  async login(@Body() dto: AdminLoginDto) {
-    return this.adminAuthService.login(dto.email, dto.password);
+  async login(@Body() dto: AdminLoginDto, @Req() req: ExpressRequest) {
+    return this.adminAuthService.login(dto.email, dto.password, {
+      ip: req.ip,
+      headers: req.headers as { 'user-agent'?: string },
+    });
+  }
+
+  @Post('logout')
+  @ApiOperation({ summary: 'Admin logout (audit + client clears token)' })
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AdminJwtGuard)
+  @ApiBearerAuth('admin')
+  async logout(
+    @Request() auth: { user: AdminTokenPayload },
+    @Req() req: ExpressRequest,
+  ) {
+    return this.adminAuthService.logout(auth.user.sub, {
+      ip: req.ip,
+      headers: req.headers as { 'user-agent'?: string },
+    });
   }
 
   @Post('refresh')

@@ -1,6 +1,5 @@
 import {
   IsString,
-  IsNotEmpty,
   IsEmail,
   IsOptional,
   IsEnum,
@@ -9,7 +8,6 @@ import {
   Matches,
   MinLength,
   IsUrl,
-  IsDateString,
   Min,
   Max,
   IsArray,
@@ -32,13 +30,19 @@ export class PopularCookingAddOnItemDto {
 }
 
 export class UpdateVendorProfileDto {
-  @ApiPropertyOptional({ example: 'Al Baik Restaurant', description: 'Restaurant name' })
+  @ApiPropertyOptional({
+    example: 'مطبخ أم سارة',
+    description: 'اسم مقدّم الخدمة / العلامة الظاهرة للعملاء',
+  })
   @IsOptional()
   @IsString()
   @MinLength(2)
   name?: string;
 
-  @ApiPropertyOptional({ example: 'Al Baik Trading Co.', description: 'Trade name' })
+  @ApiPropertyOptional({
+    example: 'Al Baik Trading Co.',
+    description: 'Trade name',
+  })
   @IsOptional()
   @IsString()
   @MinLength(2)
@@ -47,18 +51,25 @@ export class UpdateVendorProfileDto {
   @ApiPropertyOptional({
     example: 'premium_casual',
     enum: VendorType,
-    description: 'Restaurant type',
+    description:
+      'تصنيف مخزّن (ENUM قديم). يُفضّل توضيح نوع الخدمة عبر providerCategory: منزلي، شعبي، شواء، مناسبات/بوفيه',
   })
   @IsOptional()
   @IsEnum(VendorType)
   type?: VendorType;
 
-  @ApiPropertyOptional({ example: 'Best fried chicken in town', description: 'Description' })
+  @ApiPropertyOptional({
+    example: 'Best fried chicken in town',
+    description: 'Description',
+  })
   @IsOptional()
   @IsString()
   description?: string;
 
-  @ApiPropertyOptional({ example: 'restaurant@example.com', description: 'Email address' })
+  @ApiPropertyOptional({
+    example: 'chef@example.com',
+    description: 'البريد الإلكتروني',
+  })
   @IsOptional()
   @IsEmail()
   email?: string;
@@ -67,11 +78,15 @@ export class UpdateVendorProfileDto {
   @IsOptional()
   @IsString()
   @Matches(/^[0-9+\-\s()]+$/, {
-    message: 'Phone number must contain only digits, +, -, spaces, or parentheses',
+    message:
+      'Phone number must contain only digits, +, -, spaces, or parentheses',
   })
   phoneNumber?: string;
 
-  @ApiPropertyOptional({ example: 'https://www.restaurant.com', description: 'Website URL' })
+  @ApiPropertyOptional({
+    example: 'https://example.com',
+    description: 'موقع إلكتروني (اختياري)',
+  })
   @IsOptional()
   @IsUrl()
   website?: string;
@@ -91,7 +106,10 @@ export class UpdateVendorProfileDto {
   @Max(180)
   longitude?: number;
 
-  @ApiPropertyOptional({ example: '123 Main Street', description: 'Full address' })
+  @ApiPropertyOptional({
+    example: '123 Main Street',
+    description: 'Full address',
+  })
   @IsOptional()
   @IsString()
   address?: string;
@@ -118,13 +136,19 @@ export class UpdateVendorProfileDto {
   @Min(0)
   deliveryFee?: number;
 
-  @ApiPropertyOptional({ example: 10, description: 'Delivery radius in kilometers' })
+  @ApiPropertyOptional({
+    example: 10,
+    description: 'Delivery radius in kilometers',
+  })
   @IsOptional()
   @IsNumber()
   @Min(1)
   deliveryRadius?: number;
 
-  @ApiPropertyOptional({ example: 30, description: 'Estimated delivery time in minutes' })
+  @ApiPropertyOptional({
+    example: 30,
+    description: 'Estimated delivery time in minutes',
+  })
   @IsOptional()
   @IsNumber()
   @Min(5)
@@ -153,7 +177,10 @@ export class UpdateVendorProfileDto {
   @IsBoolean()
   isAcceptingOrders?: boolean;
 
-  @ApiPropertyOptional({ example: true, description: 'Is active (for development/testing)' })
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Is active (for development/testing)',
+  })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;

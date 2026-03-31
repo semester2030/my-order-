@@ -1,8 +1,35 @@
 const DEFAULT_API_URL = 'http://localhost:3001';
 
+/**
+ * على localhost: دائماً مسار نسبي `/api/...` → Next rewrites → Nest (:3001).
+ * يمنع "Failed to fetch" الناتج عن CORS + credentials عندما يكون NEXT_PUBLIC_API_URL=3001.
+ * في الإنتاج (نطاق غير localhost): نستخدم NEXT_PUBLIC_API_URL إن وُجد.
+ */
 const getBaseUrl = () => {
-  return process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL;
+  if (typeof window !== 'undefined') {
+    const h = window.location.hostname;
+    if (
+      h === 'localhost' ||
+      h === '127.0.0.1' ||
+      h === '::1' ||
+      h === '[::1]'
+    ) {
+      return '';
+    }
+    const fromEnv = process.env.NEXT_PUBLIC_API_URL?.trim();
+    if (fromEnv) return fromEnv.replace(/\/$/, '');
+    return '';
+  }
+  return process.env.NEXT_PUBLIC_API_URL?.trim()?.replace(/\/$/, '') || DEFAULT_API_URL;
 };
+
+/** مسار API كاملاً للـ fetch (نسبي `/api/...` مع البروكسي، أو مطلق نحو الباك اند). */
+function buildApiUrl(apiPath: string): string {
+  const path = apiPath.startsWith('/') ? apiPath : `/${apiPath}`;
+  const base = getBaseUrl();
+  if (base) return `${base}/api${path}`;
+  return `/api${path}`;
+}
 
 const ADMIN_TOKEN_KEY = 'admin_token';
 
@@ -36,8 +63,7 @@ export async function adminLogin(
   email: string,
   password: string,
 ): Promise<AdminLoginResponse> {
-  const base = getBaseUrl();
-  const res = await fetch(`${base}/api/admin/auth/login`, {
+  const res = await fetch(buildApiUrl('/admin/auth/login'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -52,10 +78,9 @@ export async function adminLogin(
 }
 
 export async function adminRefresh(): Promise<AdminLoginResponse> {
-  const base = getBaseUrl();
   const token = getToken();
   if (!token) throw new Error('No token');
-  const res = await fetch(`${base}/api/admin/auth/refresh`, {
+  const res = await fetch(buildApiUrl('/admin/auth/refresh'), {
     method: 'POST',
     headers: getAuthHeaders(),
   });
@@ -74,10 +99,9 @@ export async function adminMe(): Promise<{
   name: string;
   role: string;
 } | null> {
-  const base = getBaseUrl();
   const token = getToken();
   if (!token) return null;
-  const res = await fetch(`${base}/api/admin/auth/me`, {
+  const res = await fetch(buildApiUrl('/admin/auth/me'), {
     headers: getAuthHeaders(),
   });
   if (!res.ok) return null;
@@ -106,8 +130,7 @@ export function hasAdminToken(): boolean {
 
 /** Authenticated GET for admin API. Use with SWR: useSWR(key, adminFetch). */
 export async function adminFetch<T = unknown>(url: string): Promise<T> {
-  const base = getBaseUrl();
-  const fullUrl = url.startsWith('http') ? url : `${base}/api${url}`;
+  const fullUrl = url.startsWith('http') ? url : buildApiUrl(url);
   const res = await fetch(fullUrl, { headers: getAuthHeaders() });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -227,24 +250,107 @@ export function fetchAuditLogs(params?: {
   limit?: number;
   action?: string;
   entityType?: string;
+  actorId?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }): Promise<PaginatedResponse<Record<string, unknown>>> {
   const q = new URLSearchParams();
   if (params?.page) q.set('page', String(params.page));
   if (params?.limit) q.set('limit', String(params.limit));
   if (params?.action) q.set('action', params.action);
   if (params?.entityType) q.set('entityType', params.entityType);
+  if (params?.actorId) q.set('actorId', params.actorId);
+  if (params?.dateFrom) q.set('dateFrom', params.dateFrom);
+  if (params?.dateTo) q.set('dateTo', params.dateTo);
   const query = q.toString();
   return adminFetch<PaginatedResponse<Record<string, unknown>>>(
     `/admin/audit-logs${query ? `?${query}` : ''}`,
   );
 }
 
+export interface AdminRoleOption {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface AdminTeamUser {
+  id: string;
+  email: string;
+  name: string;
+  isActive: boolean;
+  createdAt: string;
+  role: { slug: string; name: string };
+}
+
+export function fetchAdminRoles(): Promise<{ roles: AdminRoleOption[] }> {
+  return adminFetch<{ roles: AdminRoleOption[] }>('/admin/users/roles');
+}
+
+export function fetchAdminUsers(): Promise<{ items: AdminTeamUser[] }> {
+  return adminFetch<{ items: AdminTeamUser[] }>('/admin/users');
+}
+
+export async function adminPatch(
+  path: string,
+  body?: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  const fullUrl = path.startsWith('http') ? path : buildApiUrl(path);
+  const res = await fetch(fullUrl, {
+    method: 'PATCH',
+    headers: getAuthHeaders(),
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(
+      (err as { message?: string }).message || res.statusText || String(res.status),
+    );
+  }
+  return res.json();
+}
+
+export function createAdminUser(body: {
+  email: string;
+  name: string;
+  password: string;
+  roleSlug: string;
+}): Promise<AdminTeamUser> {
+  return adminPost('/admin/users', body) as unknown as Promise<AdminTeamUser>;
+}
+
+export function updateAdminUser(
+  id: string,
+  body: { name?: string; roleSlug?: string; isActive?: boolean },
+): Promise<AdminTeamUser> {
+  return adminPatch(`/admin/users/${id}`, body) as unknown as Promise<AdminTeamUser>;
+}
+
+export function resetAdminUserPassword(
+  id: string,
+  password: string,
+): Promise<Record<string, unknown>> {
+  return adminPost(`/admin/users/${id}/reset-password`, { password });
+}
+
+export async function adminLogout(): Promise<void> {
+  const res = await fetch(buildApiUrl('/admin/auth/logout'), {
+    method: 'POST',
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(
+      (err as { message?: string }).message || res.statusText || String(res.status),
+    );
+  }
+}
+
 export async function adminPost(
   path: string,
   body?: Record<string, unknown>,
 ): Promise<Record<string, unknown>> {
-  const base = getBaseUrl();
-  const fullUrl = path.startsWith('http') ? path : `${base}/api${path}`;
+  const fullUrl = path.startsWith('http') ? path : buildApiUrl(path);
   const res = await fetch(fullUrl, {
     method: 'POST',
     headers: getAuthHeaders(),

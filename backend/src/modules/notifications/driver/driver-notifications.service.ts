@@ -7,7 +7,7 @@ import { JobOffer } from '../../jobs/entities/job-offer.entity';
 
 /**
  * Driver Notifications Service
- * 
+ *
  * Handles sending notifications to drivers:
  * - Job offers
  * - Delivery updates
@@ -77,7 +77,11 @@ export class DriverNotificationsService {
       };
 
       // Send multicast notification
-      const result = await this.fcmService.sendMulticast(tokens, notification, data);
+      const result = await this.fcmService.sendMulticast(
+        tokens,
+        notification,
+        data,
+      );
 
       // Remove invalid tokens from database
       if (result.invalidTokens.length > 0) {

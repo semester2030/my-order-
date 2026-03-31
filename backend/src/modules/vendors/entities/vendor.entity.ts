@@ -12,6 +12,10 @@ import { VendorCertificate } from './vendor-certificate.entity';
 import { VendorStaff } from './vendor-staff.entity';
 import { VendorStatus, VerificationStatus } from '../enums';
 
+/**
+ * قيم مخزّنة تاريخياً في قاعدة البيانات (ENUM). للعرض استخدم أيضاً `providerCategory`
+ * لمطابقة الأربعة أنواع: منزلي، شعبي، شواء، مناسبات/بوفيه.
+ */
 export enum VendorType {
   FINE_DINING = 'fine_dining',
   PREMIUM_CASUAL = 'premium_casual',
@@ -30,7 +34,11 @@ export class Vendor {
   @Column({ name: 'trade_name', unique: true, nullable: true })
   tradeName: string | null;
 
-  @Column({ type: 'enum', enum: VendorType, default: VendorType.PREMIUM_CASUAL })
+  @Column({
+    type: 'enum',
+    enum: VendorType,
+    default: VendorType.PREMIUM_CASUAL,
+  })
   type: VendorType;
 
   @Column({ type: 'text', nullable: true })
@@ -46,13 +54,25 @@ export class Vendor {
   website: string | null;
 
   // Commercial Registration
-  @Column({ name: 'commercial_registration_number', unique: true, nullable: true })
+  @Column({
+    name: 'commercial_registration_number',
+    unique: true,
+    nullable: true,
+  })
   commercialRegistrationNumber: string | null;
 
-  @Column({ name: 'commercial_registration_issue_date', type: 'date', nullable: true })
+  @Column({
+    name: 'commercial_registration_issue_date',
+    type: 'date',
+    nullable: true,
+  })
   commercialRegistrationIssueDate: Date | null;
 
-  @Column({ name: 'commercial_registration_expiry_date', type: 'date', nullable: true })
+  @Column({
+    name: 'commercial_registration_expiry_date',
+    type: 'date',
+    nullable: true,
+  })
   commercialRegistrationExpiryDate: Date | null;
 
   @Column({ name: 'commercial_registration_image', nullable: true })
@@ -89,7 +109,12 @@ export class Vendor {
   @Column('simple-array', { nullable: true, name: 'delivery_zones' })
   deliveryZones: string[] | null; // Array of zone IDs
 
-  @Column('decimal', { precision: 10, scale: 2, default: 0, name: 'delivery_fee' })
+  @Column('decimal', {
+    precision: 10,
+    scale: 2,
+    default: 0,
+    name: 'delivery_fee',
+  })
   deliveryFee: number;
 
   @Column({ name: 'delivery_radius', type: 'int', default: 10 })
@@ -139,7 +164,7 @@ export class Vendor {
   @Column({ name: 'swift_code', nullable: true })
   swiftCode: string | null;
 
-  // Media
+  // Media (أسماء الأعمدة تاريخية؛ الحقل في المنتج = معرض صور/فيديو مقدّم الخدمة)
   @Column({ nullable: true })
   logo: string | null;
 
@@ -154,12 +179,14 @@ export class Vendor {
 
   // Working Hours (stored as JSON)
   @Column({ name: 'working_hours', type: 'jsonb', nullable: true })
-  workingHours: {
-    day: string;
-    open: string;
-    close: string;
-    isOpen: boolean;
-  }[] | null;
+  workingHours:
+    | {
+        day: string;
+        open: string;
+        close: string;
+        isOpen: boolean;
+      }[]
+    | null;
 
   // Status
   @Column({

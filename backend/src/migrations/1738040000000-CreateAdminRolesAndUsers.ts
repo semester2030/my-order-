@@ -46,97 +46,97 @@ export class CreateAdminRolesAndUsers1738040000000 implements MigrationInterface
   public async up(queryRunner: QueryRunner): Promise<void> {
     if (!(await queryRunner.hasTable('admin_roles'))) {
       await queryRunner.createTable(
-      new Table({
-        name: 'admin_roles',
-        columns: [
-          {
-            name: 'id',
-            type: 'uuid',
-            isPrimary: true,
-            generationStrategy: 'uuid',
-            default: 'uuid_generate_v4()',
-          },
-          {
-            name: 'name',
-            type: 'varchar',
-            length: '100',
-            isUnique: true,
-            isNullable: false,
-          },
-          {
-            name: 'slug',
-            type: 'varchar',
-            length: '50',
-            isUnique: true,
-            isNullable: false,
-          },
-          {
-            name: 'created_at',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            isNullable: false,
-          },
-        ],
-      }),
-      true,
-    );
+        new Table({
+          name: 'admin_roles',
+          columns: [
+            {
+              name: 'id',
+              type: 'uuid',
+              isPrimary: true,
+              generationStrategy: 'uuid',
+              default: 'uuid_generate_v4()',
+            },
+            {
+              name: 'name',
+              type: 'varchar',
+              length: '100',
+              isUnique: true,
+              isNullable: false,
+            },
+            {
+              name: 'slug',
+              type: 'varchar',
+              length: '50',
+              isUnique: true,
+              isNullable: false,
+            },
+            {
+              name: 'created_at',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+              isNullable: false,
+            },
+          ],
+        }),
+        true,
+      );
     }
 
     if (!(await queryRunner.hasTable('admin_users'))) {
       await queryRunner.createTable(
-      new Table({
-        name: 'admin_users',
-        columns: [
-          {
-            name: 'id',
-            type: 'uuid',
-            isPrimary: true,
-            generationStrategy: 'uuid',
-            default: 'uuid_generate_v4()',
-          },
-          {
-            name: 'email',
-            type: 'varchar',
-            isUnique: true,
-            isNullable: false,
-          },
-          {
-            name: 'password_hash',
-            type: 'varchar',
-            isNullable: false,
-          },
-          {
-            name: 'role_id',
-            type: 'uuid',
-            isNullable: false,
-          },
-          {
-            name: 'name',
-            type: 'varchar',
-            isNullable: false,
-          },
-          {
-            name: 'is_active',
-            type: 'boolean',
-            default: true,
-            isNullable: false,
-          },
-          {
-            name: 'created_at',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            isNullable: false,
-          },
-          {
-            name: 'updated_at',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-            isNullable: false,
-          },
-        ],
-      }),
-      true,
-    );
+        new Table({
+          name: 'admin_users',
+          columns: [
+            {
+              name: 'id',
+              type: 'uuid',
+              isPrimary: true,
+              generationStrategy: 'uuid',
+              default: 'uuid_generate_v4()',
+            },
+            {
+              name: 'email',
+              type: 'varchar',
+              isUnique: true,
+              isNullable: false,
+            },
+            {
+              name: 'password_hash',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'role_id',
+              type: 'uuid',
+              isNullable: false,
+            },
+            {
+              name: 'name',
+              type: 'varchar',
+              isNullable: false,
+            },
+            {
+              name: 'is_active',
+              type: 'boolean',
+              default: true,
+              isNullable: false,
+            },
+            {
+              name: 'created_at',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+              isNullable: false,
+            },
+            {
+              name: 'updated_at',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+              isNullable: false,
+            },
+          ],
+        }),
+        true,
+      );
     }
 
     const fk = new TableForeignKey({
@@ -150,7 +150,10 @@ export class CreateAdminRolesAndUsers1738040000000 implements MigrationInterface
     await this.createIndexIfNotExists(
       queryRunner,
       'admin_users',
-      new TableIndex({ name: 'IDX_admin_users_role_id', columnNames: ['role_id'] }),
+      new TableIndex({
+        name: 'IDX_admin_users_role_id',
+        columnNames: ['role_id'],
+      }),
     );
     await this.createIndexIfNotExists(
       queryRunner,

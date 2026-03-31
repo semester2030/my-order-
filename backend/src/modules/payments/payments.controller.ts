@@ -41,10 +41,7 @@ export class PaymentsController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get payment details' })
-  async getPayment(
-    @Request() req: { user: User },
-    @Param('id') id: string,
-  ) {
+  async getPayment(@Request() req: { user: User }, @Param('id') id: string) {
     return this.paymentsService.getPayment(id, req.user.id);
   }
 

@@ -112,11 +112,15 @@ export class AddressesService {
     });
 
     if (!address) {
-      throw new NotFoundException('Address not found or does not belong to user');
+      throw new NotFoundException(
+        'Address not found or does not belong to user',
+      );
     }
 
     await this.addressRepository.update(id, addressData);
-    const updatedAddress = await this.addressRepository.findOne({ where: { id, userId } });
+    const updatedAddress = await this.addressRepository.findOne({
+      where: { id, userId },
+    });
     if (!updatedAddress) {
       throw new NotFoundException('Address not found after update');
     }
@@ -148,7 +152,9 @@ export class AddressesService {
     });
 
     if (!address) {
-      throw new NotFoundException('Address not found or does not belong to user');
+      throw new NotFoundException(
+        'Address not found or does not belong to user',
+      );
     }
 
     await this.addressRepository.delete(id);

@@ -14,10 +14,7 @@ export class FeedController {
 
   @Get()
   @ApiOperation({ summary: 'Get feed page with video-first content' })
-  async getFeed(
-    @Request() req: { user: User },
-    @Query() query: GetFeedDto,
-  ) {
+  async getFeed(@Request() req: { user: User }, @Query() query: GetFeedDto) {
     return this.feedService.getFeed(req.user.id, query);
   }
 }
