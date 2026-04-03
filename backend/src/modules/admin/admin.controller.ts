@@ -183,6 +183,31 @@ export class AdminController {
     return this.adminService.suspendVendor(id, req.user.sub, req as any);
   }
 
+  @Post('vendors/:id/reactivate')
+  @ApiOperation({ summary: 'Reactivate suspended vendor' })
+  async reactivateVendor(
+    @Param('id') id: string,
+    @Request() req: { user: AdminTokenPayload },
+  ) {
+    return this.adminService.reactivateVendor(id, req.user.sub, req as any);
+  }
+
+  @Post('vendors/:id/remove-for-reregistration')
+  @ApiOperation({
+    summary:
+      'Remove vendor and staff users (no orders) to free email for re-registration',
+  })
+  async removeVendorForReregistration(
+    @Param('id') id: string,
+    @Request() req: { user: AdminTokenPayload },
+  ) {
+    return this.adminService.removeVendorForReregistration(
+      id,
+      req.user.sub,
+      req as any,
+    );
+  }
+
   @Post('drivers/:id/approve')
   @ApiOperation({ summary: 'Approve driver' })
   async approveDriver(

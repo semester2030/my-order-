@@ -11,9 +11,11 @@ import '../../modules/auth/presentation/screens/register_screen.dart';
 import '../../modules/auth/presentation/screens/rejected_screen.dart';
 import '../../modules/auth/presentation/screens/splash_screen.dart';
 import '../../modules/profile/presentation/screens/change_password_screen.dart';
+import '../../modules/profile/presentation/screens/delete_account_screen.dart';
 import '../../modules/profile/presentation/screens/edit_profile_screen.dart';
 import '../../modules/orders/presentation/screens/order_detail_screen.dart';
 import '../../modules/menu/presentation/screens/add_menu_item_screen.dart';
+import '../../modules/menu/presentation/screens/menu_offering_terms_screen.dart';
 import '../../modules/menu/presentation/screens/edit_menu_item_screen.dart';
 import '../../modules/services/presentation/screens/add_service_screen.dart';
 import '../../modules/services/presentation/screens/edit_service_screen.dart';
@@ -41,6 +43,7 @@ GoRouter createAppRouter(Ref ref) {
           path.startsWith('${RouteNames.orders}/') ||
           path == RouteNames.menu ||
           path.startsWith('${RouteNames.menu}/') ||
+          path == RouteNames.menuOfferingTerms ||
           path == RouteNames.services ||
           path.startsWith('${RouteNames.services}/') ||
           path == RouteNames.sideOrders ||
@@ -129,6 +132,14 @@ GoRouter createAppRouter(Ref ref) {
         ),
       ),
       GoRoute(
+        path: RouteNames.deleteAccount,
+        name: 'deleteAccount',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const DeleteAccountScreen(),
+        ),
+      ),
+      GoRoute(
         path: '/orders/:id',
         name: 'orderDetail',
         pageBuilder: (context, state) {
@@ -138,6 +149,14 @@ GoRouter createAppRouter(Ref ref) {
             child: OrderDetailScreen(orderId: id),
           );
         },
+      ),
+      GoRoute(
+        path: RouteNames.menuOfferingTerms,
+        name: 'menuOfferingTerms',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const MenuOfferingTermsScreen(),
+        ),
       ),
       GoRoute(
         path: RouteNames.menuAdd,

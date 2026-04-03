@@ -11,6 +11,8 @@ class RouteNames {
   static const String orders = '/orders';
   static String orderDetail(String id) => '/orders/$id';
   static const String menu = '/menu';
+  /// شروط عرض الوجبات العامة (قبل أول إضافة وجبة).
+  static const String menuOfferingTerms = '/menu/offering-terms';
   static const String menuAdd = '/menu/add';
   static String menuItemEdit(String id) => '/menu/$id/edit';
   static const String services = '/services';
@@ -24,6 +26,7 @@ class RouteNames {
   static const String videos = '/videos';
   static const String editProfile = '/edit-profile';
   static const String changePassword = '/change-password';
+  static const String deleteAccount = '/delete-account';
 
   // المناسبات الخاصة (للمقدمين private_events)
   static const String eventOffers = '/event-offers';

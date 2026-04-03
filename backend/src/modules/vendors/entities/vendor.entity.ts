@@ -230,6 +230,28 @@ export class Vendor {
   @Column({ name: 'rejection_reason', nullable: true, type: 'text' })
   rejectionReason: string | null;
 
+  /** قبول اللوائح/الاتفاقية قبل اعتماد الإدارة */
+  @Column({ name: 'legal_accepted_at', nullable: true, type: 'timestamp' })
+  legalAcceptedAt: Date | null;
+
+  @Column({ name: 'legal_document_version', nullable: true, length: 64 })
+  legalDocumentVersion: string | null;
+
+  /** قبول الشروط العامة لعرض الوجبات/العروض (أول مرة قبل إضافة وجبة — مشتركة لكل الفئات) */
+  @Column({
+    name: 'menu_offering_terms_accepted_at',
+    nullable: true,
+    type: 'timestamp',
+  })
+  menuOfferingTermsAcceptedAt: Date | null;
+
+  @Column({
+    name: 'menu_offering_terms_version',
+    nullable: true,
+    length: 64,
+  })
+  menuOfferingTermsVersion: string | null;
+
   // Timestamps
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

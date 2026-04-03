@@ -91,13 +91,11 @@ class _FeedVideoCardState extends State<FeedVideoCard> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Video player or thumbnail
+            // خلفية كاملة: ثَمب الفيديو → صورة الوجبة → placeholder (تظهر أثناء التحميل أو بدون فيديو)
+            Positioned.fill(child: _buildStaticBackground()),
+            // الفيديو فوق الخلفية بملء الشاشة (BoxFit.cover) عند الجاهزية
             if (_isInitialized && _controller != null)
-              _buildVideoPlayer()
-            else if (widget.item.video?.thumbnailUrl != null)
-              _buildThumbnail()
-            else
-              _buildPlaceholder(),
+              Positioned.fill(child: _buildVideoCover()),
 
             // Overlay gradient
             _buildOverlay(),
@@ -119,21 +117,51 @@ class _FeedVideoCardState extends State<FeedVideoCard> {
     );
   }
 
-  Widget _buildVideoPlayer() {
-    if (_controller == null) return _buildPlaceholder();
-
-    return AspectRatio(
-      aspectRatio: _controller!.value.aspectRatio,
-      child: VideoPlayer(_controller!),
+  /// ملء الشاشة مثل تطبيقات الفيديو القصيرة (بدل اقتصار AspectRatio على منتصف الشاشة).
+  Widget _buildVideoCover() {
+    final c = _controller!;
+    final w = c.value.size.width;
+    final h = c.value.size.height;
+    if (w <= 0 || h <= 0) {
+      return _buildStaticBackground();
+    }
+    return FittedBox(
+      fit: BoxFit.cover,
+      child: SizedBox(
+        width: w,
+        height: h,
+        child: VideoPlayer(c),
+      ),
     );
   }
 
-  Widget _buildThumbnail() {
-    return Image.network(
-      widget.item.video!.thumbnailUrl!,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
-    );
+  /// ثَمب الفيديو ثم صورة الوجبة المرفوعة من المقدّم.
+  Widget _buildStaticBackground() {
+    final thumb = widget.item.video?.thumbnailUrl;
+    if (thumb != null && thumb.isNotEmpty) {
+      return Image.network(
+        thumb,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        errorBuilder: (context, error, stackTrace) => _buildMenuImageOrPlaceholder(),
+      );
+    }
+    return _buildMenuImageOrPlaceholder();
+  }
+
+  Widget _buildMenuImageOrPlaceholder() {
+    final img = widget.item.menuItem.image;
+    if (img != null && img.isNotEmpty) {
+      return Image.network(
+        img,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+      );
+    }
+    return _buildPlaceholder();
   }
 
   Widget _buildPlaceholder() {

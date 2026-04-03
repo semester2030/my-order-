@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
@@ -9,17 +9,22 @@ import { OtpStrategy } from './strategies/otp.strategy';
 import { PinStrategy } from './strategies/pin.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { VendorOnboardingJwtGuard } from './guards/vendor-onboarding-jwt.guard';
 import { OtpCacheService } from './services/otp-cache.service';
 import { User } from '../users/entities/user.entity';
+import { Order } from '../orders/entities/order.entity';
+import { Cart } from '../cart/entities/cart.entity';
+import { CartItem } from '../cart/entities/cart-item.entity';
+import { Address } from '../addresses/entities/address.entity';
 import { UsersModule } from '../users/users.module';
 import { VendorsModule } from '../vendors/vendors.module';
 
 @Module({
   imports: [
     PassportModule,
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Order, Cart, CartItem, Address]),
     UsersModule,
-    VendorsModule,
+    forwardRef(() => VendorsModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -39,7 +44,8 @@ import { VendorsModule } from '../vendors/vendors.module';
     PinStrategy,
     JwtStrategy,
     JwtAuthGuard,
+    VendorOnboardingJwtGuard,
   ],
-  exports: [AuthService, JwtAuthGuard],
+  exports: [AuthService, JwtAuthGuard, VendorOnboardingJwtGuard],
 })
 export class AuthModule {}

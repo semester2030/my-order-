@@ -4,14 +4,27 @@ import {
   NotFoundException,
   BadRequestException,
   UnauthorizedException,
+  ForbiddenException,
   InternalServerErrorException,
   Inject,
   forwardRef,
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { Repository, MoreThanOrEqual, LessThanOrEqual, Between } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { EmailService } from '../email/email.service';
+import {
+  VENDOR_ONBOARDING_JWT_SCOPE,
+  LEGAL_TERMS_VERSION_ENV,
+  DEFAULT_LEGAL_TERMS_VERSION,
+} from './constants/onboarding.constants';
+import {
+  GENERAL_MENU_OFFERING_TERMS_VERSION_ENV,
+  DEFAULT_GENERAL_MENU_OFFERING_TERMS_VERSION,
+} from './constants/menu-offering.constants';
 import { Vendor, VendorType } from './entities/vendor.entity';
 import { VendorCertificate } from './entities/vendor-certificate.entity';
 import { VendorStaff } from './entities/vendor-staff.entity';
@@ -24,11 +37,24 @@ import { Order } from '../orders/entities/order.entity';
 import { OrderStatus } from '../orders/entities/order.entity';
 import { MenuItem } from '../menu/entities/menu-item.entity';
 import { JobsService } from '../jobs/jobs.service';
+import { EventRequest } from '../event-requests/entities/event-request.entity';
+import { PrivateEventRequest } from '../private-events/entities/private-event-request.entity';
+import { EventOffer } from '../private-events/entities/event-offer.entity';
+import { Driver } from '../drivers/entities/driver.entity';
+
+interface VendorEmailOtpEntry {
+  code: string;
+  expiresAt: number;
+  attempts: number;
+}
 
 @Injectable()
 export class VendorsService {
   private readonly PASSWORD_SALT_ROUNDS = 10;
   private readonly logger = new Logger(VendorsService.name);
+  private readonly vendorEmailOtpCache = new Map<string, VendorEmailOtpEntry>();
+  private readonly EMAIL_OTP_MAX_ATTEMPTS = 3;
+  private readonly EMAIL_OTP_TTL_MS = 5 * 60 * 1000;
 
   constructor(
     @InjectRepository(Vendor)
@@ -43,8 +69,19 @@ export class VendorsService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(MenuItem)
     private readonly menuItemRepository: Repository<MenuItem>,
+    @InjectRepository(EventRequest)
+    private readonly eventRequestRepository: Repository<EventRequest>,
+    @InjectRepository(PrivateEventRequest)
+    private readonly privateEventRequestRepository: Repository<PrivateEventRequest>,
+    @InjectRepository(EventOffer)
+    private readonly eventOfferRepository: Repository<EventOffer>,
+    @InjectRepository(Driver)
+    private readonly driverRepository: Repository<Driver>,
     @Inject(forwardRef(() => JobsService))
     private readonly jobsService: JobsService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
   ) {}
 
   async getVendor(id: string): Promise<Vendor | null> {
@@ -69,7 +106,14 @@ export class VendorsService {
       cover?: any[];
       restaurantImages?: any[];
     },
-  ): Promise<{ vendorId: string; status: string; message: string }> {
+  ): Promise<{
+    vendorId: string;
+    status: string;
+    message: string;
+    onboardingAccessToken: string;
+    onboardingExpiresInSeconds: number;
+    requiredLegalDocumentVersion: string;
+  }> {
     const emailNorm = (dto.email || '').trim().toLowerCase();
     const passwordTrim = (dto.password || '').trim();
     const nameTrim = (dto.name || '').trim();
@@ -222,11 +266,23 @@ export class VendorsService {
 
       await this.staffRepository.save(ownerStaff);
 
+      const onboardingAccessToken = this.jwtService.sign(
+        {
+          sub: vendorUser.id,
+          userId: vendorUser.id,
+          scope: VENDOR_ONBOARDING_JWT_SCOPE,
+        },
+        { expiresIn: '7d' },
+      );
+
       return {
         vendorId: savedVendor.id,
         status: savedVendor.registrationStatus,
         message:
           'Registration submitted successfully. Your application is under review.',
+        onboardingAccessToken,
+        onboardingExpiresInSeconds: 7 * 24 * 60 * 60,
+        requiredLegalDocumentVersion: this.getRequiredLegalDocumentVersion(),
       };
     } catch (err: any) {
       const code = err?.driverError?.code;
@@ -444,6 +500,39 @@ export class VendorsService {
     return staff?.vendorId || null;
   }
 
+  /**
+   * يمنع استخدام واجهات مقدّم الخدمة قبل اعتماد الإدارة (تسجيل دخول + JWT + تحديث التوكن).
+   */
+  async assertVendorApprovedForApiAccess(userId: string): Promise<void> {
+    const vendorId = await this.getVendorIdByUserId(userId);
+    if (!vendorId) {
+      throw new UnauthorizedException('هذا الحساب غير مرتبط بملف مقدّم خدمة.');
+    }
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+      select: ['id', 'registrationStatus'],
+    });
+    if (!vendor) {
+      throw new UnauthorizedException('ملف مقدّم الخدمة غير موجود.');
+    }
+    if (vendor.registrationStatus === VendorStatus.APPROVED) {
+      return;
+    }
+    const byStatus: Partial<Record<VendorStatus, string>> = {
+      [VendorStatus.PENDING_APPROVAL]:
+        'طلبك ما زال بانتظار موافقة الإدارة. لا يمكن استخدام التطبيق كمقدّم خدمة قبل الاعتماد من لوحة الإدارة.',
+      [VendorStatus.UNDER_REVIEW]:
+        'طلبك قيد المراجعة. انتظر موافقة الإدارة قبل استخدام الخدمة بالكامل.',
+      [VendorStatus.REJECTED]:
+        'تم رفض طلب التسجيل. تواصل مع الدعم لمزيد من التفاصيل.',
+      [VendorStatus.SUSPENDED]: 'تم إيقاف حسابك. تواصل مع الإدارة.',
+    };
+    throw new UnauthorizedException(
+      byStatus[vendor.registrationStatus] ??
+        'حالة الحساب لا تسمح بالدخول. تواصل مع الدعم.',
+    );
+  }
+
   // Vendor Orders Management
   async getVendorOrders(
     vendorId: string,
@@ -626,6 +715,7 @@ export class VendorsService {
       isAvailable?: boolean;
     },
   ): Promise<MenuItem> {
+    await this.assertMenuOfferingTermsAcceptedForAddMenuItem(vendorId);
     const menuItem = this.menuItemRepository.create({
       vendorId,
       name: data.name,
@@ -870,5 +960,401 @@ export class VendorsService {
     }
 
     await this.staffRepository.remove(staff);
+  }
+
+  getOnboardingJwtScope(): string {
+    return VENDOR_ONBOARDING_JWT_SCOPE;
+  }
+
+  getRequiredLegalDocumentVersion(): string {
+    return (
+      this.configService.get<string>(LEGAL_TERMS_VERSION_ENV) ||
+      DEFAULT_LEGAL_TERMS_VERSION
+    );
+  }
+
+  /** يُسمح بتوكن الإكمال طالما الحساب لم يُعتمد بعد */
+  async isOnboardingTokenStillValid(vendorId: string): Promise<boolean> {
+    const v = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+      select: ['id', 'registrationStatus'],
+    });
+    return (
+      !!v &&
+      v.registrationStatus !== VendorStatus.APPROVED &&
+      v.registrationStatus !== VendorStatus.REJECTED
+    );
+  }
+
+  async assertOnboardingJwtAllowed(userId: string): Promise<void> {
+    const vid = await this.getVendorIdByUserId(userId);
+    if (!vid) {
+      throw new UnauthorizedException();
+    }
+    const ok = await this.isOnboardingTokenStillValid(vid);
+    if (!ok) {
+      throw new UnauthorizedException(
+        'انتهت مرحلة إكمال التسجيل. إن كان حسابك معتمداً استخدم تسجيل الدخول العادي.',
+      );
+    }
+  }
+
+  async assertVendorComplianceForAdminApproval(vendorId: string): Promise<void> {
+    const ownerStaff = await this.staffRepository.findOne({
+      where: { vendorId, role: StaffRole.OWNER },
+    });
+    if (!ownerStaff) {
+      throw new BadRequestException('لا يوجد مالك مسجّل لهذا المقدّم.');
+    }
+    const ownerUser = await this.userRepository.findOne({
+      where: { id: ownerStaff.userId },
+    });
+    if (!ownerUser?.emailVerifiedAt) {
+      throw new BadRequestException(
+        'لا يمكن الاعتماد: لم يُتحقق من بريد مقدّم الخدمة بعد.',
+      );
+    }
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+      select: ['id', 'legalAcceptedAt'],
+    });
+    if (!vendor?.legalAcceptedAt) {
+      throw new BadRequestException(
+        'لا يمكن الاعتماد: لم يُسجَّل قبول اللوائح/الاتفاقية بعد.',
+      );
+    }
+  }
+
+  async getVendorOnboardingSnapshotForAdmin(vendorId: string): Promise<{
+    ownerEmailVerified: boolean;
+    ownerEmailVerifiedAt: Date | null;
+    legalAccepted: boolean;
+    legalAcceptedAt: Date | null;
+    legalDocumentVersion: string | null;
+    requiredLegalDocumentVersion: string;
+  }> {
+    const ownerStaff = await this.staffRepository.findOne({
+      where: { vendorId, role: StaffRole.OWNER },
+    });
+    const ownerUser = ownerStaff
+      ? await this.userRepository.findOne({
+          where: { id: ownerStaff.userId },
+          select: ['id', 'emailVerifiedAt'],
+        })
+      : null;
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+      select: ['legalAcceptedAt', 'legalDocumentVersion'],
+    });
+    return {
+      ownerEmailVerified: !!ownerUser?.emailVerifiedAt,
+      ownerEmailVerifiedAt: ownerUser?.emailVerifiedAt ?? null,
+      legalAccepted: !!vendor?.legalAcceptedAt,
+      legalAcceptedAt: vendor?.legalAcceptedAt ?? null,
+      legalDocumentVersion: vendor?.legalDocumentVersion ?? null,
+      requiredLegalDocumentVersion: this.getRequiredLegalDocumentVersion(),
+    };
+  }
+
+  async requestVendorEmailVerificationOtp(userId: string): Promise<{
+    sent: boolean;
+    message: string;
+  }> {
+    const vendorId = await this.getVendorIdByUserId(userId);
+    if (!vendorId) {
+      throw new NotFoundException('مقدّم خدمة غير مرتبط بهذا الحساب');
+    }
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const email = user?.email?.trim().toLowerCase();
+    if (!email) {
+      throw new BadRequestException('لا يوجد بريد إلكتروني على الحساب');
+    }
+    if (user.emailVerifiedAt) {
+      throw new BadRequestException('البريد مُحقق مسبقاً');
+    }
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    this.vendorEmailOtpCache.set(email, {
+      code,
+      expiresAt: Date.now() + this.EMAIL_OTP_TTL_MS,
+      attempts: 0,
+    });
+    setTimeout(() => {
+      this.vendorEmailOtpCache.delete(email);
+    }, this.EMAIL_OTP_TTL_MS);
+
+    const sent = await this.emailService.sendOtp(email, code);
+    if (!sent) {
+      this.logger.warn(`Vendor email OTP not sent (email disabled?): ${email}`);
+    }
+    return {
+      sent,
+      message: sent
+        ? 'تم إرسال رمز التحقق إلى بريدك.'
+        : 'تعذّر إرسال البريد. تأكد من إعدادات الخادم أو جرّب لاحقاً.',
+    };
+  }
+
+  async confirmVendorEmailWithOtp(userId: string, code: string): Promise<void> {
+    const vendorId = await this.getVendorIdByUserId(userId);
+    if (!vendorId) {
+      throw new NotFoundException('مقدّم خدمة غير مرتبط بهذا الحساب');
+    }
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const email = user?.email?.trim().toLowerCase();
+    if (!email) {
+      throw new BadRequestException('لا يوجد بريد');
+    }
+    if (user.emailVerifiedAt) {
+      return;
+    }
+    const entry = this.vendorEmailOtpCache.get(email);
+    if (!entry || Date.now() > entry.expiresAt) {
+      this.vendorEmailOtpCache.delete(email);
+      throw new BadRequestException('الرمز منتهٍ أو غير صالح. اطلب رمزاً جديداً.');
+    }
+    if (entry.attempts >= this.EMAIL_OTP_MAX_ATTEMPTS) {
+      this.vendorEmailOtpCache.delete(email);
+      throw new BadRequestException('تجاوزت عدد المحاولات. اطلب رمزاً جديداً.');
+    }
+    entry.attempts += 1;
+    if (entry.code !== code.trim()) {
+      if (entry.attempts >= this.EMAIL_OTP_MAX_ATTEMPTS) {
+        this.vendorEmailOtpCache.delete(email);
+      }
+      throw new BadRequestException('رمز التحقق غير صحيح.');
+    }
+    this.vendorEmailOtpCache.delete(email);
+    user.emailVerifiedAt = new Date();
+    user.isVerified = true;
+    await this.userRepository.save(user);
+  }
+
+  async acceptVendorLegalDocument(
+    userId: string,
+    documentVersion: string,
+  ): Promise<void> {
+    const required = this.getRequiredLegalDocumentVersion().trim();
+    if ((documentVersion || '').trim() !== required) {
+      throw new BadRequestException(
+        `يجب الموافقة على إصدار اللوائح الحالي (${required}).`,
+      );
+    }
+    const vendorId = await this.getVendorIdByUserId(userId);
+    if (!vendorId) {
+      throw new NotFoundException('مقدّم خدمة غير مرتبط بهذا الحساب');
+    }
+    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+    if (!vendor) {
+      throw new NotFoundException('Vendor not found');
+    }
+    vendor.legalAcceptedAt = new Date();
+    vendor.legalDocumentVersion = required;
+    await this.vendorRepository.save(vendor);
+  }
+
+  async getVendorOnboardingChecklist(userId: string): Promise<{
+    emailVerified: boolean;
+    emailVerifiedAt: Date | null;
+    legalAccepted: boolean;
+    legalAcceptedAt: Date | null;
+    legalDocumentVersion: string | null;
+    requiredLegalDocumentVersion: string;
+    registrationStatus: string;
+    vendorId: string;
+  }> {
+    const vendorId = await this.getVendorIdByUserId(userId);
+    if (!vendorId) {
+      throw new NotFoundException('مقدّم خدمة غير مرتبط بهذا الحساب');
+    }
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+      select: [
+        'id',
+        'registrationStatus',
+        'legalAcceptedAt',
+        'legalDocumentVersion',
+      ],
+    });
+    if (!vendor) {
+      throw new NotFoundException('Vendor not found');
+    }
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: ['emailVerifiedAt'],
+    });
+    return {
+      emailVerified: !!user?.emailVerifiedAt,
+      emailVerifiedAt: user?.emailVerifiedAt ?? null,
+      legalAccepted: !!vendor.legalAcceptedAt,
+      legalAcceptedAt: vendor.legalAcceptedAt,
+      legalDocumentVersion: vendor.legalDocumentVersion,
+      requiredLegalDocumentVersion: this.getRequiredLegalDocumentVersion(),
+      registrationStatus: vendor.registrationStatus,
+      vendorId,
+    };
+  }
+
+  getRequiredMenuOfferingTermsVersion(): string {
+    const fromEnv = this.configService
+      .get<string>(GENERAL_MENU_OFFERING_TERMS_VERSION_ENV)
+      ?.trim();
+    return fromEnv || DEFAULT_GENERAL_MENU_OFFERING_TERMS_VERSION;
+  }
+
+  async getMenuOfferingTermsStatus(vendorId: string): Promise<{
+    requiredVersion: string;
+    acceptedAt: Date | null;
+    acceptedVersion: string | null;
+    isCurrent: boolean;
+  }> {
+    const required = this.getRequiredMenuOfferingTermsVersion();
+    const v = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+      select: [
+        'id',
+        'menuOfferingTermsAcceptedAt',
+        'menuOfferingTermsVersion',
+      ],
+    });
+    const acceptedVersion = v?.menuOfferingTermsVersion?.trim() ?? null;
+    const isCurrent =
+      !!v?.menuOfferingTermsAcceptedAt && acceptedVersion === required;
+    return {
+      requiredVersion: required,
+      acceptedAt: v?.menuOfferingTermsAcceptedAt ?? null,
+      acceptedVersion,
+      isCurrent,
+    };
+  }
+
+  async acceptMenuOfferingTerms(
+    vendorId: string,
+    documentVersion: string,
+  ): Promise<void> {
+    const required = this.getRequiredMenuOfferingTermsVersion();
+    if ((documentVersion || '').trim() !== required) {
+      throw new BadRequestException(
+        `يجب الموافقة على إصدار الشروط الحالي (${required}).`,
+      );
+    }
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+    });
+    if (!vendor) {
+      throw new NotFoundException('Vendor not found');
+    }
+    vendor.menuOfferingTermsAcceptedAt = new Date();
+    vendor.menuOfferingTermsVersion = required;
+    await this.vendorRepository.save(vendor);
+  }
+
+  async assertMenuOfferingTermsAcceptedForAddMenuItem(
+    vendorId: string,
+  ): Promise<void> {
+    const { isCurrent } = await this.getMenuOfferingTermsStatus(vendorId);
+    if (!isCurrent) {
+      throw new BadRequestException(
+        'يجب الموافقة على الشروط العامة لعرض الوجبات قبل إضافة وجبة.',
+      );
+    }
+  }
+
+  /** مالك المنشأة فقط (صف staff بدور owner). */
+  async findStaffOwnerVendorId(userId: string): Promise<string | null> {
+    const row = await this.staffRepository.findOne({
+      where: { userId, role: StaffRole.OWNER },
+      select: ['vendorId'],
+    });
+    return row?.vendorId ?? null;
+  }
+
+  async hasAnyVendorStaff(userId: string): Promise<boolean> {
+    const n = await this.staffRepository.count({ where: { userId } });
+    return n > 0;
+  }
+
+  async removeAllStaffMembershipsForUser(userId: string): Promise<void> {
+    await this.staffRepository.delete({ userId });
+  }
+
+  /**
+   * حذف منشأة مقدّم الخدمة بالكامل من قبل المالك (بدون طلبات/ارتباطات تمنع الحذف).
+   * يحذف سجلات المستخدمين المرتبطين كفريق لتلك المنشأة.
+   */
+  async deleteVendorBusinessByOwnerUserId(userId: string): Promise<void> {
+    const vendorId = await this.findStaffOwnerVendorId(userId);
+    if (!vendorId) {
+      throw new ForbiddenException(
+        'يمكن لمالك الحساب فقط حذف منشأة مقدّم الخدمة بالكامل.',
+      );
+    }
+
+    const vendor = await this.vendorRepository.findOne({ where: { id: vendorId } });
+    if (!vendor) {
+      throw new NotFoundException('مقدّم الخدمة غير موجود');
+    }
+
+    const orderCount = await this.orderRepository.count({
+      where: { vendorId },
+    });
+    if (orderCount > 0) {
+      throw new BadRequestException(
+        'لا يمكن حذف الحساب تلقائياً مع وجود طلبات مرتبطة بمنشأتك. تواصل مع الدعم لإتمام الإغلاق.',
+      );
+    }
+
+    const [evReqV, pevReqV, offersV] = await Promise.all([
+      this.eventRequestRepository.count({ where: { vendorId } }),
+      this.privateEventRequestRepository.count({ where: { vendorId } }),
+      this.eventOfferRepository.count({ where: { vendorId } }),
+    ]);
+    if (evReqV + pevReqV + offersV > 0) {
+      throw new BadRequestException(
+        'لا يمكن الحذف: يوجد طلبات أو عروض مناسبات مرتبطة بهذا المقدّم.',
+      );
+    }
+
+    const staff = await this.staffRepository.find({ where: { vendorId } });
+    const userIds = [...new Set(staff.map((s) => s.userId))];
+
+    for (const uid of userIds) {
+      const driver = await this.driverRepository.findOne({
+        where: { userId: uid },
+      });
+      if (driver) {
+        throw new BadRequestException(
+          'لا يمكن الحذف: أحد الحسابات مرتبط كسائق.',
+        );
+      }
+      const custOrders = await this.orderRepository.count({
+        where: { userId: uid },
+      });
+      if (custOrders > 0) {
+        throw new BadRequestException(
+          'لا يمكن الحذف: أحد حسابات الفريق له طلبات كعميل.',
+        );
+      }
+      const evU = await this.eventRequestRepository.count({
+        where: { userId: uid },
+      });
+      const pevU = await this.privateEventRequestRepository.count({
+        where: { userId: uid },
+      });
+      if (evU + pevU > 0) {
+        throw new BadRequestException(
+          'لا يمكن الحذف: أحد الحسابات له طلبات مناسبات كعميل.',
+        );
+      }
+    }
+
+    await this.vendorRepository.manager.transaction(async (em) => {
+      await em.delete(EventOffer, { vendorId });
+      await em.delete(EventRequest, { vendorId });
+      await em.delete(PrivateEventRequest, { vendorId });
+      await em.delete(Vendor, { id: vendorId });
+      for (const uid of userIds) {
+        await em.delete(User, { id: uid });
+      }
+    });
   }
 }

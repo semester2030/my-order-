@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vendor_app/core/errors/failure.dart';
 import 'package:vendor_app/core/storage/secure_storage.dart';
 import 'package:vendor_app/core/storage/storage_keys.dart';
-import 'package:vendor_app/core/utils/result.dart';
+import 'package:vendor_app/core/utils/result.dart' hide Failure;
+import 'package:vendor_app/modules/auth/domain/repositories/auth_repo.dart';
 import 'package:vendor_app/modules/profile/domain/entities/vendor_profile.dart';
 import 'package:vendor_app/modules/profile/domain/repositories/profile_repo.dart';
 
@@ -14,11 +16,13 @@ class SessionNotifier extends StateNotifier<SessionState> {
     this._authNotifier,
     this._profileRepo,
     this._secureStorage,
+    this._authRepo,
   ) : super(const SessionInitial());
 
   final AuthNotifier _authNotifier;
   final ProfileRepo _profileRepo;
   final SecureStorage _secureStorage;
+  final AuthRepo _authRepo;
 
   /// التحقق من الجلسة: توكن ثم جلب البروفايل وقراءة registrationStatus.
   Future<void> checkSession() async {
@@ -83,5 +87,18 @@ class SessionNotifier extends StateNotifier<SessionState> {
     await _secureStorage.write(StorageKeys.refreshToken, null);
     _authNotifier.setUnauthenticated();
     state = const SessionUnauthenticated();
+  }
+
+  /// حذف الحساب على الخادم؛ عند النجاح تُمسح الجلسة محلياً (التوكنات مُزالة في [AuthRepo]).
+  Future<Result<void, Failure>> deleteAccount(String currentPassword) async {
+    final result = await _authRepo.deleteAccount(currentPassword);
+    result.when(
+      success: (_) {
+        _authNotifier.setUnauthenticated();
+        state = const SessionUnauthenticated();
+      },
+      failure: (_) {},
+    );
+    return result;
   }
 }

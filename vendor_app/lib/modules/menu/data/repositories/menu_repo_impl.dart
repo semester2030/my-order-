@@ -4,6 +4,7 @@ import 'package:vendor_app/core/utils/result.dart' as res;
 import 'package:vendor_app/shared/models/paged_result.dart';
 
 import '../../domain/entities/menu_item.dart';
+import '../../domain/entities/menu_offering_terms_status.dart';
 import '../../domain/repositories/menu_repo.dart';
 import '../datasources/menu_remote_ds.dart';
 import '../mappers/menu_mapper.dart';
@@ -64,6 +65,26 @@ class MenuRepoImpl implements MenuRepo {
     try {
       final dto = await _remoteDs.toggleAvailability(id, isAvailable);
       return res.Success(MenuMapper.toMenuItem(dto));
+    } catch (e) {
+      return res.Failure(ErrorMapper.toFailure(e));
+    }
+  }
+
+  @override
+  Future<res.Result<MenuOfferingTermsStatus, Failure>> getMenuOfferingTermsStatus() async {
+    try {
+      final s = await _remoteDs.getMenuOfferingTermsStatus();
+      return res.Success(s);
+    } catch (e) {
+      return res.Failure(ErrorMapper.toFailure(e));
+    }
+  }
+
+  @override
+  Future<res.Result<void, Failure>> acceptMenuOfferingTerms(String documentVersion) async {
+    try {
+      await _remoteDs.acceptMenuOfferingTerms(documentVersion);
+      return const res.Success(null);
     } catch (e) {
       return res.Failure(ErrorMapper.toFailure(e));
     }

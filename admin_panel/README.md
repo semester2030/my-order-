@@ -12,7 +12,7 @@ admin_panel/
 │   ├── dashboard/         ← لوحة رئيسية حسب الدور
 │   ├── vendors/           ← إدارة المطاعم + الموافقات
 │   │   ├── applications/  ← طلبات تسجيل المطاعم (Approve / Reject / Needs changes)
-│   │   └── [id]/          ← تفاصيل مطعم
+│   │   └── [id]/          ← تفاصيل مقدّم خدمة
 │   ├── drivers/           ← إدارة السائقين + الموافقات
 │   │   ├── applications/  ← طلبات تسجيل السائقين (Approve / Reject / Suspend / Probation)
 │   │   └── [id]/          ← تفاصيل سائق

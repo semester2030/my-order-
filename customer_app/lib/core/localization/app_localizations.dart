@@ -130,6 +130,20 @@ class AppLocalizations {
   String get readPrivacy => isAr ? StringsAr.readPrivacy : StringsEn.readPrivacy;
   String get appVersion =>
       isAr ? StringsAr.appVersion : StringsEn.appVersion;
+  String get deleteAccount =>
+      isAr ? StringsAr.deleteAccount : StringsEn.deleteAccount;
+  String get deleteAccountSubtitle =>
+      isAr ? StringsAr.deleteAccountSubtitle : StringsEn.deleteAccountSubtitle;
+  String get deleteAccountTitle =>
+      isAr ? StringsAr.deleteAccountTitle : StringsEn.deleteAccountTitle;
+  String get deleteAccountWarning =>
+      isAr ? StringsAr.deleteAccountWarning : StringsEn.deleteAccountWarning;
+  String get deleteAccountConfirmHint =>
+      isAr ? StringsAr.deleteAccountConfirmHint : StringsEn.deleteAccountConfirmHint;
+  String get deleteAccountSubmit =>
+      isAr ? StringsAr.deleteAccountSubmit : StringsEn.deleteAccountSubmit;
+  String get deleteAccountSuccess =>
+      isAr ? StringsAr.deleteAccountSuccess : StringsEn.deleteAccountSuccess;
 
   // عام
   String get comingSoon => isAr ? StringsAr.comingSoon : StringsEn.comingSoon;

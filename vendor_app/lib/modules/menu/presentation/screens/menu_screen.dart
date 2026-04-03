@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:vendor_app/core/theme/design_system.dart';
+import 'package:vendor_app/core/utils/result.dart';
 import 'package:vendor_app/core/localization/app_localizations.dart';
 import 'package:vendor_app/core/widgets/empty_state.dart';
 import 'package:vendor_app/core/widgets/error_state.dart';
@@ -42,6 +43,30 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _goToAddMenuItem(BuildContext context) async {
+    final res = await ref.read(menuRepoProvider).getMenuOfferingTermsStatus();
+    if (!context.mounted) return;
+    final needsTerms = res.when(
+      success: (s) => !s.isCurrent,
+      failure: (f) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(f.message),
+            backgroundColor: SemanticColors.error,
+          ),
+        );
+        return null;
+      },
+    );
+    if (needsTerms == null) return;
+    if (needsTerms) {
+      final agreed = await context.push<bool>(RouteNames.menuOfferingTerms);
+      if (!context.mounted) return;
+      if (agreed != true) return;
+    }
+    if (context.mounted) context.push(RouteNames.menuAdd);
   }
 
   void _onScroll() {
@@ -107,7 +132,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                       EmptyState(message: AppLocalizations.of(context).noMeals),
                       Gaps.lgV,
                       TextButton.icon(
-                        onPressed: () => context.push(RouteNames.menuAdd),
+                        onPressed: () => _goToAddMenuItem(context),
                         icon: const Icon(Icons.add),
                         label: Text(AppLocalizations.of(context).addMeal),
                       ),
@@ -143,7 +168,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => context.push(RouteNames.menuAdd),
+          onPressed: () => _goToAddMenuItem(context),
           backgroundColor: AppColors.primary,
           child: const Icon(Icons.add, color: AppColors.textOnPrimary),
         ),

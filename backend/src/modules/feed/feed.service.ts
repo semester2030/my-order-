@@ -8,6 +8,7 @@ import { Address } from '../addresses/entities/address.entity';
 import { GetFeedDto } from './dto/get-feed.dto';
 import { VendorType } from '../vendors/entities/vendor.entity';
 import { VideoStatus } from '../menu/entities/video-asset.entity';
+import { VendorStatus } from '../vendors/enums/vendor-status.enum';
 
 interface FeedItem {
   menuItem: MenuItem;
@@ -134,10 +135,11 @@ export class FeedService {
 
     console.log('User address:', userAddress);
 
-    // Build vendor query
-    const vendorWhere: any = {
+    // معتمد + نشط فقط. لا نشترط isAcceptingOrders هنا حتى لا يُخفى الفيد بسبب حقل تشغيلي (مثلاً false بالخطأ أو بيانات قديمة)
+    // بينما رفع الفيديو يتطلّب اعتماداً فقط — كان ينتج تناقض «معتمد + رفع ناجح لكن لا يظهر للعميل».
+    const vendorWhere: Record<string, unknown> = {
       isActive: true,
-      isAcceptingOrders: true,
+      registrationStatus: VendorStatus.APPROVED,
     };
 
     if (

@@ -76,6 +76,16 @@ class StringsEn {
   static const String privacyPolicy = 'Privacy Policy';
   static const String readPrivacy = 'Read our privacy policy';
   static const String appVersion = 'App Version';
+  static const String deleteAccount = 'Delete account';
+  static const String deleteAccountSubtitle =
+      'Permanently delete or anonymize your data per our privacy policy';
+  static const String deleteAccountTitle = 'Delete account';
+  static const String deleteAccountWarning =
+      'This cannot be undone. If you have past orders, we may retain order records without personal identifiers. Enter your password to confirm.';
+  static const String deleteAccountConfirmHint = 'Password';
+  static const String deleteAccountSubmit = 'Confirm delete account';
+  static const String deleteAccountSuccess =
+      'Your request was processed. Sign in again if you create a new account.';
 
   // General
   static const String comingSoon = 'Coming soon';

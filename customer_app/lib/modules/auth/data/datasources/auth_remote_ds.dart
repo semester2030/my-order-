@@ -10,6 +10,7 @@ abstract class AuthRemoteDataSource {
   Future<AuthTokensDto> login(String email, String password);
   Future<AuthTokensDto> refreshToken(String refreshToken);
   Future<void> logout();
+  Future<void> deleteAccount(String currentPassword);
   Future<bool> validateToken();
 }
 
@@ -67,6 +68,19 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> logout() async {
     try {
       await apiClient.post(Endpoints.logout);
+    } on DioException catch (e) {
+      if (e.error is NetworkException) throw e.error as NetworkException;
+      throw NetworkException.unknown(message: e.message ?? 'Unknown error');
+    }
+  }
+
+  @override
+  Future<void> deleteAccount(String currentPassword) async {
+    try {
+      await apiClient.post(
+        Endpoints.accountDelete,
+        data: {'currentPassword': currentPassword},
+      );
     } on DioException catch (e) {
       if (e.error is NetworkException) throw e.error as NetworkException;
       throw NetworkException.unknown(message: e.message ?? 'Unknown error');

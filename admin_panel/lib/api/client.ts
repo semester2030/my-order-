@@ -374,6 +374,14 @@ export function rejectVendor(id: string, reason: string): Promise<Record<string,
 export function suspendVendor(id: string): Promise<Record<string, unknown>> {
   return adminPost(`/admin/vendors/${id}/suspend`);
 }
+export function reactivateVendor(id: string): Promise<Record<string, unknown>> {
+  return adminPost(`/admin/vendors/${id}/reactivate`);
+}
+export function removeVendorForReregistration(
+  id: string,
+): Promise<Record<string, unknown>> {
+  return adminPost(`/admin/vendors/${id}/remove-for-reregistration`);
+}
 export function approveDriver(id: string): Promise<Record<string, unknown>> {
   return adminPost(`/admin/drivers/${id}/approve`);
 }

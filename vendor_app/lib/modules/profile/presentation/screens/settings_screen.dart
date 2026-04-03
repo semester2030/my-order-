@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import 'package:vendor_app/core/config/app_urls.dart';
 import 'package:vendor_app/core/theme/design_system.dart';
 import 'package:vendor_app/core/routing/route_names.dart';
 import 'package:vendor_app/core/di/providers.dart';
@@ -35,6 +37,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _logout() async {
     await ref.read(sessionNotifierProvider.notifier).setUnauthenticated();
     if (mounted) context.go(RouteNames.login);
+  }
+
+  Future<void> _openExternalUrl(BuildContext context, String url) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final uri = Uri.parse(url);
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!context.mounted) return;
+    if (!ok) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.couldNotOpenLink),
+          backgroundColor: SemanticColors.error,
+        ),
+      );
+    }
   }
 
   @override
@@ -98,6 +116,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         title: l10n.language,
                         icon: Icons.language,
                         onTap: () => _showLanguageSheet(context, ref),
+                      ),
+                      Divider(height: 1, color: AppColors.divider),
+                      SettingsTile(
+                        title: l10n.privacyPolicy,
+                        icon: Icons.privacy_tip_outlined,
+                        onTap: () => _openExternalUrl(context, AppUrls.privacyPolicyUrl),
+                      ),
+                      Divider(height: 1, color: AppColors.divider),
+                      SettingsTile(
+                        title: l10n.termsConditions,
+                        icon: Icons.article_outlined,
+                        onTap: () => _openExternalUrl(context, AppUrls.termsUrl),
+                      ),
+                      Divider(height: 1, color: AppColors.divider),
+                      SettingsTile(
+                        title: l10n.deleteAccount,
+                        icon: Icons.delete_forever_outlined,
+                        onTap: () => context.push(RouteNames.deleteAccount),
                       ),
                     ],
                   ),

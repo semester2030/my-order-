@@ -75,6 +75,27 @@ class AppLocalizations {
   String get languageAr => StringsAr.languageAr;
   String get languageEn => StringsEn.languageEn;
 
+  String get privacyPolicy => isAr ? StringsAr.privacyPolicy : StringsEn.privacyPolicy;
+  String get readPrivacy => isAr ? StringsAr.readPrivacy : StringsEn.readPrivacy;
+  String get termsConditions => isAr ? StringsAr.termsConditions : StringsEn.termsConditions;
+  String get readTerms => isAr ? StringsAr.readTerms : StringsEn.readTerms;
+  String get deleteAccount => isAr ? StringsAr.deleteAccount : StringsEn.deleteAccount;
+  String get deleteAccountSubtitle =>
+      isAr ? StringsAr.deleteAccountSubtitle : StringsEn.deleteAccountSubtitle;
+  String get deleteAccountTitle =>
+      isAr ? StringsAr.deleteAccountTitle : StringsEn.deleteAccountTitle;
+  String get deleteAccountWarning =>
+      isAr ? StringsAr.deleteAccountWarning : StringsEn.deleteAccountWarning;
+  String get deleteAccountPasswordLabel =>
+      isAr ? StringsAr.deleteAccountPasswordLabel : StringsEn.deleteAccountPasswordLabel;
+  String get deleteAccountSubmit =>
+      isAr ? StringsAr.deleteAccountSubmit : StringsEn.deleteAccountSubmit;
+  String get deleteAccountSuccess =>
+      isAr ? StringsAr.deleteAccountSuccess : StringsEn.deleteAccountSuccess;
+  String get passwordMinHint => isAr ? StringsAr.passwordMinHint : StringsEn.passwordMinHint;
+  String get couldNotOpenLink => isAr ? StringsAr.couldNotOpenLink : StringsEn.couldNotOpenLink;
+  String get loading => isAr ? StringsAr.loading : StringsEn.loading;
+
   String get ordersSummary => isAr ? StringsAr.ordersSummary : StringsEn.ordersSummary;
   String get menuItemsCount => isAr ? StringsAr.menuItemsCount : StringsEn.menuItemsCount;
   String get analyticsSummary => isAr ? StringsAr.analyticsSummary : StringsEn.analyticsSummary;
@@ -175,6 +196,33 @@ class AppLocalizations {
   String get pricePerPersonOptional => isAr ? StringsAr.pricePerPersonOptional : StringsEn.pricePerPersonOptional;
   String get priceTotalOptional => isAr ? StringsAr.priceTotalOptional : StringsEn.priceTotalOptional;
   String guestsCount(int n) => isAr ? StringsAr.guestsCount(n) : StringsEn.guestsCount(n);
+
+  String get menuOfferingTermsTitle =>
+      isAr ? StringsAr.menuOfferingTermsTitle : StringsEn.menuOfferingTermsTitle;
+  String get menuOfferingTermsSubtitle =>
+      isAr ? StringsAr.menuOfferingTermsSubtitle : StringsEn.menuOfferingTermsSubtitle;
+  String get menuOfferingTermsNotice =>
+      isAr ? StringsAr.menuOfferingTermsNotice : StringsEn.menuOfferingTermsNotice;
+  String get menuOfferingTermsBullet1 =>
+      isAr ? StringsAr.menuOfferingTermsBullet1 : StringsEn.menuOfferingTermsBullet1;
+  String get menuOfferingTermsBullet2 =>
+      isAr ? StringsAr.menuOfferingTermsBullet2 : StringsEn.menuOfferingTermsBullet2;
+  String get menuOfferingTermsBullet3 =>
+      isAr ? StringsAr.menuOfferingTermsBullet3 : StringsEn.menuOfferingTermsBullet3;
+  String get menuOfferingTermsBullet4 =>
+      isAr ? StringsAr.menuOfferingTermsBullet4 : StringsEn.menuOfferingTermsBullet4;
+  String get menuOfferingTermsBullet5 =>
+      isAr ? StringsAr.menuOfferingTermsBullet5 : StringsEn.menuOfferingTermsBullet5;
+  String get menuOfferingTermsReadCheckbox =>
+      isAr ? StringsAr.menuOfferingTermsReadCheckbox : StringsEn.menuOfferingTermsReadCheckbox;
+  String get menuOfferingTermsAgreeButton =>
+      isAr ? StringsAr.menuOfferingTermsAgreeButton : StringsEn.menuOfferingTermsAgreeButton;
+  String get menuOfferingTermsVersionLabel =>
+      isAr ? StringsAr.menuOfferingTermsVersionLabel : StringsEn.menuOfferingTermsVersionLabel;
+  String get menuOfferingTermsLoading =>
+      isAr ? StringsAr.menuOfferingTermsLoading : StringsEn.menuOfferingTermsLoading;
+  String get menuOfferingTermsSubmitting =>
+      isAr ? StringsAr.menuOfferingTermsSubmitting : StringsEn.menuOfferingTermsSubmitting;
 
   static const List<Locale> supportedLocales = [
     Locale('ar'),

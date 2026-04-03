@@ -82,8 +82,8 @@ export const translations = {
       ownerName: 'اسم المالك',
       ownerPhone: 'جوال المالك',
       optionalNote: 'يمكنك إكمال باقي البيانات (سجل تجاري، موقع، بنك، إلخ) لاحقاً من لوحة التحكم.',
-      typePremiumCasual: 'مطعم عائلي',
-      typeFineDining: 'مطعم فاخر',
+      typePremiumCasual: 'مطبخ / خدمة طعام يومية (عائلية أو منزلية)',
+      typeFineDining: 'تقديم فاخر — مناسبات وولائم مرتبة',
       typeFastFood: 'وجبات سريعة',
       typeCafe: 'مقهى',
       typeBakery: 'مخبز',
@@ -248,7 +248,7 @@ export const translations = {
 
     dashboard: {
       title: 'Dashboard',
-      subtitle: 'Overview of your restaurant performance',
+      subtitle: 'Overview of your service performance',
       totalRevenue: 'Total Revenue',
       totalOrders: 'Total Orders',
       pendingOrders: 'Pending Orders',
@@ -261,7 +261,7 @@ export const translations = {
 
     login: {
       title: 'Vendor Login',
-      subtitle: 'Sign in to manage your restaurant',
+      subtitle: 'Sign in to manage your service business',
       email: 'Email',
       password: 'Password',
       submit: 'Sign In',

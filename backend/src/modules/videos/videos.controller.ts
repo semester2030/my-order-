@@ -24,11 +24,12 @@ import {
 import { VideosService } from './videos.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { VendorsService } from '../vendors/vendors.service';
+import { ApprovedVendorGuard } from '../vendors/guards/approved-vendor.guard';
 import { User } from '../users/entities/user.entity';
 
 @ApiTags('videos')
 @Controller('videos')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, ApprovedVendorGuard)
 @ApiBearerAuth()
 export class VideosController {
   constructor(

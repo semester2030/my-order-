@@ -46,8 +46,8 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to show nearby restaurants and set your delivery address.</string>
+	<string>نستخدم موقعك لعرض المطاعم والمقدّمين القريبين وتحديد عنوان التوصيل. We use your location for nearby vendors and delivery address.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We need your location to show nearby restaurants and set your delivery address.</string>
+	<string>نستخدم موقعك لعرض المطاعم والمقدّمين القريبين وتحديد عنوان التوصيل. We use your location for nearby vendors and delivery address.</string>
 </dict>
 </plist>

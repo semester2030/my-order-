@@ -105,6 +105,13 @@ class SettingsScreen extends ConsumerWidget {
               ),
               Gaps.smV,
               _SettingsTile(
+                icon: Icons.delete_forever_outlined,
+                title: l10n.deleteAccount,
+                subtitle: l10n.deleteAccountSubtitle,
+                onTap: () => context.push(RouteNames.deleteAccount),
+              ),
+              Gaps.smV,
+              _SettingsTile(
                 icon: Icons.info_outline,
                 title: l10n.appVersion,
                 subtitle: '1.0.0',

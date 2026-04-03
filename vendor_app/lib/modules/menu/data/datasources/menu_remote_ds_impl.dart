@@ -5,6 +5,7 @@ import 'package:vendor_app/core/network/endpoints.dart';
 import 'package:vendor_app/shared/models/api_meta.dart';
 import 'package:vendor_app/shared/models/paged_result.dart';
 
+import '../../domain/entities/menu_offering_terms_status.dart';
 import '../models/menu_item_dto.dart';
 import 'menu_remote_ds.dart';
 
@@ -117,6 +118,26 @@ class MenuRemoteDsImpl implements MenuRemoteDs {
       throw NetworkException('استجابة فارغة من الخادم');
     }
     return MenuItemDto.fromJson(_normalizeMenuItemJson(Map<String, dynamic>.from(data)));
+  }
+
+  @override
+  Future<MenuOfferingTermsStatus> getMenuOfferingTermsStatus() async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      Endpoints.vendorsMenuOfferingTermsStatus,
+    );
+    final data = response.data;
+    if (data == null) {
+      throw NetworkException('استجابة فارغة من الخادم');
+    }
+    return MenuOfferingTermsStatus.fromJson(data);
+  }
+
+  @override
+  Future<void> acceptMenuOfferingTerms(String documentVersion) async {
+    await _dio.post<void>(
+      Endpoints.vendorsMenuOfferingTermsAccept,
+      data: <String, dynamic>{'documentVersion': documentVersion},
+    );
   }
 
   @override

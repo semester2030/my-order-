@@ -33,6 +33,10 @@ export class User {
   @Column({ default: true, name: 'is_active' })
   isActive: boolean;
 
+  /** تاريخ نجاح التحقق من امتلاك البريد (OTP) — لمقدّمي الخدمة قبل الاعتماد */
+  @Column({ name: 'email_verified_at', nullable: true, type: 'timestamp' })
+  emailVerifiedAt: Date | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

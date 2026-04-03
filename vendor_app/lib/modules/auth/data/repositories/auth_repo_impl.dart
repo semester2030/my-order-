@@ -71,4 +71,16 @@ class AuthRepoImpl implements AuthRepo {
       return res.Failure(ErrorMapper.toFailure(e));
     }
   }
+
+  @override
+  Future<res.Result<void, Failure>> deleteAccount(String currentPassword) async {
+    try {
+      await _remoteDs.deleteAccount(currentPassword);
+      await _secureStorage.write(StorageKeys.accessToken, null);
+      await _secureStorage.write(StorageKeys.refreshToken, null);
+      return const res.Success(null);
+    } catch (e) {
+      return res.Failure(ErrorMapper.toFailure(e));
+    }
+  }
 }

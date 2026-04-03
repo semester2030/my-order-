@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -15,20 +15,30 @@ import { RolesGuard } from './guards/roles.guard';
 import { AdminUser, AdminRole, AuditLog } from './entities';
 import { AuditService } from './audit.service';
 import { Vendor } from '../vendors/entities/vendor.entity';
+import { VendorStaff } from '../vendors/entities/vendor-staff.entity';
 import { Driver } from '../drivers/entities/driver.entity';
 import { Order } from '../orders/entities/order.entity';
 import { Payment } from '../payments/entities/payment.entity';
+import { EventRequest } from '../event-requests/entities/event-request.entity';
+import { PrivateEventRequest } from '../private-events/entities/private-event-request.entity';
+import { EventOffer } from '../private-events/entities/event-offer.entity';
+import { VendorsModule } from '../vendors/vendors.module';
 
 @Module({
   imports: [
+    forwardRef(() => VendorsModule),
     TypeOrmModule.forFeature([
       AdminUser,
       AdminRole,
       AuditLog,
       Vendor,
+      VendorStaff,
       Driver,
       Order,
       Payment,
+      EventRequest,
+      PrivateEventRequest,
+      EventOffer,
     ]),
     PassportModule,
     JwtModule.registerAsync({

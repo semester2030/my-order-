@@ -1,5 +1,6 @@
 import 'package:vendor_app/shared/models/paged_result.dart';
 
+import '../../domain/entities/menu_offering_terms_status.dart';
 import '../models/menu_item_dto.dart';
 
 /// مصدر بيانات القائمة عن بعد — Phase 10.
@@ -16,4 +17,8 @@ abstract interface class MenuRemoteDs {
   Future<MenuItemDto> updateItem(MenuItemDto dto);
 
   Future<MenuItemDto> toggleAvailability(String id, bool isAvailable);
+
+  Future<MenuOfferingTermsStatus> getMenuOfferingTermsStatus();
+
+  Future<void> acceptMenuOfferingTerms(String documentVersion);
 }

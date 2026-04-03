@@ -92,4 +92,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = AuthState.error(e.toString());
     }
   }
+
+  /// حذف الحساب على الخادم ثم مسح الجلسة محلياً. يعيد رمي الخطأ مع استعادة حالة [authenticated] عند الفشل.
+  Future<void> deleteAccount(String currentPassword) async {
+    final prev = await repository.getCurrentUser();
+    state = const AuthState.loading();
+    try {
+      await repository.deleteAccount(currentPassword);
+      state = const AuthState.unauthenticated();
+    } catch (e) {
+      state = prev != null
+          ? AuthState.authenticated(prev)
+          : const AuthState.unauthenticated();
+      rethrow;
+    }
+  }
 }

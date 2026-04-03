@@ -20,4 +20,9 @@ class AuthRemoteDsStub implements AuthRemoteDs {
   Future<LoginResponseDto> refresh(String refreshToken) async {
     throw UnimplementedError('Auth refresh not wired (Phase 17)');
   }
+
+  @override
+  Future<void> deleteAccount(String currentPassword) async {
+    throw UnimplementedError('deleteAccount not wired');
+  }
 }

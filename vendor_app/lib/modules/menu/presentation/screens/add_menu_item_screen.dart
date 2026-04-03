@@ -9,6 +9,8 @@ import 'package:vendor_app/core/utils/validators.dart';
 import 'package:vendor_app/core/widgets/app_text_field.dart';
 import 'package:vendor_app/core/widgets/primary_button.dart';
 import 'package:vendor_app/core/di/providers.dart';
+import 'package:vendor_app/core/routing/route_names.dart';
+import 'package:vendor_app/core/widgets/loading_view.dart';
 import 'package:vendor_app/modules/menu/domain/entities/menu_item.dart';
 import 'package:vendor_app/modules/videos/presentation/widgets/video_picker_sheet.dart';
 import 'package:vendor_app/modules/videos/presentation/screens/videos_screen.dart';
@@ -29,6 +31,40 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
   final _priceController = TextEditingController();
   String? _selectedImagePath;
   String? _selectedVideoPath;
+  bool _checkingMenuOfferingTerms = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _ensureMenuOfferingTerms());
+  }
+
+  Future<void> _ensureMenuOfferingTerms() async {
+    final res = await ref.read(menuRepoProvider).getMenuOfferingTermsStatus();
+    if (!mounted) return;
+    switch (res) {
+      case Success(:final value):
+        if (value.isCurrent) {
+          setState(() => _checkingMenuOfferingTerms = false);
+          return;
+        }
+        final ok = await context.push<bool>(RouteNames.menuOfferingTerms);
+        if (!mounted) return;
+        if (ok == true) {
+          setState(() => _checkingMenuOfferingTerms = false);
+        } else {
+          context.pop();
+        }
+      case Failure(:final error):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.message),
+            backgroundColor: SemanticColors.error,
+          ),
+        );
+        context.pop();
+    }
+  }
 
   @override
   void dispose() {
@@ -179,6 +215,22 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_checkingMenuOfferingTerms) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: AppColors.background,
+          foregroundColor: AppColors.textPrimary,
+          elevation: 0,
+          title: Text(
+            AppLocalizations.of(context).addMeal,
+            style: TextStyles.headlineSmall.copyWith(color: AppColors.textPrimary),
+          ),
+        ),
+        body: const Center(child: LoadingView()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(

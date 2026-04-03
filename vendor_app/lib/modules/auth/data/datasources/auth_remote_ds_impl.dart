@@ -53,4 +53,12 @@ class AuthRemoteDsImpl implements AuthRemoteDs {
     }
     return LoginResponseDto.fromJson(data);
   }
+
+  @override
+  Future<void> deleteAccount(String currentPassword) async {
+    await _dio.post<void>(
+      Endpoints.accountDelete,
+      data: <String, dynamic>{'currentPassword': currentPassword},
+    );
+  }
 }

@@ -3,6 +3,7 @@ import 'package:vendor_app/core/utils/result.dart' as res;
 import 'package:vendor_app/shared/models/paged_result.dart';
 
 import '../entities/menu_item.dart';
+import '../entities/menu_offering_terms_status.dart';
 
 /// مستودع قائمة الوجبات — Phase 10 (قائمة + إضافة + تعديل + توفر).
 abstract interface class MenuRepo {
@@ -18,4 +19,8 @@ abstract interface class MenuRepo {
   Future<res.Result<MenuItem, Failure>> updateItem(MenuItem item);
 
   Future<res.Result<MenuItem, Failure>> toggleAvailability(String id, bool isAvailable);
+
+  Future<res.Result<MenuOfferingTermsStatus, Failure>> getMenuOfferingTermsStatus();
+
+  Future<res.Result<void, Failure>> acceptMenuOfferingTerms(String documentVersion);
 }

@@ -9,6 +9,7 @@ class Endpoints {
   // Auth
   static const String authVendorLogin = '/auth/vendor/login';
   static const String authRefresh = '/auth/refresh';
+  static const String accountDelete = '/auth/account/delete';
   static const String vendorsRegister = '/vendors/register';
 
   // Profile
@@ -20,6 +21,11 @@ class Endpoints {
   static String vendorOrderById(String id) => '/vendors/orders/$id';
 
   // Menu
+  static const String vendorsMenuOfferingTermsStatus =
+      '/vendors/menu-offering-terms/status';
+  static const String vendorsMenuOfferingTermsAccept =
+      '/vendors/menu-offering-terms/accept';
+
   static const String vendorsMenu = '/vendors/menu';
   static String vendorMenuItemById(String id) => '/vendors/menu/$id';
   static String vendorMenuItemAvailability(String id) => '/vendors/menu/$id/availability';

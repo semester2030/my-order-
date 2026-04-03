@@ -76,6 +76,15 @@ class StringsAr {
   static const String privacyPolicy = 'سياسة الخصوصية';
   static const String readPrivacy = 'قراءة سياسة الخصوصية';
   static const String appVersion = 'إصدار التطبيق';
+  static const String deleteAccount = 'حذف الحساب';
+  static const String deleteAccountSubtitle =
+      'حذف نهائي أو إخفاء بياناتك وفق سياسة الخصوصية';
+  static const String deleteAccountTitle = 'حذف الحساب';
+  static const String deleteAccountWarning =
+      'لا يمكن التراجع. إن وُجدت طلبات سابقة قد نُبقي سجلات الطلبات دون بيانات تعريفية. أدخل الرمز السري للتأكيد.';
+  static const String deleteAccountConfirmHint = 'الرمز السري';
+  static const String deleteAccountSubmit = 'تأكيد حذف الحساب';
+  static const String deleteAccountSuccess = 'تمت معالجة طلبك. سجّل الدخول إن أنشأت حساباً جديداً.';
 
   // رسائل عامة
   static const String comingSoon = 'قريباً';

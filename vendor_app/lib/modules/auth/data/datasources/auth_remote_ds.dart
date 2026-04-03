@@ -14,4 +14,7 @@ abstract interface class AuthRemoteDs {
 
   /// POST /auth/refresh. Returns new tokens (Phase 17).
   Future<LoginResponseDto> refresh(String refreshToken);
+
+  /// POST /auth/account/delete — يتطلب Bearer؛ حذف أو إلغاء تعريف الحساب حسب سياسة الخادم.
+  Future<void> deleteAccount(String currentPassword);
 }

@@ -27,9 +27,10 @@
   </header>
   <div class="hub-title-wrap">
     <h1 data-ar="تحليل دقيق: الباكند، العميل، المزوّد، لوحة الإدارة" data-en="Precision analysis: backend, customer, vendor, admin"></h1>
-    <p class="hub-meta" data-ar="لقطة: ٢٩ مارس ٢٠٢٦ — الأرقام من أوامر wc / find / npm run lint / dart analyze على المستودع المحلي." data-en="Snapshot: 29 Mar 2026 — from wc, find, npm run lint, dart analyze."></p>
+    <p class="hub-meta" data-ar="لقطة أولية: ٢٩ مارس ٢٠٢٦ — تحديث تنفيذي وإثبات إصلاحات: ٣٠ مارس ٢٠٢٦ (مقابلة الملفات في المستودع)." data-en="Initial snapshot: 29 Mar 2026 — execution update & fix evidence: 30 Mar 2026 (repo-verified)."></p>
   </div>
   <nav class="deep-nav" aria-label="أقسام">
+    <a href="#done" data-ar="✅ ما نُفّذ والمتبقي" data-en="✅ Done & remaining"></a>
     <a href="#exec" data-ar="📊 الجدول التنفيذي" data-en="📊 Exec table"></a>
     <a href="#link" data-ar="🔗 التكامل" data-en="🔗 Integration"></a>
     <a href="#dup" data-ar="📑 التكرار" data-en="📑 Duplication"></a>
@@ -39,6 +40,83 @@
   </nav>
 
   <div class="hub-panel active" style="display:block;max-width:1040px">
+
+    <h2 class="hub-section-title" id="done" data-ar="✅ ما نُفّذ، ما أُصلح من الملاحظات السابقة، والمتبقي — بإثبات الملفات" data-en="✅ Implemented, fixes vs prior notes, remaining — file evidence"></h2>
+
+    <div class="hub-card">
+      <h3 data-ar="١) ما أُضيف أو كُمّل مؤخراً (باكند + لوحة إدارة)" data-en="1) Recently added or completed"></h3>
+      <ul style="line-height:1.85;margin:0;padding-right:1.2rem">
+        <li data-ar="بروكسي API للوحة الإدارة: rewrites من المسار ‎/api/:path*‎ إلى Nest (افتراضي منفذ 3001) — الملف admin_panel/next.config.js (دالة rewrites، متغير البيئة API_PROXY_TARGET)." data-en="Admin API proxy: admin_panel/next.config.js rewrites /api/:path* to Nest (default port 3001); env API_PROXY_TARGET."></li>
+        <li data-ar="عميل الواجهة بدون CORS محلي: على localhost و127.0.0.1 و::1 يُستخدم مسار نسبي ‎/api…‎ فيمر عبر Next ثم البروكسي — admin_panel/lib/api/client.ts (getBaseUrl، buildApiUrl)." data-en="Browser client: on localhost etc. uses relative /api… — admin_panel/lib/api/client.ts (getBaseUrl, buildApiUrl)."></li>
+        <li data-ar="middleware: تمرير ‎/api‎ و‎/api/*‎ دون فرض كوكي الجلسة على طلبات البروكسي — admin_panel/middleware.ts." data-en="middleware.ts passes /api/* without cookie auth gate."></li>
+        <li data-ar="CORS صريح في Nest: credentials، رؤوس مسموحة، وقائمة اختيارية CORS_ORIGINS — backend/src/main.ts (تقريباً الأسطر 37–46)." data-en="Explicit CORS in backend/src/main.ts (~37–46): credentials, headers, optional CORS_ORIGINS."></li>
+        <li data-ar="مستخدمو الإدارة (Super Admin): قائمة، أدوار، إنشاء، تحديث، إعادة تعيين كلمة مرور — backend/src/modules/admin/admin-users.controller.ts وadmin-users.service.ts ومجلد dto/." data-en="Admin users CRUD + roles + reset password — admin-users.controller.ts, admin-users.service.ts, dto/."></li>
+        <li data-ar="سجل تدقيق: هجرة 1738056000000-CreateAuditLogsTable.ts؛ إثراء السجل وتسجيل دخول/خروج — audit.service.ts وadmin-auth.service.ts وadmin-auth.controller.ts." data-en="Audit: migration CreateAuditLogsTable; audit.service + admin-auth service/controller."></li>
+        <li data-ar="واجهة فريق الإدارة: admin_panel/app/(dashboard)/team/page.tsx؛ تحسينات audit_logs وSidebar." data-en="Team page team/page.tsx; audit_logs + Sidebar updates."></li>
+        <li data-ar="لغة المنتج في Swagger: وصف يذكر مقدّمي الخدمة دون نموذج «مطعم» — backend/src/main.ts (DocumentBuilder)." data-en="Swagger description: service providers, no restaurant model — main.ts DocumentBuilder."></li>
+        <li data-ar="دفع إلى GitHub على الفرع main (مثال: semester2030/my-order-) لربط Render." data-en="Pushed to GitHub main (e.g. semester2030/my-order-) for Render."></li>
+      </ul>
+    </div>
+
+    <div class="hub-card">
+      <h3 data-ar="٢) ماذا أُصلح بالضبط مقابل ملاحظات هذه الصفحة والمحادثات السابقة" data-en="2) Exact fixes vs this page & prior notes"></h3>
+      <div class="hub-table-wrap">
+        <table class="hub-table" style="font-size:0.78rem">
+          <thead>
+            <tr>
+              <th data-ar="الملاحظة السابقة" data-en="Prior issue"></th>
+              <th data-ar="الإصلاح / الوضع الحالي" data-en="Fix / current state"></th>
+              <th data-ar="إثبات (مسار)" data-en="Evidence (path)"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-ar="٣١ خطأ ESLint في الباكند (مسح قديم)" data-en="31 backend ESLint errors (old scan)"></td>
+              <td data-ar="أمر npm run lint يخرج بنجاح (0) — مُتحقق محلياً مع التحديث الأخير." data-en="npm run lint exits 0 — verified locally after fixes."></td>
+              <td><code>backend/</code> — <span class="mono-sm" dir="ltr">cd backend && npm run lint</span></td>
+            </tr>
+            <tr>
+              <td data-ar="enableCors() بدون سياسة + لوحة على منفذ آخر" data-en="Bare enableCors + admin other port"></td>
+              <td data-ar="خيارات CORS صريحة مع credentials وCORS_ORIGINS اختياري." data-en="Explicit CORS + credentials + optional CORS_ORIGINS."></td>
+              <td><code>backend/src/main.ts</code></td>
+            </tr>
+            <tr>
+              <td data-ar="Failed to fetch من اللوحة (متصفح 3002 → API 3001)" data-en="Failed to fetch cross-port"></td>
+              <td data-ar="مسار نسبي ‎/api‎ + rewrites؛ طلبات API بدون credentials include (Bearer فقط)." data-en="Relative /api + rewrites; API fetch without credentials (Bearer only)."></td>
+              <td><code>admin_panel/lib/api/client.ts</code> · <code>next.config.js</code></td>
+            </tr>
+            <tr>
+              <td data-ar="Cannot GET /api عند ضرب Next بدل Nest" data-en="Cannot GET /api on Next"></td>
+              <td data-ar="استثناء ‎/api‎ في middleware + rewrites." data-en="Middleware /api passthrough + rewrites."></td>
+              <td><code>middleware.ts</code> · <code>next.config.js</code></td>
+            </tr>
+            <tr>
+              <td data-ar="خطأ داخلي / استعلام سجل التدقيق" data-en="Audit log / 500"></td>
+              <td data-ar="تبسيط الاستعلام وتطبيع الصفحات؛ هجرة جدول audit_logs." data-en="Query normalization + audit_logs migration."></td>
+              <td><code>audit.service.ts</code> · <code>1738056000000-CreateAuditLogsTable.ts</code></td>
+            </tr>
+            <tr>
+              <td data-ar="توحيد لغة المنتج (مقدّم خدمة لا مطعم)" data-en="Vendor not restaurant wording"></td>
+              <td data-ar="Swagger + واجهة الإدارة + أجزاء من الباكند في آخر دفعة." data-en="Swagger + admin UI + backend modules in last batch."></td>
+              <td><code>main.ts</code> · <code>admin_panel/.../Sidebar.tsx</code> · vendors</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="hub-card">
+      <h3 data-ar="٣) ما زال متبقياً (لم يُغلق في آخر دفعة)" data-en="3) Still open"></h3>
+      <ul style="line-height:1.85;margin:0;padding-right:1.2rem">
+        <li data-ar="اختبارات وحدة/تكامل للباكند (*.spec.ts) — غير مضافة." data-en="Backend *.spec.ts — not added."></li>
+        <li data-ar="تكرار أصول خط Cairo بين customer_app وvendor_app — لم يُدمج." data-en="Duplicate Cairo fonts — not deduped."></li>
+        <li data-ar="ملفات خدمة كبيرة (مثل vendors.service.ts) — تقسيم اختياري." data-en="Large services — optional split."></li>
+        <li data-ar="admin_panel: next lint قد يطلب إعداد ESLint تفاعلياً؛ npm run type-check يمرّ — يُنصح بملف eslint ثابت لـ CI." data-en="admin_panel: next lint may prompt; type-check passes — add ESLint config for CI."></li>
+        <li data-ar="إعادة dart analyze على التطبيقات وتحديث أرقام قسم المُحلّل أدناه (من مسح سابق)." data-en="Re-run dart analyze; analyzer section below is stale."></li>
+        <li data-ar="الإنتاج: CORS_ORIGINS وNEXT_PUBLIC_API_URL على Render/Netlify حسب النطاقات." data-en="Production env: CORS_ORIGINS, NEXT_PUBLIC_API_URL on Render/Netlify."></li>
+        <li data-ar="أرقام find/du في الجدول التنفيذي — لقطة تاريخية." data-en="Exec table counts — historical snapshot."></li>
+      </ul>
+    </div>
 
     <h2 class="hub-section-title" id="exec" data-ar="📊 الجدول التنفيذي (الأربعة)" data-en="📊 Executive table (the four)"></h2>
     <div class="hub-table-wrap">
@@ -105,19 +183,20 @@ _defaultApiBaseUrl = 'https://my-order.onrender.com/api';
 vendor_app/lib/core/network/api_client.dart → baseUrl: AppNetworkConfig.baseUrl</div>
 
     <div class="flow-box" dir="rtl">
-      <span>🛡️ admin_panel</span><span class="arr">→</span><span><code>NEXT_PUBLIC_API_URL</code> أو localhost</span>
+      <span>🛡️ admin_panel</span><span class="arr">→</span><span data-ar="مسار نسبي /api (محلي) أو NEXT_PUBLIC_API_URL (إنتاج)" data-en="Relative /api (local) or NEXT_PUBLIC_API_URL (prod)"></span>
+      <span class="arr">→</span><span>Next rewrites</span>
       <span class="arr">→</span><span>🖥️ Nest <code>/api/admin/*</code></span>
     </div>
-    <div class="hub-evidence">admin_panel/lib/api/client.ts
-const DEFAULT_API_URL = 'http://localhost:3001';
-fetch(`${base}/api/admin/auth/login`, ...)</div>
+    <div class="hub-evidence">admin_panel/lib/api/client.ts — getBaseUrl() يعيد '' على localhost في المتصفح فيُبنى المسار كـ /api/admin/...
+admin_panel/next.config.js — rewrites: /api/:path* → API_PROXY_TARGET أو http://localhost:3001/api/:path*
+SSR/الخادم: DEFAULT_API_URL أو NEXT_PUBLIC_API_URL لطلبات غير المتصفح</div>
 
     <div class="hub-card">
       <h3 data-ar="نقطة الربط في الخادم" data-en="Server binding"></h3>
       <div class="hub-evidence">backend/src/main.ts
-app.setGlobalPrefix('api', ...);
-app.enableCors();  // مفتوح — راجع تقييد النطاقات في الإنتاج</div>
-      <p class="hub-note" data-ar="الخلاصة: التطبيقان يستهدفان نفس الجذر /api على الاستضافة الافتراضية؛ لوحة الإدارة تستدعي مسارات /api/admin/* مع Bearer من localStorage (مفتاح admin_token في client.ts)." data-en="Summary: Flutter apps hit /api on default host; admin uses /api/admin/* with Bearer from localStorage (ADMIN_TOKEN_KEY)."></p>
+app.setGlobalPrefix('api', { exclude: [{ path: '', method: RequestMethod.GET }] });
+app.enableCors({ origin: corsOrigins?.length ? corsOrigins : true, credentials: true, ... }); // متغير CORS_ORIGINS اختياري</div>
+      <p class="hub-note" data-ar="الخلاصة: تطبيقا Flutter يستهدفان /api على المضيف الافتراضي؛ لوحة الإدارة محلياً تمرّر /api عبر Next ثم Nest، مع Bearer من localStorage (مفتاح admin_token). في الإنتاج عيّن NEXT_PUBLIC_API_URL وCORS_ORIGINS." data-en="Summary: Flutter → /api host; admin local → relative /api via Next rewrites + Bearer (admin_token). Prod: set NEXT_PUBLIC_API_URL and CORS_ORIGINS."></p>
     </div>
 
     <h2 class="hub-section-title" id="dup" data-ar="📑 التكرار — نوعان (مهم)" data-en="📑 Duplication — two kinds"></h2>
@@ -205,7 +284,8 @@ vendor_app/assets/fonts/Cairo/     (5 ملفات)</div>
       <table class="hub-table">
         <thead><tr><th data-ar="أسطر" data-en="Lines"></th><th data-ar="مسار" data-en="Path"></th></tr></thead>
         <tbody>
-          <tr><td>308</td><td><code>admin_panel/lib/api/client.ts</code></td></tr>
+          <tr><td>414</td><td><code>admin_panel/lib/api/client.ts</code></td></tr>
+          <tr><td>334</td><td><code>admin_panel/app/(dashboard)/team/page.tsx</code></td></tr>
           <tr><td>196</td><td><code>admin_panel/app/(dashboard)/vendors/page.tsx</code></td></tr>
           <tr><td>190</td><td><code>admin_panel/app/(dashboard)/vendors/[id]/page.tsx</code></td></tr>
           <tr><td>182</td><td><code>admin_panel/app/(dashboard)/drivers/[id]/page.tsx</code></td></tr>
@@ -216,47 +296,49 @@ vendor_app/assets/fonts/Cairo/     (5 ملفات)</div>
 
     <h2 class="hub-section-title" id="lint" data-ar="⚠️ الأخطاء والتحذيرات — دليل المُحلّل" data-en="⚠️ Lint & analyzer evidence"></h2>
     <div class="hub-card">
-      <h3 data-ar="🖥️ Backend — npm run lint (ESLint) — ٣١ خطأ" data-en="🖥️ Backend ESLint — 31 errors"></h3>
-      <p class="hub-note" data-ar="الأمر: cd backend && npm run lint — معظمها unused imports/vars و require في fcm.config.ts" data-en="Run: cd backend && npm run lint — mostly unused vars/imports + no-var-requires."></p>
-      <div class="hub-table-wrap">
-        <table class="hub-table" style="font-size:0.72rem">
-          <thead><tr><th data-ar="ملف (نسبي من backend/src)" data-en="File (under src)"></th><th data-ar="سطر" data-en="Line"></th><th>ESLint</th><th data-ar="الرسالة" data-en="Message"></th></tr></thead>
-          <tbody>
-            <tr><td><code>migrations/1738042000000-EnsureVendorColumnsOnRender.ts</code></td><td>29</td><td>no-unused-vars</td><td>_queryRunner</td></tr>
-            <tr><td><code>migrations/1738043000000-CreateOrdersMenuAndRelatedTables.ts</code></td><td>1025</td><td>no-unused-vars</td><td>_queryRunner</td></tr>
-            <tr><td><code>modules/auth/auth.controller.ts</code></td><td>91</td><td>no-unused-vars</td><td>req</td></tr>
-            <tr><td><code>modules/drivers/drivers.service.ts</code></td><td>381</td><td>no-unused-vars</td><td>adminId</td></tr>
-            <tr><td><code>modules/drivers/dto/register-driver-step1.dto.ts</code></td><td>7</td><td>no-unused-vars</td><td>IsOptional</td></tr>
-            <tr><td><code>modules/drivers/dto/register-driver-step2.dto.ts</code></td><td>9</td><td>no-unused-vars</td><td>Matches</td></tr>
-            <tr><td><code>modules/drivers/dto/register-driver-step2.dto.ts</code></td><td>10</td><td>no-unused-vars</td><td>Length</td></tr>
-            <tr><td><code>modules/drivers/entities/driver.entity.ts</code></td><td>17</td><td>no-unused-vars</td><td>VerificationStatus</td></tr>
-            <tr><td><code>modules/event-requests/event-requests.service.ts</code></td><td>3</td><td>no-unused-vars</td><td>NotFoundException</td></tr>
-            <tr><td><code>modules/feed/feed.service.ts</code></td><td>8</td><td>no-unused-vars</td><td>User</td></tr>
-            <tr><td><code>modules/feed/feed.service.ts</code></td><td>71</td><td>no-unused-vars</td><td>deliveryZones</td></tr>
-            <tr><td><code>modules/jobs/jobs.module.ts</code></td><td>1</td><td>no-unused-vars</td><td>forwardRef</td></tr>
-            <tr><td><code>modules/jobs/jobs.service.ts</code></td><td>8</td><td>no-unused-vars</td><td>LessThan</td></tr>
-            <tr><td><code>modules/jobs/jobs.service.ts</code></td><td>11</td><td>no-unused-vars</td><td>Driver</td></tr>
-            <tr><td><code>modules/notifications/fcm/fcm.config.ts</code></td><td>37</td><td>no-var-requires</td><td>Require not part of import</td></tr>
-            <tr><td><code>modules/orders/orders.service.ts</code></td><td>62</td><td>no-unused-vars</td><td>notes assigned never used</td></tr>
-            <tr><td><code>modules/payments/dto/initiate-payment.dto.ts</code></td><td>1</td><td>no-unused-vars</td><td>IsNumber</td></tr>
-            <tr><td><code>modules/payments/dto/initiate-payment.dto.ts</code></td><td>1</td><td>no-unused-vars</td><td>Min</td></tr>
-            <tr><td><code>modules/payments/payments.service.ts</code></td><td>12</td><td>no-unused-vars</td><td>PaymentMethod</td></tr>
-            <tr><td><code>modules/vendors/dto/register-vendor.dto.ts</code></td><td>22</td><td>no-unused-vars</td><td>toNumber</td></tr>
-            <tr><td><code>modules/vendors/dto/update-commercial-registration.dto.ts</code></td><td>1</td><td>no-unused-vars</td><td>IsEnum</td></tr>
-            <tr><td><code>modules/vendors/dto/update-commercial-registration.dto.ts</code></td><td>3</td><td>no-unused-vars</td><td>VerificationStatus</td></tr>
-            <tr><td><code>modules/vendors/dto/update-vendor-profile.dto.ts</code></td><td>3</td><td>no-unused-vars</td><td>IsNotEmpty</td></tr>
-            <tr><td><code>modules/vendors/dto/update-vendor-profile.dto.ts</code></td><td>12</td><td>no-unused-vars</td><td>IsDateString</td></tr>
-            <tr><td><code>modules/vendors/vendors.controller.ts</code></td><td>26</td><td>no-unused-vars</td><td>ApiBody</td></tr>
-            <tr><td><code>modules/vendors/vendors.service.ts</code></td><td>26</td><td>no-unused-vars</td><td>CertificateType</td></tr>
-            <tr><td><code>modules/vendors/vendors.service.ts</code></td><td>504</td><td>no-unused-vars</td><td>reason</td></tr>
-            <tr><td><code>modules/videos/cloudflare/cloudflare-stream.service.ts</code></td><td>38</td><td>no-unused-vars</td><td>fileName</td></tr>
-            <tr><td><code>modules/videos/cloudflare/cloudflare-stream.service.ts</code></td><td>39</td><td>no-unused-vars</td><td>fileSize</td></tr>
-            <tr><td><code>modules/videos/videos.service.ts</code></td><td>305</td><td>no-unused-vars</td><td>parameter a</td></tr>
-            <tr><td><code>modules/videos/videos.service.ts</code></td><td>305</td><td>no-unused-vars</td><td>parameter b</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="hub-note" data-ar="المجموع ٣١ خطأ — مطابق لمخرجات npm run lint بتاريخ المسح." data-en="31 errors — matches npm run lint at scan time."></p>
+      <h3 data-ar="🖥️ Backend — npm run lint (ESLint) — الوضع الحالي: نجاح" data-en="🖥️ Backend ESLint — current: pass"></h3>
+      <p class="hub-note" data-ar="مُتحقق: ‎cd backend && npm run lint‎ يخرج برمز ٠ (مارس ٢٠٢٦). الجدول في القسم المطوي أدناه أرشيف لقائمة الـ ٣١ خطأ التي سُجّلت في لقطة ٢٩ مارس قبل الإصلاح." data-en="Verified: cd backend && npm run lint exits 0 (Mar 2026). Collapsed table = archived 31-issue list from 29 Mar snapshot before fixes."></p>
+      <details style="margin-top:0.75rem">
+        <summary style="cursor:pointer;font-weight:700" data-ar="▼ أرشيف: جدول الـ ٣١ خطأ (مسح قديم)" data-en="▼ Archive: 31-issue table (old scan)"></summary>
+        <div class="hub-table-wrap" style="margin-top:0.5rem">
+          <table class="hub-table" style="font-size:0.72rem">
+            <thead><tr><th data-ar="ملف" data-en="File"></th><th data-ar="سطر" data-en="Line"></th><th>ESLint</th><th data-ar="الرسالة" data-en="Message"></th></tr></thead>
+            <tbody>
+              <tr><td><code>migrations/1738042000000-EnsureVendorColumnsOnRender.ts</code></td><td>29</td><td>no-unused-vars</td><td>_queryRunner</td></tr>
+              <tr><td><code>migrations/1738043000000-CreateOrdersMenuAndRelatedTables.ts</code></td><td>1025</td><td>no-unused-vars</td><td>_queryRunner</td></tr>
+              <tr><td><code>modules/auth/auth.controller.ts</code></td><td>91</td><td>no-unused-vars</td><td>req</td></tr>
+              <tr><td><code>modules/drivers/drivers.service.ts</code></td><td>381</td><td>no-unused-vars</td><td>adminId</td></tr>
+              <tr><td><code>modules/drivers/dto/register-driver-step1.dto.ts</code></td><td>7</td><td>no-unused-vars</td><td>IsOptional</td></tr>
+              <tr><td><code>modules/drivers/dto/register-driver-step2.dto.ts</code></td><td>9</td><td>no-unused-vars</td><td>Matches</td></tr>
+              <tr><td><code>modules/drivers/dto/register-driver-step2.dto.ts</code></td><td>10</td><td>no-unused-vars</td><td>Length</td></tr>
+              <tr><td><code>modules/drivers/entities/driver.entity.ts</code></td><td>17</td><td>no-unused-vars</td><td>VerificationStatus</td></tr>
+              <tr><td><code>modules/event-requests/event-requests.service.ts</code></td><td>3</td><td>no-unused-vars</td><td>NotFoundException</td></tr>
+              <tr><td><code>modules/feed/feed.service.ts</code></td><td>8</td><td>no-unused-vars</td><td>User</td></tr>
+              <tr><td><code>modules/feed/feed.service.ts</code></td><td>71</td><td>no-unused-vars</td><td>deliveryZones</td></tr>
+              <tr><td><code>modules/jobs/jobs.module.ts</code></td><td>1</td><td>no-unused-vars</td><td>forwardRef</td></tr>
+              <tr><td><code>modules/jobs/jobs.service.ts</code></td><td>8</td><td>no-unused-vars</td><td>LessThan</td></tr>
+              <tr><td><code>modules/jobs/jobs.service.ts</code></td><td>11</td><td>no-unused-vars</td><td>Driver</td></tr>
+              <tr><td><code>modules/notifications/fcm/fcm.config.ts</code></td><td>37</td><td>no-var-requires</td><td>Require not part of import</td></tr>
+              <tr><td><code>modules/orders/orders.service.ts</code></td><td>62</td><td>no-unused-vars</td><td>notes assigned never used</td></tr>
+              <tr><td><code>modules/payments/dto/initiate-payment.dto.ts</code></td><td>1</td><td>no-unused-vars</td><td>IsNumber</td></tr>
+              <tr><td><code>modules/payments/dto/initiate-payment.dto.ts</code></td><td>1</td><td>no-unused-vars</td><td>Min</td></tr>
+              <tr><td><code>modules/payments/payments.service.ts</code></td><td>12</td><td>no-unused-vars</td><td>PaymentMethod</td></tr>
+              <tr><td><code>modules/vendors/dto/register-vendor.dto.ts</code></td><td>22</td><td>no-unused-vars</td><td>toNumber</td></tr>
+              <tr><td><code>modules/vendors/dto/update-commercial-registration.dto.ts</code></td><td>1</td><td>no-unused-vars</td><td>IsEnum</td></tr>
+              <tr><td><code>modules/vendors/dto/update-commercial-registration.dto.ts</code></td><td>3</td><td>no-unused-vars</td><td>VerificationStatus</td></tr>
+              <tr><td><code>modules/vendors/dto/update-vendor-profile.dto.ts</code></td><td>3</td><td>no-unused-vars</td><td>IsNotEmpty</td></tr>
+              <tr><td><code>modules/vendors/dto/update-vendor-profile.dto.ts</code></td><td>12</td><td>no-unused-vars</td><td>IsDateString</td></tr>
+              <tr><td><code>modules/vendors/vendors.controller.ts</code></td><td>26</td><td>no-unused-vars</td><td>ApiBody</td></tr>
+              <tr><td><code>modules/vendors/vendors.service.ts</code></td><td>26</td><td>no-unused-vars</td><td>CertificateType</td></tr>
+              <tr><td><code>modules/vendors/vendors.service.ts</code></td><td>504</td><td>no-unused-vars</td><td>reason</td></tr>
+              <tr><td><code>modules/videos/cloudflare/cloudflare-stream.service.ts</code></td><td>38</td><td>no-unused-vars</td><td>fileName</td></tr>
+              <tr><td><code>modules/videos/cloudflare/cloudflare-stream.service.ts</code></td><td>39</td><td>no-unused-vars</td><td>fileSize</td></tr>
+              <tr><td><code>modules/videos/videos.service.ts</code></td><td>305</td><td>no-unused-vars</td><td>parameter a</td></tr>
+              <tr><td><code>modules/videos/videos.service.ts</code></td><td>305</td><td>no-unused-vars</td><td>parameter b</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
     </div>
     <div class="hub-card">
       <h3 data-ar="📱 customer_app — dart analyze — ٣٩ ملاحظة" data-en="📱 customer_app dart analyze — 39 issues"></h3>
@@ -272,9 +354,9 @@ lib/modules/addresses/.../addresses_list_screen.dart — use_build_context_synch
 + deprecated: Dropdown value، Switch activeColor، withOpacity (info)</div>
     </div>
     <div class="hub-card">
-      <h3 data-ar="🛡️ admin_panel — next lint" data-en="🛡️ admin_panel next lint"></h3>
-      <p class="hub-badge hub-badge--risk" data-ar="لم يُكمل تلقائياً" data-en="Did not complete"></p>
-      <p class="hub-note" data-ar="عند التشغيل طلب Next.js وضع ESLint تفاعلياً — يدل على أن مسار lint غير مُهيأ بالكامل في CI بدون تدخل بشري." data-en="Interactive ESLint setup prompt — CI lint needs config."></p>
+      <h3 data-ar="🛡️ admin_panel — next lint و TypeScript" data-en="🛡️ admin_panel — next lint & TypeScript"></h3>
+      <p class="hub-badge hub-badge--warn" data-ar="type-check: نجاح" data-en="type-check: pass"></p>
+      <p class="hub-note" data-ar="أمر npm run type-check (tsc --noEmit) ناجح. أمر next lint قد يطلب إعداد ESLint تفاعلياً إن لم يُثبَّت ملف الإعداد بالكامل — راجع المتبقي في أعلى الصفحة." data-en="npm run type-check passes. next lint may still prompt for ESLint setup — see Remaining at top."></p>
     </div>
 
     <h2 class="hub-section-title" id="maint" data-ar="🛠️ الصيانة، التسليم لمبرمجين جدد، الجاهزية" data-en="🛠️ Maintenance & handover"></h2>
@@ -284,8 +366,8 @@ lib/modules/addresses/.../addresses_list_screen.dart — use_build_context_synch
         <li><span class="hub-badge hub-badge--ok">✓</span> <span data-ar="فصل وحدات Nest + مسارات واضحة /api" data-en="Nest modules + /api"></span></li>
         <li><span class="hub-badge hub-badge--ok">✓</span> <span data-ar="Flutter منظم بـ modules تحت lib/" data-en="Flutter modules under lib/"></span></li>
         <li><span class="hub-badge hub-badge--warn">!</span> <span data-ar="لا اختبارات .spec.ts ظاهرة في الباكند" data-en="No backend *.spec.ts"></span></li>
-        <li><span class="hub-badge hub-badge--warn">!</span> <span data-ar="٣١ خطأ ESLint في الباكند يمنع «lint نظيف» حتى الإصلاح" data-en="31 ESLint errors block clean lint"></span></li>
-        <li><span class="hub-badge hub-badge--warn">!</span> <span data-ar="CORS مفتوح — يحتاج سياسة إنتاج" data-en="Open CORS needs production policy"></span></li>
+        <li><span class="hub-badge hub-badge--ok">✓</span> <span data-ar="ESLint الباكند: npm run lint ناجح بعد الإصلاحات (راجع قسم المُحلّل)" data-en="Backend ESLint: npm run lint passes (see lint section)"></span></li>
+        <li><span class="hub-badge hub-badge--warn">!</span> <span data-ar="CORS: خيارات صريحة في main.ts؛ للإنتاج عيّن CORS_ORIGINS بدل الاعتماد على allow-all الافتراضي" data-en="CORS: explicit in main.ts; set CORS_ORIGINS in production"></span></li>
       </ul>
     </div>
     <div class="hub-card">
@@ -294,8 +376,8 @@ lib/modules/addresses/.../addresses_list_screen.dart — use_build_context_synch
         <li data-ar="تشغيل محلي: backend (Nest) + Postgres + متغيرات البيئة من README backend" data-en="Local: Nest + Postgres + env from backend README"></li>
         <li data-ar="تشغيل العميل: flutter run --dart-define=API_BASE_URL=..." data-en="Customer: flutter run with API_BASE_URL"></li>
         <li data-ar="تشغيل المزوّد: نفس dart-define" data-en="Vendor: same dart-define"></li>
-        <li data-ar="لوحة الإدارة: NEXT_PUBLIC_API_URL + npm run dev" data-en="Admin: NEXT_PUBLIC_API_URL + dev"></li>
-        <li data-ar="إصلاح ESLint ثم إضافة CI (lint + build)" data-en="Fix ESLint then CI"></li>
+        <li data-ar="لوحة الإدارة: npm run dev (منفذ 3002) — محلياً اترك NEXT_PUBLIC_API_URL فارغاً للبروكسي؛ الإنتاج: NEXT_PUBLIC_API_URL لرابط الـ API" data-en="Admin: npm run dev :3002 — local: omit NEXT_PUBLIC_API_URL for proxy; prod: set it to API URL"></li>
+        <li data-ar="CI: باكند lint + build؛ لوحة: type-check وإعداد eslint ثابت لـ next lint" data-en="CI: backend lint+build; admin: type-check + ESLint config for next lint"></li>
         <li data-ar="توحيد حزمة خطوط مشتركة أو git submodule لتقليل تكرار Cairo" data-en="Shared font package to dedupe Cairo"></li>
       </ol>
     </div>

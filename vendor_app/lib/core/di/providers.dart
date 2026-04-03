@@ -124,7 +124,8 @@ final sessionNotifierProvider =
   final authNotifier = ref.watch(authNotifierProvider.notifier);
   final profileRepo = ref.watch(profileRepoProvider);
   final secureStorage = ref.watch(secureStorageProvider);
-  return SessionNotifier(authNotifier, profileRepo, secureStorage);
+  final authRepo = ref.watch(authRepoProvider);
+  return SessionNotifier(authNotifier, profileRepo, secureStorage, authRepo);
 });
 
 /// Profile remote datasource (Phase 7: real API).

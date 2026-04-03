@@ -1,6 +1,7 @@
 import 'package:vendor_app/shared/models/api_meta.dart';
 import 'package:vendor_app/shared/models/paged_result.dart';
 
+import '../../domain/entities/menu_offering_terms_status.dart';
 import '../models/menu_item_dto.dart';
 import 'menu_remote_ds.dart';
 
@@ -90,5 +91,16 @@ class MenuRemoteDsStub implements MenuRemoteDs {
       return _items[index];
     }
     return getItemById(id);
+  }
+
+  @override
+  Future<MenuOfferingTermsStatus> getMenuOfferingTermsStatus() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return const MenuOfferingTermsStatus(requiredVersion: 'stub', isCurrent: true);
+  }
+
+  @override
+  Future<void> acceptMenuOfferingTerms(String documentVersion) async {
+    await Future.delayed(const Duration(milliseconds: 100));
   }
 }

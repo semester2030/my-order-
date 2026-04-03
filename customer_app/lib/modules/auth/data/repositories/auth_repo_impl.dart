@@ -53,6 +53,14 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> deleteAccount(String currentPassword) async {
+    await remoteDataSource.deleteAccount(currentPassword);
+    await localDataSource.clearTokens();
+    await localDataSource.clearUser();
+    await localDataSource.clearPinHash();
+  }
+
+  @override
   Future<bool> isAuthenticated() async {
     final token = await localDataSource.getAccessToken();
     return token != null && token.isNotEmpty;

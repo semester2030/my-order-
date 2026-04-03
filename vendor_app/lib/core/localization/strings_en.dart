@@ -43,6 +43,24 @@ class StringsEn {
   static const String languageAr = 'العربية';
   static const String languageEn = 'English';
 
+  static const String privacyPolicy = 'Privacy Policy';
+  static const String readPrivacy = 'Open privacy policy on the website';
+  static const String termsConditions = 'Terms & Conditions';
+  static const String readTerms = 'Open terms on the website';
+  static const String deleteAccount = 'Delete account';
+  static const String deleteAccountSubtitle =
+      'Permanently delete or anonymize your data per our privacy policy';
+  static const String deleteAccountTitle = 'Delete account';
+  static const String deleteAccountWarning =
+      'This cannot be undone. Operational records may be kept without personal identifiers. Enter your password to confirm.';
+  static const String deleteAccountPasswordLabel = 'Password';
+  static const String deleteAccountSubmit = 'Confirm delete account';
+  static const String deleteAccountSuccess =
+      'Your request was processed. You can sign in again with a new account if you wish.';
+  static const String passwordMinHint = 'At least 6 characters';
+  static const String couldNotOpenLink = 'Could not open link';
+  static const String loading = 'Loading...';
+
   static const String ordersSummary = 'Orders Summary';
   static const String menuItemsCount = 'Menu Items Count';
   static const String analyticsSummary = 'Orders & Revenue Summary';
@@ -135,4 +153,26 @@ class StringsEn {
   static const String pricePerPersonOptional = 'Price per person (SAR) — optional';
   static const String priceTotalOptional = 'Total price (SAR) — optional';
   static String guestsCount(int n) => '$n guests';
+
+  static const String menuOfferingTermsTitle = 'General terms for listing meals';
+  static const String menuOfferingTermsSubtitle =
+      'Applies to all provider categories. Full legal text can be added later without changing the acceptance flow.';
+  static const String menuOfferingTermsNotice =
+      'Below is a temporary framework of common obligations; replace or expand with full legal wording as needed.';
+  static const String menuOfferingTermsBullet1 =
+      'Accurate meal descriptions and pricing — no misleading information.';
+  static const String menuOfferingTermsBullet2 =
+      'No content or media that violates law or public decency.';
+  static const String menuOfferingTermsBullet3 =
+      'Follow platform policies when dealing with customers and orders.';
+  static const String menuOfferingTermsBullet4 =
+      'Update listings when the product, price, or availability changes.';
+  static const String menuOfferingTermsBullet5 =
+      'The provider is responsible for the accuracy of displayed information.';
+  static const String menuOfferingTermsReadCheckbox =
+      'I have read the terms above and agree to comply.';
+  static const String menuOfferingTermsAgreeButton = 'Agree and continue';
+  static const String menuOfferingTermsVersionLabel = 'Terms version';
+  static const String menuOfferingTermsLoading = 'Loading...';
+  static const String menuOfferingTermsSubmitting = 'Saving...';
 }

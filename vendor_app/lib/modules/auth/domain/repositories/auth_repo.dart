@@ -16,4 +16,7 @@ abstract interface class AuthRepo {
 
   /// Refresh access token using refresh token (Phase 17).
   Future<res.Result<VendorSession, Failure>> refresh();
+
+  /// حذف الحساب على الخادم ثم مسح التوكنات محلياً.
+  Future<res.Result<void, Failure>> deleteAccount(String currentPassword);
 }

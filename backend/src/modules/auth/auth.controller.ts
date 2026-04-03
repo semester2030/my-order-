@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   HttpCode,
   HttpStatus,
@@ -10,6 +11,8 @@ import {
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { VendorOnboardingJwtGuard } from './guards/vendor-onboarding-jwt.guard';
+import { VendorsService } from '../vendors/vendors.service';
 import { User } from '../users/entities/user.entity';
 import { RequestOtpDto } from './dto/request-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
@@ -19,11 +22,19 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { VendorLoginDto } from './dto/vendor-login.dto';
 import { CustomerRegisterDto } from './dto/customer-register.dto';
 import { CustomerLoginDto } from './dto/customer-login.dto';
+import {
+  VendorOnboardingVerifyEmailDto,
+  VendorOnboardingAcceptLegalDto,
+} from './dto/vendor-onboarding.dto';
+import { DeleteAccountDto } from './dto/delete-account.dto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly vendorsService: VendorsService,
+  ) {}
 
   @Post('otp/request')
   @ApiOperation({ summary: 'Request OTP (phone or email)' })
@@ -83,6 +94,56 @@ export class AuthController {
     return this.authService.vendorLogin(dto.email, dto.password);
   }
 
+  @Post('vendor/onboarding/email/request-otp')
+  @UseGuards(JwtAuthGuard, VendorOnboardingJwtGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'طلب رمز تحقق البريد (قبل اعتماد الإدارة، JWT بـ scope vendor_onboarding)',
+  })
+  @HttpCode(HttpStatus.OK)
+  async vendorOnboardingRequestEmailOtp(@Request() req: { user: User }) {
+    return this.vendorsService.requestVendorEmailVerificationOtp(req.user.id);
+  }
+
+  @Post('vendor/onboarding/email/verify')
+  @UseGuards(JwtAuthGuard, VendorOnboardingJwtGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'تأكيد البريد برمز OTP' })
+  @HttpCode(HttpStatus.OK)
+  async vendorOnboardingVerifyEmail(
+    @Request() req: { user: User },
+    @Body() dto: VendorOnboardingVerifyEmailDto,
+  ) {
+    await this.vendorsService.confirmVendorEmailWithOtp(req.user.id, dto.code);
+    return { success: true };
+  }
+
+  @Post('vendor/onboarding/legal/accept')
+  @UseGuards(JwtAuthGuard, VendorOnboardingJwtGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'قبول اللوائح — documentVersion يجب أن يطابق إصدار الخادم',
+  })
+  @HttpCode(HttpStatus.OK)
+  async vendorOnboardingAcceptLegal(
+    @Request() req: { user: User },
+    @Body() dto: VendorOnboardingAcceptLegalDto,
+  ) {
+    await this.vendorsService.acceptVendorLegalDocument(
+      req.user.id,
+      dto.documentVersion,
+    );
+    return { success: true };
+  }
+
+  @Get('vendor/onboarding/status')
+  @UseGuards(JwtAuthGuard, VendorOnboardingJwtGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'حالة إكمال التسجيل (بريد، لوائح، حالة الطلب)' })
+  async vendorOnboardingStatus(@Request() req: { user: User }) {
+    return this.vendorsService.getVendorOnboardingChecklist(req.user.id);
+  }
+
   @Post('logout')
   @ApiOperation({ summary: 'Logout' })
   @UseGuards(JwtAuthGuard)
@@ -90,5 +151,21 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async logout() {
     return this.authService.logout();
+  }
+
+  @Post('account/delete')
+  @ApiOperation({
+    summary:
+      'حذف الحساب أو إلغاء تعريفه (عميل / مالك مقدّم خدمة / عضو فريق) — يتطلب كلمة المرور',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  async deleteAccount(
+    @Request() req: { user: User },
+    @Body() dto: DeleteAccountDto,
+  ) {
+    await this.authService.deleteMyAccount(req.user.id, dto.currentPassword);
+    return { success: true };
   }
 }

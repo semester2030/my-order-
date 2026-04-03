@@ -26,6 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { VendorsService } from './vendors.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ApprovedVendorGuard } from './guards/approved-vendor.guard';
 import { RegisterVendorDto } from './dto/register-vendor.dto';
 import { UpdateVendorProfileDto } from './dto/update-vendor-profile.dto';
 import { AddCertificateDto } from './dto/add-certificate.dto';
@@ -38,6 +39,7 @@ import { User } from '../users/entities/user.entity';
 import { OrderStatus } from '../orders/entities/order.entity';
 import { PrivateEventsService } from '../private-events/private-events.service';
 import { CreateEventOfferDto } from '../private-events/dto/create-event-offer.dto';
+import { AcceptMenuOfferingTermsDto } from './dto/accept-menu-offering-terms.dto';
 
 @ApiTags('vendors')
 @Controller('vendors')
@@ -86,7 +88,7 @@ export class VendorsController {
   }
 
   @Get('profile')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get vendor profile' })
   async getProfile(@Request() req: { user: User }) {
@@ -98,7 +100,7 @@ export class VendorsController {
   }
 
   @Put('profile')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update vendor profile' })
   async updateProfile(
@@ -113,7 +115,7 @@ export class VendorsController {
   }
 
   @Patch('change-password')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Change vendor password' })
   @HttpCode(HttpStatus.OK)
@@ -129,7 +131,7 @@ export class VendorsController {
   }
 
   @Post('certificates')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Add certificate' })
   @ApiConsumes('multipart/form-data')
@@ -159,7 +161,7 @@ export class VendorsController {
   }
 
   @Get('certificates')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get vendor certificates' })
   async getCertificates(@Request() req: { user: User }) {
@@ -172,7 +174,7 @@ export class VendorsController {
 
   // Vendor Orders Management
   @Get('orders')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get vendor orders' })
   async getOrders(
@@ -187,7 +189,7 @@ export class VendorsController {
   }
 
   @Get('orders/:orderId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get vendor order details' })
   async getOrder(
@@ -202,7 +204,7 @@ export class VendorsController {
   }
 
   @Post('orders/:orderId/accept')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Accept order' })
   @HttpCode(HttpStatus.OK)
@@ -218,7 +220,7 @@ export class VendorsController {
   }
 
   @Post('orders/:orderId/reject')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Reject order' })
   @HttpCode(HttpStatus.OK)
@@ -235,7 +237,7 @@ export class VendorsController {
   }
 
   @Patch('orders/:orderId/status')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update order status' })
   async updateOrderStatus(
@@ -251,8 +253,43 @@ export class VendorsController {
   }
 
   // Vendor Menu Management
+  @Get('menu-offering-terms/status')
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'حالة قبول الشروط العامة لعرض الوجبات (قبل أول إضافة وجبة — مشتركة لكل الفئات)',
+  })
+  async getMenuOfferingTermsStatus(@Request() req: { user: User }) {
+    const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
+    if (!vendorId) {
+      throw new NotFoundException('Vendor not found for this user');
+    }
+    return this.vendorsService.getMenuOfferingTermsStatus(vendorId);
+  }
+
+  @Post('menu-offering-terms/accept')
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'قبول الشروط العامة لعرض الوجبات' })
+  @HttpCode(HttpStatus.OK)
+  async acceptMenuOfferingTerms(
+    @Request() req: { user: User },
+    @Body() dto: AcceptMenuOfferingTermsDto,
+  ) {
+    const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
+    if (!vendorId) {
+      throw new NotFoundException('Vendor not found for this user');
+    }
+    await this.vendorsService.acceptMenuOfferingTerms(
+      vendorId,
+      dto.documentVersion,
+    );
+    return { success: true };
+  }
+
   @Get('menu')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get vendor menu' })
   async getMenu(@Request() req: { user: User }) {
@@ -264,7 +301,7 @@ export class VendorsController {
   }
 
   @Post('menu')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Add menu item' })
   @ApiConsumes('multipart/form-data')
@@ -299,7 +336,7 @@ export class VendorsController {
   }
 
   @Put('menu/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update menu item' })
   @ApiConsumes('multipart/form-data')
@@ -340,7 +377,7 @@ export class VendorsController {
   }
 
   @Delete('menu/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete menu item' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -356,7 +393,7 @@ export class VendorsController {
   }
 
   @Patch('menu/:id/availability')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Set menu item availability' })
   async toggleMenuItemAvailability(
@@ -377,7 +414,7 @@ export class VendorsController {
 
   // Vendor Analytics
   @Get('analytics')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get vendor analytics' })
   async getAnalytics(
@@ -398,7 +435,7 @@ export class VendorsController {
 
   // Vendor Staff Management
   @Get('staff')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get vendor staff' })
   async getStaff(@Request() req: { user: User }) {
@@ -410,7 +447,7 @@ export class VendorsController {
   }
 
   @Post('staff')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Add staff member' })
   @HttpCode(HttpStatus.CREATED)
@@ -423,7 +460,7 @@ export class VendorsController {
   }
 
   @Put('staff/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update staff member' })
   async updateStaff(
@@ -439,7 +476,7 @@ export class VendorsController {
   }
 
   @Delete('staff/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Remove staff member' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -456,7 +493,7 @@ export class VendorsController {
 
   // المناسبات الخاصة — عروض المقدم
   @Get('event-offers')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'عروض المناسبات الخاصة (للمقدم)' })
   async getMyEventOffers(@Request() req: { user: User }) {
@@ -468,7 +505,7 @@ export class VendorsController {
   }
 
   @Post('event-offers')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'إضافة عرض مناسبة' })
   @HttpCode(HttpStatus.CREATED)
@@ -482,7 +519,7 @@ export class VendorsController {
   }
 
   @Put('event-offers/:offerId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'تحديث عرض مناسبة' })
   async updateEventOffer(
@@ -496,7 +533,7 @@ export class VendorsController {
   }
 
   @Delete('event-offers/:offerId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'حذف عرض مناسبة' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -510,7 +547,7 @@ export class VendorsController {
   }
 
   @Get('private-event-requests')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'طلبات المناسبات الواردة للمقدم' })
   async getPrivateEventRequests(@Request() req: { user: User }) {
@@ -520,7 +557,7 @@ export class VendorsController {
   }
 
   @Post('private-event-requests/:requestId/accept')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'قبول طلب مناسبة' })
   @HttpCode(HttpStatus.OK)
@@ -538,7 +575,7 @@ export class VendorsController {
   }
 
   @Post('private-event-requests/:requestId/reject')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'رفض طلب مناسبة' })
   @HttpCode(HttpStatus.OK)

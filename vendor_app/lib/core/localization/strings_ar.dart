@@ -43,6 +43,24 @@ class StringsAr {
   static const String languageAr = 'العربية';
   static const String languageEn = 'English';
 
+  static const String privacyPolicy = 'سياسة الخصوصية';
+  static const String readPrivacy = 'قراءة سياسة الخصوصية على الموقع';
+  static const String termsConditions = 'الشروط والأحكام';
+  static const String readTerms = 'قراءة الشروط على الموقع';
+  static const String deleteAccount = 'حذف الحساب';
+  static const String deleteAccountSubtitle =
+      'حذف نهائي أو إخفاء بياناتك وفق سياسة الخصوصية';
+  static const String deleteAccountTitle = 'حذف الحساب';
+  static const String deleteAccountWarning =
+      'لا يمكن التراجع. إن وُجدت طلبات أو بيانات تشغيل قد نُبقي السجلات دون بيانات تعريفية. أدخل كلمة المرور للتأكيد.';
+  static const String deleteAccountPasswordLabel = 'كلمة المرور';
+  static const String deleteAccountSubmit = 'تأكيد حذف الحساب';
+  static const String deleteAccountSuccess =
+      'تمت معالجة طلبك. يمكنك تسجيل الدخول لاحقاً بحساب جديد إن رغبت.';
+  static const String passwordMinHint = '6 أحرف على الأقل';
+  static const String couldNotOpenLink = 'تعذّر فتح الرابط';
+  static const String loading = 'جاري التحميل...';
+
   static const String ordersSummary = 'ملخص الطلبات';
   static const String menuItemsCount = 'عدد الوجبات';
   static const String analyticsSummary = 'ملخص الطلبات والإيرادات';
@@ -135,4 +153,27 @@ class StringsAr {
   static const String pricePerPersonOptional = 'السعر للفرد (ر.س) — اختياري';
   static const String priceTotalOptional = 'السعر الإجمالي (ر.س) — اختياري';
   static String guestsCount(int n) => '$n ضيوف';
+
+  /// شروط عرض الوجبات العامة (قبل أول إضافة وجبة)
+  static const String menuOfferingTermsTitle = 'الشروط العامة لعرض الوجبات';
+  static const String menuOfferingTermsSubtitle =
+      'تنطبق على جميع فئات مقدّمي الخدمة. يمكن إكمال النصوص التفصيلية لاحقاً دون تغيير آلية الموافقة.';
+  static const String menuOfferingTermsNotice =
+      'ما يلي إطار عام مؤقت يعبّر عن الالتزامات الشائعة؛ يُستبدل أو يُوسَّع بنصوص قانونية كاملة عند الحاجة.';
+  static const String menuOfferingTermsBullet1 =
+      'الالتزام بدقة وصف الوجبات والأسعار وعدم التضليل.';
+  static const String menuOfferingTermsBullet2 =
+      'عدم نشر محتوى أو وسائط مخالفة للنظام أو الآداب العامة.';
+  static const String menuOfferingTermsBullet3 =
+      'الالتزام بسياسات المنصّة في التعامل مع العملاء والطلبات.';
+  static const String menuOfferingTermsBullet4 =
+      'تحديث البيانات المعروضة عند تغيّر المنتج أو السعر أو التوفر.';
+  static const String menuOfferingTermsBullet5 =
+      'المسؤولية عن صحة المعلومات المعروضة تقع على مقدّم الخدمة.';
+  static const String menuOfferingTermsReadCheckbox =
+      'قرأت الشروط أعلاه وأوافق على الالتزام بها.';
+  static const String menuOfferingTermsAgreeButton = 'موافقة ومتابعة';
+  static const String menuOfferingTermsVersionLabel = 'إصدار الشروط';
+  static const String menuOfferingTermsLoading = 'جاري التحميل...';
+  static const String menuOfferingTermsSubmitting = 'جاري الحفظ...';
 }

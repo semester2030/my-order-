@@ -4,16 +4,22 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Repository, Between, In } from 'typeorm';
 import { Vendor } from '../vendors/entities/vendor.entity';
+import { VendorStaff } from '../vendors/entities/vendor-staff.entity';
 import { VendorStatus } from '../vendors/enums/vendor-status.enum';
 import { Driver } from '../drivers/entities/driver.entity';
+import { EventRequest } from '../event-requests/entities/event-request.entity';
+import { PrivateEventRequest } from '../private-events/entities/private-event-request.entity';
+import { EventOffer } from '../private-events/entities/event-offer.entity';
+import { User } from '../users/entities/user.entity';
 import { DriverStatus } from '../drivers/enums/driver-status.enum';
 import { Order } from '../orders/entities/order.entity';
 import { OrderStatus } from '../orders/entities/order.entity';
 import { Payment } from '../payments/entities/payment.entity';
 import { PaymentStatus } from '../payments/entities/payment.entity';
 import { AuditService } from './audit.service';
+import { VendorsService } from '../vendors/vendors.service';
 
 type ReqForAudit = { ip?: string; headers?: { 'user-agent'?: string } };
 
@@ -22,13 +28,22 @@ export class AdminService {
   constructor(
     @InjectRepository(Vendor)
     private readonly vendorRepo: Repository<Vendor>,
+    @InjectRepository(VendorStaff)
+    private readonly vendorStaffRepo: Repository<VendorStaff>,
     @InjectRepository(Driver)
     private readonly driverRepo: Repository<Driver>,
     @InjectRepository(Order)
     private readonly orderRepo: Repository<Order>,
     @InjectRepository(Payment)
     private readonly paymentRepo: Repository<Payment>,
+    @InjectRepository(EventRequest)
+    private readonly eventRequestRepo: Repository<EventRequest>,
+    @InjectRepository(PrivateEventRequest)
+    private readonly privateEventRequestRepo: Repository<PrivateEventRequest>,
+    @InjectRepository(EventOffer)
+    private readonly eventOfferRepo: Repository<EventOffer>,
     private readonly auditService: AuditService,
+    private readonly vendorsService: VendorsService,
   ) {}
 
   async getDashboard() {
@@ -54,7 +69,12 @@ export class AdminService {
         where: { status: OrderStatus.PENDING },
       }),
       this.vendorRepo.count({
-        where: { registrationStatus: VendorStatus.PENDING_APPROVAL },
+        where: {
+          registrationStatus: In([
+            VendorStatus.PENDING_APPROVAL,
+            VendorStatus.UNDER_REVIEW,
+          ]),
+        },
       }),
       this.driverRepo.count({
         where: {
@@ -143,7 +163,9 @@ export class AdminService {
       relations: ['certificates'],
     });
     if (!vendor) throw new NotFoundException('Vendor not found');
-    return vendor;
+    const onboardingCompliance =
+      await this.vendorsService.getVendorOnboardingSnapshotForAdmin(id);
+    return { ...vendor, onboardingCompliance };
   }
 
   async getDriversList(options: {
@@ -295,6 +317,7 @@ export class AdminService {
   async approveVendor(id: string, adminId: string, req?: ReqForAudit) {
     const vendor = await this.vendorRepo.findOne({ where: { id } });
     if (!vendor) throw new NotFoundException('Vendor not found');
+    await this.vendorsService.assertVendorComplianceForAdminApproval(id);
     if (
       vendor.registrationStatus !== VendorStatus.PENDING_APPROVAL &&
       vendor.registrationStatus !== VendorStatus.UNDER_REVIEW
@@ -368,6 +391,7 @@ export class AdminService {
     const oldStatus = vendor.registrationStatus;
     vendor.registrationStatus = VendorStatus.SUSPENDED;
     vendor.isAcceptingOrders = false;
+    vendor.isActive = false;
     await this.vendorRepo.save(vendor);
     await this.auditService.log({
       actorId: adminId,
@@ -382,6 +406,128 @@ export class AdminService {
       success: true,
       vendor: { id: vendor.id, registrationStatus: vendor.registrationStatus },
     };
+  }
+
+  async reactivateVendor(id: string, adminId: string, req?: ReqForAudit) {
+    const vendor = await this.vendorRepo.findOne({ where: { id } });
+    if (!vendor) throw new NotFoundException('Vendor not found');
+    if (vendor.registrationStatus !== VendorStatus.SUSPENDED) {
+      throw new BadRequestException(
+        vendor.registrationStatus === VendorStatus.APPROVED
+          ? 'المقدّم معتمد بالفعل'
+          : `لا يمكن إعادة التفعيل من الحالة الحالية: ${vendor.registrationStatus}`,
+      );
+    }
+    const oldStatus = vendor.registrationStatus;
+    vendor.registrationStatus = VendorStatus.APPROVED;
+    vendor.isActive = true;
+    vendor.isAcceptingOrders = true;
+    await this.vendorRepo.save(vendor);
+    await this.auditService.log({
+      actorId: adminId,
+      action: 'REACTIVATE_VENDOR',
+      entityType: 'vendor',
+      entityId: id,
+      oldValue: { registrationStatus: oldStatus },
+      newValue: { registrationStatus: VendorStatus.APPROVED },
+      req,
+    });
+    return {
+      success: true,
+      vendor: { id: vendor.id, registrationStatus: vendor.registrationStatus },
+    };
+  }
+
+  /**
+   * حذف مقدّم الخدمة وحسابات مستخدمي فريقه لتحرير البريد وإعادة التسجيل.
+   * غير مسموح للمعتمدين النشطين — يجب الإيقاف أولاً. يتطلب عدم وجود طلبات أو ارتباطات تمنع الحذف.
+   */
+  async removeVendorForReregistration(
+    id: string,
+    adminId: string,
+    req?: ReqForAudit,
+  ) {
+    const vendor = await this.vendorRepo.findOne({ where: { id } });
+    if (!vendor) throw new NotFoundException('Vendor not found');
+
+    if (vendor.registrationStatus === VendorStatus.APPROVED) {
+      throw new BadRequestException(
+        'لا يمكن حذف مقدّم معتمد من هذه الشاشة. أوقف الحساب أولاً ثم أعد المحاولة.',
+      );
+    }
+
+    const orderCount = await this.orderRepo.count({ where: { vendorId: id } });
+    if (orderCount > 0) {
+      throw new BadRequestException(
+        'لا يمكن الحذف: يوجد طلبات مرتبطة بهذا المقدّم.',
+      );
+    }
+
+    const [evReqV, pevReqV, offersV] = await Promise.all([
+      this.eventRequestRepo.count({ where: { vendorId: id } }),
+      this.privateEventRequestRepo.count({ where: { vendorId: id } }),
+      this.eventOfferRepo.count({ where: { vendorId: id } }),
+    ]);
+    if (evReqV + pevReqV + offersV > 0) {
+      throw new BadRequestException(
+        'لا يمكن الحذف: يوجد طلبات أو عروض مناسبات مرتبطة بهذا المقدّم.',
+      );
+    }
+
+    const staff = await this.vendorStaffRepo.find({ where: { vendorId: id } });
+    const userIds = [...new Set(staff.map((s) => s.userId))];
+
+    for (const userId of userIds) {
+      const driver = await this.driverRepo.findOne({ where: { userId } });
+      if (driver) {
+        throw new BadRequestException(
+          'لا يمكن الحذف: أحد الحسابات مرتبط كسائق.',
+        );
+      }
+      const custOrders = await this.orderRepo.count({ where: { userId } });
+      if (custOrders > 0) {
+        throw new BadRequestException(
+          'لا يمكن الحذف: أحد الحسابات له طلبات كعميل.',
+        );
+      }
+      const evU = await this.eventRequestRepo.count({ where: { userId } });
+      const pevU = await this.privateEventRequestRepo.count({
+        where: { userId },
+      });
+      if (evU + pevU > 0) {
+        throw new BadRequestException(
+          'لا يمكن الحذف: أحد الحسابات له طلبات مناسبات كعميل.',
+        );
+      }
+    }
+
+    const snapshot = {
+      email: vendor.email,
+      name: vendor.name,
+      registrationStatus: vendor.registrationStatus,
+    };
+
+    await this.vendorRepo.manager.transaction(async (em) => {
+      await em.delete(EventOffer, { vendorId: id });
+      await em.delete(EventRequest, { vendorId: id });
+      await em.delete(PrivateEventRequest, { vendorId: id });
+      await em.delete(Vendor, { id });
+      for (const userId of userIds) {
+        await em.delete(User, { id: userId });
+      }
+    });
+
+    await this.auditService.log({
+      actorId: adminId,
+      action: 'REMOVE_VENDOR_REREGISTRATION',
+      entityType: 'vendor',
+      entityId: id,
+      oldValue: snapshot,
+      newValue: { removed: true },
+      req,
+    });
+
+    return { success: true };
   }
 
   async approveDriver(id: string, adminId: string, req?: ReqForAudit) {
@@ -495,7 +641,12 @@ export class AdminService {
       await Promise.all([
         this.paymentRepo.count({ where: { status: PaymentStatus.FAILED } }),
         this.vendorRepo.count({
-          where: { registrationStatus: VendorStatus.PENDING_APPROVAL },
+          where: {
+            registrationStatus: In([
+              VendorStatus.PENDING_APPROVAL,
+              VendorStatus.UNDER_REVIEW,
+            ]),
+          },
         }),
         this.driverRepo.count({ where: { status: DriverStatus.PENDING } }),
       ]);
@@ -523,8 +674,8 @@ export class AdminService {
       flags.push({
         id: 'vendors-pending-backlog',
         type: 'pending_backlog',
-        title: 'تراكم طلبات المطاعم',
-        description: `${pendingVendorsCount} مطعم بانتظار الموافقة`,
+        title: 'تراكم طلبات تسجيل مقدّمي الخدمة',
+        description: `${pendingVendorsCount} مقدّم خدمة بانتظار الموافقة`,
         severity: 'medium',
         entityType: 'vendor',
         entityId: null,

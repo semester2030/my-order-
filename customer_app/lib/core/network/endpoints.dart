@@ -17,6 +17,7 @@ class Endpoints {
   static const String customerLogin = '$auth/customer/login';
   static const String refreshToken = '$auth/refresh';
   static const String logout = '$auth/logout';
+  static const String accountDelete = '$auth/account/delete';
 
   // Users
   static const String users = '/users';

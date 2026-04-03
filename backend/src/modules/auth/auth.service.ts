@@ -8,8 +8,13 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
+import { Order } from '../orders/entities/order.entity';
+import { Cart } from '../cart/entities/cart.entity';
+import { CartItem } from '../cart/entities/cart-item.entity';
+import { Address } from '../addresses/entities/address.entity';
 import { UsersService } from '../users/users.service';
 import { OtpCacheService } from './services/otp-cache.service';
 import { VendorsService } from '../vendors/vendors.service';
@@ -24,6 +29,14 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
+    @InjectRepository(Cart)
+    private readonly cartRepository: Repository<Cart>,
+    @InjectRepository(CartItem)
+    private readonly cartItemRepository: Repository<CartItem>,
+    @InjectRepository(Address)
+    private readonly addressRepository: Repository<Address>,
     private readonly usersService: UsersService,
     private readonly otpCacheService: OtpCacheService,
     private readonly vendorsService: VendorsService,
@@ -145,9 +158,17 @@ export class AuthService {
       await this.userRepository.save(user);
     }
 
+    const linkedVendorId = await this.vendorsService.getVendorIdByUserId(
+      user.id,
+    );
+    if (linkedVendorId) {
+      await this.vendorsService.assertVendorApprovedForApiAccess(user.id);
+    }
+
     const payload = {
       sub: user.id,
       userId: user.id,
+      ...(linkedVendorId ? { vendorId: linkedVendorId } : {}),
       ...(user.phone ? { phone: user.phone } : {}),
       ...(user.email ? { email: user.email } : {}),
     };
@@ -214,9 +235,17 @@ export class AuthService {
       throw new UnauthorizedException('Invalid PIN');
     }
 
+    const linkedVendorId = await this.vendorsService.getVendorIdByUserId(
+      user.id,
+    );
+    if (linkedVendorId) {
+      await this.vendorsService.assertVendorApprovedForApiAccess(user.id);
+    }
+
     const payload = {
       sub: user.id,
       userId: user.id,
+      ...(linkedVendorId ? { vendorId: linkedVendorId } : {}),
       ...(user.phone ? { phone: user.phone } : {}),
       ...(user.email ? { email: user.email } : {}),
     };
@@ -242,7 +271,14 @@ export class AuthService {
     }
 
     try {
-      const payload = this.jwtService.verify(refreshToken);
+      const payload = this.jwtService.verify(refreshToken) as {
+        sub?: string;
+        userId?: string;
+        vendorId?: string;
+        phone?: string;
+        email?: string;
+        scope?: string;
+      };
 
       // Verify user still exists
       const user = await this.usersService.findById(
@@ -253,12 +289,40 @@ export class AuthService {
         throw new UnauthorizedException('User not found or inactive');
       }
 
-      // Generate new tokens
+      const isOnboardingRefresh =
+        payload.scope === this.vendorsService.getOnboardingJwtScope();
+
+      const vendorIdFromDb = await this.vendorsService.getVendorIdByUserId(
+        user.id,
+      );
+
+      if (isOnboardingRefresh) {
+        if (!vendorIdFromDb) {
+          throw new UnauthorizedException('Invalid onboarding session');
+        }
+        const ok = await this.vendorsService.isOnboardingTokenStillValid(
+          vendorIdFromDb,
+        );
+        if (!ok) {
+          throw new UnauthorizedException(
+            'انتهت صلاحية مرحلة إكمال التسجيل. سجّل الدخول بعد اعتماد حسابك.',
+          );
+        }
+      } else if (vendorIdFromDb) {
+        await this.vendorsService.assertVendorApprovedForApiAccess(user.id);
+      }
+
       const newPayload = {
         sub: user.id,
         userId: user.id,
+        ...(isOnboardingRefresh
+          ? { scope: this.vendorsService.getOnboardingJwtScope() }
+          : {}),
         ...(user.phone ? { phone: user.phone } : {}),
         ...(user.email ? { email: user.email } : {}),
+        ...(!isOnboardingRefresh && vendorIdFromDb
+          ? { vendorId: vendorIdFromDb }
+          : {}),
       };
 
       return {
@@ -283,10 +347,31 @@ export class AuthService {
     };
   }
 
-  async validateUser(userId: string): Promise<User | null> {
+  /**
+   * تحقق JWT: جلسة إكمال تسجيل (قبل اعتماد الإدارة) أو عميل/مقدّم معتمد.
+   */
+  async validateJwtPayload(payload: {
+    sub?: string;
+    userId?: string;
+    scope?: string;
+  }): Promise<User> {
+    const userId = payload.sub || payload.userId;
+    if (!userId) {
+      throw new UnauthorizedException();
+    }
     const user = await this.usersService.findById(userId);
     if (!user || !user.isActive) {
-      return null;
+      throw new UnauthorizedException();
+    }
+    if (payload.scope === this.vendorsService.getOnboardingJwtScope()) {
+      await this.vendorsService.assertOnboardingJwtAllowed(userId);
+      return user;
+    }
+    const linkedVendorId = await this.vendorsService.getVendorIdByUserId(
+      userId,
+    );
+    if (linkedVendorId) {
+      await this.vendorsService.assertVendorApprovedForApiAccess(userId);
     }
     return user;
   }
@@ -411,13 +496,14 @@ export class AuthService {
         );
       }
 
-      // Test account bypass
+      // Test account bypass (يجب أن يكون الملف معتمداً في DB مثل أي مزوّد)
       const TEST_EMAIL = 'cy-20@outlook.com';
       const TEST_PASSWORD = 'test123456';
       if (
         emailNorm === TEST_EMAIL.toLowerCase() &&
         passwordTrim === TEST_PASSWORD
       ) {
+        await this.vendorsService.assertVendorApprovedForApiAccess(user.id);
         const payload = {
           email: user.email,
           sub: user.id,
@@ -453,6 +539,8 @@ export class AuthService {
         );
       }
 
+      await this.vendorsService.assertVendorApprovedForApiAccess(user.id);
+
       const payload = {
         email: user.email,
         sub: user.id,
@@ -484,5 +572,75 @@ export class AuthService {
         'خطأ في الاتصال بالخادم. تحقق من الإنترنت وحاول مرة أخرى.',
       );
     }
+  }
+
+  /**
+   * حذف أو إلغاء تعريف حساب المستخدم بعد التحقق من كلمة المرور.
+   * — مالك مقدّم خدمة: حذف المنشأة بالكامل إن سمحت الشروط.
+   * — عضو فريق بدون ملكية: إزالة عضوية الفريق ثم معالجة كحساب عميل.
+   * — عميل: حذف كامل إن لم توجد طلبات، أو إلغاء تعريف (إخفاء بيانات) مع الإبقاء على سجل الطلبات.
+   */
+  async deleteMyAccount(userId: string, currentPassword: string): Promise<void> {
+    const user = await this.usersService.findById(userId);
+    if (!user || !user.pinHash) {
+      throw new BadRequestException('لا يمكن إكمال العملية لهذا الحساب.');
+    }
+    const ok = await bcrypt.compare(
+      (currentPassword || '').trim(),
+      user.pinHash,
+    );
+    if (!ok) {
+      throw new UnauthorizedException('كلمة المرور غير صحيحة.');
+    }
+
+    const ownerVendorId =
+      await this.vendorsService.findStaffOwnerVendorId(userId);
+    if (ownerVendorId) {
+      await this.vendorsService.deleteVendorBusinessByOwnerUserId(userId);
+      return;
+    }
+
+    if (await this.vendorsService.hasAnyVendorStaff(userId)) {
+      await this.vendorsService.removeAllStaffMembershipsForUser(userId);
+    }
+
+    await this.deleteCustomerUserAccount(userId);
+  }
+
+  private async deleteCustomerUserAccount(userId: string): Promise<void> {
+    const orderCount = await this.orderRepository.count({
+      where: { userId },
+    });
+
+    if (orderCount > 0) {
+      const u = await this.usersService.findById(userId);
+      if (!u) return;
+      u.email = `deleted_${randomUUID()}@removed.invalid`;
+      u.phone = null;
+      u.name = null;
+      u.pinHash = await bcrypt.hash(randomUUID(), this.PIN_SALT_ROUNDS);
+      u.isActive = false;
+      u.isVerified = false;
+      u.emailVerifiedAt = null;
+      await this.userRepository.save(u);
+
+      const carts = await this.cartRepository.find({ where: { userId } });
+      for (const c of carts) {
+        await this.cartItemRepository.delete({ cartId: c.id });
+        await this.cartRepository.delete({ id: c.id });
+      }
+      await this.addressRepository.delete({ userId });
+      return;
+    }
+
+    await this.userRepository.manager.transaction(async (em) => {
+      const carts = await em.find(Cart, { where: { userId } });
+      for (const c of carts) {
+        await em.delete(CartItem, { cartId: c.id });
+        await em.delete(Cart, { id: c.id });
+      }
+      await em.delete(Address, { userId });
+      await em.delete(User, { id: userId });
+    });
   }
 }
