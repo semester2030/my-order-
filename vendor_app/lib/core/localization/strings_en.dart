@@ -30,6 +30,17 @@ class StringsEn {
   static const String emailLabel = 'Email';
   static const String passwordLabel = 'Password';
   static const String createAccount = 'Create account';
+  static const String registerSuccessTitle = 'Registration successful';
+  static const String registerSuccessBody =
+      'Thank you for registering with Home Kitchen.\n\n'
+      '• Check your email: you may receive a confirmation message when sending is enabled on the server (also check spam/junk).\n\n'
+      '• Your application status: pending admin approval; this may take some time.\n\n'
+      'If approved:\n'
+      'Sign in with the same email and password to complete your profile and start working.\n\n'
+      'If rejected:\n'
+      'After you sign in, a screen will show the reason provided by our team.\n\n'
+      'You can go to login now; while waiting you may see an “under review” screen.';
+  static const String registerSuccessGoLogin = 'Go to login';
   static const String errorInvalidCredentials = 'Invalid email or password';
   static const String errorNetwork = 'Check your connection and try again';
   static const String errorServer = 'Server error, please try again later';

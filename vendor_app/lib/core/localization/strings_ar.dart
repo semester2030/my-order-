@@ -30,6 +30,18 @@ class StringsAr {
   static const String emailLabel = 'البريد الإلكتروني';
   static const String passwordLabel = 'كلمة المرور';
   static const String createAccount = 'إنشاء حساب جديد';
+  /// بعد تسجيل مقدّم خدمة ناجح — حوار يوضّح الخطوات التالية (بريد، موافقة، رفض).
+  static const String registerSuccessTitle = 'تم التسجيل بنجاح';
+  static const String registerSuccessBody =
+      'شكراً لتسجيلك في مطبخ البيت.\n\n'
+      '• راجع بريدك الإلكتروني: قد تصلك رسالة تأكيد عند تفعيل الإرسال على الخادم (تحقّق أيضاً من «الرسائل غير المرغوبة»).\n\n'
+      '• حالة طلبك الآن: بانتظار موافقة الإدارة، وقد يستغرق ذلك وقتاً.\n\n'
+      'بعد الموافقة:\n'
+      'سجّل الدخول بنفس البريد وكلمة المرور لإكمال بياناتك والبدء بالعمل.\n\n'
+      'في حال الرفض:\n'
+      'عند تسجيل الدخول ستظهر لك شاشة توضّح سبب الرفض عندما يحدده فريق الإدارة.\n\n'
+      'يمكنك الآن الانتقال إلى تسجيل الدخول؛ أثناء الانتظار قد ترى شاشة «قيد المراجعة».';
+  static const String registerSuccessGoLogin = 'الانتقال لتسجيل الدخول';
   static const String errorInvalidCredentials = 'البريد أو كلمة المرور غير صحيحة';
   static const String errorNetwork = 'تحقق من الاتصال بالإنترنت وحاول مرة أخرى';
   static const String errorServer = 'حدث خطأ في الخادم، حاول لاحقاً';

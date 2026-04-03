@@ -65,16 +65,25 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     ref.listen<AuthState>(authNotifierProvider, (prev, next) {
       if (prev is AuthLoading && next is AuthUnauthenticated && context.mounted) {
+        final l10n = AppLocalizations.of(context);
         showDialog<void>(
           context: context,
           barrierDismissible: false,
           builder: (ctx) => AlertDialog(
-            title: const Text('تم استلام الطلب'),
-            content: const Text(
-              'تم إنشاء طلب التسجيل وهو بانتظار موافقة الإدارة.\n\n'
-              'إذا كان البريد مفعّلاً على الخادم ستصلك رسالة تأكيد.\n'
-              'في لوحة الإدارة يظهر الطلب تحت «طلبات التسجيل» حتى تتم الموافقة.\n\n'
-              'يمكنك الآن تسجيل الدخول لإكمال البيانات عندما يُفعّل حسابك.',
+            icon: Icon(
+              Icons.mark_email_read_outlined,
+              color: AppColors.primary,
+              size: 40,
+            ),
+            title: Text(l10n.registerSuccessTitle),
+            content: SingleChildScrollView(
+              child: Text(
+                l10n.registerSuccessBody,
+                style: TextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.45,
+                ),
+              ),
             ),
             actions: [
               TextButton(
@@ -82,7 +91,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   Navigator.of(ctx).pop();
                   context.go(RouteNames.login);
                 },
-                child: const Text('تسجيل الدخول'),
+                child: Text(l10n.registerSuccessGoLogin),
               ),
             ],
           ),

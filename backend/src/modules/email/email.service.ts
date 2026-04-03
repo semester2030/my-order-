@@ -102,10 +102,13 @@ export class EmailService {
   <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 12px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
     <h2 style="color: #333; margin: 0 0 12px;">مرحباً ${this.escapeHtml(vendorName)}</h2>
     <p style="color: #555; line-height: 1.7; margin: 0 0 16px;">
-      تم استلام طلب تسجيلك كمقدّم خدمة. حالته الآن: <strong>بانتظار موافقة الإدارة</strong>.
+      تم استلام طلب تسجيلك كمقدّم خدمة. حالته الآن: <strong>بانتظار موافقة الإدارة</strong> (قد يستغرق وقتاً).
+    </p>
+    <p style="color: #555; line-height: 1.7; margin: 0 0 12px;">
+      <strong>عند الموافقة:</strong> سجّل الدخول من تطبيق مقدّم الخدمة بنفس بريدك وكلمة المرور لإكمال بياناتك.
     </p>
     <p style="color: #555; line-height: 1.7; margin: 0 0 16px;">
-      بعد الموافقة يمكنك تسجيل الدخول من تطبيق مقدّم الخدمة وإكمال بياناتك.
+      <strong>عند الرفض:</strong> بعد تسجيل الدخول ستظهر لك في التطبيق شاشة توضّح سبب الرفض عندما يحدده فريقنا.
     </p>
     <p style="color: #888; font-size: 13px; margin: 0;">هذه رسالة تلقائية من منصة مطبخ البيت.</p>
   </div>

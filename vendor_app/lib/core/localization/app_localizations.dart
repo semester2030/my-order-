@@ -43,6 +43,12 @@ class AppLocalizations {
   String get emailLabel => isAr ? StringsAr.emailLabel : StringsEn.emailLabel;
   String get passwordLabel => isAr ? StringsAr.passwordLabel : StringsEn.passwordLabel;
   String get createAccount => isAr ? StringsAr.createAccount : StringsEn.createAccount;
+  String get registerSuccessTitle =>
+      isAr ? StringsAr.registerSuccessTitle : StringsEn.registerSuccessTitle;
+  String get registerSuccessBody =>
+      isAr ? StringsAr.registerSuccessBody : StringsEn.registerSuccessBody;
+  String get registerSuccessGoLogin =>
+      isAr ? StringsAr.registerSuccessGoLogin : StringsEn.registerSuccessGoLogin;
   String get errorInvalidCredentials => isAr ? StringsAr.errorInvalidCredentials : StringsEn.errorInvalidCredentials;
   String get errorNetwork => isAr ? StringsAr.errorNetwork : StringsEn.errorNetwork;
   String get errorServer => isAr ? StringsAr.errorServer : StringsEn.errorServer;
