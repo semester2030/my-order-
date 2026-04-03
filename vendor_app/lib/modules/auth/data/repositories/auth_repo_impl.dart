@@ -83,4 +83,33 @@ class AuthRepoImpl implements AuthRepo {
       return res.Failure(ErrorMapper.toFailure(e));
     }
   }
+
+  @override
+  Future<res.Result<({String message, String? devOtp}), Failure>>
+      requestVendorPasswordReset(String email) async {
+    try {
+      final out = await _remoteDs.requestVendorPasswordReset(email);
+      return res.Success(out);
+    } catch (e) {
+      return res.Failure(ErrorMapper.toFailure(e));
+    }
+  }
+
+  @override
+  Future<res.Result<void, Failure>> confirmVendorPasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    try {
+      await _remoteDs.confirmVendorPasswordReset(
+        email: email,
+        code: code,
+        newPassword: newPassword,
+      );
+      return const res.Success(null);
+    } catch (e) {
+      return res.Failure(ErrorMapper.toFailure(e));
+    }
+  }
 }

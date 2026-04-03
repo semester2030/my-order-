@@ -177,6 +177,53 @@ export class EmailService {
     }
   }
 
+  /**
+   * رمز لاستعادة كلمة مرور مقدّم الخدمة (صالح 15 دقيقة).
+   */
+  async sendVendorPasswordResetOtp(to: string, otp: string): Promise<boolean> {
+    if (!this.resend) {
+      this.logger.warn(
+        `Vendor password reset email not sent (no RESEND_API_KEY): ${to}`,
+      );
+      return false;
+    }
+    try {
+      const subject = 'استعادة كلمة المرور — مطبخ البيت (مقدّم خدمة)';
+      const html = `
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head><meta charset="UTF-8"></head>
+<body style="font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 24px; background: #f5f5f5;">
+  <div style="max-width: 400px; margin: 0 auto; background: white; border-radius: 12px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+    <h2 style="color: #333; margin: 0 0 16px; font-size: 20px;">استعادة كلمة المرور</h2>
+    <p style="color: #666; margin: 0 0 24px; line-height: 1.6;">استخدم الرمز التالي في تطبيق مقدّم الخدمة لتعيين كلمة مرور جديدة:</p>
+    <div style="background: #f9f9f9; border-radius: 8px; padding: 16px 24px; text-align: center; font-size: 28px; font-weight: bold; letter-spacing: 8px; color: #333;">${otp}</div>
+    <p style="color: #999; margin: 24px 0 0; font-size: 13px;">الرمز صالح لمدة 15 دقيقة. إن لم تطلب هذا التغيير تجاهل الرسالة.</p>
+  </div>
+</body>
+</html>`;
+      const { data, error } = await this.resend.emails.send({
+        from: this.from,
+        to: [to],
+        subject,
+        html,
+      });
+      if (error) {
+        this.logger.error(
+          `Vendor password reset email failed for ${to}: ${error.message}`,
+        );
+        return false;
+      }
+      this.logger.log(
+        `Vendor password reset OTP sent to ${to} | Resend id: ${data?.id}`,
+      );
+      return true;
+    } catch (err) {
+      this.logger.error(`Vendor password reset email error for ${to}:`, err);
+      return false;
+    }
+  }
+
   private escapeHtml(s: string): string {
     return (s || '')
       .replace(/&/g, '&amp;')

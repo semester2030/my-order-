@@ -368,6 +368,12 @@ export async function adminPost(
 export function approveVendor(id: string): Promise<Record<string, unknown>> {
   return adminPost(`/admin/vendors/${id}/approve`);
 }
+
+export function resendVendorRegistrationEmail(
+  id: string,
+): Promise<Record<string, unknown>> {
+  return adminPost(`/admin/vendors/${id}/resend-registration-email`);
+}
 export function rejectVendor(id: string, reason: string): Promise<Record<string, unknown>> {
   return adminPost(`/admin/vendors/${id}/reject`, { reason });
 }

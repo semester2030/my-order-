@@ -37,7 +37,10 @@ class SessionNotifier extends StateNotifier<SessionState> {
     result.when(
       success: (VendorProfile profile) {
         final status = profile.registrationStatus?.toLowerCase();
-        if (status == 'pending') {
+        final isPending = status == 'pending' ||
+            status == 'pending_approval' ||
+            status == 'under_review';
+        if (isPending) {
           state = SessionPending(profile.rejectionReason ?? 'جاري مراجعة طلبك');
         } else if (status == 'rejected') {
           state = SessionRejected(

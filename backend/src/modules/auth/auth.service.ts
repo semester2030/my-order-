@@ -24,6 +24,8 @@ import { EmailService } from '../email/email.service';
 export class AuthService {
   private readonly PIN_SALT_ROUNDS = 10;
   private readonly logger = new Logger(AuthService.name);
+  private readonly vendorPwResetCooldownMs = 60_000;
+  private readonly vendorPwResetLastRequest = new Map<string, number>();
 
   constructor(
     private readonly jwtService: JwtService,
@@ -308,8 +310,6 @@ export class AuthService {
             'انتهت صلاحية مرحلة إكمال التسجيل. سجّل الدخول بعد اعتماد حسابك.',
           );
         }
-      } else if (vendorIdFromDb) {
-        await this.vendorsService.assertVendorApprovedForApiAccess(user.id);
       }
 
       const newPayload = {
@@ -348,7 +348,8 @@ export class AuthService {
   }
 
   /**
-   * تحقق JWT: جلسة إكمال تسجيل (قبل اعتماد الإدارة) أو عميل/مقدّم معتمد.
+   * تحقق JWT: مستخدم نشط. تقييد «مقدّم معتمد فقط» يُطبَّق عبر [ApprovedVendorGuard] على المسارات الحساسة،
+   * بينما يبقى جلب البروفايل متاحاً لمن هم قيد الموافقة أو مرفوعين لعرض الحالة في التطبيق.
    */
   async validateJwtPayload(payload: {
     sub?: string;
@@ -367,11 +368,17 @@ export class AuthService {
       await this.vendorsService.assertOnboardingJwtAllowed(userId);
       return user;
     }
-    const linkedVendorId = await this.vendorsService.getVendorIdByUserId(
-      userId,
-    );
+    const linkedVendorId = await this.vendorsService.getVendorIdByUserId(userId);
     if (linkedVendorId) {
-      await this.vendorsService.assertVendorApprovedForApiAccess(userId);
+      const tokenVid = (payload as { vendorId?: string }).vendorId;
+      if (tokenVid === linkedVendorId) {
+        return user;
+      }
+      if (tokenVid == null || tokenVid === '') {
+        await this.vendorsService.assertVendorApprovedForApiAccess(userId);
+        return user;
+      }
+      throw new UnauthorizedException();
     }
     return user;
   }
@@ -503,7 +510,6 @@ export class AuthService {
         emailNorm === TEST_EMAIL.toLowerCase() &&
         passwordTrim === TEST_PASSWORD
       ) {
-        await this.vendorsService.assertVendorApprovedForApiAccess(user.id);
         const payload = {
           email: user.email,
           sub: user.id,
@@ -539,8 +545,6 @@ export class AuthService {
         );
       }
 
-      await this.vendorsService.assertVendorApprovedForApiAccess(user.id);
-
       const payload = {
         email: user.email,
         sub: user.id,
@@ -572,6 +576,155 @@ export class AuthService {
         'خطأ في الاتصال بالخادم. تحقق من الإنترنت وحاول مرة أخرى.',
       );
     }
+  }
+
+  private vendorPasswordResetCacheKey(emailNorm: string): string {
+    return `vendor_pw_reset:${emailNorm}`;
+  }
+
+  /**
+   * طلب رمز استعادة كلمة مرور مقدّم الخدمة (بريد). الاستجابة العامة لا تكشف وجود الحساب.
+   */
+  async requestVendorPasswordReset(rawEmail: string): Promise<{
+    message: string;
+    code?: string;
+  }> {
+    const emailNorm = (rawEmail || '').trim().toLowerCase();
+    if (!emailNorm || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNorm)) {
+      throw new BadRequestException('البريد الإلكتروني غير صالح.');
+    }
+
+    const now = Date.now();
+    const last = this.vendorPwResetLastRequest.get(emailNorm) ?? 0;
+    if (now - last < this.vendorPwResetCooldownMs) {
+      return {
+        message:
+          'إن وُجد حساب مرتبط بهذا البريد، ستصلك تعليمات قريباً. انتظر دقيقة قبل طلب رمز جديد.',
+      };
+    }
+    this.vendorPwResetLastRequest.set(emailNorm, now);
+
+    const genericMessage =
+      'إن وُجد حساب مقدّم خدمة مرتبط بهذا البريد، ستتلقى رسالة تحتوي رمزاً مكوناً من 6 أرقام. تحقق من مجلد الرسائل غير المرغوب فيها.';
+
+    const user = await this.userRepository
+      .createQueryBuilder('u')
+      .where('LOWER(TRIM(u.email)) = :email', { email: emailNorm })
+      .getOne();
+
+    if (!user) {
+      return { message: genericMessage };
+    }
+
+    const vendorId = await this.vendorsService.getVendorIdByUserId(user.id);
+    if (!vendorId) {
+      return { message: genericMessage };
+    }
+
+    const TEST_EMAIL = 'test@example.com';
+    const TEST_OTP = '123456';
+    const otp =
+      emailNorm === TEST_EMAIL.toLowerCase()
+        ? TEST_OTP
+        : this.otpCacheService.generateOtp();
+
+    const key = this.vendorPasswordResetCacheKey(emailNorm);
+    this.otpCacheService.storeKeyedOtp(key, otp);
+
+    if (this.emailService.isConfigured()) {
+      const sent = await this.emailService.sendVendorPasswordResetOtp(
+        emailNorm,
+        otp,
+      );
+      const forceRaw = process.env.OTP_FORCE_WHITELIST ?? '';
+      const inForceList = forceRaw
+        .split(',')
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean)
+        .includes(emailNorm);
+      if (!sent && !inForceList) {
+        throw new InternalServerErrorException(
+          'فشل إرسال البريد. حاول مرة أخرى لاحقاً.',
+        );
+      }
+    } else {
+      if (process.env.NODE_ENV === 'production') {
+        throw new InternalServerErrorException(
+          'خدمة البريد غير مهيأة. يرجى الاتصال بالدعم.',
+        );
+      }
+      const whitelistRaw = process.env.OTP_DEV_WHITELIST ?? '';
+      const whitelist = whitelistRaw
+        .split(',')
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean);
+      if (!whitelist.includes(emailNorm)) {
+        this.logger.warn(
+          `Vendor password reset: set RESEND_API_KEY or add ${emailNorm} to OTP_DEV_WHITELIST for local testing`,
+        );
+      }
+    }
+
+    const whitelistRaw = process.env.OTP_DEV_WHITELIST ?? '';
+    const forceRaw = process.env.OTP_FORCE_WHITELIST ?? '';
+    const inWhitelist = whitelistRaw
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean)
+      .includes(emailNorm);
+    const inForceList = forceRaw
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean)
+      .includes(emailNorm);
+    const shouldReturnOtp =
+      (!this.emailService.isConfigured() &&
+        (process.env.NODE_ENV === 'development' || inWhitelist)) ||
+      inForceList;
+
+    return {
+      message: genericMessage,
+      ...(shouldReturnOtp ? { code: otp } : {}),
+    };
+  }
+
+  async confirmVendorPasswordReset(
+    rawEmail: string,
+    code: string,
+    newPassword: string,
+  ): Promise<{ success: true }> {
+    const emailNorm = (rawEmail || '').trim().toLowerCase();
+    const passwordTrim = (newPassword || '').trim();
+    if (!emailNorm) {
+      throw new BadRequestException('البريد الإلكتروني مطلوب.');
+    }
+    if (!passwordTrim || passwordTrim.length < 6) {
+      throw new BadRequestException('كلمة المرور يجب ألا تقل عن 6 أحرف.');
+    }
+
+    const key = this.vendorPasswordResetCacheKey(emailNorm);
+    const otpOk = this.otpCacheService.verifyKeyedOtp(
+      key,
+      (code || '').trim(),
+    );
+    if (!otpOk) {
+      throw new UnauthorizedException('الرمز غير صحيح أو منتهي.');
+    }
+
+    const user = await this.userRepository
+      .createQueryBuilder('u')
+      .where('LOWER(TRIM(u.email)) = :email', { email: emailNorm })
+      .getOne();
+    const vendorId = user
+      ? await this.vendorsService.getVendorIdByUserId(user.id)
+      : null;
+    if (!user || !vendorId) {
+      throw new UnauthorizedException('تعذّر إكمال العملية.');
+    }
+
+    user.pinHash = await bcrypt.hash(passwordTrim, this.PIN_SALT_ROUNDS);
+    await this.userRepository.save(user);
+    return { success: true };
   }
 
   /**

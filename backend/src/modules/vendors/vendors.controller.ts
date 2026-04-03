@@ -88,9 +88,12 @@ export class VendorsController {
   }
 
   @Get('profile')
-  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get vendor profile' })
+  @ApiOperation({
+    summary:
+      'Get vendor profile (أي حالة تسجيل — للعرض في التطبيق قبل/بعد الاعتماد)',
+  })
   async getProfile(@Request() req: { user: User }) {
     const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
     if (!vendorId) {

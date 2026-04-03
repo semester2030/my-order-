@@ -8,6 +8,10 @@ class Endpoints {
 
   // Auth
   static const String authVendorLogin = '/auth/vendor/login';
+  static const String authVendorPasswordResetRequest =
+      '/auth/vendor/password-reset/request';
+  static const String authVendorPasswordResetConfirm =
+      '/auth/vendor/password-reset/confirm';
   static const String authRefresh = '/auth/refresh';
   static const String accountDelete = '/auth/account/delete';
   static const String vendorsRegister = '/vendors/register';

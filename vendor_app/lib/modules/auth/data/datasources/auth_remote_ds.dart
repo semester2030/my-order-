@@ -17,4 +17,16 @@ abstract interface class AuthRemoteDs {
 
   /// POST /auth/account/delete — يتطلب Bearer؛ حذف أو إلغاء تعريف الحساب حسب سياسة الخادم.
   Future<void> deleteAccount(String currentPassword);
+
+  /// POST /auth/vendor/password-reset/request — رسالة للمستخدم؛ [devOtp] في بيئة التطوير/القائمة البيضاء فقط.
+  Future<({String message, String? devOtp})> requestVendorPasswordReset(
+    String email,
+  );
+
+  /// POST /auth/vendor/password-reset/confirm
+  Future<void> confirmVendorPasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  });
 }

@@ -45,6 +45,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     super.dispose();
   }
 
+  /// رسالة تعارض البريد كمقدّم خدمة من الباك اند (409).
+  bool _isDuplicateVendorEmailMessage(String? msg) {
+    if (msg == null || msg.isEmpty) return false;
+    final m = msg.toLowerCase();
+    return m.contains('مسجّل مسبقاً') ||
+        m.contains('مسجل مسبقا') ||
+        m.contains('كمقدّم خدمة') ||
+        m.contains('كمقدم خدمة') ||
+        m.contains('already registered');
+  }
+
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     final request = RegisterVendorRequest(
@@ -244,6 +255,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       color: SemanticColors.error,
                     ),
                   ),
+                  if (_isDuplicateVendorEmailMessage(authState.message)) ...[
+                    Gaps.smV,
+                    Text(
+                      'للمتابعة: سجّل الدخول بنفس البريد وكلمة المرور — لا حاجة لإنشاء حساب جديد.',
+                      style: TextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => context.go(RouteNames.login),
+                      child: Text(
+                        'تسجيل الدخول',
+                        style: TextStyles.bodyMedium.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
                 Gaps.xlV,
                 PrimaryButton(

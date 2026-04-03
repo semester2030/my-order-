@@ -174,6 +174,22 @@ export class AdminController {
     );
   }
 
+  @Post('vendors/:id/resend-registration-email')
+  @ApiOperation({
+    summary:
+      'إعادة إرسال بريد «تم استلام طلب التسجيل» (pending_approval / under_review)',
+  })
+  async resendVendorRegistrationEmail(
+    @Param('id') id: string,
+    @Request() req: { user: AdminTokenPayload },
+  ) {
+    return this.adminService.resendVendorRegistrationEmail(
+      id,
+      req.user.sub,
+      req as any,
+    );
+  }
+
   @Post('vendors/:id/suspend')
   @ApiOperation({ summary: 'Suspend vendor' })
   async suspendVendor(

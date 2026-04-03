@@ -15,6 +15,7 @@ import {
   suspendVendor,
   reactivateVendor,
   removeVendorForReregistration,
+  resendVendorRegistrationEmail,
 } from '@/lib/api/client'
 import { format } from 'date-fns'
 import { ar } from 'date-fns/locale'
@@ -249,6 +250,31 @@ export default function VendorDetailPage() {
             <div className="flex flex-wrap gap-2">
               {(registrationStatus === 'pending_approval' || registrationStatus === 'under_review') && (
                 <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={actionLoading}
+                    onClick={async () => {
+                      setMessage(null)
+                      setActionLoading(true)
+                      try {
+                        const r = await resendVendorRegistrationEmail(id)
+                        setMessage(
+                          typeof r.message === 'string'
+                            ? r.message
+                            : r.emailSent
+                              ? 'تم إرسال البريد'
+                              : 'لم يُرسل البريد — تحقق من إعدادات الخادم',
+                        )
+                      } catch (e) {
+                        setMessage('فشل: ' + (e instanceof Error ? e.message : ''))
+                      } finally {
+                        setActionLoading(false)
+                      }
+                    }}
+                  >
+                    إعادة إرسال بريد التسجيل
+                  </Button>
                   <Button
                     variant="primary"
                     size="sm"

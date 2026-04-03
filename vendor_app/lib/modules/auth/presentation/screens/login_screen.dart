@@ -156,6 +156,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   label: authState is AuthLoading ? AppLocalizations.of(context).loginChecking : AppLocalizations.of(context).login,
                   onPressed: authState is AuthLoading ? null : _submit,
                 ),
+                Gaps.smV,
+                TextButton(
+                  onPressed: () => context.go(RouteNames.forgotPassword),
+                  child: Text(
+                    'نسيت كلمة المرور؟',
+                    style: TextStyles.bodySmall.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
                 Gaps.lgV,
                 TextButton(
                   onPressed: () => context.go(RouteNames.register),

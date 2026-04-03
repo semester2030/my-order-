@@ -8,6 +8,7 @@ import '../di/providers.dart';
 import '../../modules/auth/presentation/screens/login_screen.dart';
 import '../../modules/auth/presentation/screens/pending_screen.dart';
 import '../../modules/auth/presentation/screens/register_screen.dart';
+import '../../modules/auth/presentation/screens/vendor_forgot_password_screen.dart';
 import '../../modules/auth/presentation/screens/rejected_screen.dart';
 import '../../modules/auth/presentation/screens/splash_screen.dart';
 import '../../modules/profile/presentation/screens/change_password_screen.dart';
@@ -89,6 +90,14 @@ GoRouter createAppRouter(Ref ref) {
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
           child: const RegisterScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.forgotPassword,
+        name: 'forgotPassword',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const VendorForgotPasswordScreen(),
         ),
       ),
       GoRoute(

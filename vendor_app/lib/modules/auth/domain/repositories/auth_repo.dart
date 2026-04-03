@@ -19,4 +19,13 @@ abstract interface class AuthRepo {
 
   /// حذف الحساب على الخادم ثم مسح التوكنات محلياً.
   Future<res.Result<void, Failure>> deleteAccount(String currentPassword);
+
+  Future<res.Result<({String message, String? devOtp}), Failure>>
+      requestVendorPasswordReset(String email);
+
+  Future<res.Result<void, Failure>> confirmVendorPasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  });
 }

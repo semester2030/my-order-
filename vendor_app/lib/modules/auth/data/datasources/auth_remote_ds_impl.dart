@@ -61,4 +61,37 @@ class AuthRemoteDsImpl implements AuthRemoteDs {
       data: <String, dynamic>{'currentPassword': currentPassword},
     );
   }
+
+  @override
+  Future<({String message, String? devOtp})> requestVendorPasswordReset(
+    String email,
+  ) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      Endpoints.authVendorPasswordResetRequest,
+      data: <String, dynamic>{'email': email.trim()},
+    );
+    final data = response.data;
+    if (data == null) {
+      throw NetworkException('استجابة فارغة من الخادم');
+    }
+    final message = data['message'] as String? ?? '';
+    final devOtp = data['code'] as String?;
+    return (message: message, devOtp: devOtp);
+  }
+
+  @override
+  Future<void> confirmVendorPasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    await _dio.post<void>(
+      Endpoints.authVendorPasswordResetConfirm,
+      data: <String, dynamic>{
+        'email': email.trim(),
+        'code': code.trim(),
+        'newPassword': newPassword,
+      },
+    );
+  }
 }

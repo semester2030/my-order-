@@ -131,7 +131,11 @@ export class VendorsService {
       .getOne();
     if (existingVendorByEmail) {
       throw new ConflictException(
-        'البريد الإلكتروني مسجّل مسبقاً كمقدّم خدمة. سجّل الدخول أو استخدم بريداً آخر.',
+        'هذا البريد مسجّل مسبقاً كمقدّم خدمة — لا يُنشأ حساب ثانٍ بنفس البريد. ' +
+          'إن كنت قد سجّلت من قبل: استخدم «تسجيل الدخول» بنفس البريد وكلمة المرور؛ ' +
+          'إن كان طلبك بانتظار موافقة الإدارة ستظهر لك شاشة «قيد المراجعة» بعد الدخول. ' +
+          'رسالة التأكيد على البريد تعتمد على إعدادات الخادم (قد لا تصل إن لم يُفعّل الإرسال). ' +
+          'لحذف الطلب القديم أو إعادة التسجيل: يتواصل فريق الدعم/الإدارة معك أو يُلغى الطلب من لوحة الإدارة.',
       );
     }
     const existingUserByEmail = await this.userRepository
@@ -404,6 +408,32 @@ export class VendorsService {
       approvedAt: vendor.approvedAt,
       message: messages[vendor.registrationStatus] || 'Unknown status',
     };
+  }
+
+  /** إعادة إرسال بريد تأكيد التسجيل لطلبات معلقة (من لوحة الإدارة). */
+  async resendPendingVendorRegistrationEmail(
+    vendorId: string,
+  ): Promise<{ emailSent: boolean }> {
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+      select: ['id', 'email', 'name', 'registrationStatus'],
+    });
+    if (!vendor) {
+      throw new NotFoundException('Vendor not found');
+    }
+    if (
+      vendor.registrationStatus !== VendorStatus.PENDING_APPROVAL &&
+      vendor.registrationStatus !== VendorStatus.UNDER_REVIEW
+    ) {
+      throw new BadRequestException(
+        'إعادة الإرسال متاحة فقط لطلبات بانتظار الموافقة أو قيد المراجعة.',
+      );
+    }
+    const emailSent = await this.emailService.sendVendorRegistrationSubmitted(
+      vendor.email,
+      vendor.name,
+    );
+    return { emailSent };
   }
 
   async updateProfile(

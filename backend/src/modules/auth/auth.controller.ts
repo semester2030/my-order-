@@ -27,6 +27,8 @@ import {
   VendorOnboardingAcceptLegalDto,
 } from './dto/vendor-onboarding.dto';
 import { DeleteAccountDto } from './dto/delete-account.dto';
+import { VendorPasswordResetRequestDto } from './dto/vendor-password-reset-request.dto';
+import { VendorPasswordResetConfirmDto } from './dto/vendor-password-reset-confirm.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -92,6 +94,28 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async vendorLogin(@Body() dto: VendorLoginDto) {
     return this.authService.vendorLogin(dto.email, dto.password);
+  }
+
+  @Post('vendor/password-reset/request')
+  @ApiOperation({
+    summary: 'طلب رمز استعادة كلمة مرور مقدّم الخدمة (يُرسل للبريد)',
+  })
+  @HttpCode(HttpStatus.OK)
+  async vendorPasswordResetRequest(@Body() dto: VendorPasswordResetRequestDto) {
+    return this.authService.requestVendorPasswordReset(dto.email);
+  }
+
+  @Post('vendor/password-reset/confirm')
+  @ApiOperation({ summary: 'تأكيد الرمز وتعيين كلمة مرور جديدة (مقدّم خدمة)' })
+  @HttpCode(HttpStatus.OK)
+  async vendorPasswordResetConfirm(
+    @Body() dto: VendorPasswordResetConfirmDto,
+  ) {
+    return this.authService.confirmVendorPasswordReset(
+      dto.email,
+      dto.code,
+      dto.newPassword,
+    );
   }
 
   @Post('vendor/onboarding/email/request-otp')

@@ -385,6 +385,30 @@ export class AdminService {
     };
   }
 
+  async resendVendorRegistrationEmail(
+    id: string,
+    adminId: string,
+    req?: ReqForAudit,
+  ) {
+    const { emailSent } =
+      await this.vendorsService.resendPendingVendorRegistrationEmail(id);
+    await this.auditService.log({
+      actorId: adminId,
+      action: 'RESEND_VENDOR_REGISTRATION_EMAIL',
+      entityType: 'vendor',
+      entityId: id,
+      newValue: { emailSent },
+      req,
+    });
+    return {
+      success: true,
+      emailSent,
+      message: emailSent
+        ? 'تم إرسال نسخة من رسالة التسجيل إلى بريد مقدّم الخدمة.'
+        : 'تعذّر إرسال البريد. تحقق من إعدادات الخادم (RESEND_API_KEY / RESEND_FROM).',
+    };
+  }
+
   async suspendVendor(id: string, adminId: string, req?: ReqForAudit) {
     const vendor = await this.vendorRepo.findOne({ where: { id } });
     if (!vendor) throw new NotFoundException('Vendor not found');

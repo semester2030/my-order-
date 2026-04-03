@@ -25,4 +25,20 @@ class AuthRemoteDsStub implements AuthRemoteDs {
   Future<void> deleteAccount(String currentPassword) async {
     throw UnimplementedError('deleteAccount not wired');
   }
+
+  @override
+  Future<({String message, String? devOtp})> requestVendorPasswordReset(
+    String email,
+  ) async {
+    throw UnimplementedError('vendor password reset not wired');
+  }
+
+  @override
+  Future<void> confirmVendorPasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    throw UnimplementedError('vendor password reset not wired');
+  }
 }
