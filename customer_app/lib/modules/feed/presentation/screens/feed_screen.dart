@@ -89,11 +89,49 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     }
   }
 
-  Widget _buildCategoryHeader() {
+  /// شريط علوي واحد: يمنع تكدّس سطرَي «اسم الفئة» و«الفلتر» فوق صندوق الطباخ/الوجبة في [DishOverlay].
+  Widget _buildTopChrome() {
     final l = AppLocalizations.of(context);
-    final categoryLabel = widget.category != null
-        ? l.categoryLabel(widget.category!)
-        : l.discover;
+    if (widget.category != null) {
+      final categoryLabel = l.categoryLabel(widget.category!);
+      return SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: Insets.sm,
+            vertical: Insets.xs,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                onPressed: () => context.go(RouteNames.categories),
+                color: AppColors.textInverse,
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.black26,
+                  padding: const EdgeInsets.all(8),
+                  minimumSize: const Size(40, 40),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  categoryLabel,
+                  style: TextStyles.titleSmall.copyWith(
+                    color: AppColors.textInverse,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              _buildFilterButton(),
+            ],
+          ),
+        ),
+      );
+    }
     return SafeArea(
       bottom: false,
       child: Padding(
@@ -103,32 +141,17 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         ),
         child: Row(
           children: [
-            if (widget.category != null)
-              IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new),
-                onPressed: () => context.go(RouteNames.categories),
-                color: AppColors.textInverse,
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.black26,
-                ),
-              ),
-            if (widget.category != null) SizedBox(width: Insets.xs),
-            Expanded(
-              child: Text(
-                categoryLabel,
-                style: TextStyles.titleMedium.copyWith(
-                  color: AppColors.textInverse,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
+            const Spacer(),
+            _buildFilterButton(),
           ],
         ),
       ),
     );
   }
+
+  /// مسافة دفع [DishOverlay] أسفل الشريط العلوي (نفس المنطق بصرياً لكل الفئات).
+  double get _dishOverlayTopInset =>
+      widget.category != null ? 56.0 : 50.0;
 
   void _openFilterSheet() {
     final l = AppLocalizations.of(context);
@@ -318,13 +341,13 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         initial: () => Stack(
           children: [
             const LoadingView(),
-            if (widget.category != null) _buildCategoryHeader(),
+            _buildTopChrome(),
           ],
         ),
         loading: () => Stack(
           children: [
             const LoadingView(),
-            if (widget.category != null) _buildCategoryHeader(),
+            _buildTopChrome(),
           ],
         ),
         loaded: (items, page, hasMore) {
@@ -398,7 +421,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                     ),
                   ),
                 ),
-                if (widget.category != null) _buildCategoryHeader(),
+                _buildTopChrome(),
               ],
             );
           }
@@ -430,6 +453,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                     isPlaying: isPlaying,
                     onAddToCart: () => _onAddToCart(item),
                     acceptsCustomRequests: item.vendor.acceptsCustomRequests,
+                    topChromeInset: _dishOverlayTopInset,
                   );
                 },
               ),
@@ -437,17 +461,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                 top: 0,
                 left: 0,
                 right: 0,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (widget.category != null) _buildCategoryHeader(),
-                    if (widget.category == null)
-                      SafeArea(bottom: false, child: _buildFilterButton())
-                    else
-                      _buildFilterButton(),
-                  ],
-                ),
+                child: _buildTopChrome(),
               ),
             ],
           );
@@ -477,7 +491,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                   ref.read(feedNotifierProvider.notifier).refreshFeed();
                 },
               ),
-              if (widget.category != null) _buildCategoryHeader(),
+              _buildTopChrome(),
             ],
           );
         },

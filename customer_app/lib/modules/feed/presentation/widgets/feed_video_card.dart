@@ -14,6 +14,9 @@ class FeedVideoCard extends StatefulWidget {
   /// إن كانت الطباخة تقبل "خدمات عند الطلب" (من الـ Backend لاحقاً).
   final bool acceptsCustomRequests;
 
+  /// ارتفاع الشريط العلوي في [FeedScreen] (فئة/فلتر) حتى لا يغطي صندوق الطباخ والوجبة.
+  final double topChromeInset;
+
   const FeedVideoCard({
     super.key,
     required this.item,
@@ -21,6 +24,7 @@ class FeedVideoCard extends StatefulWidget {
     this.onTap,
     this.onAddToCart,
     this.acceptsCustomRequests = true,
+    this.topChromeInset = 0,
   });
 
   @override
@@ -105,6 +109,7 @@ class _FeedVideoCardState extends State<FeedVideoCard> {
               item: widget.item,
               onAddToCart: widget.onAddToCart,
               acceptsCustomRequests: widget.acceptsCustomRequests,
+              topChromeInset: widget.topChromeInset,
             ),
             // TikTok-style right side: وجبات جاهزة + خدمات عند الطلب
             FeedVideoSideActions(

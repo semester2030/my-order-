@@ -15,6 +15,9 @@ class DishOverlay extends StatelessWidget {
   /// إن كانت الطباخة تقبل "خدمات عند الطلب"؛ إن false يظهر الزر معطّلاً.
   final bool acceptsCustomRequests;
 
+  /// مسافة إضافية من الأعلى لتفادي تداخل [FeedScreen] الشريط (فئة + فلتر) فوق اسم الطباخ والوجبة.
+  final double topChromeInset;
+
   bool get _isPopularCooking =>
       item.vendor.providerCategory == ProviderCategories.popularCooking;
 
@@ -23,14 +26,17 @@ class DishOverlay extends StatelessWidget {
     required this.item,
     this.onAddToCart,
     this.acceptsCustomRequests = true,
+    this.topChromeInset = 0,
   });
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     return SafeArea(
-      child: Column(
-        children: [
+      child: Padding(
+        padding: EdgeInsets.only(top: topChromeInset),
+        child: Column(
+          children: [
           // Top content - Chef and Dish info in a frame
           Container(
             margin: const EdgeInsets.all(Insets.md),
@@ -255,6 +261,7 @@ class DishOverlay extends StatelessWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }
