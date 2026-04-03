@@ -63,6 +63,33 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
 
+    ref.listen<AuthState>(authNotifierProvider, (prev, next) {
+      if (prev is AuthLoading && next is AuthUnauthenticated && context.mounted) {
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => AlertDialog(
+            title: const Text('تم استلام الطلب'),
+            content: const Text(
+              'تم إنشاء طلب التسجيل وهو بانتظار موافقة الإدارة.\n\n'
+              'إذا كان البريد مفعّلاً على الخادم ستصلك رسالة تأكيد.\n'
+              'في لوحة الإدارة يظهر الطلب تحت «طلبات التسجيل» حتى تتم الموافقة.\n\n'
+              'يمكنك الآن تسجيل الدخول لإكمال البيانات عندما يُفعّل حسابك.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  context.go(RouteNames.login);
+                },
+                child: const Text('تسجيل الدخول'),
+              ),
+            ],
+          ),
+        );
+      }
+    });
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(

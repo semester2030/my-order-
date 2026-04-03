@@ -130,14 +130,18 @@ export class VendorsService {
       .where('LOWER(TRIM(v.email)) = :email', { email: emailNorm })
       .getOne();
     if (existingVendorByEmail) {
-      throw new ConflictException('البريد الإلكتروني مسجّل مسبقاً.');
+      throw new ConflictException(
+        'البريد الإلكتروني مسجّل مسبقاً كمقدّم خدمة. سجّل الدخول أو استخدم بريداً آخر.',
+      );
     }
     const existingUserByEmail = await this.userRepository
       .createQueryBuilder('u')
       .where('LOWER(TRIM(u.email)) = :email', { email: emailNorm })
       .getOne();
     if (existingUserByEmail) {
-      throw new ConflictException('البريد الإلكتروني مسجّل مسبقاً.');
+      throw new ConflictException(
+        'البريد مستخدم مسبقاً (مثلاً حساب عميل أو مستخدم آخر). لمقدّم خدمة جديد استخدم بريداً غير مستخدم، أو سجّل الدخول إن كان لديك حساب.',
+      );
     }
 
     const phoneOrEmail = dto.phoneNumber?.trim() || emailNorm;
@@ -171,7 +175,9 @@ export class VendorsService {
       where: { ownerIdNumber: ownerIdValue },
     });
     if (existingVendorById) {
-      throw new ConflictException('Owner ID number already exists');
+      throw new ConflictException(
+        'تعذّر إكمال التسجيل: بيانات مالك مرتبطة بحساب آخر. جرّب بريداً إلكترونياً مختلفاً أو تواصل مع الدعم.',
+      );
     }
 
     // 4. Hash password (use trimmed)
@@ -266,6 +272,37 @@ export class VendorsService {
 
       await this.staffRepository.save(ownerStaff);
 
+      // بريد تأكيد للمقدّم + إشعار اختياري للإدارة (لا يعطل التسجيل عند الفشل)
+      void this.emailService
+        .sendVendorRegistrationSubmitted(emailNorm, nameTrim)
+        .then((ok) => {
+          if (!ok) {
+            this.logger.warn(
+              `Vendor registration ack not delivered to ${emailNorm} — check RESEND_API_KEY / RESEND_FROM on server`,
+            );
+          }
+        })
+        .catch((e) => this.logger.error('sendVendorRegistrationSubmitted', e));
+
+      const notifyRaw = this.configService.get<string>(
+        'VENDOR_REGISTRATION_NOTIFY_EMAIL',
+      );
+      if (notifyRaw?.trim()) {
+        const adminList = notifyRaw
+          .split(/[,;]/)
+          .map((s) => s.trim())
+          .filter((s) => s.includes('@'));
+        if (adminList.length > 0) {
+          void this.emailService
+            .notifyAdminsVendorRegistrationPending(adminList, {
+              vendorName: nameTrim,
+              vendorEmail: emailNorm,
+              vendorId: savedVendor.id,
+            })
+            .catch((e) => this.logger.error('notifyAdminsVendorRegistrationPending', e));
+        }
+      }
+
       const onboardingAccessToken = this.jwtService.sign(
         {
           sub: vendorUser.id,
@@ -302,7 +339,9 @@ export class VendorsService {
           );
         }
         if (detailStr.includes('(email)=')) {
-          throw new ConflictException('البريد الإلكتروني مسجّل مسبقاً.');
+          throw new ConflictException(
+            'البريد الإلكتروني مسجّل مسبقاً. استخدم بريداً آخر أو سجّل الدخول.',
+          );
         }
         if (
           detailStr.includes('(phone') ||
