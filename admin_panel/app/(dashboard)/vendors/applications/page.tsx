@@ -19,10 +19,15 @@ import { fetchVendors } from '@/lib/api/client'
 import { format } from 'date-fns'
 import { ar } from 'date-fns/locale'
 
+const queueStatusLabel: Record<string, string> = {
+  pending_approval: 'بانتظار الموافقة',
+  under_review: 'قيد المراجعة',
+}
+
 export default function VendorApplicationsPage() {
   const { data, error, isLoading } = useSWR(
-    '/admin/vendors?status=pending_approval',
-    () => fetchVendors({ status: 'pending_approval', limit: 50 }),
+    '/admin/vendors?registrationQueue=1',
+    () => fetchVendors({ registrationQueue: true, limit: 50 }),
   )
 
   if (error) {
@@ -49,7 +54,7 @@ export default function VendorApplicationsPage() {
     <>
       <PageHeader
         title="طلبات تسجيل مقدّمي الخدمة"
-        description="بيانات مقدّم الخدمة والمستندات. أزرار الموافقة/الرفض ستُفعّل في المرحلة 4"
+        description="كل طلبات ما قبل الاعتماد: بانتظار الموافقة وقيد المراجعة — راجع ثم وافق أو ارفض من التفاصيل"
       />
       <Card>
         <CardHeader
@@ -88,7 +93,11 @@ export default function VendorApplicationsPage() {
                         ? format(new Date(app.createdAt), 'yyyy/MM/dd HH:mm', { locale: ar })
                         : '-'}
                     </TableCell>
-                    <TableCell><Badge variant="warning">قيد المراجعة</Badge></TableCell>
+                    <TableCell>
+                      <Badge variant="warning">
+                        {queueStatusLabel[app.registrationStatus] ?? app.registrationStatus}
+                      </Badge>
+                    </TableCell>
                     <TableCell>
                       <Link href={`/vendors/${app.id}`}>
                         <Button variant="ghost" size="sm">تفاصيل</Button>

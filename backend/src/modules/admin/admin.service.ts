@@ -116,6 +116,8 @@ export class AdminService {
 
   async getVendorsList(options: {
     status?: VendorStatus;
+    /** طابور التسجيل: بانتظار الموافقة + قيد المراجعة (لصفحة طلبات التسجيل) */
+    registrationQueue?: boolean;
     category?: string;
     page?: number;
     limit?: number;
@@ -124,11 +126,15 @@ export class AdminService {
     const limit = Math.min(100, Math.max(1, options.limit ?? 20));
     const skip = (page - 1) * limit;
 
-    const where: Partial<{
-      registrationStatus: VendorStatus;
-      providerCategory: string | null;
-    }> = {};
-    if (options.status) where.registrationStatus = options.status;
+    const where: Record<string, unknown> = {};
+    if (options.registrationQueue) {
+      where.registrationStatus = In([
+        VendorStatus.PENDING_APPROVAL,
+        VendorStatus.UNDER_REVIEW,
+      ]);
+    } else if (options.status) {
+      where.registrationStatus = options.status;
+    }
     if (options.category?.trim())
       where.providerCategory = options.category.trim();
 

@@ -171,11 +171,14 @@ export function fetchDashboard(): Promise<DashboardStats> {
 
 export function fetchVendors(params?: {
   status?: string;
+  /** طابور ما قبل الاعتماد: pending_approval + under_review */
+  registrationQueue?: boolean;
   category?: string;
   page?: number;
   limit?: number;
 }): Promise<PaginatedResponse<Record<string, unknown>>> {
   const q = new URLSearchParams();
+  if (params?.registrationQueue) q.set('registrationQueue', '1');
   if (params?.status) q.set('status', params.status);
   if (params?.category) q.set('category', params.category);
   if (params?.page) q.set('page', String(params.page));

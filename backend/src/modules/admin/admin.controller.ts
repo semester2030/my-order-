@@ -61,11 +61,14 @@ export class AdminController {
   @ApiOperation({ summary: 'List vendors' })
   async getVendors(
     @Query('status') status?: VendorStatus,
+    @Query('registrationQueue') registrationQueue?: string,
     @Query('category') category?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
+    const rq = registrationQueue?.toLowerCase();
     return this.adminService.getVendorsList({
+      registrationQueue: rq === '1' || rq === 'true' || rq === 'yes',
       status,
       category,
       page: page ? parseInt(page, 10) : undefined,
