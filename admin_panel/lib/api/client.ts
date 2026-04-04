@@ -1,26 +1,56 @@
 const DEFAULT_API_URL = 'http://localhost:3001';
 
-/**
- * على localhost: دائماً مسار نسبي `/api/...` → Next rewrites → Nest (:3001).
- * يمنع "Failed to fetch" الناتج عن CORS + credentials عندما يكون NEXT_PUBLIC_API_URL=3001.
- * في الإنتاج (نطاق غير localhost): نستخدم NEXT_PUBLIC_API_URL إن وُجد.
- */
-const getBaseUrl = () => {
-  if (typeof window !== 'undefined') {
-    const h = window.location.hostname;
-    if (
+function isBrowserLocalhost(hostname: string): boolean {
+  return (
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '::1' ||
+    hostname === '[::1]'
+  );
+}
+
+/** true إذا كان عنوان الـ API يشير لباك اند على نفس الجهاز (CORS عند الجلب المباشر من المتصفح). */
+function isLocalBackendBase(baseUrl: string): boolean {
+  const t = baseUrl.trim();
+  if (!t) return false;
+  try {
+    const withProto = t.includes('://') ? t : `https://${t}`;
+    const u = new URL(withProto);
+    const h = u.hostname.toLowerCase();
+    return (
       h === 'localhost' ||
       h === '127.0.0.1' ||
-      h === '::1' ||
-      h === '[::1]'
-    ) {
+      h === '[::1]' ||
+      h === '::1'
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * - على localhost: إن وُجد `NEXT_PUBLIC_API_URL` لخادم **بعيد** (مثل Render) نستخدمه مباشرة —
+ *   حتى تطابق قاعدة البيانات تطبيق المزوّد الذي يضرب الإنترنت. بدون ذلك، `/api` يذهب
+ *   للبروكسي → غالباً `localhost:3001` وقاعدة محلية **فارغة** من طلبات الإنتاج.
+ * - إن كان المتغير لـ localhost:3001 نتجاهله ونستخدم `/api` → rewrites (تفادي CORS).
+ * - في الإنتاج (نطاق غير localhost): `NEXT_PUBLIC_API_URL` إن وُجد.
+ */
+const getBaseUrl = () => {
+  const fromEnvRaw = process.env.NEXT_PUBLIC_API_URL?.trim();
+  const fromEnv = fromEnvRaw ? fromEnvRaw.replace(/\/$/, '') : '';
+
+  if (typeof window !== 'undefined') {
+    const h = window.location.hostname;
+    if (isBrowserLocalhost(h)) {
+      if (fromEnv && !isLocalBackendBase(fromEnv)) {
+        return fromEnv;
+      }
       return '';
     }
-    const fromEnv = process.env.NEXT_PUBLIC_API_URL?.trim();
-    if (fromEnv) return fromEnv.replace(/\/$/, '');
+    if (fromEnv) return fromEnv;
     return '';
   }
-  return process.env.NEXT_PUBLIC_API_URL?.trim()?.replace(/\/$/, '') || DEFAULT_API_URL;
+  return fromEnv || DEFAULT_API_URL;
 };
 
 /** مسار API كاملاً للـ fetch (نسبي `/api/...` مع البروكسي، أو مطلق نحو الباك اند). */
