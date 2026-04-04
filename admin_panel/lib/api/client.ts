@@ -154,6 +154,19 @@ export function clearAdminToken(): void {
   }
 }
 
+/**
+ * توكن غير مقبول من الباك اند (منتهي، أو صادر من خادم آخر بـ JWT_SECRET مختلف).
+ * يمسح الجلسة ويعيد لتسجيل الدخول حتى لا يبقى «Unauthorized» عالقاً.
+ */
+function handleAdminUnauthorized(): void {
+  if (typeof window === 'undefined') return;
+  clearAdminToken();
+  const path = window.location.pathname;
+  if (!path.startsWith('/auth/login')) {
+    window.location.assign('/auth/login?session=invalid');
+  }
+}
+
 export function hasAdminToken(): boolean {
   return !!getToken();
 }
@@ -162,6 +175,9 @@ export function hasAdminToken(): boolean {
 export async function adminFetch<T = unknown>(url: string): Promise<T> {
   const fullUrl = url.startsWith('http') ? url : buildApiUrl(url);
   const res = await fetch(fullUrl, { headers: getAuthHeaders() });
+  if (res.status === 401) {
+    handleAdminUnauthorized();
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(
@@ -334,6 +350,9 @@ export async function adminPatch(
     headers: getAuthHeaders(),
     body: body ? JSON.stringify(body) : undefined,
   });
+  if (res.status === 401) {
+    handleAdminUnauthorized();
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(
@@ -389,6 +408,9 @@ export async function adminPost(
     headers: getAuthHeaders(),
     body: body ? JSON.stringify(body) : undefined,
   });
+  if (res.status === 401) {
+    handleAdminUnauthorized();
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(
