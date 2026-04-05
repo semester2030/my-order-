@@ -76,6 +76,23 @@ class AppLocalizations {
 
   String get editProfile => isAr ? StringsAr.editProfile : StringsEn.editProfile;
   String get changePassword => isAr ? StringsAr.changePassword : StringsEn.changePassword;
+  String get verifyEmail => isAr ? StringsAr.verifyEmail : StringsEn.verifyEmail;
+  String get verifyEmailDescription =>
+      isAr ? StringsAr.verifyEmailDescription : StringsEn.verifyEmailDescription;
+  String get verifyEmailSendOtp =>
+      isAr ? StringsAr.verifyEmailSendOtp : StringsEn.verifyEmailSendOtp;
+  String get verifyEmailOtpLabel =>
+      isAr ? StringsAr.verifyEmailOtpLabel : StringsEn.verifyEmailOtpLabel;
+  String get verifyEmailConfirm =>
+      isAr ? StringsAr.verifyEmailConfirm : StringsEn.verifyEmailConfirm;
+  String get verifyEmailSuccess =>
+      isAr ? StringsAr.verifyEmailSuccess : StringsEn.verifyEmailSuccess;
+  String get verifyEmailAlreadyDone =>
+      isAr ? StringsAr.verifyEmailAlreadyDone : StringsEn.verifyEmailAlreadyDone;
+  String get verifyEmailDevCodeTitle =>
+      isAr ? StringsAr.verifyEmailDevCodeTitle : StringsEn.verifyEmailDevCodeTitle;
+  String get verifyEmailDevCodeHint =>
+      isAr ? StringsAr.verifyEmailDevCodeHint : StringsEn.verifyEmailDevCodeHint;
   String get logout => isAr ? StringsAr.logout : StringsEn.logout;
   String get language => isAr ? StringsAr.language : StringsEn.language;
   String get languageAr => StringsAr.languageAr;
@@ -174,6 +191,7 @@ class AppLocalizations {
   String get videosDeleted => isAr ? StringsAr.videosDeleted : StringsEn.videosDeleted;
   String get videoMealLabel => isAr ? StringsAr.videoMealLabel : StringsEn.videoMealLabel;
   String get delete => isAr ? StringsAr.delete : StringsEn.delete;
+  String get copy => isAr ? StringsAr.copy : StringsEn.copy;
 
   // المناسبات الخاصة
   String get eventOffers => isAr ? StringsAr.eventOffers : StringsEn.eventOffers;

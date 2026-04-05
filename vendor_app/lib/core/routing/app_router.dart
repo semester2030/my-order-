@@ -10,6 +10,7 @@ import '../../modules/auth/presentation/screens/pending_screen.dart';
 import '../../modules/auth/presentation/screens/register_screen.dart';
 import '../../modules/auth/presentation/screens/vendor_forgot_password_screen.dart';
 import '../../modules/auth/presentation/screens/rejected_screen.dart';
+import '../../modules/auth/presentation/screens/verify_email_screen.dart';
 import '../../modules/auth/presentation/screens/splash_screen.dart';
 import '../../modules/profile/presentation/screens/change_password_screen.dart';
 import '../../modules/profile/presentation/screens/delete_account_screen.dart';
@@ -54,6 +55,7 @@ GoRouter createAppRouter(Ref ref) {
           path == RouteNames.videos ||
           path == RouteNames.editProfile ||
           path == RouteNames.changePassword ||
+          path == RouteNames.verifyEmail ||
           path == RouteNames.eventOffers ||
           path.startsWith('${RouteNames.eventOffers}/') ||
           path == RouteNames.eventRequests;
@@ -138,6 +140,14 @@ GoRouter createAppRouter(Ref ref) {
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
           child: const ChangePasswordScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.verifyEmail,
+        name: 'verifyEmail',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const VerifyEmailScreen(),
         ),
       ),
       GoRoute(

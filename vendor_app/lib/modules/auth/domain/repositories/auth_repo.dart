@@ -3,6 +3,7 @@ import 'package:vendor_app/core/utils/result.dart' as res;
 
 import '../entities/register_result.dart';
 import '../entities/register_vendor_request.dart';
+import '../entities/vendor_email_otp_request_outcome.dart';
 import '../entities/vendor_onboarding_status.dart';
 import '../entities/vendor_session.dart';
 
@@ -33,4 +34,9 @@ abstract interface class AuthRepo {
   Future<res.Result<VendorOnboardingStatus, Failure>> getVendorOnboardingStatus();
 
   Future<res.Result<void, Failure>> acceptVendorLegalDocument(String documentVersion);
+
+  Future<res.Result<VendorEmailOtpRequestOutcome, Failure>>
+      requestVendorEmailVerificationOtp();
+
+  Future<res.Result<void, Failure>> verifyVendorEmailWithOtp(String code);
 }

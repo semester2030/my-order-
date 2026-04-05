@@ -17,6 +17,10 @@ class Endpoints {
   static const String authVendorOnboardingStatus = '/auth/vendor/onboarding/status';
   static const String authVendorOnboardingLegalAccept =
       '/auth/vendor/onboarding/legal/accept';
+  static const String authVendorOnboardingEmailRequestOtp =
+      '/auth/vendor/onboarding/email/request-otp';
+  static const String authVendorOnboardingEmailVerify =
+      '/auth/vendor/onboarding/email/verify';
   static const String vendorsRegister = '/vendors/register';
 
   // Profile

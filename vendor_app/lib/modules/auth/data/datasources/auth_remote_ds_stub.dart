@@ -1,5 +1,6 @@
 import '../../domain/entities/vendor_onboarding_status.dart';
 import '../models/login_request_dto.dart';
+import '../models/vendor_email_otp_request_result.dart';
 import '../models/login_response_dto.dart';
 import '../models/register_response_dto.dart';
 import 'auth_remote_ds.dart';
@@ -54,4 +55,16 @@ class AuthRemoteDsStub implements AuthRemoteDs {
 
   @override
   Future<void> acceptVendorLegalDocument(String documentVersion) async {}
+
+  @override
+  Future<VendorEmailOtpRequestResult> requestVendorEmailVerificationOtp() async {
+    return const VendorEmailOtpRequestResult(
+      sent: true,
+      message: 'stub',
+      code: '123456',
+    );
+  }
+
+  @override
+  Future<void> verifyVendorEmailWithOtp(String code) async {}
 }

@@ -6,6 +6,7 @@ import 'package:vendor_app/core/utils/result.dart' as res;
 
 import '../../domain/entities/register_result.dart';
 import '../../domain/entities/register_vendor_request.dart';
+import '../../domain/entities/vendor_email_otp_request_outcome.dart';
 import '../../domain/entities/vendor_onboarding_status.dart';
 import '../../domain/entities/vendor_session.dart';
 import '../../domain/repositories/auth_repo.dart';
@@ -128,6 +129,33 @@ class AuthRepoImpl implements AuthRepo {
   Future<res.Result<void, Failure>> acceptVendorLegalDocument(String documentVersion) async {
     try {
       await _remoteDs.acceptVendorLegalDocument(documentVersion);
+      return const res.Success(null);
+    } catch (e) {
+      return res.Failure(ErrorMapper.toFailure(e));
+    }
+  }
+
+  @override
+  Future<res.Result<VendorEmailOtpRequestOutcome, Failure>>
+      requestVendorEmailVerificationOtp() async {
+    try {
+      final r = await _remoteDs.requestVendorEmailVerificationOtp();
+      return res.Success(
+        VendorEmailOtpRequestOutcome(
+          sent: r.sent,
+          message: r.message,
+          code: r.code,
+        ),
+      );
+    } catch (e) {
+      return res.Failure(ErrorMapper.toFailure(e));
+    }
+  }
+
+  @override
+  Future<res.Result<void, Failure>> verifyVendorEmailWithOtp(String code) async {
+    try {
+      await _remoteDs.verifyVendorEmailWithOtp(code);
       return const res.Success(null);
     } catch (e) {
       return res.Failure(ErrorMapper.toFailure(e));

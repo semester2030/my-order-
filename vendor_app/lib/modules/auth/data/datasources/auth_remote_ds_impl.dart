@@ -5,6 +5,7 @@ import 'package:vendor_app/core/network/endpoints.dart';
 
 import '../../domain/entities/vendor_onboarding_status.dart';
 import '../models/login_request_dto.dart';
+import '../models/vendor_email_otp_request_result.dart';
 import '../models/login_response_dto.dart';
 import '../models/register_response_dto.dart';
 import '../models/register_vendor_dto.dart';
@@ -113,6 +114,26 @@ class AuthRemoteDsImpl implements AuthRemoteDs {
     await _dio.post<void>(
       Endpoints.authVendorOnboardingLegalAccept,
       data: <String, dynamic>{'documentVersion': documentVersion.trim()},
+    );
+  }
+
+  @override
+  Future<VendorEmailOtpRequestResult> requestVendorEmailVerificationOtp() async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      Endpoints.authVendorOnboardingEmailRequestOtp,
+    );
+    final data = response.data;
+    if (data == null) {
+      throw NetworkException('استجابة فارغة من الخادم');
+    }
+    return VendorEmailOtpRequestResult.fromJson(data);
+  }
+
+  @override
+  Future<void> verifyVendorEmailWithOtp(String code) async {
+    await _dio.post<void>(
+      Endpoints.authVendorOnboardingEmailVerify,
+      data: <String, dynamic>{'code': code.trim()},
     );
   }
 }

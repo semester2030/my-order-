@@ -19,6 +19,7 @@ class StringsEn {
   static const String videosDeleted = 'Video deleted';
   static const String videoMealLabel = 'Meal';
   static const String delete = 'Delete';
+  static const String copy = 'Copy';
 
   static const String login = 'Login';
   static const String register = 'Register';
@@ -49,6 +50,17 @@ class StringsEn {
 
   static const String editProfile = 'Edit Profile';
   static const String changePassword = 'Change Password';
+  static const String verifyEmail = 'Verify email';
+  static const String verifyEmailDescription =
+      'After admin approval, confirm your email with a code sent to your registered address to add meals or upload video.';
+  static const String verifyEmailSendOtp = 'Send verification code';
+  static const String verifyEmailOtpLabel = 'Verification code';
+  static const String verifyEmailConfirm = 'Confirm email';
+  static const String verifyEmailSuccess = 'Email verified successfully';
+  static const String verifyEmailAlreadyDone = 'Email is already verified.';
+  static const String verifyEmailDevCodeTitle = 'Code from server (test mode)';
+  static const String verifyEmailDevCodeHint =
+      'Shown when the API returns the code (OTP_FORCE_WHITELIST or development). Copy it into the field above.';
   static const String logout = 'Logout';
   static const String language = 'Language';
   static const String languageAr = 'العربية';

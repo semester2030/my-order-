@@ -26,6 +26,11 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  static bool _isApprovedVendor(String? registrationStatus) {
+    final s = registrationStatus?.toLowerCase().trim();
+    return s == 'approved';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -111,6 +116,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         icon: Icons.lock_outline,
                         onTap: () => context.push(RouteNames.changePassword),
                       ),
+                      if (_isApprovedVendor(state.profile.registrationStatus)) ...[
+                        Divider(height: 1, color: AppColors.divider),
+                        SettingsTile(
+                          title: l10n.verifyEmail,
+                          icon: Icons.mark_email_unread_outlined,
+                          onTap: () => context.push(RouteNames.verifyEmail),
+                        ),
+                      ],
                       Divider(height: 1, color: AppColors.divider),
                       SettingsTile(
                         title: l10n.language,

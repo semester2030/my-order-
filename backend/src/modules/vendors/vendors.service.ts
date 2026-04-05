@@ -1149,6 +1149,7 @@ export class VendorsService {
   async requestVendorEmailVerificationOtp(userId: string): Promise<{
     sent: boolean;
     message: string;
+    code?: string;
   }> {
     const vendorId = await this.getVendorIdByUserId(userId);
     if (!vendorId) {
@@ -1176,11 +1177,37 @@ export class VendorsService {
     if (!sent) {
       this.logger.warn(`Vendor email OTP not sent (email disabled?): ${email}`);
     }
+
+    const whitelistRaw =
+      this.configService.get<string>('OTP_DEV_WHITELIST') ??
+      process.env.OTP_DEV_WHITELIST ??
+      '';
+    const forceRaw =
+      this.configService.get<string>('OTP_FORCE_WHITELIST') ??
+      process.env.OTP_FORCE_WHITELIST ??
+      '';
+    const inWhitelist = whitelistRaw
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean)
+      .includes(email);
+    const inForceList = forceRaw
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean)
+      .includes(email);
+    const nodeEnv = this.configService.get<string>('NODE_ENV') ?? process.env.NODE_ENV;
+    const shouldReturnOtp =
+      (!this.emailService.isConfigured() &&
+        (nodeEnv === 'development' || inWhitelist)) ||
+      inForceList;
+
     return {
       sent,
       message: sent
         ? 'تم إرسال رمز التحقق إلى بريدك.'
         : 'تعذّر إرسال البريد. تأكد من إعدادات الخادم أو جرّب لاحقاً.',
+      ...(shouldReturnOtp ? { code } : {}),
     };
   }
 

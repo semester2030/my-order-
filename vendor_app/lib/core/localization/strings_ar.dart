@@ -19,6 +19,7 @@ class StringsAr {
   static const String videosDeleted = 'تم حذف المقطع';
   static const String videoMealLabel = 'الوجبة';
   static const String delete = 'حذف';
+  static const String copy = 'نسخ';
 
   static const String login = 'تسجيل الدخول';
   static const String register = 'التسجيل';
@@ -50,6 +51,17 @@ class StringsAr {
 
   static const String editProfile = 'تعديل البروفايل';
   static const String changePassword = 'تغيير كلمة المرور';
+  static const String verifyEmail = 'التحقق من البريد';
+  static const String verifyEmailDescription =
+      'بعد موافقة الإدارة، يجب تأكيد بريدك برمز يُرسل إلى نفس البريد المسجّل حتى تستطيع إضافة وجبات أو رفع فيديو.';
+  static const String verifyEmailSendOtp = 'إرسال رمز التحقق';
+  static const String verifyEmailOtpLabel = 'رمز التحقق';
+  static const String verifyEmailConfirm = 'تأكيد البريد';
+  static const String verifyEmailSuccess = 'تم التحقق من البريد بنجاح';
+  static const String verifyEmailAlreadyDone = 'البريد مُحقق مسبقاً.';
+  static const String verifyEmailDevCodeTitle = 'رمز من الخادم (وضع اختبار)';
+  static const String verifyEmailDevCodeHint =
+      'يظهر هذا عندما يعيد الخادم الرمز في الاستجابة (قائمة OTP_FORCE_WHITELIST أو بيئة تطوير). انسخه وأدخله أعلاه.';
   static const String logout = 'تسجيل الخروج';
   static const String language = 'اللغة';
   static const String languageAr = 'العربية';

@@ -27,6 +27,7 @@ class RouteNames {
   static const String videos = '/videos';
   static const String editProfile = '/edit-profile';
   static const String changePassword = '/change-password';
+  static const String verifyEmail = '/verify-email';
   static const String deleteAccount = '/delete-account';
 
   // المناسبات الخاصة (للمقدمين private_events)
