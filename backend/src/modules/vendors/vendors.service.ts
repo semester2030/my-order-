@@ -1083,6 +1083,7 @@ export class VendorsService {
 
   /**
    * بعد اعتماد الإدارة — لإضافة وجبات، رفع فيديو، شهادات بصور، إلخ.
+   * التحقق من البريد (OTP) غير مُشترط حالياً؛ يبقى قبول اللوائح على المنصّة.
    */
   async assertVendorOperationalCompliance(userId: string): Promise<void> {
     const vendorId = await this.getVendorIdByUserId(userId);
@@ -1094,15 +1095,6 @@ export class VendorsService {
     });
     if (!ownerStaff) {
       throw new ForbiddenException('لا يوجد مالك مسجّل لهذا المقدّم.');
-    }
-    const ownerUser = await this.userRepository.findOne({
-      where: { id: ownerStaff.userId },
-      select: ['id', 'emailVerifiedAt'],
-    });
-    if (!ownerUser?.emailVerifiedAt) {
-      throw new ForbiddenException(
-        'أكمل التحقق من البريد الإلكتروني قبل إضافة الوجبات أو رفع الفيديو.',
-      );
     }
     const vendor = await this.vendorRepository.findOne({
       where: { id: vendorId },
