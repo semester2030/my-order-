@@ -1068,6 +1068,10 @@ export class VendorsService {
     }
   }
 
+  /**
+   * قبل اعتماد الإدارة: يكفي وجود مالك مرتبط.
+   * التحقق من البريد وقبول اللوائح تُفرض لاحقاً على العمليات (وجبات، فيديو، …).
+   */
   async assertVendorComplianceForAdminApproval(vendorId: string): Promise<void> {
     const ownerStaff = await this.staffRepository.findOne({
       where: { vendorId, role: StaffRole.OWNER },
@@ -1075,12 +1079,29 @@ export class VendorsService {
     if (!ownerStaff) {
       throw new BadRequestException('لا يوجد مالك مسجّل لهذا المقدّم.');
     }
+  }
+
+  /**
+   * بعد اعتماد الإدارة — لإضافة وجبات، رفع فيديو، شهادات بصور، إلخ.
+   */
+  async assertVendorOperationalCompliance(userId: string): Promise<void> {
+    const vendorId = await this.getVendorIdByUserId(userId);
+    if (!vendorId) {
+      throw new ForbiddenException('هذا الحساب غير مرتبط بملف مقدّم خدمة.');
+    }
+    const ownerStaff = await this.staffRepository.findOne({
+      where: { vendorId, role: StaffRole.OWNER },
+    });
+    if (!ownerStaff) {
+      throw new ForbiddenException('لا يوجد مالك مسجّل لهذا المقدّم.');
+    }
     const ownerUser = await this.userRepository.findOne({
       where: { id: ownerStaff.userId },
+      select: ['id', 'emailVerifiedAt'],
     });
     if (!ownerUser?.emailVerifiedAt) {
-      throw new BadRequestException(
-        'لا يمكن الاعتماد: لم يُتحقق من بريد مقدّم الخدمة بعد.',
+      throw new ForbiddenException(
+        'أكمل التحقق من البريد الإلكتروني قبل إضافة الوجبات أو رفع الفيديو.',
       );
     }
     const vendor = await this.vendorRepository.findOne({
@@ -1088,8 +1109,8 @@ export class VendorsService {
       select: ['id', 'legalAcceptedAt'],
     });
     if (!vendor?.legalAcceptedAt) {
-      throw new BadRequestException(
-        'لا يمكن الاعتماد: لم يُسجَّل قبول اللوائح/الاتفاقية بعد.',
+      throw new ForbiddenException(
+        'اقبل اللوائح/الاتفاقية من التطبيق قبل إضافة الوجبات أو رفع الفيديو.',
       );
     }
   }

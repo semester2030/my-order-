@@ -3,6 +3,7 @@ import 'package:vendor_app/core/utils/result.dart' as res;
 
 import '../entities/register_result.dart';
 import '../entities/register_vendor_request.dart';
+import '../entities/vendor_onboarding_status.dart';
 import '../entities/vendor_session.dart';
 
 /// Repository for auth: login and register.
@@ -28,4 +29,8 @@ abstract interface class AuthRepo {
     required String code,
     required String newPassword,
   });
+
+  Future<res.Result<VendorOnboardingStatus, Failure>> getVendorOnboardingStatus();
+
+  Future<res.Result<void, Failure>> acceptVendorLegalDocument(String documentVersion);
 }

@@ -186,4 +186,27 @@ class StringsEn {
   static const String menuOfferingTermsVersionLabel = 'Terms version';
   static const String menuOfferingTermsLoading = 'Loading...';
   static const String menuOfferingTermsSubmitting = 'Saving...';
+
+  static const String vendorCombinedTermsTitle = 'Terms & obligations';
+  static const String vendorPlatformTermsSectionTitle = 'General platform rules';
+  static const String vendorPlatformTermsIntro =
+      'By agreeing, you acknowledge the following as a service provider on the Home Kitchen platform. This copy can be updated when needed.';
+  static const String vendorPlatformTermsFeesTitle = 'Fees and commission';
+  static const String vendorPlatformTermsFeesBody =
+      'The platform may charge fees or commission on orders or listed services. Rates, deduction method, and payment rules are set by admin policy and notices. You are responsible for reviewing updates.';
+  static const String vendorPlatformTermsPayoutTitle = 'Payouts and settlement';
+  static const String vendorPlatformTermsPayoutBody =
+      'Your payouts follow the platform’s payment policy (e.g. periodic or after delivery confirmation), after deducting any platform fees or commission.';
+  static const String vendorPlatformTermsComplianceTitle = 'Accuracy and compliance';
+  static const String vendorPlatformTermsComplianceBody =
+      'You provide accurate information about meals, prices, and availability, and comply with applicable laws and regulations in Saudi Arabia.';
+  static const String vendorCombinedTermsMenuSectionTitle = 'General terms for listing meals';
+  static const String vendorCategoryTermsSectionTitle = 'Category-specific terms (coming later)';
+  static const String vendorCategoryTermsPlaceholder =
+      'Additional terms may apply per provider category (home kitchen, grilling, events, etc.). Content is not finalized yet and will be added later without changing this acceptance screen.';
+  static const String vendorLegalAlreadyAccepted = 'Platform terms for this version were already accepted.';
+  static const String vendorMenuTermsAlreadyAccepted = 'Meal listing terms for this version were already accepted.';
+  static const String vendorCombinedTermsReadCheckbox =
+      'I have read the general platform rules, the general meal listing terms, and the category section (when available), and I agree to comply.';
+  static const String vendorCombinedTermsLegalVersionLabel = 'Platform terms version';
 }

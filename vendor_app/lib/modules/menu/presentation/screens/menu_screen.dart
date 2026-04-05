@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:vendor_app/core/theme/design_system.dart';
-import 'package:vendor_app/core/utils/result.dart';
 import 'package:vendor_app/core/localization/app_localizations.dart';
 import 'package:vendor_app/core/widgets/empty_state.dart';
 import 'package:vendor_app/core/widgets/error_state.dart';
@@ -12,6 +11,7 @@ import 'package:vendor_app/core/di/providers.dart';
 import 'package:vendor_app/core/routing/route_names.dart';
 import 'package:vendor_app/modules/menu/domain/entities/menu_item.dart';
 import 'package:vendor_app/modules/menu/presentation/providers/menu_state.dart';
+import 'package:vendor_app/modules/menu/presentation/utils/vendor_terms_precheck.dart';
 import 'package:vendor_app/modules/menu/presentation/widgets/menu_item_tile.dart';
 
 /// شاشة قائمة الوجبات — ثيم موحد (Phase 10).
@@ -46,22 +46,18 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
   }
 
   Future<void> _goToAddMenuItem(BuildContext context) async {
-    final res = await ref.read(menuRepoProvider).getMenuOfferingTermsStatus();
+    final pre = await precheckVendorCombinedTerms(ref);
     if (!context.mounted) return;
-    final needsTerms = res.when(
-      success: (s) => !s.isCurrent,
-      failure: (f) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(f.message),
-            backgroundColor: SemanticColors.error,
-          ),
-        );
-        return null;
-      },
-    );
-    if (needsTerms == null) return;
-    if (needsTerms) {
+    if (pre.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(pre.errorMessage!),
+          backgroundColor: SemanticColors.error,
+        ),
+      );
+      return;
+    }
+    if (!pre.allComplete) {
       final agreed = await context.push<bool>(RouteNames.menuOfferingTerms);
       if (!context.mounted) return;
       if (agreed != true) return;

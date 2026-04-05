@@ -188,4 +188,28 @@ class StringsAr {
   static const String menuOfferingTermsVersionLabel = 'إصدار الشروط';
   static const String menuOfferingTermsLoading = 'جاري التحميل...';
   static const String menuOfferingTermsSubmitting = 'جاري الحفظ...';
+
+  /// شاشة موحّدة: لوائح المنصّة + شروط عرض الوجبات + مكان لشروط الفئة (لاحقاً)
+  static const String vendorCombinedTermsTitle = 'الشروط والالتزامات';
+  static const String vendorPlatformTermsSectionTitle = 'اللوائح والالتزامات العامة (المنصّة)';
+  static const String vendorPlatformTermsIntro =
+      'بالموافقة أنت تقرّ بما يلي في علاقتك مع منصّة مطبخ البيت كمقدّم خدمة. تُحدَّث هذه الفقرات عند الحاجة من الإدارة أو فريق المنتج.';
+  static const String vendorPlatformTermsFeesTitle = 'رسوم الخدمة والعمولة';
+  static const String vendorPlatformTermsFeesBody =
+      'قد تطبّق المنصّة رسوماً أو عمولة على الطلبات أو الخدمات المعروضة. تُحدَّد النسب وآلية الاستقطاع والدفع في إشعارات أو لوحة التحكم حسب سياسة الإدارة. يتحمّل مقدّم الخدمة مسؤولية الاطلاع على أي تحديث.';
+  static const String vendorPlatformTermsPayoutTitle = 'المستحقات والتسوية';
+  static const String vendorPlatformTermsPayoutBody =
+      'تُصرف مستحقات مقدّم الخدمة وفق سياسة الدفع المعتمدة (مثلاً بشكل دوري أو بعد تأكيد التسليم)، مع خصم أي رسوم أو عمولات مستحقة للمنصّة.';
+  static const String vendorPlatformTermsComplianceTitle = 'صحة البيانات والالتزام بالأنظمة';
+  static const String vendorPlatformTermsComplianceBody =
+      'يُقدّم مقدّم الخدمة معلومات صحيحة عن الوجبات والأسعار والتوفر، ويلتزم بالأنظمة المعمول بها في المملكة العربية السعودية.';
+  static const String vendorCombinedTermsMenuSectionTitle = 'الشروط العامة لعرض الوجبات';
+  static const String vendorCategoryTermsSectionTitle = 'شروط إضافية حسب نوع الخدمة';
+  static const String vendorCategoryTermsPlaceholder =
+      'هذا القسم مخصّص لشروط تختلف بحسب فئة مقدّم الخدمة (مطبخ منزلي، شوي، مناسبات، …). النصوص غير جاهزة بعد — سيُكمل الفريق لاحقاً دون تغيير شاشة الموافقة.';
+  static const String vendorLegalAlreadyAccepted = 'تم قبول لوائح المنصّة مسبقاً لهذا الإصدار.';
+  static const String vendorMenuTermsAlreadyAccepted = 'تم قبول شروط عرض الوجبات مسبقاً لهذا الإصدار.';
+  static const String vendorCombinedTermsReadCheckbox =
+      'قرأت اللوائح العامة للمنصّة والشروط العامة لعرض الوجبات والقسم الخاص بفئة الخدمة (عند توفره) وأوافق على الالتزام بها.';
+  static const String vendorCombinedTermsLegalVersionLabel = 'إصدار لوائح المنصّة';
 }

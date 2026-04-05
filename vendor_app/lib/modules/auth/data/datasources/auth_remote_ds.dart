@@ -1,3 +1,4 @@
+import '../../domain/entities/vendor_onboarding_status.dart';
 import '../models/login_request_dto.dart';
 import '../models/login_response_dto.dart';
 import '../models/register_response_dto.dart';
@@ -29,4 +30,10 @@ abstract interface class AuthRemoteDs {
     required String code,
     required String newPassword,
   });
+
+  /// GET /auth/vendor/onboarding/status — بريد، لوائح، إصدارات مطلوبة.
+  Future<VendorOnboardingStatus> getVendorOnboardingStatus();
+
+  /// POST /auth/vendor/onboarding/legal/accept
+  Future<void> acceptVendorLegalDocument(String documentVersion);
 }

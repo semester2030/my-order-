@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:vendor_app/core/errors/app_exception.dart';
 import 'package:vendor_app/core/network/endpoints.dart';
 
+import '../../domain/entities/vendor_onboarding_status.dart';
 import '../models/login_request_dto.dart';
 import '../models/login_response_dto.dart';
 import '../models/register_response_dto.dart';
@@ -92,6 +93,26 @@ class AuthRemoteDsImpl implements AuthRemoteDs {
         'code': code.trim(),
         'newPassword': newPassword,
       },
+    );
+  }
+
+  @override
+  Future<VendorOnboardingStatus> getVendorOnboardingStatus() async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      Endpoints.authVendorOnboardingStatus,
+    );
+    final data = response.data;
+    if (data == null) {
+      throw NetworkException('استجابة فارغة من الخادم');
+    }
+    return VendorOnboardingStatus.fromJson(data);
+  }
+
+  @override
+  Future<void> acceptVendorLegalDocument(String documentVersion) async {
+    await _dio.post<void>(
+      Endpoints.authVendorOnboardingLegalAccept,
+      data: <String, dynamic>{'documentVersion': documentVersion.trim()},
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:vendor_app/core/utils/result.dart' as res;
 
 import '../../domain/entities/register_result.dart';
 import '../../domain/entities/register_vendor_request.dart';
+import '../../domain/entities/vendor_onboarding_status.dart';
 import '../../domain/entities/vendor_session.dart';
 import '../../domain/repositories/auth_repo.dart';
 import '../datasources/auth_remote_ds.dart';
@@ -107,6 +108,26 @@ class AuthRepoImpl implements AuthRepo {
         code: code,
         newPassword: newPassword,
       );
+      return const res.Success(null);
+    } catch (e) {
+      return res.Failure(ErrorMapper.toFailure(e));
+    }
+  }
+
+  @override
+  Future<res.Result<VendorOnboardingStatus, Failure>> getVendorOnboardingStatus() async {
+    try {
+      final s = await _remoteDs.getVendorOnboardingStatus();
+      return res.Success(s);
+    } catch (e) {
+      return res.Failure(ErrorMapper.toFailure(e));
+    }
+  }
+
+  @override
+  Future<res.Result<void, Failure>> acceptVendorLegalDocument(String documentVersion) async {
+    try {
+      await _remoteDs.acceptVendorLegalDocument(documentVersion);
       return const res.Success(null);
     } catch (e) {
       return res.Failure(ErrorMapper.toFailure(e));

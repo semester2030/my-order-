@@ -15,6 +15,7 @@ import 'package:vendor_app/modules/menu/domain/entities/menu_item.dart';
 import 'package:vendor_app/modules/videos/presentation/widgets/video_picker_sheet.dart';
 import 'package:vendor_app/modules/videos/presentation/screens/videos_screen.dart';
 import 'package:vendor_app/modules/menu/presentation/providers/menu_state.dart';
+import 'package:vendor_app/modules/menu/presentation/utils/vendor_terms_precheck.dart';
 
 /// شاشة إضافة وجبة — ثيم موحد (Phase 10).
 class AddMenuItemScreen extends ConsumerStatefulWidget {
@@ -40,29 +41,28 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
   }
 
   Future<void> _ensureMenuOfferingTerms() async {
-    final res = await ref.read(menuRepoProvider).getMenuOfferingTermsStatus();
+    final pre = await precheckVendorCombinedTerms(ref);
     if (!mounted) return;
-    switch (res) {
-      case Success(:final value):
-        if (value.isCurrent) {
-          setState(() => _checkingMenuOfferingTerms = false);
-          return;
-        }
-        final ok = await context.push<bool>(RouteNames.menuOfferingTerms);
-        if (!mounted) return;
-        if (ok == true) {
-          setState(() => _checkingMenuOfferingTerms = false);
-        } else {
-          context.pop();
-        }
-      case Failure(:final error):
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error.message),
-            backgroundColor: SemanticColors.error,
-          ),
-        );
-        context.pop();
+    if (pre.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(pre.errorMessage!),
+          backgroundColor: SemanticColors.error,
+        ),
+      );
+      context.pop();
+      return;
+    }
+    if (pre.allComplete) {
+      setState(() => _checkingMenuOfferingTerms = false);
+      return;
+    }
+    final ok = await context.push<bool>(RouteNames.menuOfferingTerms);
+    if (!mounted) return;
+    if (ok == true) {
+      setState(() => _checkingMenuOfferingTerms = false);
+    } else {
+      context.pop();
     }
   }
 

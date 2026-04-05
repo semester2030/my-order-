@@ -104,11 +104,11 @@ export default function VendorDetailPage() {
           const canApprove =
             registrationStatus === 'pending_approval' ||
             registrationStatus === 'under_review'
-          const ready =
+          const complianceComplete =
             Boolean(oc.ownerEmailVerified) && Boolean(oc.legalAccepted)
           return (
             <Card className="lg:col-span-2">
-              <CardHeader title="التحقق قبل الموافقة (لوائح / بريد المالك)" />
+              <CardHeader title="البريد واللوائح (مرحلة بعد اعتماد الإدارة)" />
               <CardBody>
                 <dl className="grid gap-3 text-sm sm:grid-cols-2">
                   <div className="flex justify-between items-center py-1 border-b border-divider">
@@ -166,11 +166,11 @@ export default function VendorDetailPage() {
                     </dd>
                   </div>
                 </dl>
-                {canApprove && !ready && (
-                  <p className="mt-3 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-text-primary">
-                    لا يمكن اعتماد هذا الطلب من الخادم حتى يُكمل مقدّم الخدمة
-                    التحقق من البريد وقبول اللوائح في التطبيق. زر «موافقة» سيرجع
-                    خطأ إن لم يكتمل ذلك.
+                {canApprove && !complianceComplete && (
+                  <p className="mt-3 rounded-md border border-border-default bg-surface-variant/80 px-3 py-2 text-xs text-text-secondary leading-relaxed">
+                    يمكنك الموافقة من هنا دون انتظار التحقق أو اللوائح. بعد الاعتماد،
+                    لن يستطيع المقدّم إضافة وجبات أو رفع فيديو حتى يُكمِل التحقق من
+                    بريد المالك وقبول اللوائح من التطبيق.
                   </p>
                 )}
               </CardBody>

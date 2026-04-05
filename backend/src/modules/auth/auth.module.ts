@@ -10,6 +10,7 @@ import { PinStrategy } from './strategies/pin.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { VendorOnboardingJwtGuard } from './guards/vendor-onboarding-jwt.guard';
+import { VendorOnboardingOrApprovedJwtGuard } from './guards/vendor-onboarding-or-approved-jwt.guard';
 import { OtpCacheService } from './services/otp-cache.service';
 import { User } from '../users/entities/user.entity';
 import { Order } from '../orders/entities/order.entity';
@@ -45,7 +46,13 @@ import { VendorsModule } from '../vendors/vendors.module';
     JwtStrategy,
     JwtAuthGuard,
     VendorOnboardingJwtGuard,
+    VendorOnboardingOrApprovedJwtGuard,
   ],
-  exports: [AuthService, JwtAuthGuard, VendorOnboardingJwtGuard],
+  exports: [
+    AuthService,
+    JwtAuthGuard,
+    VendorOnboardingJwtGuard,
+    VendorOnboardingOrApprovedJwtGuard,
+  ],
 })
 export class AuthModule {}

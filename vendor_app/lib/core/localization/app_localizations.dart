@@ -230,6 +230,39 @@ class AppLocalizations {
   String get menuOfferingTermsSubmitting =>
       isAr ? StringsAr.menuOfferingTermsSubmitting : StringsEn.menuOfferingTermsSubmitting;
 
+  String get vendorCombinedTermsTitle =>
+      isAr ? StringsAr.vendorCombinedTermsTitle : StringsEn.vendorCombinedTermsTitle;
+  String get vendorPlatformTermsSectionTitle =>
+      isAr ? StringsAr.vendorPlatformTermsSectionTitle : StringsEn.vendorPlatformTermsSectionTitle;
+  String get vendorPlatformTermsIntro =>
+      isAr ? StringsAr.vendorPlatformTermsIntro : StringsEn.vendorPlatformTermsIntro;
+  String get vendorPlatformTermsFeesTitle =>
+      isAr ? StringsAr.vendorPlatformTermsFeesTitle : StringsEn.vendorPlatformTermsFeesTitle;
+  String get vendorPlatformTermsFeesBody =>
+      isAr ? StringsAr.vendorPlatformTermsFeesBody : StringsEn.vendorPlatformTermsFeesBody;
+  String get vendorPlatformTermsPayoutTitle =>
+      isAr ? StringsAr.vendorPlatformTermsPayoutTitle : StringsEn.vendorPlatformTermsPayoutTitle;
+  String get vendorPlatformTermsPayoutBody =>
+      isAr ? StringsAr.vendorPlatformTermsPayoutBody : StringsEn.vendorPlatformTermsPayoutBody;
+  String get vendorPlatformTermsComplianceTitle =>
+      isAr ? StringsAr.vendorPlatformTermsComplianceTitle : StringsEn.vendorPlatformTermsComplianceTitle;
+  String get vendorPlatformTermsComplianceBody =>
+      isAr ? StringsAr.vendorPlatformTermsComplianceBody : StringsEn.vendorPlatformTermsComplianceBody;
+  String get vendorCombinedTermsMenuSectionTitle =>
+      isAr ? StringsAr.vendorCombinedTermsMenuSectionTitle : StringsEn.vendorCombinedTermsMenuSectionTitle;
+  String get vendorCategoryTermsSectionTitle =>
+      isAr ? StringsAr.vendorCategoryTermsSectionTitle : StringsEn.vendorCategoryTermsSectionTitle;
+  String get vendorCategoryTermsPlaceholder =>
+      isAr ? StringsAr.vendorCategoryTermsPlaceholder : StringsEn.vendorCategoryTermsPlaceholder;
+  String get vendorLegalAlreadyAccepted =>
+      isAr ? StringsAr.vendorLegalAlreadyAccepted : StringsEn.vendorLegalAlreadyAccepted;
+  String get vendorMenuTermsAlreadyAccepted =>
+      isAr ? StringsAr.vendorMenuTermsAlreadyAccepted : StringsEn.vendorMenuTermsAlreadyAccepted;
+  String get vendorCombinedTermsReadCheckbox =>
+      isAr ? StringsAr.vendorCombinedTermsReadCheckbox : StringsEn.vendorCombinedTermsReadCheckbox;
+  String get vendorCombinedTermsLegalVersionLabel =>
+      isAr ? StringsAr.vendorCombinedTermsLegalVersionLabel : StringsEn.vendorCombinedTermsLegalVersionLabel;
+
   static const List<Locale> supportedLocales = [
     Locale('ar'),
     Locale('en'),

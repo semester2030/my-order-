@@ -19,6 +19,7 @@ import { UsersModule } from '../users/users.module';
 import { JobsModule } from '../jobs/jobs.module';
 import { PrivateEventsModule } from '../private-events/private-events.module';
 import { ApprovedVendorGuard } from './guards/approved-vendor.guard';
+import { VendorOperationalComplianceGuard } from './guards/vendor-operational-compliance.guard';
 
 @Module({
   imports: [
@@ -50,7 +51,16 @@ import { ApprovedVendorGuard } from './guards/approved-vendor.guard';
     PrivateEventsModule,
   ],
   controllers: [VendorsController],
-  providers: [VendorsService, ApprovedVendorGuard],
-  exports: [VendorsService, ApprovedVendorGuard, TypeOrmModule],
+  providers: [
+    VendorsService,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  ],
+  exports: [
+    VendorsService,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+    TypeOrmModule,
+  ],
 })
 export class VendorsModule {}

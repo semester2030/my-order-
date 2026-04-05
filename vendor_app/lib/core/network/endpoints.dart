@@ -14,6 +14,9 @@ class Endpoints {
       '/auth/vendor/password-reset/confirm';
   static const String authRefresh = '/auth/refresh';
   static const String accountDelete = '/auth/account/delete';
+  static const String authVendorOnboardingStatus = '/auth/vendor/onboarding/status';
+  static const String authVendorOnboardingLegalAccept =
+      '/auth/vendor/onboarding/legal/accept';
   static const String vendorsRegister = '/vendors/register';
 
   // Profile

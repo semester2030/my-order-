@@ -27,6 +27,7 @@ import {
 import { VendorsService } from './vendors.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApprovedVendorGuard } from './guards/approved-vendor.guard';
+import { VendorOperationalComplianceGuard } from './guards/vendor-operational-compliance.guard';
 import { RegisterVendorDto } from './dto/register-vendor.dto';
 import { UpdateVendorProfileDto } from './dto/update-vendor-profile.dto';
 import { AddCertificateDto } from './dto/add-certificate.dto';
@@ -134,7 +135,11 @@ export class VendorsController {
   }
 
   @Post('certificates')
-  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Add certificate' })
   @ApiConsumes('multipart/form-data')
@@ -304,7 +309,11 @@ export class VendorsController {
   }
 
   @Post('menu')
-  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Add menu item' })
   @ApiConsumes('multipart/form-data')
@@ -339,7 +348,11 @@ export class VendorsController {
   }
 
   @Put('menu/:id')
-  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update menu item' })
   @ApiConsumes('multipart/form-data')
@@ -380,7 +393,11 @@ export class VendorsController {
   }
 
   @Delete('menu/:id')
-  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete menu item' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -396,7 +413,11 @@ export class VendorsController {
   }
 
   @Patch('menu/:id/availability')
-  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Set menu item availability' })
   async toggleMenuItemAvailability(

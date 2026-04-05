@@ -11,7 +11,7 @@ import {
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { VendorOnboardingJwtGuard } from './guards/vendor-onboarding-jwt.guard';
+import { VendorOnboardingOrApprovedJwtGuard } from './guards/vendor-onboarding-or-approved-jwt.guard';
 import { VendorsService } from '../vendors/vendors.service';
 import { User } from '../users/entities/user.entity';
 import { RequestOtpDto } from './dto/request-otp.dto';
@@ -119,10 +119,11 @@ export class AuthController {
   }
 
   @Post('vendor/onboarding/email/request-otp')
-  @UseGuards(JwtAuthGuard, VendorOnboardingJwtGuard)
+  @UseGuards(JwtAuthGuard, VendorOnboardingOrApprovedJwtGuard)
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'طلب رمز تحقق البريد (قبل اعتماد الإدارة، JWT بـ scope vendor_onboarding)',
+    summary:
+      'طلب رمز تحقق البريد (JWT إكمال التسجيل أو تسجيل دخول مقدّم معتمد لإنهاء المرحلة الثانية)',
   })
   @HttpCode(HttpStatus.OK)
   async vendorOnboardingRequestEmailOtp(@Request() req: { user: User }) {
@@ -130,7 +131,7 @@ export class AuthController {
   }
 
   @Post('vendor/onboarding/email/verify')
-  @UseGuards(JwtAuthGuard, VendorOnboardingJwtGuard)
+  @UseGuards(JwtAuthGuard, VendorOnboardingOrApprovedJwtGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'تأكيد البريد برمز OTP' })
   @HttpCode(HttpStatus.OK)
@@ -143,7 +144,7 @@ export class AuthController {
   }
 
   @Post('vendor/onboarding/legal/accept')
-  @UseGuards(JwtAuthGuard, VendorOnboardingJwtGuard)
+  @UseGuards(JwtAuthGuard, VendorOnboardingOrApprovedJwtGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'قبول اللوائح — documentVersion يجب أن يطابق إصدار الخادم',
@@ -161,7 +162,7 @@ export class AuthController {
   }
 
   @Get('vendor/onboarding/status')
-  @UseGuards(JwtAuthGuard, VendorOnboardingJwtGuard)
+  @UseGuards(JwtAuthGuard, VendorOnboardingOrApprovedJwtGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'حالة إكمال التسجيل (بريد، لوائح، حالة الطلب)' })
   async vendorOnboardingStatus(@Request() req: { user: User }) {
