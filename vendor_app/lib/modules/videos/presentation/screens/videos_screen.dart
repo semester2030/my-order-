@@ -39,7 +39,7 @@ class _VideosScreenState extends ConsumerState<VideosScreen> {
     listResult.when(
       success: (l) => _list = l,
       failure: (f) {
-        if (_error == null) _error = f.message;
+        _error ??= f.message;
       },
     );
     setState(() => _loading = false);

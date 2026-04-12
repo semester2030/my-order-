@@ -515,11 +515,11 @@ export class VendorsController {
     await this.vendorsService.removeStaff(vendorId, staffId);
   }
 
-  // المناسبات الخاصة — عروض المقدم
+  // المناسبات والحفلات — عروض المقدم
   @Get('event-offers')
   @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'عروض المناسبات الخاصة (للمقدم)' })
+  @ApiOperation({ summary: 'عروض المناسبات والحفلات (للمقدم)' })
   async getMyEventOffers(@Request() req: { user: User }) {
     const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
     if (!vendorId) throw new NotFoundException('Vendor not found');

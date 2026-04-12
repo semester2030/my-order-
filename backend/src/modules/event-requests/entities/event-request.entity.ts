@@ -13,6 +13,8 @@ import { Address } from '../../addresses/entities/address.entity';
 export enum EventRequestType {
   POPULAR_COOKING = 'popular_cooking',
   HOME_COOKING = 'home_cooking',
+  /** شواء خارجي عند العميل — نفس متطلبات العنوان كالطبخ الميداني */
+  GRILLING = 'grilling',
 }
 
 export enum EventRequestStatus {

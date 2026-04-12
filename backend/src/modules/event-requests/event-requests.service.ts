@@ -19,10 +19,14 @@ export class EventRequestsService {
     userId: string,
     dto: CreateEventRequestDto,
   ): Promise<EventRequest> {
-    if (dto.requestType === EventRequestType.POPULAR_COOKING) {
+    const needsServiceLocation =
+      dto.requestType === EventRequestType.POPULAR_COOKING ||
+      dto.requestType === EventRequestType.GRILLING;
+
+    if (needsServiceLocation) {
       if (!dto.addressId?.trim()) {
         throw new BadRequestException(
-          'عنوان استقبال الذبايح مطلوب للطبخ الشعبي',
+          'عنوان موقع تنفيذ الخدمة مطلوب (طبخ ذبائح أو شواء خارجي)',
         );
       }
     } else {
@@ -36,10 +40,7 @@ export class EventRequestsService {
     const entity = this.eventRequestRepository.create({
       userId,
       vendorId: dto.vendorId,
-      addressId:
-        dto.requestType === EventRequestType.POPULAR_COOKING
-          ? dto.addressId
-          : null,
+      addressId: needsServiceLocation ? dto.addressId : null,
       requestType: dto.requestType,
       scheduledDate: dto.scheduledDate,
       scheduledTime: dto.scheduledTime,

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>مرجع أصول الأيقونات — مطبخ البيت (عميل · مقدّم · أدمن · موقع)</title>
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #6c757d;
+      --border: #e0e0e0;
+      --primary: #ff6b35;
+      --primary-dark: #e55a2b;
+      --primary-container: #ffe5dc;
+      --accent: #ffd700;
+      --sidebar: #1a1a1a;
+      --code-bg: #f0f2f5;
+      --ok: #198754;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, "Cairo", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+    header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: #fff;
+      padding: 2rem 1.5rem 2.5rem;
+      position: relative;
+    }
+    header h1 { margin: 0 0 0.5rem; font-size: 1.65rem; font-weight: 700; }
+    header p { margin: 0; opacity: 0.95; max-width: 52rem; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; }
+    .layout { display: grid; grid-template-columns: 260px 1fr; gap: 1.5rem; align-items: start; padding: 1.5rem 0 3rem; }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static !important; }
+    }
+    nav.toc {
+      position: sticky;
+      top: 1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1rem 1.1rem;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,.04);
+    }
+    nav.toc strong { display: block; margin-bottom: 0.6rem; color: var(--primary-dark); }
+    nav.toc a {
+      display: block;
+      color: var(--text);
+      text-decoration: none;
+      padding: 0.35rem 0.25rem;
+      border-radius: 6px;
+    }
+    nav.toc a:hover { background: var(--primary-container); color: var(--primary-dark); }
+    main section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.35rem 1.5rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 1px 8px rgba(0,0,0,.03);
+    }
+    h2 {
+      margin: 0 0 0.85rem;
+      font-size: 1.2rem;
+      color: var(--primary-dark);
+      border-bottom: 2px solid var(--primary-container);
+      padding-bottom: 0.45rem;
+    }
+    h3 { margin: 1.1rem 0 0.5rem; font-size: 1.05rem; color: var(--text); }
+    p { margin: 0.5rem 0; color: var(--muted); }
+    p strong { color: var(--text); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin: 0.75rem 0;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.55rem 0.65rem;
+      text-align: right;
+      vertical-align: top;
+    }
+    th { background: var(--primary-container); color: var(--primary-dark); font-weight: 600; }
+    tr:nth-child(even) td { background: #fafafa; }
+    code, .path {
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      font-size: 0.82rem;
+      background: var(--code-bg);
+      padding: 0.12rem 0.35rem;
+      border-radius: 4px;
+      direction: ltr;
+      display: inline-block;
+      unicode-bidi: embed;
+    }
+    .path { display: block; margin: 0.2rem 0; word-break: break-all; }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-left: 0.25rem;
+    }
+    .p0 { background: #fde8e4; color: #a03018; }
+    .p1 { background: #fff3cd; color: #856404; }
+    .p2 { background: #e7f1ff; color: #084298; }
+    .swatch-row { display: flex; flex-wrap: wrap; gap: 0.65rem; margin: 0.75rem 0; }
+    .swatch {
+      width: 88px;
+      height: 56px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 4px 6px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    }
+    .actions { margin: 1rem 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      background: var(--primary);
+      color: #fff;
+    }
+    button.secondary { background: var(--sidebar); }
+    button:hover { filter: brightness(1.05); }
+    #progress { margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted); }
+    .note {
+      border-right: 4px solid var(--primary);
+      padding: 0.65rem 0.85rem;
+      background: #fff9f6;
+      border-radius: 0 8px 8px 0;
+      margin: 0.75rem 0;
+      color: var(--text);
+    }
+    ul.check { list-style: none; padding: 0; margin: 0.5rem 0; }
+    ul.check li { padding: 0.35rem 0; padding-right: 1.5rem; position: relative; }
+    ul.check li::before {
+      content: "☐";
+      position: absolute;
+      right: 0;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+    @media print {
+      nav.toc, .actions, button { display: none; }
+      .layout { grid-template-columns: 1fr; }
+      section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>مرجع أصول الأيقونات والشعارات — مطبخ البيت</h1>
+      <p>
+        قائمة تحقق شاملة مبنية على شيفرة المشروع الحالية (تطبيق العميل Flutter، تطبيق المقدّم Flutter، لوحة الإدارة Next.js + Lucide، والموقع التعريفي).
+        استخدمها مع المصمم أو عند شراء/تنزيل أصول من Vecteezy وغيرها — مع مراجعة <strong>الترخيص التجاري</strong> لكل ملف.
+      </p>
+    </div>
+  </header>
+
+  <div class="wrap layout">
+    <nav class="toc" id="toc" aria-label="فهرس"></nav>
+
+    <main>
+      <section id="palette">
+        <h2>١. لوحة الألوان المعتمدة (من تطبيق العميل)</h2>
+        <p>صمّم الأيقونات أحادية اللون (Monochrome) أو ثنائية (أيقونة بلون <code>primary</code> على شفافية) لتتناسب مع الواجهة.</p>
+        <div class="swatch-row">
+          <div class="swatch" style="background:#ff6b35;">Primary<br>#FF6B35</div>
+          <div class="swatch" style="background:#e55a2b;">Primary Dark<br>#E55A2B</div>
+          <div class="swatch" style="background:#ffe5dc;color:#1a1a1a;text-shadow:none;">Container<br>#FFE5DC</div>
+          <div class="swatch" style="background:#1a1a1a;">Text<br>#1A1A1A</div>
+          <div class="swatch" style="background:#6c757d;">Secondary text<br>#6C757D</div>
+          <div class="swatch" style="background:#ffffff;color:#1a1a1a;text-shadow:none;border:1px solid #ccc;">Surface<br>#FFFFFF</div>
+        </div>
+        <p><strong>قاعدة:</strong> ملفات <abbr title="Scalable Vector Graphics">SVG</abbr> مفضّلة — لون المعالجة عبر الكود (tint) إن أمكن. إن صدّرت <strong>PNG</strong> استخدم خلفية شفافة.</p>
+      </section>
+
+      <section id="formats">
+        <h2>٢. أنواع الملفات والمقاسات</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>النوع</th>
+              <th>متى تستخدمه</th>
+              <th>ملاحظات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>SVG</strong></td>
+              <td>أيقونات الواجهة، الفئات، الشريط السفلي، القائمة الجانبية</td>
+              <td>العميل يستخدم حزمة <code>flutter_svg</code>. مسارات بسيطة، بدون تضمين خطوط غريبة.</td>
+            </tr>
+            <tr>
+              <td><strong>PNG @1x / @2x / @3x</strong></td>
+              <td>إن لم يتوفر SVG نظيف</td>
+              <td>مثال أسماء: <code>ic_cat_home@2x.png</code> — ضع المقاسات في مجلدات <code>mipmap</code> أو بنية موحّدة.</td>
+            </tr>
+            <tr>
+              <td><strong>أحادي اللون</strong></td>
+              <td>معظم أيقونات التنقل</td>
+              <td>صمّم بلون واحد (#FF6B35 أو أسود) ثم استخدم <code>ColorFilter</code> في Flutter إن لزم.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <strong>تنبيه عن «طاقية الشيف» من المواقع:</strong> لا تخلط عشرات أنماط مختلفة (كرتوني / ثلاثي الأبعاد / خطّي). اطلب من المصمم <strong>مجموعة واحدة متناسقة</strong> لأربع فئات + شريط التنقل.
+        </div>
+      </section>
+
+      <section id="naming">
+        <h2>٣. تسمية الملفات (اتفاقية المشروع)</h2>
+        <p>استخدم أسماء إنجليزية صغيرة + شرطات سفلية:</p>
+        <code>ic_&lt;مكان&gt;_&lt;معنى&gt;.svg</code>
+        <p>أمثلة:</p>
+        <ul class="check">
+          <li><code>ic_category_home_cooking.svg</code></li>
+          <li><code>ic_nav_cart.svg</code> ، <code>ic_nav_cart_active.svg</code> (اختياري للحالة النشطة)</li>
+        </ul>
+      </section>
+
+      <section id="customer">
+        <h2>٤. تطبيق العميل (customer_app — Flutter)</h2>
+        <h3>أولوية عالية — شاشة «اختر الخدمة» (الفئات الأربع)</h3>
+        <p>الشاشة: <code>lib/modules/categories/presentation/screens/categories_screen.dart</code></p>
+        <table>
+          <thead>
+            <tr>
+              <th>المعرف</th>
+              <th>الوظيفة</th>
+              <th>اسم الملف المقترح</th>
+              <th>الحجم المنطقي</th>
+              <th>أولوية</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CAT_HOME</td>
+              <td>الطبخ المنزلي</td>
+              <td><code>ic_category_home_cooking.svg</code></td>
+              <td>~72dp داخل دائرة</td>
+              <td><span class="badge p0">P0</span></td>
+            </tr>
+            <tr>
+              <td>CAT_SACRIFICE</td>
+              <td>طبخ الذبائح</td>
+              <td><code>ic_category_sacrifice_cooking.svg</code></td>
+              <td>~72dp</td>
+              <td><span class="badge p0">P0</span></td>
+            </tr>
+            <tr>
+              <td>CAT_EVENTS</td>
+              <td>المناسبات والحفلات</td>
+              <td><code>ic_category_events_parties.svg</code></td>
+              <td>~72dp</td>
+              <td><span class="badge p0">P0</span></td>
+            </tr>
+            <tr>
+              <td>CAT_BBQ</td>
+              <td>الشواء الخارجي</td>
+              <td><code>ic_category_outdoor_bbq.svg</code></td>
+              <td>~72dp</td>
+              <td><span class="badge p0">P0</span></td>
+            </tr>
+            <tr>
+              <td>CAT_PLAY_BADGE</td>
+              <td>شارة فيديو صغيرة (اختياري إن لم تُبرمج برمجياً)</td>
+              <td><code>ic_badge_play.svg</code></td>
+              <td>~24dp</td>
+              <td><span class="badge p2">P2</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>شريط التنقل السفلي (٥ أيقونات)</h3>
+        <p>الملف: <code>lib/core/widgets/app_bottom_navigation_bar.dart</code> — حالياً Material Icons.</p>
+        <table>
+          <thead>
+            <tr><th>التبويب</th><th>ملف مقترح</th><th>أولوية</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>اكتشف (رئيسية)</td><td><code>ic_nav_discover.svg</code> + <code>ic_nav_discover_filled.svg</code></td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>السلة</td><td><code>ic_nav_cart.svg</code> + filled</td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>طلباتي</td><td><code>ic_nav_orders.svg</code> + filled</td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>الدفع</td><td><code>ic_nav_payment.svg</code> + filled</td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>البروفايل</td><td><code>ic_nav_profile.svg</code> + filled</td><td><span class="badge p1">P1</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3>أيقونات ثانوية (يمكن إبقاء Material أو توحيد لاحقاً)</h3>
+        <p>الفيديو، الفلاتر، الإعدادات، السلة، الطلب — قائمة مختصرة من الكود:</p>
+        <table>
+          <thead>
+            <tr><th>السياق</th><th>أيقونة Material الحالية</th><th>ملف اختياري</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>فلتر الـ Feed</td><td><code>tune_rounded</code></td><td><code>ic_feed_filter.svg</code></td></tr>
+            <tr><td>ترتيب حسب المسافة</td><td><code>near_me_outlined</code></td><td><code>ic_sort_distance.svg</code></td></tr>
+            <tr><td>ترتيب التقييم</td><td><code>star_border_rounded</code></td><td><code>ic_sort_rating.svg</code></td></tr>
+            <tr><td>إجراءات جانب الفيديو</td><td><code>restaurant_menu</code>، <code>person_rounded</code></td><td><code>ic_action_request.svg</code></td></tr>
+            <tr><td>إعدادات العميل</td><td><code>notifications_outlined</code>، <code>language_outlined</code>…</td><td>مجموعة <code>ic_settings_*.svg</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="vendor">
+        <h2>٥. تطبيق المقدّم (vendor_app — Flutter)</h2>
+        <p>القائمة الجانبية: <code>vendor_drawer.dart</code> — الشريط السفلي: <code>vendor_bottom_nav.dart</code></p>
+
+        <h3>شريط سفلي (٦ عناصر)</h3>
+        <table>
+          <thead>
+            <tr><th>التسمية</th><th>Lucide/Material حالياً</th><th>ملف SVG مقترح</th><th>أولوية</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>لوحة التحكم</td><td>dashboard</td><td><code>ic_vendor_nav_dashboard.svg</code> (+ filled)</td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>الطلبات</td><td>receipt_long</td><td><code>ic_vendor_nav_orders.svg</code></td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>القائمة</td><td>restaurant_menu</td><td><code>ic_vendor_nav_menu.svg</code></td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>الخدمات</td><td>handyman</td><td><code>ic_vendor_nav_services.svg</code></td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>الموظفون</td><td>people</td><td><code>ic_vendor_nav_staff.svg</code></td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>الإعدادات</td><td>settings</td><td><code>ic_vendor_nav_settings.svg</code></td><td><span class="badge p1">P1</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3>قائمة الدرج (Drawer) — نفس الرموز + إضافات</h3>
+        <table>
+          <thead>
+            <tr><th>عنصر القائمة</th><th>ملف مقترح</th><th>أولوية</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>لوحة التحكم</td><td><code>ic_vendor_drawer_dashboard.svg</code></td><td><span class="badge p2">P2</span> (أو إعادة استخدام الشريط)</td></tr>
+            <tr><td>الطلبات</td><td><code>ic_vendor_drawer_orders.svg</code></td><td><span class="badge p2">P2</span></td></tr>
+            <tr><td>قائمة الوجبات</td><td><code>ic_vendor_drawer_menu.svg</code></td><td><span class="badge p2">P2</span></td></tr>
+            <tr><td>الخدمات الإضافية</td><td><code>ic_vendor_drawer_services.svg</code></td><td><span class="badge p2">P2</span></td></tr>
+            <tr><td>طلبات جانبية (طبخ ذبائح)</td><td><code>ic_vendor_drawer_side_orders.svg</code></td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>عروض المناسبات</td><td><code>ic_vendor_drawer_event_offers.svg</code></td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>طلبات المناسبات</td><td><code>ic_vendor_drawer_event_requests.svg</code></td><td><span class="badge p1">P1</span></td></tr>
+            <tr><td>طلبات البريد / رسائل</td><td><code>ic_vendor_drawer_mail.svg</code></td><td><span class="badge p2">P2</span></td></tr>
+            <tr><td>الموظفون</td><td><code>ic_vendor_drawer_staff.svg</code></td><td><span class="badge p2">P2</span></td></tr>
+            <tr><td>التحليلات</td><td><code>ic_vendor_drawer_analytics.svg</code></td><td><span class="badge p2">P2</span></td></tr>
+            <tr><td>الفيديوهات</td><td><code>ic_vendor_drawer_videos.svg</code></td><td><span class="badge p2">P2</span></td></tr>
+            <tr><td>الإعدادات</td><td><code>ic_vendor_drawer_settings.svg</code></td><td><span class="badge p2">P2</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3>لوحة العدادات (Dashboard) — بطاقات إحصاء</h3>
+        <p>أيقونات: جدولة، مكتمل، مبالغ، قائمة — يمكن أصولاً صغيرة <code>ic_stat_*.svg</code> <span class="badge p2">P2</span></p>
+      </section>
+
+      <section id="admin">
+        <h2>٦. لوحة الإدارة (admin_panel — Next.js + Lucide React)</h2>
+        <p>الملف: <code>components/layout/Sidebar.tsx</code> — الأيقونات حالياً من مكتبة <strong>lucide-react</strong> (لا تحتاج ملفات إلا لأغراض الهوية).</p>
+        <table>
+          <thead>
+            <tr><th>رابط</th><th>التسمية</th><th>مكوّن Lucide</th><th>ملاحظة</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>/dashboard</td><td>لوحة التحكم</td><td><code>LayoutDashboard</code></td><td>—</td></tr>
+            <tr><td>/vendors</td><td>مقدّمو الخدمة</td><td><code>Store</code></td><td>—</td></tr>
+            <tr><td>/vendors/applications</td><td>طلبات التسجيل</td><td><code>FileCheck</code></td><td>—</td></tr>
+            <tr><td>/drivers</td><td>السائقون</td><td><code>Users</code></td><td>—</td></tr>
+            <tr><td>/drivers/applications</td><td>طلبات السائقين</td><td><code>UserCheck</code></td><td>—</td></tr>
+            <tr><td>/orders</td><td>الطلبات</td><td><code>ShoppingBag</code></td><td>—</td></tr>
+            <tr><td>/orders/live</td><td>طلبات حية</td><td><code>Radio</code></td><td>—</td></tr>
+            <tr><td>/payments</td><td>المدفوعات</td><td><code>CreditCard</code></td><td>—</td></tr>
+            <tr><td>/disputes</td><td>الشكاوى</td><td><code>MessageSquare</code></td><td>—</td></tr>
+            <tr><td>/monitoring</td><td>المراقبة</td><td><code>Activity</code></td><td>—</td></tr>
+            <tr><td>/risk_engine</td><td>منع التلاعب</td><td><code>ShieldAlert</code></td><td>—</td></tr>
+            <tr><td>/settings</td><td>الإعدادات</td><td><code>Settings</code></td><td>—</td></tr>
+            <tr><td>/audit_logs</td><td>سجل التدقيق</td><td><code>FileText</code></td><td>—</td></tr>
+            <tr><td>/team</td><td>فريق الإدارة</td><td><code>UserCog</code></td><td>للسوبر أدمن فقط</td></tr>
+          </tbody>
+        </table>
+        <p><strong>متى تضيف SVG مخصص للأدمن؟</strong> إن أردت شعاراً بجانب «مطبخ البيت» بدل مربع Lucide — ضع مثلاً <code>public/brand/admin-mark.svg</code> واستبدل المحتوى في رأس الـ Sidebar.</p>
+      </section>
+
+      <section id="website">
+        <h2>٧. الموقع التعريفي (website)</h2>
+        <p>البطاقات تستخدم أيقونات SVG مضمّنة أو صوراً في <code>website/assets/</code>. عند استبدال رموز الخدمات الأربع، صدّر نفس أصول <strong>P0</strong> بصيغة مناسبة للويب (SVG أو PNG مزدوج الكثافة).</p>
+      </section>
+
+      <section id="steps">
+        <h2>٨. بعد التحميل — أين تضع الملفات (خطوات)</h2>
+
+        <h3>أ) تطبيق العميل</h3>
+        <ol>
+          <li>أنشئ المجلد إن لزم: <span class="path">customer_app/assets/icons/custom_icons/</span></li>
+          <li>انسخ ملفات <code>.svg</code> (أو PNG) هناك.</li>
+          <li>تأكد أن <code>pubspec.yaml</code> يتضمن المسار (موجود مسبقاً):</li>
+        </ol>
+        <code class="path">assets/icons/custom_icons/</code>
+        <ol start="4">
+          <li>في الكود استبدل <code>Icon(Icons....)</code> بـ <code>SvgPicture.asset('assets/icons/custom_icons/ic_category_home_cooking.svg')</code> مع استيراد <code>flutter_svg</code>.</li>
+          <li>نفّذ <code>flutter pub get</code> ثم أعد تشغيل التطبيق.</li>
+        </ol>
+
+        <h3>ب) تطبيق المقدّم</h3>
+        <ol>
+          <li>أنشئ: <span class="path">vendor_app/assets/icons/custom/</span></li>
+          <li>أضف في <code>vendor_app/pubspec.yaml</code> تحت <code>flutter: assets:</code> السطر:</li>
+        </ol>
+        <code class="path">- assets/icons/custom/</code>
+        <ol start="3">
+          <li>اربط الأصول في <code>vendor_drawer.dart</code> و<code>vendor_bottom_nav.dart</code> بنفس أسلوب العميل.</li>
+        </ol>
+
+        <h3>ج) لوحة الإدارة</h3>
+        <ol>
+          <li>للشعار فقط غالباً: <span class="path">admin_panel/public/</span></li>
+          <li>استورد الصورة في <code>Sidebar.tsx</code> عبر <code>next/image</code> أو <code>&lt;img src="/brand-mark.svg" /&gt;</code>.</li>
+          <li>عناصر القائمة تبقى على Lucide ما لم ترغب باستبدال كل أيقونة يدوياً (غير موصى به بدون حاجة قوية).</li>
+        </ol>
+      </section>
+
+      <section id="tracker">
+        <h2>٩. متتبع بسيط (محلي في المتصفح)</h2>
+        <p>حدّد ما أنجزته من أصول P0 — يُحفظ في متصفحك فقط (LocalStorage).</p>
+        <div class="actions">
+          <button type="button" id="btn-check-all-p0">تعليم كل P0 كمكتمل</button>
+          <button type="button" class="secondary" id="btn-reset">مسح التتبع</button>
+        </div>
+        <div id="progress"></div>
+        <ul class="check" id="p0-list">
+          <li data-key="p0_home"><label><input type="checkbox" class="asset-cb" data-key="p0_home" /> CAT_HOME — ic_category_home_cooking.svg</label></li>
+          <li data-key="p0_sac"><label><input type="checkbox" class="asset-cb" data-key="p0_sac" /> CAT_SACRIFICE — ic_category_sacrifice_cooking.svg</label></li>
+          <li data-key="p0_ev"><label><input type="checkbox" class="asset-cb" data-key="p0_ev" /> CAT_EVENTS — ic_category_events_parties.svg</label></li>
+          <li data-key="p0_bbq"><label><input type="checkbox" class="asset-cb" data-key="p0_bbq" /> CAT_BBQ — ic_category_outdoor_bbq.svg</label></li>
+        </ul>
+      </section>
+
+      <section id="brief">
+        <h2>١٠. نص جاهز لإرساله للمصمم (موجز)</h2>
+        <p style="color:var(--text);background:var(--code-bg);padding:1rem;border-radius:8px;white-space:pre-wrap;font-size:0.88rem;">نحتاج مجموعة أيقونات متناسقة لمشروع «مطبخ البيت» (تطبيق طعام سعودي).
+الألوان الأساسية: برتقالي #FF6B35، خلفيات فاتحة #FFFFFF و #F8F9FA.
+الأولوية: 4 أيقونات لفئات الخدمة (طبخ منزلي، طبخ ذبائح، مناسبات وحفلات، شواء خارجي) بأسلوب واحد (خطوط متساوية السماكة، بدون 3D مبالغ فيه)، SVG بخلفية شفافة، حجم تصميم 512×512 بكسل.
+ثانوياً: أيقونات شريط تنقل سفلي (5 للعميل، 6 للمقدّم) بنفس عائلة التصميم، نسختان outline + filled إن أمكن.
+الترخيص: ملكية كاملة للاستخدام التجاري في التطبيقات والموقع.</p>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    مرجع داخلي لمشروع مطبخ البيت — حدّث الجداول عند إضافة شاشات جديدة. افتح هذا الملف مباشرة في المتصفح: <code>docs/icon-asset-reference.html</code>
+  </footer>
+
+  <script>
+    (function () {
+      var storageKey = 'hk_icon_spec_p0';
+      var toc = document.getElementById('toc');
+      var main = document.querySelector('main');
+      if (toc && main) {
+        var strong = document.createElement('strong');
+        strong.textContent = 'انتقل إلى';
+        toc.appendChild(strong);
+        main.querySelectorAll('section[id]').forEach(function (sec) {
+          var id = sec.id;
+          var h = sec.querySelector('h2');
+          if (!h) return;
+          var a = document.createElement('a');
+          a.href = '#' + id;
+          a.textContent = h.textContent.replace(/^[٠-٩]+?\.\s*/, '').trim();
+          toc.appendChild(a);
+        });
+      }
+
+      function loadState() {
+        try {
+          return JSON.parse(localStorage.getItem(storageKey) || '{}');
+        } catch (e) {
+          return {};
+        }
+      }
+      function saveState(state) {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      }
+      function refreshProgress() {
+        var boxes = document.querySelectorAll('.asset-cb');
+        var state = loadState();
+        var done = 0;
+        boxes.forEach(function (cb) {
+          cb.checked = !!state[cb.dataset.key];
+          if (cb.checked) done++;
+        });
+        var el = document.getElementById('progress');
+        if (el) el.textContent = 'مكتمل: ' + done + ' / ' + boxes.length + ' (أصول P0 للفئات)';
+      }
+      document.querySelectorAll('.asset-cb').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+          var state = loadState();
+          state[cb.dataset.key] = cb.checked;
+          saveState(state);
+          refreshProgress();
+        });
+      });
+      document.getElementById('btn-check-all-p0')?.addEventListener('click', function () {
+        var state = {};
+        document.querySelectorAll('.asset-cb').forEach(function (cb) {
+          state[cb.dataset.key] = true;
+          cb.checked = true;
+        });
+        saveState(state);
+        refreshProgress();
+      });
+      document.getElementById('btn-reset')?.addEventListener('click', function () {
+        localStorage.removeItem(storageKey);
+        document.querySelectorAll('.asset-cb').forEach(function (cb) {
+          cb.checked = false;
+        });
+        refreshProgress();
+      });
+      refreshProgress();
+    })();
+  </script>
+</body>
+</html>

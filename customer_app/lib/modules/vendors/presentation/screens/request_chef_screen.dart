@@ -16,8 +16,8 @@ import '../providers/vendor_notifier.dart';
 import '../../domain/repositories/vendors_repo.dart';
 import '../../../../core/di/providers.dart';
 
-/// شاشة طلب طباخة أو احجز الطباخ (الطبخ الشعبي).
-/// — طبخ شعبي: الطباخ يأتي عندك ليطبخ الذبايح + طلبات جانبية (جريش، قرصان، إدامات).
+/// شاشة طلب طباخة أو احجز الطباخ (طبخ الذبائح).
+/// — طبخ الذبائح: الطباخ يأتي عندك ليطبخ الذبائح + طلبات جانبية (جريش، قرصان، إدامات).
 /// — طبخ منزلي: اختيار أطباق + استلام أو توصيل.
 class RequestChefScreen extends ConsumerStatefulWidget {
   final String vendorId;
@@ -45,10 +45,12 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
   bool _isSubmitting = false;
   /// معرّفات الأطباق المختارة (ما يريده العميل من هذه الطباخة).
   final Set<String> _selectedDishIds = {};
-  /// للطبخ الشعبي: عنوان استقبال الذبايح (مكان الطبخ عند العميل).
+  /// لطبخ الذبائح: عنوان استقبال الذبائح (مكان الطبخ عند العميل).
   String? _selectedAddressId;
-  /// للطبخ الشعبي: أسماء الطلبات الجانبية المختارة (جريش، قرصان، إدامات...).
+  /// لطبخ الذبائح: أسماء الطلبات الجانبية المختارة (جريش، قرصان، إدامات...).
   final Set<String> _selectedAddOnNames = {};
+  /// للشواء الخارجي: أنواع شواء ومقبلات شائعة (تُدمج مع الملاحظات عند الإرسال).
+  final Set<String> _selectedGrillingOptions = {};
 
   @override
   void dispose() {
@@ -94,6 +96,54 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
         _selectedAddOnNames.add(name);
       }
     });
+  }
+
+  void _toggleGrillingOption(String key) {
+    setState(() {
+      if (_selectedGrillingOptions.contains(key)) {
+        _selectedGrillingOptions.remove(key);
+      } else {
+        _selectedGrillingOptions.add(key);
+      }
+    });
+  }
+
+  /// ملاحظات الشواء: سطر من الاختيارات + الملاحظات الحرة (إن وُجدت).
+  String? _composeGrillingNotes(AppLocalizations l) {
+    final user = _notesController.text.trim();
+    if (_selectedGrillingOptions.isEmpty) {
+      return user.isEmpty ? null : user;
+    }
+    final ordered = AppLocalizations.grillingOptionKeys
+        .where(_selectedGrillingOptions.contains)
+        .map((k) => l.grillingOptionLabel(k))
+        .toList();
+    final selectionLine = '${l.grillingNotesPrefix}: ${ordered.join('، ')}';
+    if (user.isEmpty) return selectionLine;
+    return '$selectionLine\n\n$user';
+  }
+
+  /// حجز طباخ في موقع العميل (ذبائح أو شواء خارجي أو فلترة من الـ Feed).
+  bool _onSiteChefBooking(Vendor v) {
+    if (v.isPopularCooking || v.isGrilling) return true;
+    final f = widget.feedCategory;
+    return f == ProviderCategories.popularCooking ||
+        f == ProviderCategories.grilling;
+  }
+
+  /// طلبات جانبية (جريش…) — لطبخ الذبائح فقط، ليس للشواء الخارجي.
+  bool _sacrificeSideOrdersFlow(Vendor v) {
+    if (v.isPopularCooking) return true;
+    return widget.feedCategory == ProviderCategories.popularCooking &&
+        !v.isGrilling;
+  }
+
+  String _apiRequestType(Vendor v) {
+    if (!_onSiteChefBooking(v)) return 'home_cooking';
+    if (v.isGrilling || widget.feedCategory == ProviderCategories.grilling) {
+      return 'grilling';
+    }
+    return 'popular_cooking';
   }
 
   IconData _getAddOnIcon(String name) {
@@ -203,15 +253,21 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
       );
       return;
     }
-    final isPopularCooking = ref.read(vendorNotifierProvider(widget.vendorId)).maybeWhen(
-      loaded: (Vendor v, _) => v.isPopularCooking || (widget.feedCategory == ProviderCategories.popularCooking),
-      orElse: () => widget.feedCategory == ProviderCategories.popularCooking,
+    final vendorForFlow = ref.read(vendorNotifierProvider(widget.vendorId)).maybeWhen(
+      loaded: (Vendor v, _) => v,
+      orElse: () => null,
     );
-    if (isPopularCooking) {
+    if (vendorForFlow == null) return;
+    final onSite = _onSiteChefBooking(vendorForFlow);
+    if (onSite) {
       if (_selectedAddressId == null || _selectedAddressId!.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l.selectSlaughterAddress),
+            content: Text(
+              _sacrificeSideOrdersFlow(vendorForFlow)
+                  ? l.selectSlaughterAddress
+                  : l.selectOnsiteServiceAddress,
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -252,29 +308,36 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
           if (addOn != null) 'price': addOn.price,
         };
       }).toList();
+      final sacrificeAddonsSubmit = _sacrificeSideOrdersFlow(vendorForFlow);
+      final addOnsForApi =
+          sacrificeAddonsSubmit ? addOnsList : <Map<String, dynamic>>[];
       final customDishes = _customDishesController.text.trim();
+      final rt = _apiRequestType(vendorForFlow);
+      final onSiteSubmit = _onSiteChefBooking(vendorForFlow);
+      final notesForApi = rt == 'grilling'
+          ? _composeGrillingNotes(l)
+          : (_notesController.text.trim().isEmpty ? null : _notesController.text.trim());
       await repo.createEventRequest(
         CreateEventRequestParams(
           vendorId: widget.vendorId,
-          requestType: isPopularCooking ? 'popular_cooking' : 'home_cooking',
+          requestType: rt,
           scheduledDate: '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}',
           scheduledTime: '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}',
           guestsCount: _guestsCount,
-          addressId: isPopularCooking ? _selectedAddressId : null,
-          addOns: addOnsList,
-          dishIds: isPopularCooking ? null : (_selectedDishIds.isEmpty ? null : _selectedDishIds.toList()),
-          customDishNames: isPopularCooking ? null : (customDishes.isEmpty ? null : customDishes),
-          delivery: isPopularCooking ? null : _delivery,
-          notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+          addressId: onSiteSubmit ? _selectedAddressId : null,
+          addOns: addOnsForApi,
+          dishIds: onSiteSubmit ? null : (_selectedDishIds.isEmpty ? null : _selectedDishIds.toList()),
+          customDishNames: onSiteSubmit ? null : (customDishes.isEmpty ? null : customDishes),
+          delivery: onSiteSubmit ? null : _delivery,
+          notes: notesForApi,
         ),
       );
 
       if (!mounted) return;
 
-      final l = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(isPopularCooking ? l.chefBookedSuccess : l.orderSentSuccess),
+          content: Text(onSiteSubmit ? l.chefBookedSuccess : l.orderSentSuccess),
           backgroundColor: AppColors.primary,
         ),
       );
@@ -304,12 +367,11 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
       appBar: AppBar(
           title: vendorState.maybeWhen(
           loaded: (Vendor v, _) => Text(
-            (v.isPopularCooking || widget.feedCategory == ProviderCategories.popularCooking)
-                ? l.bookChef
-                : l.requestCooking,
+            _onSiteChefBooking(v) ? l.bookChef : l.requestCooking,
           ),
           orElse: () => Text(
-            widget.feedCategory == ProviderCategories.popularCooking
+            (widget.feedCategory == ProviderCategories.popularCooking ||
+                    widget.feedCategory == ProviderCategories.grilling)
                 ? l.bookChef
                 : l.requestCooking,
           ),
@@ -341,9 +403,8 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
           ),
         ),
         loaded: (vendor, menuItems) {
-          // استخدام feedCategory كاحتياطي عند وصول المستخدم من Feed بفئة الطبخ الشعبي
-          final isPopularCooking = vendor.isPopularCooking ||
-              (widget.feedCategory == ProviderCategories.popularCooking);
+          final onSite = _onSiteChefBooking(vendor);
+          final sacrificeAddons = _sacrificeSideOrdersFlow(vendor);
           final availableDishes = menuItems.where((m) => m.isAvailable).toList();
           final addressState = ref.watch(addressNotifierProvider);
           final addOns = vendor.popularCookingAddOns ?? [];
@@ -354,22 +415,29 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  isPopularCooking ? l.bookChef : l.servicesOnRequest,
+                  onSite ? l.bookChef : l.servicesOnRequest,
                   style: TextStyles.headlineMedium,
                 ),
                 Gaps.smV,
                 Text(
-                  isPopularCooking
+                  sacrificeAddons
                       ? l.popularCookingDescWithName(vendor.name)
-                      : l.homeCookingDescWithName(vendor.name),
+                      : (onSite
+                          ? l.grillingServiceDescWithName(vendor.name)
+                          : l.homeCookingDescWithName(vendor.name)),
                   style: TextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
                 Gaps.xlV,
-                // للطبخ الشعبي: عنوان استقبال الذبايح
-                if (isPopularCooking) ...[
-                  Text(l.selectSlaughterAddress, style: TextStyles.titleMedium),
+                // طبخ ذبائح أو شواء خارجي: عنوان موقع التنفيذ
+                if (onSite) ...[
+                  Text(
+                    sacrificeAddons
+                        ? l.selectSlaughterAddress
+                        : l.selectOnsiteServiceAddress,
+                    style: TextStyles.titleMedium,
+                  ),
                   Gaps.smV,
                   addressState.when(
                     initial: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
@@ -387,7 +455,9 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                l.noAddressAddOne,
+                                sacrificeAddons
+                                    ? l.noAddressAddOne
+                                    : l.noAddressAddOneOnsite,
                                 style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
                               ),
                               Gaps.smV,
@@ -421,7 +491,31 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                     },
                   ),
                   Gaps.xlV,
-                  if (addOns.isNotEmpty) ...[
+                  if (onSite && !sacrificeAddons) ...[
+                    Text(l.grillingSelectionsTitle, style: TextStyles.titleMedium),
+                    Gaps.smV,
+                    Text(
+                      l.grillingSelectionsSubtitle,
+                      style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                    ),
+                    Gaps.smV,
+                    Wrap(
+                      spacing: Insets.sm,
+                      runSpacing: Insets.sm,
+                      children: AppLocalizations.grillingOptionKeys.map((key) {
+                        final isSelected = _selectedGrillingOptions.contains(key);
+                        return FilterChip(
+                          label: Text(l.grillingOptionLabel(key)),
+                          selected: isSelected,
+                          onSelected: (_) => _toggleGrillingOption(key),
+                          selectedColor: AppColors.primaryContainer,
+                          checkmarkColor: AppColors.primary,
+                        );
+                      }).toList(),
+                    ),
+                    Gaps.xlV,
+                  ],
+                  if (sacrificeAddons && addOns.isNotEmpty) ...[
                     Text(l.sideOrdersOptional, style: TextStyles.titleMedium),
                     Gaps.smV,
                     Wrap(
@@ -444,7 +538,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                       }).toList(),
                     ),
                     Gaps.xlV,
-                  ] else ...[
+                  ] else if (sacrificeAddons) ...[
                     Text(l.sideOrdersOptional, style: TextStyles.titleMedium),
                     Gaps.smV,
                     Text(
@@ -473,7 +567,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                     ),
                     Gaps.xlV,
                   ],
-                  // للطبخ الشعبي: عدد الأشخاص والتاريخ والوقت
+                  // موقع الخدمة: عدد الأشخاص والتاريخ والوقت
                   Text(l.guestsCount, style: TextStyles.labelLarge),
                   Gaps.smV,
                   Row(
@@ -521,8 +615,10 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                   AppTextField(
                     controller: _notesController,
                     label: l.additionalNotes,
-                    hint: l.notesHint(true),
-                    maxLines: 2,
+                    hint: sacrificeAddons
+                        ? l.notesHint(true)
+                        : l.notesHintGrilling,
+                    maxLines: sacrificeAddons ? 2 : 4,
                   ),
                   Gaps.xlV,
                 ] else ...[
@@ -724,7 +820,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                     title: l.additionalNotes,
                     child: AppTextField(
                       controller: _notesController,
-                      hint: l.notesHint(isPopularCooking),
+                      hint: l.notesHint(false),
                       maxLines: 2,
                     ),
                   ),
@@ -732,7 +828,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                 Gaps.xxlV,
                 PrimaryButton(
                   onPressed: _isSubmitting ? null : () {
-                    if (isPopularCooking) {
+                    if (onSite) {
                       if (_selectedAddressId == null || _selectedAddressId!.isEmpty) return;
                     } else {
                       if (_customDishesController.text.trim().isEmpty && _selectedDishIds.isEmpty) return;
@@ -740,9 +836,11 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                     _submitRequest();
                   },
                   isLoading: _isSubmitting,
-                  text: isPopularCooking
+                  text: onSite
                       ? (_selectedAddressId == null || _selectedAddressId!.isEmpty
-                          ? l.selectSlaughterAddressBtn
+                          ? (sacrificeAddons
+                              ? l.selectSlaughterAddressBtn
+                              : l.selectOnsiteServiceAddressBtn)
                           : l.bookChef)
                       : (_customDishesController.text.trim().isEmpty && _selectedDishIds.isEmpty
                           ? l.enterOrSelectDish

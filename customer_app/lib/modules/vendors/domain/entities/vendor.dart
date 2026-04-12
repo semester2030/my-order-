@@ -33,9 +33,13 @@ class Vendor extends Equatable {
     this.popularCookingAddOns,
   });
 
-  /// طبخ شعبي (ذبايح) عند العميل
+  /// طبخ الذبائح عند العميل
   bool get isPopularCooking =>
       providerCategory != null && providerCategory == 'popular_cooking';
+
+  /// شواء خارجي عند العميل
+  bool get isGrilling =>
+      providerCategory != null && providerCategory == 'grilling';
 
   @override
   List<Object?> get props => [
@@ -56,7 +60,7 @@ class Vendor extends Equatable {
       ];
 }
 
-/// طلب جانبي للطبخ الشعبي (جريش، قرصان، ادامات...)
+/// طلب جانبي لطبخ الذبائح (جريش، قرصان، إدامات...)
 class PopularCookingAddOn extends Equatable {
   final String name;
   final double price;

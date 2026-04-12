@@ -44,7 +44,7 @@ export class PrivateEventsService {
     if (!vendor) throw new NotFoundException('المقدم غير موجود');
     if (vendor.providerCategory !== 'private_events') {
       throw new ForbiddenException(
-        'هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط',
+        'هذه الخدمة متاحة لمقدمي المناسبات والحفلات فقط',
       );
     }
     const offer = this.eventOfferRepository.create({
@@ -73,7 +73,7 @@ export class PrivateEventsService {
     if (!vendor) throw new NotFoundException('المقدم غير موجود');
     if (vendor.providerCategory !== 'private_events') {
       throw new ForbiddenException(
-        'هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط',
+        'هذه الخدمة متاحة لمقدمي المناسبات والحفلات فقط',
       );
     }
     const offer = await this.eventOfferRepository.findOne({
@@ -101,7 +101,7 @@ export class PrivateEventsService {
     if (!vendor) throw new NotFoundException('المقدم غير موجود');
     if (vendor.providerCategory !== 'private_events') {
       throw new ForbiddenException(
-        'هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط',
+        'هذه الخدمة متاحة لمقدمي المناسبات والحفلات فقط',
       );
     }
     const result = await this.eventOfferRepository.delete({
@@ -120,7 +120,7 @@ export class PrivateEventsService {
     if (!vendor) throw new NotFoundException('المقدم غير موجود');
     if (vendor.providerCategory !== 'private_events') {
       throw new ForbiddenException(
-        'هذه الخدمة متاحة لمقدمي المناسبات الخاصة فقط',
+        'هذه الخدمة متاحة لمقدمي المناسبات والحفلات فقط',
       );
     }
     return this.eventOfferRepository.find({
@@ -142,7 +142,7 @@ export class PrivateEventsService {
     if (!vendor) throw new NotFoundException('المقدم غير موجود');
     if (vendor.providerCategory !== 'private_events') {
       throw new BadRequestException(
-        'هذا المقدم لا يقدم خدمات المناسبات الخاصة',
+        'هذا المقدم لا يقدم خدمات المناسبات والحفلات',
       );
     }
     const request = this.privateEventRequestRepository.create({

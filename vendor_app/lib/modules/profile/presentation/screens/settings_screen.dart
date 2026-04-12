@@ -26,6 +26,11 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  static bool _isApprovedVendor(String? registrationStatus) {
+    final s = registrationStatus?.toLowerCase().trim();
+    return s == 'approved';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +58,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
       );
     }
+  }
+
+  void _showLanguageSheet(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.topLG),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(l10n.languageAr),
+              onTap: () {
+                ref.read(localeProvider.notifier).setLocale(const Locale('ar'));
+                Navigator.of(ctx).pop();
+              },
+            ),
+            ListTile(
+              title: Text(l10n.languageEn),
+              onTap: () {
+                ref.read(localeProvider.notifier).setLocale(const Locale('en'));
+                Navigator.of(ctx).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -111,6 +146,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         icon: Icons.lock_outline,
                         onTap: () => context.push(RouteNames.changePassword),
                       ),
+                      if (_isApprovedVendor(state.profile.registrationStatus)) ...[
+                        Divider(height: 1, color: AppColors.divider),
+                        SettingsTile(
+                          title: l10n.verifyEmail,
+                          icon: Icons.mark_email_unread_outlined,
+                          onTap: () => context.push(RouteNames.verifyEmail),
+                        ),
+                      ],
                       Divider(height: 1, color: AppColors.divider),
                       SettingsTile(
                         title: l10n.language,
@@ -172,36 +215,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       title: Text(
         AppLocalizations.maybeOf(context)?.settings ?? 'الإعدادات',
         style: TextStyles.headlineSmall.copyWith(color: AppColors.textPrimary),
-      ),
-    );
-  }
-
-  void _showLanguageSheet(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColors.surface,
-      shape: RoundedRectangleBorder(borderRadius: AppRadius.topLG),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: Text(l10n.languageAr),
-              onTap: () {
-                ref.read(localeProvider.notifier).setLocale(const Locale('ar'));
-                Navigator.of(ctx).pop();
-              },
-            ),
-            ListTile(
-              title: Text(l10n.languageEn),
-              onTap: () {
-                ref.read(localeProvider.notifier).setLocale(const Locale('en'));
-                Navigator.of(ctx).pop();
-              },
-            ),
-          ],
-        ),
       ),
     );
   }

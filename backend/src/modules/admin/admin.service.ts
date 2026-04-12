@@ -338,6 +338,23 @@ export class AdminService {
               : `حالة المورد الحالية: ${vendor.registrationStatus}`;
       throw new BadRequestException(msg);
     }
+    const addr = (vendor.address || '').trim();
+    const city = (vendor.city || '').trim();
+    const lat = Number(vendor.latitude);
+    const lng = Number(vendor.longitude);
+    const missingLocation =
+      addr.length < 3 ||
+      city.length < 2 ||
+      addr === 'قيد الإكمال' ||
+      city === 'غير محدد' ||
+      Number.isNaN(lat) ||
+      Number.isNaN(lng) ||
+      (Math.abs(lat) < 1e-9 && Math.abs(lng) < 1e-9);
+    if (missingLocation) {
+      throw new BadRequestException(
+        'لا يمكن اعتماد مقدم الخدمة: يجب إكمال عنوان الموقع والمدينة وإحداثيات صحيحة على الخريطة قبل الموافقة.',
+      );
+    }
     const oldStatus = vendor.registrationStatus;
     vendor.registrationStatus = VendorStatus.APPROVED;
     vendor.approvedAt = new Date();

@@ -1,11 +1,15 @@
 import { apiClient } from './client'
 import { Endpoints } from './endpoints'
 
-/** الضروري فقط: الاسم، الإيميل، كلمة المرور. الباقي اختياري. */
+/** التسجيل — مطلوب: الاسم، الإيميل، كلمة المرور، العنوان، المدينة، الإحداثيات. */
 export interface RegisterVendorDto {
   name: string
   email: string
   password: string
+  address: string
+  city: string
+  latitude: number
+  longitude: number
 
   tradeName?: string
   type?: string
@@ -18,10 +22,6 @@ export interface RegisterVendorDto {
   commercialRegistrationIssueDate?: string
   commercialRegistrationExpiryDate?: string
 
-  latitude?: number
-  longitude?: number
-  address?: string
-  city?: string
   district?: string
   postalCode?: string
 
@@ -68,6 +68,10 @@ export const vendorsRegisterApi = {
     formData.append('name', data.name)
     formData.append('email', data.email)
     formData.append('password', data.password)
+    formData.append('address', data.address)
+    formData.append('city', data.city)
+    formData.append('latitude', data.latitude.toString())
+    formData.append('longitude', data.longitude.toString())
 
     if (data.tradeName) formData.append('tradeName', data.tradeName)
     if (data.type) formData.append('type', data.type)
@@ -80,10 +84,6 @@ export const vendorsRegisterApi = {
     if (data.commercialRegistrationIssueDate) formData.append('commercialRegistrationIssueDate', data.commercialRegistrationIssueDate)
     if (data.commercialRegistrationExpiryDate) formData.append('commercialRegistrationExpiryDate', data.commercialRegistrationExpiryDate)
 
-    if (data.latitude !== undefined) formData.append('latitude', data.latitude.toString())
-    if (data.longitude !== undefined) formData.append('longitude', data.longitude.toString())
-    if (data.address) formData.append('address', data.address)
-    if (data.city) formData.append('city', data.city)
     if (data.district) formData.append('district', data.district)
     if (data.postalCode) formData.append('postalCode', data.postalCode)
 

@@ -31,6 +31,29 @@ class StringsEn {
   static const String emailLabel = 'Email';
   static const String passwordLabel = 'Password';
   static const String createAccount = 'Create account';
+  static const String registerSubtitleWithLocation =
+      'Required: name, email, password, and your service location (street address, city, latitude & longitude from Maps) so customers see distance correctly.';
+  static const String registerServiceLocationTitle = 'Service location';
+  static const String registerStreetAddressLabel = 'Street address';
+  static const String registerStreetAddressHint = 'e.g. street, district, building';
+  static const String registerCityLabel = 'City';
+  static const String registerCityHint = 'e.g. Riyadh';
+  static const String registerLatitudeLabel = 'Latitude';
+  static const String registerLongitudeLabel = 'Longitude';
+  static const String registerCoordinatesHint =
+      'From Google Maps: tap the place, then copy latitude & longitude.';
+  static const String registerCoordinatesZero =
+      'Coordinates cannot be zero — pick your real location on the map.';
+  static const String registerUseMyLocation = 'Use my current location';
+  static const String registerFetchingLocation = 'Getting location...';
+  static const String registerLocationServiceDisabled =
+      'Turn on location (GPS) in your device settings.';
+  static const String registerLocationPermissionDenied =
+      'Allow location access to fill address and coordinates automatically.';
+  static const String registerLocationPermissionForever =
+      'Location is blocked in Settings — enable it for this app, then try again.';
+  static const String registerLocationPositionUnavailable =
+      'Could not get location. Try again or enter coordinates manually from Maps.';
   static const String registerSuccessTitle = 'Registration successful';
   static const String registerSuccessBody =
       'Thank you for registering with Home Kitchen.\n\n'
@@ -215,7 +238,7 @@ class StringsEn {
   static const String vendorCombinedTermsMenuSectionTitle = 'General terms for listing meals';
   static const String vendorCategoryTermsSectionTitle = 'Category-specific terms (coming later)';
   static const String vendorCategoryTermsPlaceholder =
-      'Additional terms may apply per provider category (home kitchen, grilling, events, etc.). Content is not finalized yet and will be added later without changing this acceptance screen.';
+      'Additional terms may apply per provider category (home kitchen, outdoor BBQ, events & parties, etc.). Content is not finalized yet and will be added later without changing this acceptance screen.';
   static const String vendorLegalAlreadyAccepted = 'Platform terms for this version were already accepted.';
   static const String vendorMenuTermsAlreadyAccepted = 'Meal listing terms for this version were already accepted.';
   static const String vendorCombinedTermsReadCheckbox =

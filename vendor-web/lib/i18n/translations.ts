@@ -54,8 +54,10 @@ export const translations = {
     // التسجيل
     register: {
       title: 'تسجيل مقدم الخدمة',
-      subtitle: 'الضروري فقط: الاسم، الإيميل، كلمة المرور. الباقي يمكن إكماله لاحقاً.',
+      subtitle:
+        'مطلوب: الاسم، البريد، كلمة المرور، وموقع تنفيذ الخدمة (العنوان، المدينة، خط العرض والطول من الخرائط) ليظهر للعميل ويُحسب البعد.',
       requiredData: 'البيانات الضرورية',
+      serviceLocationTitle: 'موقع تنفيذ الخدمة',
       name: 'الاسم (مقدم الخدمة / المنشأة)',
       email: 'البريد الإلكتروني',
       password: 'كلمة المرور',
@@ -65,8 +67,8 @@ export const translations = {
       categoryPlaceholder: '— اختر فئة الخدمة (اختياري) —',
       categoryHomeCooking: 'الطبخ المنزلي',
       categoryPopularCooking: 'الطبخ الشعبي (ذبايح)',
-      categoryPrivateEvents: 'المناسبات الخاصة (بوفيه)',
-      categoryGrilling: 'الشوي',
+      categoryPrivateEvents: 'المناسبات والحفلات',
+      categoryGrilling: 'الشواء الخارجي',
       addOptional: 'إضافة بيانات اختيارية (عنوان، مدينة، مالك، إلخ)',
       hideOptional: 'إخفاء البيانات الاختيارية',
       submit: 'تسجيل مقدم الخدمة',
@@ -77,8 +79,21 @@ export const translations = {
       tradeName: 'الاسم التجاري',
       establishmentType: 'نوع المنشأة',
       description: 'الوصف',
-      address: 'العنوان',
+      address: 'عنوان الموقع',
       city: 'المدينة',
+      latitude: 'خط العرض (Latitude)',
+      longitude: 'خط الطول (Longitude)',
+      coordinatesHint:
+        'من Google Maps: اضغط على الموقع ثم انسخ «خط العرض، خط الطول».',
+      addressRequired: 'عنوان الموقع مطلوب (ثلاثة أحرف على الأقل)',
+      cityRequired: 'المدينة مطلوبة (حرفان على الأقل)',
+      latitudeRequired: 'خط العرض مطلوب',
+      longitudeRequired: 'خط الطول مطلوب',
+      invalidLatitude: 'خط العرض غير صالح',
+      invalidLongitude: 'خط الطول غير صالح',
+      latitudeRange: 'خط العرض يجب أن يكون بين -90 و 90',
+      longitudeRange: 'خط الطول يجب أن يكون بين -180 و 180',
+      coordinatesNonZero: 'الإحداثيات لا يمكن أن تكون صفراً — حدد موقعك على الخريطة',
       ownerName: 'اسم المالك',
       ownerPhone: 'جوال المالك',
       optionalNote: 'يمكنك إكمال باقي البيانات (سجل تجاري، موقع، بنك، إلخ) لاحقاً من لوحة التحكم.',
@@ -277,8 +292,10 @@ export const translations = {
 
     register: {
       title: 'Register as service provider',
-      subtitle: 'Required only: Name, Email, Password. The rest can be completed later.',
+      subtitle:
+        'Required: name, email, password, and your service location (address, city, latitude & longitude from Maps) so customers see distance correctly.',
       requiredData: 'Required data',
+      serviceLocationTitle: 'Service location',
       name: 'Name (service provider / establishment)',
       email: 'Email',
       password: 'Password',
@@ -288,8 +305,8 @@ export const translations = {
       categoryPlaceholder: '— Choose service category (optional) —',
       categoryHomeCooking: 'Home Cooking',
       categoryPopularCooking: 'Popular cooking (catering)',
-      categoryPrivateEvents: 'Private events (buffet)',
-      categoryGrilling: 'Grilling',
+      categoryPrivateEvents: 'Events & parties',
+      categoryGrilling: 'Outdoor BBQ',
       addOptional: 'Add optional details (address, city, owner, etc.)',
       hideOptional: 'Hide optional details',
       submit: 'Register',
@@ -300,8 +317,20 @@ export const translations = {
       tradeName: 'Trade name',
       establishmentType: 'Establishment type',
       description: 'Description',
-      address: 'Address',
+      address: 'Street address',
       city: 'City',
+      latitude: 'Latitude',
+      longitude: 'Longitude',
+      coordinatesHint: 'From Google Maps: tap the place, then copy latitude & longitude.',
+      addressRequired: 'Address is required (at least 3 characters)',
+      cityRequired: 'City is required (at least 2 characters)',
+      latitudeRequired: 'Latitude is required',
+      longitudeRequired: 'Longitude is required',
+      invalidLatitude: 'Invalid latitude',
+      invalidLongitude: 'Invalid longitude',
+      latitudeRange: 'Latitude must be between -90 and 90',
+      longitudeRange: 'Longitude must be between -180 and 180',
+      coordinatesNonZero: 'Coordinates cannot be zero — pick your real location on the map',
       ownerName: 'Owner name',
       ownerPhone: 'Owner phone',
       optionalNote: 'You can complete the rest (commercial registration, website, bank, etc.) later from the dashboard.',
@@ -448,13 +477,8 @@ export const translations = {
 } as const
 
 export type TranslationKey = keyof typeof translations.ar
-export type NestedKey = keyof typeof translations.ar extends infer K
-  ? K extends string
-    ? keyof (typeof translations.ar)[K] extends string
-      ? `${K}.${keyof (typeof translations.ar)[K] & string}`
-      : K
-    : never
-  : never
+/** مسارات مثل register.title — القيمة الفعلية تُستخرَج وقت التشغيل عبر [t]. */
+export type NestedKey = string
 
 function getNested(obj: Record<string, unknown>, path: string): string | undefined {
   const keys = path.split('.')

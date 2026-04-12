@@ -39,4 +39,20 @@ class Validators {
     if (digits.length < 9) return 'رقم الهاتف غير صالح';
     return null;
   }
+
+  static String? latitude(String? value) {
+    if (value == null || value.trim().isEmpty) return 'خط العرض مطلوب';
+    final n = double.tryParse(value.trim().replaceAll(',', '.'));
+    if (n == null) return 'خط العرض غير صالح';
+    if (n < -90 || n > 90) return 'خط العرض يجب أن يكون بين -90 و 90';
+    return null;
+  }
+
+  static String? longitude(String? value) {
+    if (value == null || value.trim().isEmpty) return 'خط الطول مطلوب';
+    final n = double.tryParse(value.trim().replaceAll(',', '.'));
+    if (n == null) return 'خط الطول غير صالح';
+    if (n < -180 || n > 180) return 'خط الطول يجب أن يكون بين -180 و 180';
+    return null;
+  }
 }

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// عنصر طلب جانبي (إضافة للطبخ الشعبي: جريش، قرصان، إدامات…) — Phase 12.
+/// عنصر طلب جانبي (إضافة لطبخ الذبائح: جريش، قرصان، إدامات…) — Phase 12.
 class SideOrderItem with EquatableMixin {
   const SideOrderItem({
     required this.id,

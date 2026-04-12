@@ -283,7 +283,7 @@ class _RequestPrivateEventScreenState
                 ),
                 Gaps.xlV,
                 _buildSectionCard(
-                  icon: Icons.celebration,
+                  icon: Icons.brunch_dining_rounded,
                   title: l.eventTypeLabel,
                   child: Wrap(
                     spacing: Insets.sm,

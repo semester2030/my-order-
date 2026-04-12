@@ -124,6 +124,34 @@ export class VendorsService {
         'اسم مقدم الخدمة يجب أن يكون حرفين على الأقل.',
       );
 
+    const addrTrim = (dto.address ?? '').trim();
+    const cityTrim = (dto.city ?? '').trim();
+    if (addrTrim.length < 3) {
+      throw new BadRequestException(
+        'عنوان موقع مقدم الخدمة مطلوب (ثلاثة أحرف على الأقل) ليظهر للعميل ويُحسب البعد.',
+      );
+    }
+    if (cityTrim.length < 2) {
+      throw new BadRequestException('المدينة مطلوبة.');
+    }
+    const latNum = Number(dto.latitude);
+    const lngNum = Number(dto.longitude);
+    if (
+      dto.latitude === undefined ||
+      dto.longitude === undefined ||
+      Number.isNaN(latNum) ||
+      Number.isNaN(lngNum)
+    ) {
+      throw new BadRequestException(
+        'خط العرض وخط الطول مطلوبان (يمكن نسخهما من خرائط جوجل) لحساب المسافة للعميل.',
+      );
+    }
+    if (Math.abs(latNum) < 1e-9 && Math.abs(lngNum) < 1e-9) {
+      throw new BadRequestException(
+        'إحداثيات الموقع غير صالحة — حدد موقعاً حقيقياً على الخريطة (لا يقبل ٠،٠).',
+      );
+    }
+
     // 1. Check email uniqueness (vendor + user), case-insensitive
     const existingVendorByEmail = await this.vendorRepository
       .createQueryBuilder('v')
@@ -190,7 +218,7 @@ export class VendorsService {
       this.PASSWORD_SALT_ROUNDS,
     );
 
-    // 5. Create vendor — required: name, email, phoneNumber, location, owner fields (use defaults when optional)
+    // 5. Create vendor — موقع مؤكد من dto (مطلوب عند التسجيل)
     const vendor = this.vendorRepository.create({
       name: nameTrim,
       tradeName: dto.tradeName?.trim() || null,
@@ -210,10 +238,10 @@ export class VendorsService {
       commercialRegistrationImage:
         files?.commercialRegistration?.[0]?.filename || null,
       commercialRegistrationStatus: VerificationStatus.PENDING,
-      latitude: dto.latitude ?? 0,
-      longitude: dto.longitude ?? 0,
-      address: (dto.address?.trim() || '').replace(/^$/, 'قيد الإكمال'),
-      city: (dto.city?.trim() || '').replace(/^$/, 'غير محدد'),
+      latitude: latNum,
+      longitude: lngNum,
+      address: addrTrim,
+      city: cityTrim,
       district: dto.district?.trim() || null,
       postalCode: dto.postalCode?.trim() || null,
       deliveryFee: dto.deliveryFee ?? 0,

@@ -11,8 +11,10 @@ class AppLocalizations {
 
   static AppLocalizations of(BuildContext context) {
     final l = Localizations.of<AppLocalizations>(context, AppLocalizations);
-    assert(l != null,
-        'AppLocalizations not found. Add AppLocalizations.delegate to localizationsDelegates.');
+    assert(
+      l != null,
+      'AppLocalizations not found. Add AppLocalizations.delegate to localizationsDelegates.',
+    );
     return l!;
   }
 
@@ -198,6 +200,7 @@ class AppLocalizations {
   String get requestCookingTooltip =>
       isAr ? StringsAr.requestCookingTooltip : StringsEn.requestCookingTooltip;
   String get requestEvent => isAr ? StringsAr.requestEvent : StringsEn.requestEvent;
+  String get bookYourEvent => isAr ? StringsAr.bookYourEvent : StringsEn.bookYourEvent;
   String get unavailableNow => isAr ? StringsAr.unavailableNow : StringsEn.unavailableNow;
   String get signature => isAr ? StringsAr.signature : StringsEn.signature;
   String get sortByDistance => isAr ? StringsAr.sortByDistance : StringsEn.sortByDistance;
@@ -237,6 +240,8 @@ class AppLocalizations {
     }
   }
   String get selectService => isAr ? StringsAr.selectService : StringsEn.selectService;
+  String get categoriesVideoHint =>
+      isAr ? StringsAr.categoriesVideoHint : StringsEn.categoriesVideoHint;
 
   // Request Chef
   String get selectDateAndTime =>
@@ -254,10 +259,16 @@ class AppLocalizations {
       isAr ? StringsAr.servicesOnRequest : StringsEn.servicesOnRequest;
   String popularCookingDescWithName(String name) =>
       isAr ? StringsAr.popularCookingDescWithName(name) : StringsEn.popularCookingDescWithName(name);
+  String grillingServiceDescWithName(String name) =>
+      isAr ? StringsAr.grillingServiceDescWithName(name) : StringsEn.grillingServiceDescWithName(name);
   String homeCookingDescWithName(String name) =>
       isAr ? StringsAr.homeCookingDescWithName(name) : StringsEn.homeCookingDescWithName(name);
+  String get selectOnsiteServiceAddress =>
+      isAr ? StringsAr.selectOnsiteServiceAddress : StringsEn.selectOnsiteServiceAddress;
   String get noAddressAddOne =>
       isAr ? StringsAr.noAddressAddOne : StringsEn.noAddressAddOne;
+  String get noAddressAddOneOnsite =>
+      isAr ? StringsAr.noAddressAddOneOnsite : StringsEn.noAddressAddOneOnsite;
   String get addAddress => isAr ? StringsAr.addAddress : StringsEn.addAddress;
   String get sideOrdersOptional =>
       isAr ? StringsAr.sideOrdersOptional : StringsEn.sideOrdersOptional;
@@ -314,10 +325,58 @@ class AppLocalizations {
       isPopularCooking
           ? (isAr ? StringsAr.notesHintPopular : StringsEn.notesHintPopular)
           : (isAr ? StringsAr.notesHintHome : StringsEn.notesHintHome);
+  String get notesHintGrilling =>
+      isAr ? StringsAr.notesHintGrilling : StringsEn.notesHintGrilling;
+  String get grillingSelectionsTitle =>
+      isAr ? StringsAr.grillingSelectionsTitle : StringsEn.grillingSelectionsTitle;
+  String get grillingSelectionsSubtitle =>
+      isAr ? StringsAr.grillingSelectionsSubtitle : StringsEn.grillingSelectionsSubtitle;
+  String get grillingNotesPrefix =>
+      isAr ? StringsAr.grillingNotesPrefix : StringsEn.grillingNotesPrefix;
+
+  /// مفاتيح ثابتة لدمجها في الملاحظات المرسلة للخادم.
+  static const List<String> grillingOptionKeys = [
+    'kebab',
+    'awsal',
+    'shish_tawook',
+    'kofta',
+    'ribs',
+    'mixed_grill',
+    'hummus',
+    'mutabal',
+    'cold_appetizers',
+  ];
+
+  String grillingOptionLabel(String key) {
+    switch (key) {
+      case 'kebab':
+        return isAr ? StringsAr.grillingOptKebab : StringsEn.grillingOptKebab;
+      case 'awsal':
+        return isAr ? StringsAr.grillingOptAwsal : StringsEn.grillingOptAwsal;
+      case 'shish_tawook':
+        return isAr ? StringsAr.grillingOptShishTawook : StringsEn.grillingOptShishTawook;
+      case 'kofta':
+        return isAr ? StringsAr.grillingOptKofta : StringsEn.grillingOptKofta;
+      case 'ribs':
+        return isAr ? StringsAr.grillingOptRibs : StringsEn.grillingOptRibs;
+      case 'mixed_grill':
+        return isAr ? StringsAr.grillingOptMixedGrill : StringsEn.grillingOptMixedGrill;
+      case 'hummus':
+        return isAr ? StringsAr.grillingOptHummus : StringsEn.grillingOptHummus;
+      case 'mutabal':
+        return isAr ? StringsAr.grillingOptMutabal : StringsEn.grillingOptMutabal;
+      case 'cold_appetizers':
+        return isAr ? StringsAr.grillingOptColdAppetizers : StringsEn.grillingOptColdAppetizers;
+      default:
+        return key;
+    }
+  }
   String get notesHintHome =>
       isAr ? StringsAr.notesHintHome : StringsEn.notesHintHome;
   String get selectSlaughterAddressBtn =>
       isAr ? StringsAr.selectSlaughterAddressBtn : StringsEn.selectSlaughterAddressBtn;
+  String get selectOnsiteServiceAddressBtn =>
+      isAr ? StringsAr.selectOnsiteServiceAddressBtn : StringsEn.selectOnsiteServiceAddressBtn;
   String get sendRequest => isAr ? StringsAr.sendRequest : StringsEn.sendRequest;
   String get selectOneDishMin =>
       isAr ? StringsAr.selectOneDishMin : StringsEn.selectOneDishMin;

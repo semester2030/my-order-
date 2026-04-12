@@ -128,6 +128,7 @@ class StringsAr {
   static const String requestCooking = 'اطلب وجبتك المخصصة';
   static const String requestCookingTooltip = 'اطلب طبخة غير موجودة في القائمة';
   static const String requestEvent = 'طلب مناسبة';
+  static const String bookYourEvent = 'احجز مناسبتك';
   static const String unavailableNow = 'غير متوفر حالياً';
   static const String signature = 'Signature';
   static const String sortByDistance = 'الأقرب';
@@ -148,25 +149,32 @@ class StringsAr {
   static const String addToCartFailed = 'فشل الإضافة للسلة';
   // فئات المزودين
   static const String categoryHomeCooking = 'الطبخ المنزلي';
-  static const String categoryPopularCooking = 'الطبخ الشعبي';
-  static const String categoryPrivateEvents = 'المناسبات الخاصة';
-  static const String categoryGrilling = 'الشوي';
+  static const String categoryPopularCooking = 'طبخ الذبائح';
+  static const String categoryPrivateEvents = 'المناسبات والحفلات';
+  static const String categoryGrilling = 'الشواء الخارجي';
   static const String selectService = 'اختر الخدمة';
+  static const String categoriesVideoHint = 'اختر فئة لتصفّح فيديوهات الطبّاخين';
 
   // === Request Chef ===
   static const String selectDateAndTime = 'اختر التاريخ والوقت';
-  static const String selectSlaughterAddress = 'اختر عنوان استقبال الذبايح (مكان الطبخ عندك)';
+  static const String selectSlaughterAddress = 'اختر عنوان استقبال الذبائح (مكان الطبخ عندك)';
   static const String selectAtLeastOneDish = 'اختر طبقاً واحداً على الأقل مما تتقنه الطباخة';
   static const String enterOrSelectDish = 'اكتب ما تريد أو اختر من القائمة';
   static const String chefBookedSuccess = 'تم حجز الطباخ. سيتم الرد قريباً.';
   static const String orderSentSuccess = 'تم إرسال الطلب. سيتم الرد من الطباخة قريباً.';
   static const String requestFailed = 'فشل إرسال الطلب';
   static const String servicesOnRequest = 'خدمات عند الطلب';
-  static const String popularCookingDesc = 'سيأتي عندك ليطبخ الذبايح في مكانك (المنزل، المزرعة، الاستراحة). حدد العنوان والتاريخ والوقت وعدد الأشخاص.';
+  static const String popularCookingDesc = 'سيأتي عندك ليطبخ الذبائح في مكانك (المنزل، المزرعة، الاستراحة). حدد العنوان والتاريخ والوقت وعدد الأشخاص.';
   static const String homeCookingDesc = 'اطلب ما تريد من مقدم الخدمة — حدد التاريخ والوقت وعدد الأشخاص. لا دفع الآن — سيُرد عليك بعرض سعر أو قبول.';
-  static String popularCookingDescWithName(String name) => '$name سيأتي عندك ليطبخ الذبايح في مكانك (المنزل، المزرعة، الاستراحة). حدد العنوان والتاريخ والوقت وعدد الأشخاص.';
+  static String popularCookingDescWithName(String name) => '$name سيأتي عندك ليطبخ الذبائح في مكانك (المنزل، المزرعة، الاستراحة). حدد العنوان والتاريخ والوقت وعدد الأشخاص.';
+  static String grillingServiceDescWithName(String name) =>
+      '$name سيأتي لموقعك للشواء الخارجي (المنزل، المزرعة، الاستراحة). حدد العنوان والتاريخ والوقت وعدد الأشخاص.';
   static String homeCookingDescWithName(String name) => 'اطلب ما تريد من $name — حدد التاريخ والوقت وعدد الأشخاص. لا دفع الآن — سيُرد عليك بعرض سعر أو قبول.';
-  static const String noAddressAddOne = 'لا يوجد عنوان. أضف عنواناً لاستقبال الذبايح.';
+  static const String selectOnsiteServiceAddress =
+      'اختر عنوان موقع تنفيذ الخدمة (الشواء أو الطبخ عندك)';
+  static const String noAddressAddOne = 'لا يوجد عنوان. أضف عنواناً لاستقبال الذبائح.';
+  static const String noAddressAddOneOnsite =
+      'لا يوجد عنوان. أضف عنواناً لموقع تنفيذ الخدمة عندك.';
   static const String addAddress = 'إضافة عنوان';
   static const String sideOrdersOptional = 'طلبات جانبية (اختياري)';
   static const String tapToSelectSideOrders = 'اضغط لاختيار الطلبات الجانبية المطلوبة:';
@@ -191,9 +199,25 @@ class StringsAr {
   static const String deliveryToAddress = 'سيتم توصيل الطلب إلى عنوانك';
   static const String pickupFromChef = 'استلام الطلب من عند الطباخ (الطباخ يطبخ في بيته)';
   static const String additionalNotes = 'ملاحظات إضافية (اختياري)';
-  static const String notesHintPopular = 'مثال: عدد الذبايح، تفضيلات الطبخ';
+  static const String notesHintPopular = 'مثال: عدد الذبائح، تفضيلات الطبخ';
+  static const String notesHintGrilling =
+      'مثال: نوع اللحوم، العدد، مستوى النضج، أي طلبات خاصة للشواء';
+  static const String grillingSelectionsTitle = 'أنواع الشواء والمقبلات (اختياري)';
+  static const String grillingSelectionsSubtitle =
+      'اختر ما يناسبك؛ يمكنك إضافة تفاصيل في الملاحظات أدناه.';
+  static const String grillingNotesPrefix = 'الشواء والمقبلات المطلوبة';
+  static const String grillingOptKebab = 'كباب';
+  static const String grillingOptAwsal = 'أوصال';
+  static const String grillingOptShishTawook = 'شيش طاووق';
+  static const String grillingOptKofta = 'كفتة';
+  static const String grillingOptRibs = 'ريش / أضلاع';
+  static const String grillingOptMixedGrill = 'مشاوي مشكلة';
+  static const String grillingOptHummus = 'حمص';
+  static const String grillingOptMutabal = 'متبل';
+  static const String grillingOptColdAppetizers = 'مقبلات باردة وسلطات';
   static const String notesHintHome = 'مثال: بدون بصل، حار، أدوات إضافية';
-  static const String selectSlaughterAddressBtn = 'اختر عنوان استقبال الذبايح';
+  static const String selectSlaughterAddressBtn = 'اختر عنوان استقبال الذبائح';
+  static const String selectOnsiteServiceAddressBtn = 'اختر عنوان موقع الخدمة';
   static const String sendRequest = 'إرسال الطلب';
   static const String selectOneDishMin = 'اختر طبقاً واحداً على الأقل';
 
@@ -373,7 +397,7 @@ class StringsAr {
 
   static const String termsSection2Title = '٢. تعريف المنصة والخدمات';
   static const String termsSection2Body =
-      'مطبخ البيت منصة إلكترونية تربط بين: (أ) العملاء الراغبين في طلب طعام منزلي، و(ب) مقدمي الخدمة (الطباخين المنزليين) الذين ينتجون طبخاً من بيوتهم أو يقدمون خدمات طبخ داخل منازل العملاء. نقدم: وجبات جاهزة من الطباخين، طبخ شعبي (الطباخ يأتي ليطبخ في مكانك)، مناسبات خاصة، وشوي. نحن وسيط فقط — لا ننتج الطعام ولا نتحكم بمحتواه.';
+      'مطبخ البيت منصة إلكترونية تربط بين: (أ) العملاء الراغبين في طلب طعام منزلي، و(ب) مقدمي الخدمة (الطباخين المنزليين) الذين ينتجون طبخاً من بيوتهم أو يقدمون خدمات طبخ داخل منازل العملاء. نقدم: وجبات جاهزة من الطباخين، طبخ الذبائح (الطباخ يأتي ليقوم بطبخ الذبائح في مكانك)، المناسبات والحفلات، والشواء الخارجي. نحن وسيط فقط — لا ننتج الطعام ولا نتحكم بمحتواه.';
 
   static const String termsSection3Title = '٣. من يخاطب هذه الشروط';
   static const String termsSection3Body =

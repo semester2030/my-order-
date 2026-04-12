@@ -31,11 +31,10 @@ function toBoolean(v: unknown): boolean | undefined {
 }
 
 /**
- * تسجيل مقدم الخدمة — الضروري فقط: الاسم، الإيميل، كلمة المرور.
- * باقي الحقول اختيارية ويمكن إكمالها لاحقاً من لوحة التحكم.
+ * تسجيل مقدم الخدمة — مطلوب: الاسم، الإيميل، كلمة المرور، عنوان الموقع، المدينة، الإحداثيات.
  */
 export class RegisterVendorDto {
-  // --- الضروري فقط ---
+  // --- الضروري للتسجيل ---
   @ApiProperty({
     example: 'مطبخ أم محمد',
     description: 'اسم مقدم الخدمة / المنشأة',
@@ -128,31 +127,43 @@ export class RegisterVendorDto {
   @IsDateString()
   commercialRegistrationExpiryDate?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty({
+    example: 24.7136,
+    description: 'خط العرض — لحساب المسافة للعميل (مطلوب)',
+  })
   @Type(() => Number)
   @IsNumber()
   @Min(-90)
   @Max(90)
-  latitude?: number;
+  latitude: number;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty({
+    example: 46.6753,
+    description: 'خط الطول (مطلوب)',
+  })
   @Type(() => Number)
   @IsNumber()
   @Min(-180)
   @Max(180)
-  longitude?: number;
+  longitude: number;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty({
+    example: 'طريق الملك فهد، حي العليا',
+    description: 'عنوان موقع مقدم الخدمة (مطلوب)',
+  })
   @IsString()
-  address?: string;
+  @IsNotEmpty()
+  @MinLength(3)
+  address: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty({
+    example: 'الرياض',
+    description: 'المدينة (مطلوبة)',
+  })
   @IsString()
-  city?: string;
+  @IsNotEmpty()
+  @MinLength(2)
+  city: string;
 
   @ApiPropertyOptional()
   @IsOptional()

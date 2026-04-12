@@ -10,7 +10,7 @@ class Vendor extends Equatable {
   final String type;
   /// إن كانت الطباخة تقبل "خدمات عند الطلب" (اطلبي طباخة).
   final bool acceptsCustomRequests;
-  /// فئة الخدمة: home_cooking | popular_cooking | ...
+  /// فئة الخدمة: home_cooking | popular_cooking (طبخ الذبائح) | ...
   final String? providerCategory;
 
   const Vendor({
@@ -26,6 +26,9 @@ class Vendor extends Equatable {
 
   bool get isPopularCooking =>
       providerCategory != null && providerCategory == 'popular_cooking';
+
+  bool get isGrilling =>
+      providerCategory != null && providerCategory == 'grilling';
 
   @override
   List<Object?> get props => [id, name, logo, rating, ratingCount, type, acceptsCustomRequests, providerCategory];

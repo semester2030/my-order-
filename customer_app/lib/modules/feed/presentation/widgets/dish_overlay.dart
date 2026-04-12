@@ -18,8 +18,40 @@ class DishOverlay extends StatelessWidget {
   /// مسافة إضافية من الأعلى لتفادي تداخل [FeedScreen] الشريط (فئة + فلتر) فوق اسم الطباخ والوجبة.
   final double topChromeInset;
 
-  bool get _isPopularCooking =>
-      item.vendor.providerCategory == ProviderCategories.popularCooking;
+  bool get _isPrivateEvents =>
+      item.vendor.providerCategory == ProviderCategories.privateEvents;
+
+  /// طبخ ذبائح أو شواء خارجي — حجز طباخ في الموقع.
+  bool get _isChefOnsiteService {
+    final c = item.vendor.providerCategory;
+    return c == ProviderCategories.popularCooking ||
+        c == ProviderCategories.grilling;
+  }
+
+  /// خدمة (حجز) وليس منتجاً للسلة.
+  bool get _primaryIsServiceBookingNotCart =>
+      _isChefOnsiteService || _isPrivateEvents;
+
+  String get _requestChefQuery {
+    final c = item.vendor.providerCategory;
+    if (c == ProviderCategories.popularCooking) {
+      return '?category=${ProviderCategories.popularCooking}';
+    }
+    if (c == ProviderCategories.grilling) {
+      return '?category=${ProviderCategories.grilling}';
+    }
+    return '';
+  }
+
+  void _onPrimaryServiceCta(BuildContext context) {
+    if (_isPrivateEvents) {
+      context.push('${RouteNames.requestPrivateEvent}/${item.vendor.id}');
+    } else {
+      context.push(
+        '${RouteNames.requestChef}/${item.vendor.id}${_requestChefQuery}',
+      );
+    }
+  }
 
   const DishOverlay({
     super.key,
@@ -207,7 +239,7 @@ class DishOverlay extends StatelessWidget {
                   ],
                 ),
                 Gaps.lgV,
-                // CTA: عرض الطباخ + (طبخ شعبي: احجز الطباخ | وجبات جاهزة: أضف للسلة)
+                // CTA: عرض الطباخ + (مناسبات: احجز مناسبتك | ذبائح/شواء: احجز الطباخ | منزلي: أضف للسلة)
                 Row(
                   children: [
                     Expanded(
@@ -222,11 +254,9 @@ class DishOverlay extends StatelessWidget {
                     Gaps.mdH,
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: _isPopularCooking
+                        onPressed: _primaryIsServiceBookingNotCart
                             ? (acceptsCustomRequests
-                                ? () => context.push(
-                                      '${RouteNames.requestChef}/${item.vendor.id}?category=popular_cooking',
-                                    )
+                                ? () => _onPrimaryServiceCta(context)
                                 : null)
                             : onAddToCart,
                         style: VideoOverlayTheme.ctaButtonStyle,
@@ -235,15 +265,21 @@ class DishOverlay extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              _isPopularCooking
-                                  ? Icons.restaurant_menu
-                                  : Icons.shopping_cart,
+                              _isPrivateEvents
+                                  ? Icons.event_available_rounded
+                                  : _isChefOnsiteService
+                                      ? Icons.restaurant_menu
+                                      : Icons.shopping_cart,
                               size: IconSizes.xs,
                             ),
                             Gaps.xsH,
                             Flexible(
                               child: Text(
-                                _isPopularCooking ? l.bookChef : l.addToCart,
+                                _isPrivateEvents
+                                    ? l.bookYourEvent
+                                    : _isChefOnsiteService
+                                        ? l.bookChef
+                                        : l.addToCart,
                                 style: TextStyles.button.copyWith(
                                   fontSize: FontSizes.bodySmall,
                                 ),

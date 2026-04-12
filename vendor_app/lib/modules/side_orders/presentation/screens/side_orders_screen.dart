@@ -13,7 +13,7 @@ import 'package:vendor_app/modules/side_orders/presentation/providers/side_order
 import 'package:vendor_app/modules/side_orders/presentation/widgets/add_side_order_form.dart';
 import 'package:vendor_app/modules/side_orders/presentation/widgets/side_order_tile.dart';
 
-/// شاشة الطلبات الجانبية — Phase 12 (لمقدمي الطبخ الشعبي فقط).
+/// شاشة الطلبات الجانبية — Phase 12 (لمقدمي طبخ الذبائح فقط).
 class SideOrdersScreen extends ConsumerStatefulWidget {
   const SideOrdersScreen({super.key});
 

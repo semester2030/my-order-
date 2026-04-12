@@ -32,31 +32,77 @@ class CategoriesScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: Insets.lg, vertical: Insets.md),
-        child: GridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: Insets.md,
-          crossAxisSpacing: Insets.md,
-          childAspectRatio: 0.95,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _CategoryTile(
-              category: ProviderCategories.homeCooking,
-              icon: Icons.restaurant,
-              onTap: () => _openFeed(context, ProviderCategories.homeCooking),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: AppColors.primaryContainer.withValues(alpha: 0.55),
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Insets.md,
+                  vertical: Insets.sm + 2,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.play_circle_outline_rounded,
+                      size: 22,
+                      color: AppColors.primary,
+                    ),
+                    Gaps.smH,
+                    Expanded(
+                      child: Text(
+                        l.categoriesVideoHint,
+                        style: TextStyles.bodySmall.copyWith(
+                          color: AppColors.textPrimary.withValues(alpha: 0.82),
+                          height: 1.4,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            _CategoryTile(
-              category: ProviderCategories.popularCooking,
-              icon: Icons.celebration,
-              onTap: () => _openFeed(context, ProviderCategories.popularCooking),
-            ),
-            _CategoryTile(
-              category: ProviderCategories.privateEvents,
-              icon: Icons.event,
-              onTap: () => _openFeed(context, ProviderCategories.privateEvents),
-            ),
-            _CategoryTile(
-              category: ProviderCategories.grilling,
-              icon: Icons.outdoor_grill,
-              onTap: () => _openFeed(context, ProviderCategories.grilling),
+            Gaps.mdV,
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: Insets.md,
+                crossAxisSpacing: Insets.md,
+                childAspectRatio: 0.88,
+                children: [
+                  _CategoryTile(
+                    category: ProviderCategories.homeCooking,
+                    icon: Icons.dinner_dining_rounded,
+                    onTap: () => _openFeed(context, ProviderCategories.homeCooking),
+                  ),
+                  _CategoryTile(
+                    category: ProviderCategories.popularCooking,
+                    // طبخ ميداني / ولائم وقدور — أقرب من «طبق صحي» لـ set_meal
+                    icon: Icons.soup_kitchen_rounded,
+                    onTap: () => _openFeed(context, ProviderCategories.popularCooking),
+                  ),
+                  _CategoryTile(
+                    category: ProviderCategories.privateEvents,
+                    // بوفيه وموائد مناسبات — أدق من حفلة (celebration) أو مجرد تقويم
+                    icon: Icons.brunch_dining_rounded,
+                    onTap: () => _openFeed(context, ProviderCategories.privateEvents),
+                  ),
+                  _CategoryTile(
+                    category: ProviderCategories.grilling,
+                    icon: Icons.outdoor_grill_rounded,
+                    onTap: () => _openFeed(context, ProviderCategories.grilling),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -80,25 +126,121 @@ class _CategoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    return Material(
-      color: AppColors.surfaceElevated,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Padding(
-          padding: EdgeInsets.all(Insets.md),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: IconSizes.xxl, color: AppColors.primary),
-              Gaps.smV,
-              Text(
-                l.categoryLabel(category),
-                textAlign: TextAlign.center,
-                style: TextStyles.titleMedium.copyWith(color: AppColors.textPrimary),
+    final label = l.categoryLabel(category);
+    return Semantics(
+      button: true,
+      label: label,
+      hint: l.categoriesVideoHint,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(AppRadius.md + 2),
+          border: Border.all(color: AppColors.warmDivider.withValues(alpha: 0.85)),
+          boxShadow: const [AppShadows.sm],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(AppRadius.md + 2),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppRadius.md + 2),
+            splashColor: AppColors.primary.withValues(alpha: 0.09),
+            highlightColor: AppColors.primary.withValues(alpha: 0.05),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: Insets.sm + 2,
+                vertical: Insets.md,
               ),
-            ],
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 84,
+                    height: 84,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 78,
+                          height: 78,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppColors.primaryContainer,
+                                AppColors.primaryContainer.withValues(alpha: 0.65),
+                              ],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(alpha: 0.14),
+                                blurRadius: 14,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.65),
+                              width: 1.5,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Icon(
+                            icon,
+                            size: IconSizes.xxl - 2,
+                            color: AppColors.primary,
+                            shadows: [
+                              Shadow(
+                                color: AppColors.primaryDark.withValues(alpha: 0.18),
+                                blurRadius: 6,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PositionedDirectional(
+                          end: -1,
+                          bottom: 0,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceElevated,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.primaryContainer,
+                                width: 2,
+                              ),
+                              boxShadow: const [AppShadows.sm],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(1),
+                              child: Icon(
+                                Icons.play_circle_filled_rounded,
+                                size: 24,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Gaps.smV,
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyles.titleMedium.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      height: 1.25,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

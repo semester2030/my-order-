@@ -6,6 +6,10 @@ class RegisterVendorRequest with EquatableMixin {
     required this.name,
     required this.email,
     required this.password,
+    required this.address,
+    required this.city,
+    required this.latitude,
+    required this.longitude,
     this.phoneNumber,
     this.providerCategory,
     this.tradeName,
@@ -16,6 +20,10 @@ class RegisterVendorRequest with EquatableMixin {
   final String name;
   final String email;
   final String password;
+  final String address;
+  final String city;
+  final double latitude;
+  final double longitude;
   final String? phoneNumber;
   final String? providerCategory;
   final String? tradeName;
@@ -27,6 +35,10 @@ class RegisterVendorRequest with EquatableMixin {
         name,
         email,
         password,
+        address,
+        city,
+        latitude,
+        longitude,
         phoneNumber,
         providerCategory,
         tradeName,

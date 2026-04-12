@@ -43,6 +43,36 @@ class AppLocalizations {
   String get emailLabel => isAr ? StringsAr.emailLabel : StringsEn.emailLabel;
   String get passwordLabel => isAr ? StringsAr.passwordLabel : StringsEn.passwordLabel;
   String get createAccount => isAr ? StringsAr.createAccount : StringsEn.createAccount;
+  String get registerSubtitleWithLocation =>
+      isAr ? StringsAr.registerSubtitleWithLocation : StringsEn.registerSubtitleWithLocation;
+  String get registerServiceLocationTitle =>
+      isAr ? StringsAr.registerServiceLocationTitle : StringsEn.registerServiceLocationTitle;
+  String get registerStreetAddressLabel =>
+      isAr ? StringsAr.registerStreetAddressLabel : StringsEn.registerStreetAddressLabel;
+  String get registerStreetAddressHint =>
+      isAr ? StringsAr.registerStreetAddressHint : StringsEn.registerStreetAddressHint;
+  String get registerCityLabel => isAr ? StringsAr.registerCityLabel : StringsEn.registerCityLabel;
+  String get registerCityHint => isAr ? StringsAr.registerCityHint : StringsEn.registerCityHint;
+  String get registerLatitudeLabel =>
+      isAr ? StringsAr.registerLatitudeLabel : StringsEn.registerLatitudeLabel;
+  String get registerLongitudeLabel =>
+      isAr ? StringsAr.registerLongitudeLabel : StringsEn.registerLongitudeLabel;
+  String get registerCoordinatesHint =>
+      isAr ? StringsAr.registerCoordinatesHint : StringsEn.registerCoordinatesHint;
+  String get registerCoordinatesZero =>
+      isAr ? StringsAr.registerCoordinatesZero : StringsEn.registerCoordinatesZero;
+  String get registerUseMyLocation =>
+      isAr ? StringsAr.registerUseMyLocation : StringsEn.registerUseMyLocation;
+  String get registerFetchingLocation =>
+      isAr ? StringsAr.registerFetchingLocation : StringsEn.registerFetchingLocation;
+  String get registerLocationServiceDisabled =>
+      isAr ? StringsAr.registerLocationServiceDisabled : StringsEn.registerLocationServiceDisabled;
+  String get registerLocationPermissionDenied =>
+      isAr ? StringsAr.registerLocationPermissionDenied : StringsEn.registerLocationPermissionDenied;
+  String get registerLocationPermissionForever =>
+      isAr ? StringsAr.registerLocationPermissionForever : StringsEn.registerLocationPermissionForever;
+  String get registerLocationPositionUnavailable =>
+      isAr ? StringsAr.registerLocationPositionUnavailable : StringsEn.registerLocationPositionUnavailable;
   String get registerSuccessTitle =>
       isAr ? StringsAr.registerSuccessTitle : StringsEn.registerSuccessTitle;
   String get registerSuccessBody =>

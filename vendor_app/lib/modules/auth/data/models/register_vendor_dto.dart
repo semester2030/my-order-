@@ -1,10 +1,14 @@
 /// Request DTO for POST /vendors/register.
-/// Aligned with backend RegisterVendorDto: required name, email, password; optional fields.
+/// Aligned with backend RegisterVendorDto.
 class RegisterVendorDto {
   const RegisterVendorDto({
     required this.name,
     required this.email,
     required this.password,
+    required this.address,
+    required this.city,
+    required this.latitude,
+    required this.longitude,
     this.phoneNumber,
     this.providerCategory,
     this.tradeName,
@@ -15,6 +19,10 @@ class RegisterVendorDto {
   final String name;
   final String email;
   final String password;
+  final String address;
+  final String city;
+  final double latitude;
+  final double longitude;
   final String? phoneNumber;
   /// home_cooking | popular_cooking | private_events | grilling
   final String? providerCategory;
@@ -28,6 +36,10 @@ class RegisterVendorDto {
       'name': name,
       'email': email,
       'password': password,
+      'address': address,
+      'city': city,
+      'latitude': latitude,
+      'longitude': longitude,
     };
     if (phoneNumber != null) map['phoneNumber'] = phoneNumber;
     if (providerCategory != null) map['providerCategory'] = providerCategory;

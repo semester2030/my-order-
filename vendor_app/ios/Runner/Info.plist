@@ -52,6 +52,8 @@
 	<string>نحتاج الوصول للمعرض لاختيار صور الوجبات ورفع فيديوهات التعريف بمطبخك.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>نحتاج الإذن لحفظ الصور والفيديوهات في المعرض.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>نستخدم موقعك لتعبئة عنوان مقدم الخدمة والإحداثيات عند التسجيل — ليظهر للعميل ويُحسب البعد.</string>
 	<!-- تعطيل Impeller على الجهاز الفعلي قد يمنع تعطل DartInit/شاشة بيضاء -->
 	<key>FLTEnableImpeller</key>
 	<false/>

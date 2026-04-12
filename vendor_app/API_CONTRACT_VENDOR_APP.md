@@ -50,6 +50,10 @@
   "name": "مطبخ الورد",
   "email": "vendor@example.com",
   "password": "••••••••",
+  "address": "طريق الملك فهد، حي العليا",
+  "city": "الرياض",
+  "latitude": 24.7136,
+  "longitude": 46.6753,
   "phoneNumber": "0500000000",
   "providerCategory": "popular_cooking",
   "tradeName": "Kitchen Alward",
@@ -57,6 +61,8 @@
   "popularCookingAddOns": "[{\"name\":\"جريش\",\"price\":50}]"
 }
 ```
+
+**إلزامي:** `address` (≥3 أحرف)، `city` (≥2)، `latitude`، `longitude` — ولا يُقبل موقع (0،0).
 
 **Response (201):**
 ```json

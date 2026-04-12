@@ -3,7 +3,7 @@
 class FeatureFlags {
   FeatureFlags._();
 
-  /// Show "Side Orders" in Shell for popular_cooking vendors.
+  /// Show "Side Orders" in Shell for popular_cooking (طبخ الذبائح) vendors.
   static const bool sideOrdersEnabled = true;
 
   /// Enable analytics module.

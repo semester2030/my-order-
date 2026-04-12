@@ -10,7 +10,7 @@ import '../../domain/entities/feed_item.dart';
 
 /// أزرار على يمين الفيديو (نمط تيك توك).
 /// — الطبخ المنزلي: وجبات جاهزة + "اطلب وجبتك المخصصة" (طلب وجبة غير القائمة).
-/// — الطبخ الشعبي + الشوي: "احجز الطباخ" — الطباخ يأتي عند العميل.
+/// — طبخ الذبائح + الشواء الخارجي: "احجز الطباخ" — الطباخ يأتي عند العميل.
 class FeedVideoSideActions extends StatelessWidget {
   final FeedItem item;
   /// إن كانت الخدمة غير متاحة يظهر الزر معطّلاً مع توضيح.
@@ -25,7 +25,7 @@ class FeedVideoSideActions extends StatelessWidget {
   bool get _isPopularCooking =>
       item.vendor.providerCategory == ProviderCategories.popularCooking;
 
-  /// الطبخ المنزلي: "اطلب وجبتك المخصصة" | الطبخ الشعبي + الشوي: "احجز الطباخ" | المناسبات: "طلب مناسبة"
+  /// الطبخ المنزلي: "اطلب وجبتك المخصصة" | طبخ الذبائح + الشواء الخارجي: "احجز الطباخ" | مناسبات/بوفيه: "طلب مناسبة"
   bool get _showRequestChefButton {
     final cat = item.vendor.providerCategory;
     return cat == ProviderCategories.homeCooking ||
@@ -66,13 +66,20 @@ class FeedVideoSideActions extends StatelessWidget {
                       if (item.vendor.providerCategory ==
                           ProviderCategories.privateEvents) {
                         context.push(
-                            '${RouteNames.requestPrivateEvent}/${item.vendor.id}');
+                            '${RouteNames.requestPrivateEvent}/${item.vendor.id}',
+                        );
                       } else if (item.vendor.isPopularCooking) {
                         context.push(
-                            '${RouteNames.requestChef}/${item.vendor.id}?category=popular_cooking');
+                            '${RouteNames.requestChef}/${item.vendor.id}?category=${ProviderCategories.popularCooking}',
+                        );
+                      } else if (item.vendor.isGrilling) {
+                        context.push(
+                            '${RouteNames.requestChef}/${item.vendor.id}?category=${ProviderCategories.grilling}',
+                        );
                       } else {
                         context.push(
-                            '${RouteNames.requestChef}/${item.vendor.id}');
+                            '${RouteNames.requestChef}/${item.vendor.id}',
+                        );
                       }
                     }
                   : null,

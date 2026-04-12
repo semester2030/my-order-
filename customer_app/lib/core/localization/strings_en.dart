@@ -129,6 +129,7 @@ class StringsEn {
   static const String requestCooking = 'Order Your Custom Meal';
   static const String requestCookingTooltip = 'Request a dish not on the menu';
   static const String requestEvent = 'Request Event';
+  static const String bookYourEvent = 'Book your event';
   static const String unavailableNow = 'Unavailable now';
   static const String signature = 'Signature';
   static const String sortByDistance = 'Nearest';
@@ -149,10 +150,11 @@ class StringsEn {
   static const String addToCartFailed = 'Failed to add to cart';
   // Provider categories
   static const String categoryHomeCooking = 'Home Cooking';
-  static const String categoryPopularCooking = 'Popular Cooking';
-  static const String categoryPrivateEvents = 'Private Events';
-  static const String categoryGrilling = 'Grilling';
+  static const String categoryPopularCooking = 'Sacrificial meat cooking';
+  static const String categoryPrivateEvents = 'Events & parties';
+  static const String categoryGrilling = 'Outdoor BBQ';
   static const String selectService = 'Select Service';
+  static const String categoriesVideoHint = 'Pick a category to browse chef videos';
 
   // === Request Chef ===
   static const String selectDateAndTime = 'Select date and time';
@@ -163,11 +165,19 @@ class StringsEn {
   static const String orderSentSuccess = 'Request sent. The chef will respond soon.';
   static const String requestFailed = 'Failed to send request';
   static const String servicesOnRequest = 'Services on Request';
-  static const String popularCookingDesc = 'Will come to your location to cook (home, farm, retreat). Set address, date, time and number of guests.';
+  static const String popularCookingDesc =
+      'Will come to your location to cook sacrificial meat (home, farm, rest stop). Set address, date, time, and number of guests.';
   static const String homeCookingDesc = 'Order what you want from the provider — set date, time and number of guests. No payment now — you will receive a quote or acceptance.';
-  static String popularCookingDescWithName(String name) => '$name will come to your location to cook (home, farm, retreat). Set address, date, time and number of guests.';
+  static String popularCookingDescWithName(String name) =>
+      '$name will come to your location to cook sacrificial meat (home, farm, rest stop). Set address, date, time, and number of guests.';
+  static String grillingServiceDescWithName(String name) =>
+      '$name will come to your location for outdoor BBQ (home, farm, rest stop). Set address, date, time, and number of guests.';
   static String homeCookingDescWithName(String name) => 'Order what you want from $name — set date, time and number of guests. No payment now — you will receive a quote or acceptance.';
+  static const String selectOnsiteServiceAddress =
+      'Select the address where the service will take place (your venue)';
   static const String noAddressAddOne = 'No address. Add an address for slaughter reception.';
+  static const String noAddressAddOneOnsite =
+      'No address. Add an address for your service location.';
   static const String addAddress = 'Add Address';
   static const String sideOrdersOptional = 'Side orders (optional)';
   static const String tapToSelectSideOrders = 'Tap to select side orders you want:';
@@ -192,9 +202,25 @@ class StringsEn {
   static const String deliveryToAddress = 'Order will be delivered to your address';
   static const String pickupFromChef = 'Pickup from chef (chef cooks at their home)';
   static const String additionalNotes = 'Additional notes (optional)';
-  static const String notesHintPopular = 'E.g.: number of slaughters, cooking preferences';
+  static const String notesHintPopular = 'E.g.: number of sacrifices, cooking preferences';
+  static const String notesHintGrilling =
+      'E.g.: meat type, headcount, doneness, special BBQ requests';
+  static const String grillingSelectionsTitle = 'BBQ & appetizers (optional)';
+  static const String grillingSelectionsSubtitle =
+      'Select what you like; add more detail in the notes below.';
+  static const String grillingNotesPrefix = 'Requested BBQ & appetizers';
+  static const String grillingOptKebab = 'Kebab';
+  static const String grillingOptAwsal = 'Lamb cuts (awsal)';
+  static const String grillingOptShishTawook = 'Shish tawook';
+  static const String grillingOptKofta = 'Kofta';
+  static const String grillingOptRibs = 'Ribs';
+  static const String grillingOptMixedGrill = 'Mixed grill';
+  static const String grillingOptHummus = 'Hummus';
+  static const String grillingOptMutabal = 'Mutabal';
+  static const String grillingOptColdAppetizers = 'Cold appetizers & salads';
   static const String notesHintHome = 'E.g.: no onion, spicy, extra utensils';
   static const String selectSlaughterAddressBtn = 'Select slaughter address';
+  static const String selectOnsiteServiceAddressBtn = 'Select service address';
   static const String sendRequest = 'Send Request';
   static const String selectOneDishMin = 'Select at least one dish';
 
@@ -375,7 +401,7 @@ class StringsEn {
 
   static const String termsSection2Title = '2. Platform & Services Definition';
   static const String termsSection2Body =
-      'Home Kitchen is an electronic platform connecting: (a) customers seeking home-cooked food, and (b) service providers (home chefs) who produce cooking from their homes or provide cooking services at customers\' locations. We offer: ready meals from chefs, popular cooking (chef comes to cook at your place), private events, and grilling. We are an intermediary only — we do not produce food nor control its content.';
+      'Home Kitchen is an electronic platform connecting: (a) customers seeking home-cooked food, and (b) service providers (home chefs) who produce cooking from their homes or provide cooking services at customers\' locations. We offer: ready meals from chefs, on-site sacrifice cooking (chef comes to cook sacrifices at your location), events & parties, and outdoor BBQ. We are an intermediary only — we do not produce food nor control its content.';
 
   static const String termsSection3Title = '3. Who These Terms Apply To';
   static const String termsSection3Body =

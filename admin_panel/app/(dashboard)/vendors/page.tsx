@@ -30,9 +30,9 @@ const statusLabel: Record<string, string> = {
 
 const categoryLabel: Record<string, string> = {
   home_cooking: 'الطبخ المنزلي',
-  popular_cooking: 'الطبخ الشعبي',
-  private_events: 'المناسبات الخاصة',
-  grilling: 'الشوي',
+  popular_cooking: 'طبخ الذبائح',
+  private_events: 'المناسبات والحفلات',
+  grilling: 'الشواء الخارجي',
 }
 
 export default function VendorsPage() {

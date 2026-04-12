@@ -20,11 +20,11 @@ class ProviderCategories {
       case homeCooking:
         return 'الطبخ المنزلي';
       case popularCooking:
-        return 'الطبخ الشعبي';
+        return 'طبخ الذبائح';
       case privateEvents:
-        return 'المناسبات الخاصة';
+        return 'المناسبات والحفلات';
       case grilling:
-        return 'الشوي';
+        return 'الشواء الخارجي';
       default:
         return value;
     }

@@ -31,6 +31,29 @@ class StringsAr {
   static const String emailLabel = 'البريد الإلكتروني';
   static const String passwordLabel = 'كلمة المرور';
   static const String createAccount = 'إنشاء حساب جديد';
+  static const String registerSubtitleWithLocation =
+      'مطلوب: الاسم، البريد، كلمة المرور، وموقع تنفيذ الخدمة (العنوان، المدينة، خط العرض والطول من الخرائط) ليظهر للعميل ويُحسب البعد.';
+  static const String registerServiceLocationTitle = 'موقع مقدم الخدمة';
+  static const String registerStreetAddressLabel = 'عنوان الموقع';
+  static const String registerStreetAddressHint = 'مثال: شارع، حي، رقم المبنى';
+  static const String registerCityLabel = 'المدينة';
+  static const String registerCityHint = 'مثال: الرياض';
+  static const String registerLatitudeLabel = 'خط العرض (Latitude)';
+  static const String registerLongitudeLabel = 'خط الطول (Longitude)';
+  static const String registerCoordinatesHint =
+      'من Google Maps: اضغط على الموقع ثم انسخ «خط العرض، خط الطول».';
+  static const String registerCoordinatesZero =
+      'الإحداثيات لا يمكن أن تكون صفراً — حدد موقعك الحقيقي على الخريطة.';
+  static const String registerUseMyLocation = 'استخدام موقعي الحالي';
+  static const String registerFetchingLocation = 'جاري تحديد الموقع...';
+  static const String registerLocationServiceDisabled =
+      'فعِّل خدمة الموقع (GPS) من إعدادات الجهاز.';
+  static const String registerLocationPermissionDenied =
+      'اسمح بالوصول للموقع لتعبئة العنوان والإحداثيات تلقائياً.';
+  static const String registerLocationPermissionForever =
+      'تم رفض الموقع من الإعدادات — فعِّل الإذن لتطبيق «شيف مطبخ البيت» ثم أعد المحاولة.';
+  static const String registerLocationPositionUnavailable =
+      'تعذر الحصول على الموقع. جرّب مرة أخرى أو أدخل الإحداثيات يدوياً من الخرائط.';
   /// بعد تسجيل مقدّم خدمة ناجح — حوار يوضّح الخطوات التالية (بريد، موافقة، رفض).
   static const String registerSuccessTitle = 'تم التسجيل بنجاح';
   static const String registerSuccessBody =
@@ -218,7 +241,7 @@ class StringsAr {
   static const String vendorCombinedTermsMenuSectionTitle = 'الشروط العامة لعرض الوجبات';
   static const String vendorCategoryTermsSectionTitle = 'شروط إضافية حسب نوع الخدمة';
   static const String vendorCategoryTermsPlaceholder =
-      'هذا القسم مخصّص لشروط تختلف بحسب فئة مقدّم الخدمة (مطبخ منزلي، شوي، مناسبات، …). النصوص غير جاهزة بعد — سيُكمل الفريق لاحقاً دون تغيير شاشة الموافقة.';
+      'هذا القسم مخصّص لشروط تختلف بحسب فئة مقدّم الخدمة (مطبخ منزلي، الشواء الخارجي، المناسبات والحفلات، …). النصوص غير جاهزة بعد — سيُكمل الفريق لاحقاً دون تغيير شاشة الموافقة.';
   static const String vendorLegalAlreadyAccepted = 'تم قبول لوائح المنصّة مسبقاً لهذا الإصدار.';
   static const String vendorMenuTermsAlreadyAccepted = 'تم قبول شروط عرض الوجبات مسبقاً لهذا الإصدار.';
   static const String vendorCombinedTermsReadCheckbox =

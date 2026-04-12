@@ -34,7 +34,7 @@ export class PrivateEventsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'طلبات المناسبات الخاصة الخاصة بي' })
+  @ApiOperation({ summary: 'طلبات المناسبات والحفلات الخاصة بي' })
   async getMine(@Request() req: { user: User }) {
     return this.privateEventsService.findPrivateEventRequestsByUser(
       req.user.id,

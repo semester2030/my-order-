@@ -40,10 +40,10 @@ type RegisterFormData = {
   type?: string
   description?: string
   website?: string
-  address?: string
-  city?: string
-  latitude?: number
-  longitude?: number
+  address: string
+  city: string
+  latitude: string
+  longitude: string
   deliveryFee?: number
   deliveryRadius?: number
   estimatedDeliveryTime?: number
@@ -90,10 +90,10 @@ export default function RegisterPage() {
           type: z.string().optional(),
           description: z.string().optional(),
           website: z.string().url(t('register.invalidUrl')).optional().or(z.literal('')),
-          address: z.string().optional(),
-          city: z.string().optional(),
-          latitude: z.number().optional(),
-          longitude: z.number().optional(),
+          address: z.string().trim().min(3, t('register.addressRequired')),
+          city: z.string().trim().min(2, t('register.cityRequired')),
+          latitude: z.string().min(1, t('register.latitudeRequired')),
+          longitude: z.string().min(1, t('register.longitudeRequired')),
           deliveryFee: z.number().optional(),
           deliveryRadius: z.number().optional(),
           estimatedDeliveryTime: z.number().optional(),
@@ -110,6 +110,47 @@ export default function RegisterPage() {
         .refine((data) => data.password === data.confirmPassword, {
           message: t('register.passwordMismatch'),
           path: ['confirmPassword'],
+        })
+        .superRefine((data, ctx) => {
+          const lat = parseFloat(data.latitude.replace(',', '.'))
+          const lng = parseFloat(data.longitude.replace(',', '.'))
+          if (Number.isNaN(lat)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t('register.invalidLatitude'),
+              path: ['latitude'],
+            })
+            return
+          }
+          if (Number.isNaN(lng)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t('register.invalidLongitude'),
+              path: ['longitude'],
+            })
+            return
+          }
+          if (lat < -90 || lat > 90) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t('register.latitudeRange'),
+              path: ['latitude'],
+            })
+          }
+          if (lng < -180 || lng > 180) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t('register.longitudeRange'),
+              path: ['longitude'],
+            })
+          }
+          if (Math.abs(lat) < 1e-9 && Math.abs(lng) < 1e-9) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t('register.coordinatesNonZero'),
+              path: ['latitude'],
+            })
+          }
         }),
     [t]
   )
@@ -134,6 +175,8 @@ export default function RegisterPage() {
       website: '',
       address: '',
       city: '',
+      latitude: '',
+      longitude: '',
       deliveryFee: 15,
       deliveryRadius: 10,
       estimatedDeliveryTime: 30,
@@ -187,10 +230,16 @@ export default function RegisterPage() {
       setIsSubmitting(true)
       setError(null)
 
+      const lat = parseFloat(data.latitude.replace(',', '.'))
+      const lng = parseFloat(data.longitude.replace(',', '.'))
       const registerData: RegisterVendorDto = {
         name: data.name.trim(),
         email: data.email.trim(),
         password: data.password,
+        address: data.address.trim(),
+        city: data.city.trim(),
+        latitude: lat,
+        longitude: lng,
       }
       if (data.phoneNumber?.trim()) registerData.phoneNumber = data.phoneNumber.trim()
       if (data.providerCategory?.trim()) registerData.providerCategory = data.providerCategory.trim()
@@ -198,10 +247,6 @@ export default function RegisterPage() {
       if (data.type) registerData.type = data.type
       if (data.description?.trim()) registerData.description = data.description.trim()
       if (data.website?.trim()) registerData.website = data.website.trim()
-      if (data.address?.trim()) registerData.address = data.address.trim()
-      if (data.city?.trim()) registerData.city = data.city.trim()
-      if (data.latitude !== undefined) registerData.latitude = data.latitude
-      if (data.longitude !== undefined) registerData.longitude = data.longitude
       if (data.deliveryFee !== undefined) registerData.deliveryFee = data.deliveryFee
       if (data.deliveryRadius !== undefined) registerData.deliveryRadius = data.deliveryRadius
       if (data.estimatedDeliveryTime !== undefined) registerData.estimatedDeliveryTime = data.estimatedDeliveryTime
@@ -374,6 +419,69 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-text-primary">
+                {t('register.serviceLocationTitle')}
+              </h2>
+              <p className="text-xs text-text-secondary">{t('register.coordinatesHint')}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    {t('register.address')} <span className="text-error">*</span>
+                  </label>
+                  <input
+                    {...register('address')}
+                    type="text"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  {errors.address && (
+                    <p className="mt-1 text-sm text-error">{errors.address.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    {t('register.city')} <span className="text-error">*</span>
+                  </label>
+                  <input
+                    {...register('city')}
+                    type="text"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  {errors.city && <p className="mt-1 text-sm text-error">{errors.city.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    {t('register.latitude')} <span className="text-error">*</span>
+                  </label>
+                  <input
+                    {...register('latitude')}
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="24.7136"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  {errors.latitude && (
+                    <p className="mt-1 text-sm text-error">{errors.latitude.message}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    {t('register.longitude')} <span className="text-error">*</span>
+                  </label>
+                  <input
+                    {...register('longitude')}
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="46.6753"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  {errors.longitude && (
+                    <p className="mt-1 text-sm text-error">{errors.longitude.message}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {/* خدمات إضافية للطبخ الشعبي (جريش، قرصان، ادامات…) — تظهر للعميل لطلبها */}
             {providerCategory === 'popular_cooking' && (
               <div className="mt-4 p-4 border border-border rounded-lg bg-surface/50 space-y-3">
@@ -451,14 +559,6 @@ export default function RegisterPage() {
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-text-primary mb-2">{t('register.description')}</label>
                     <textarea {...register('description')} rows={2} className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-text-primary mb-2">{t('register.address')}</label>
-                    <input {...register('address')} type="text" className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-text-primary mb-2">{t('register.city')}</label>
-                    <input {...register('city')} type="text" className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-text-primary mb-2">{t('register.ownerName')}</label>

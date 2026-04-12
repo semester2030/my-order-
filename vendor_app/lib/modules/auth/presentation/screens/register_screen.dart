@@ -9,6 +9,7 @@ import 'package:vendor_app/core/widgets/app_text_field.dart';
 import 'package:vendor_app/core/widgets/primary_button.dart';
 import 'package:vendor_app/core/di/providers.dart';
 import 'package:vendor_app/core/routing/route_names.dart';
+import 'package:vendor_app/core/location/register_location_helper.dart';
 import 'package:vendor_app/modules/auth/domain/entities/register_vendor_request.dart';
 import 'package:vendor_app/modules/auth/presentation/providers/auth_state.dart';
 
@@ -22,10 +23,10 @@ class RegisterScreen extends ConsumerStatefulWidget {
 
 /// أنواع مقدم الخدمة حسب الباك اند — نفس الويب.
 const List<({String value, String labelAr})> _providerCategories = [
-  (value: 'popular_cooking', labelAr: 'طبخ شعبي'),
+  (value: 'popular_cooking', labelAr: 'طبخ الذبائح'),
   (value: 'home_cooking', labelAr: 'مطبخ منزلي'),
-  (value: 'private_events', labelAr: 'مناسبات خاصة'),
-  (value: 'grilling', labelAr: 'شوي'),
+  (value: 'private_events', labelAr: 'المناسبات والحفلات'),
+  (value: 'grilling', labelAr: 'الشواء الخارجي'),
 ];
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
@@ -33,8 +34,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _latitudeController = TextEditingController();
+  final _longitudeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String? _selectedProviderCategory;
+  bool _locationBusy = false;
 
   @override
   void dispose() {
@@ -42,6 +48,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _phoneController.dispose();
+    _addressController.dispose();
+    _cityController.dispose();
+    _latitudeController.dispose();
+    _longitudeController.dispose();
     super.dispose();
   }
 
@@ -56,12 +66,73 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         m.contains('already registered');
   }
 
+  Future<void> _useCurrentLocation() async {
+    final l10n = AppLocalizations.of(context);
+    if (_locationBusy) return;
+    setState(() => _locationBusy = true);
+    final out = await RegisterLocationHelper.obtainCurrent();
+    if (!mounted) return;
+    setState(() => _locationBusy = false);
+
+    if (out.err != null) {
+      final msg = switch (out.err!) {
+        RegisterLocationPickError.serviceDisabled => l10n.registerLocationServiceDisabled,
+        RegisterLocationPickError.permissionDenied => l10n.registerLocationPermissionDenied,
+        RegisterLocationPickError.permissionDeniedForever =>
+          l10n.registerLocationPermissionForever,
+        RegisterLocationPickError.positionUnavailable => l10n.registerLocationPositionUnavailable,
+      };
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(msg),
+          backgroundColor: SemanticColors.error,
+        ),
+      );
+      return;
+    }
+
+    final d = out.data!;
+    setState(() {
+      _latitudeController.text = d.latitude.toStringAsFixed(6);
+      _longitudeController.text = d.longitude.toStringAsFixed(6);
+      final addr = d.suggestedAddress?.trim();
+      if (addr != null && addr.length >= 3) {
+        _addressController.text = addr;
+      }
+      final city = d.suggestedCity?.trim();
+      if (city != null && city.length >= 2) {
+        _cityController.text = city;
+      }
+    });
+  }
+
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
+    final lat = double.tryParse(
+      _latitudeController.text.trim().replaceAll(',', '.'),
+    );
+    final lng = double.tryParse(
+      _longitudeController.text.trim().replaceAll(',', '.'),
+    );
+    if (lat == null || lng == null) return;
+    if (lat.abs() < 1e-9 && lng.abs() < 1e-9) {
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.registerCoordinatesZero),
+          backgroundColor: SemanticColors.error,
+        ),
+      );
+      return;
+    }
     final request = RegisterVendorRequest(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
+      address: _addressController.text.trim(),
+      city: _cityController.text.trim(),
+      latitude: lat,
+      longitude: lng,
       phoneNumber: _phoneController.text.trim().isEmpty
           ? null
           : _phoneController.text.trim(),
@@ -72,6 +143,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final authState = ref.watch(authNotifierProvider);
 
     ref.listen<AuthState>(authNotifierProvider, (prev, next) {
@@ -117,7 +189,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         title: Text(
-          'إنشاء حساب',
+          l10n.createAccount,
           style: TextStyles.headlineSmall,
         ),
       ),
@@ -154,7 +226,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 Gaps.smV,
                 Text(
-                  'الاسم، البريد، وكلمة المرور مطلوبة',
+                  l10n.registerSubtitleWithLocation,
                   style: TextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -211,6 +283,91 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   decoration: InputDecoration(
                     labelText: 'رقم الجوال (اختياري)',
                     hintText: '05xxxxxxxx',
+                    border: OutlineInputBorder(
+                      borderRadius: AppRadius.mdAll,
+                    ),
+                    filled: true,
+                    fillColor: AppColors.surface,
+                  ),
+                ),
+                Gaps.lgV,
+                Text(
+                  l10n.registerServiceLocationTitle,
+                  style: TextStyles.titleMedium.copyWith(color: AppColors.textPrimary),
+                ),
+                Gaps.smV,
+                Text(
+                  l10n.registerCoordinatesHint,
+                  style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                ),
+                Gaps.mdV,
+                OutlinedButton.icon(
+                  onPressed: (_locationBusy || authState is AuthLoading) ? null : _useCurrentLocation,
+                  icon: _locationBusy
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primary,
+                          ),
+                        )
+                      : const Icon(Icons.my_location_outlined),
+                  label: Text(
+                    _locationBusy ? l10n.registerFetchingLocation : l10n.registerUseMyLocation,
+                  ),
+                ),
+                Gaps.mdV,
+                AppTextField(
+                  controller: _addressController,
+                  validator: (v) => Validators.minLength(v, 3, l10n.registerStreetAddressLabel),
+                  decoration: InputDecoration(
+                    labelText: l10n.registerStreetAddressLabel,
+                    hintText: l10n.registerStreetAddressHint,
+                    border: OutlineInputBorder(
+                      borderRadius: AppRadius.mdAll,
+                    ),
+                    filled: true,
+                    fillColor: AppColors.surface,
+                  ),
+                ),
+                Gaps.mdV,
+                AppTextField(
+                  controller: _cityController,
+                  validator: (v) => Validators.minLength(v, 2, l10n.registerCityLabel),
+                  decoration: InputDecoration(
+                    labelText: l10n.registerCityLabel,
+                    hintText: l10n.registerCityHint,
+                    border: OutlineInputBorder(
+                      borderRadius: AppRadius.mdAll,
+                    ),
+                    filled: true,
+                    fillColor: AppColors.surface,
+                  ),
+                ),
+                Gaps.mdV,
+                AppTextField(
+                  controller: _latitudeController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                  validator: Validators.latitude,
+                  decoration: InputDecoration(
+                    labelText: l10n.registerLatitudeLabel,
+                    hintText: '24.7136',
+                    border: OutlineInputBorder(
+                      borderRadius: AppRadius.mdAll,
+                    ),
+                    filled: true,
+                    fillColor: AppColors.surface,
+                  ),
+                ),
+                Gaps.mdV,
+                AppTextField(
+                  controller: _longitudeController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                  validator: Validators.longitude,
+                  decoration: InputDecoration(
+                    labelText: l10n.registerLongitudeLabel,
+                    hintText: '46.6753',
                     border: OutlineInputBorder(
                       borderRadius: AppRadius.mdAll,
                     ),

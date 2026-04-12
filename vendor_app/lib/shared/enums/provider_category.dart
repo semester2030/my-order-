@@ -1,9 +1,9 @@
-/// فئة مقدم الخدمة — Phase 12 (لإظهار الطلبات الجانبية لمقدمي الطبخ الشعبي فقط).
+/// فئة مقدم الخدمة — Phase 12 (لإظهار الطلبات الجانبية لمقدمي طبخ الذبائح فقط).
 enum ProviderCategory {
   homeCooking('home_cooking', 'طبخ منزلي'),
-  popularCooking('popular_cooking', 'طبخ شعبي'),
-  privateEvents('private_events', 'مناسبات خاصة'),
-  grilling('grilling', 'شواء');
+  popularCooking('popular_cooking', 'طبخ الذبائح'),
+  privateEvents('private_events', 'المناسبات والحفلات'),
+  grilling('grilling', 'الشواء الخارجي');
 
   const ProviderCategory(this.value, this.labelAr);
 
