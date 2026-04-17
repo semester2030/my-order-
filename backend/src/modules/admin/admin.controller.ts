@@ -7,6 +7,8 @@ import {
   Body,
   UseGuards,
   Request,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
@@ -18,6 +20,7 @@ import { DriverStatus } from '../drivers/enums/driver-status.enum';
 import { OrderStatus } from '../orders/entities/order.entity';
 import { RejectReasonDto } from './dto/reject-reason.dto';
 import { ForceOrderStatusDto } from './dto/force-order-status.dto';
+import { EventRequestsService } from '../event-requests/event-requests.service';
 
 @ApiTags('admin')
 @Controller('admin')
@@ -27,6 +30,7 @@ export class AdminController {
   constructor(
     private readonly adminService: AdminService,
     private readonly auditService: AuditService,
+    private readonly eventRequestsService: EventRequestsService,
   ) {}
 
   @Get('dashboard')
@@ -279,5 +283,76 @@ export class AdminController {
   @ApiOperation({ summary: 'Get risk flags' })
   async getRiskFlags() {
     return this.adminService.getRiskFlags();
+  }
+
+  @Get('home-cooking-payment-queue')
+  @ApiOperation({
+    summary: 'قائمة طلبات الطبخ المنزلي بانتظار تحقق التحويل البنكي',
+  })
+  async getHomeCookingPaymentQueue(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const { items, total } =
+      await this.eventRequestsService.findHomeCookingPaymentPendingForAdmin({
+        page: page ? parseInt(page, 10) : undefined,
+        limit: limit ? parseInt(limit, 10) : undefined,
+      });
+    return {
+      items,
+      total,
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? parseInt(limit, 10) : 20,
+    };
+  }
+
+  @Post('home-cooking-requests/:id/verify-payment')
+  @ApiOperation({
+    summary: 'تأكيد استلام تحويل طلب طبخ منزلي — يُبلّغ المطبخ بالبدء',
+  })
+  @HttpCode(HttpStatus.OK)
+  async verifyHomeCookingPayment(
+    @Param('id') id: string,
+    @Request() req: { user: AdminTokenPayload } & { ip?: string; headers?: object },
+  ) {
+    const updated =
+      await this.eventRequestsService.verifyHomeCookingPaymentByAdmin(
+        id,
+        req.user.sub,
+      );
+    await this.auditService.log({
+      actorId: req.user.sub,
+      action: 'home_cooking_payment_verified',
+      entityType: 'event_request',
+      entityId: id,
+      newValue: {
+        status: updated.status,
+        paymentVerifiedAt: updated.paymentVerifiedAt,
+      },
+      req: req as { ip?: string; headers?: { 'user-agent'?: string } },
+    });
+    return updated;
+  }
+
+  @Get('home-cooking-completed')
+  @ApiOperation({
+    summary:
+      'أرشيف طلبات الطبخ المنزلي المكتملة (بعد تأكيد استلام العميل) مع رمز الإتمام',
+  })
+  async getHomeCookingCompleted(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const { items, total } =
+      await this.eventRequestsService.findHomeCookingCompletedForAdmin({
+        page: page ? parseInt(page, 10) : undefined,
+        limit: limit ? parseInt(limit, 10) : undefined,
+      });
+    return {
+      items,
+      total,
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? parseInt(limit, 10) : 20,
+    };
   }
 }

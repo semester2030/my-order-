@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/routing/route_names.dart';
+import '../../../../core/widgets/branded_logo.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/utils/validators.dart';
@@ -83,19 +84,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(90),
-                    child: Image.asset(
-                      'assets/images/icons/logo.jpeg',
-                      width: 180,
-                      height: 180,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Icon(
-                        Icons.restaurant,
-                        size: 180,
-                        color: AppColors.primary,
-                      ),
-                    ),
+                  child: BrandedLogo(
+                    assetPath: 'assets/images/icons/logo.jpeg',
+                    size: 220,
+                    cornerRadius: 110,
                   ),
                 ),
                 Gaps.lgV,

@@ -72,6 +72,13 @@ class Endpoints {
   // Event Requests (احجز الطباخ / طلب طباخة)
   static const String eventRequests = '/event-requests';
   static const String createEventRequest = eventRequests;
+  static const String listMyEventRequests = eventRequests;
+  static String eventRequestById(String id) => '$eventRequests/$id';
+  static String declareHomeCookingPayment(String id) =>
+      '$eventRequests/$id/declare-home-cooking-payment';
+  static String confirmHomeCookingReceipt(String id) =>
+      '$eventRequests/$id/confirm-home-cooking-receipt';
+  static String cancelEventRequest(String id) => '$eventRequests/$id/cancel';
 
   // Private Event Requests (المناسبات الخاصة)
   static const String privateEventRequests = '/private-event-requests';

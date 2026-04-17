@@ -39,6 +39,8 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
   final _customDishesController = TextEditingController();
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  /// غداء/عشاء لحجز الولائم أو الشوي عند الموقع — قيم API: `lunch` | `dinner`.
+  String? _mealSlot;
   int _guestsCount = 1;
   /// true = توصيل الطلب لموقعي، false = استلام الطلب من عند الطباخ
   bool _delivery = false;
@@ -244,10 +246,10 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
 
   Future<void> _submitRequest() async {
     final l = AppLocalizations.of(context);
-    if (_selectedDate == null || _selectedTime == null) {
+    if (_selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l.selectDateAndTime),
+          content: Text(l.selectDate),
           backgroundColor: AppColors.error,
         ),
       );
@@ -259,6 +261,25 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
     );
     if (vendorForFlow == null) return;
     final onSite = _onSiteChefBooking(vendorForFlow);
+    if (onSite) {
+      if (_mealSlot == null || _mealSlot!.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.selectMealSlot),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        return;
+      }
+    } else if (_selectedTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l.selectDateAndTime),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
     if (onSite) {
       if (_selectedAddressId == null || _selectedAddressId!.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -322,7 +343,10 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
           vendorId: widget.vendorId,
           requestType: rt,
           scheduledDate: '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}',
-          scheduledTime: '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}',
+          scheduledTime: onSiteSubmit
+              ? null
+              : '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}',
+          mealSlot: onSiteSubmit ? _mealSlot : null,
           guestsCount: _guestsCount,
           addressId: onSiteSubmit ? _selectedAddressId : null,
           addOns: addOnsForApi,
@@ -599,17 +623,35 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                     onTap: _pickDate,
                   ),
                   Gaps.smV,
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(l.startTime, style: TextStyles.labelLarge),
-                    subtitle: Text(
-                      _selectedTime != null ? _selectedTime!.format(context) : l.selectTime,
-                      style: TextStyles.bodyMedium.copyWith(
-                        color: _selectedTime != null ? AppColors.textPrimary : AppColors.textSecondary,
+                  Text(l.chefMealSlotTitle, style: TextStyles.labelLarge),
+                  Gaps.smV,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildOptionChip(
+                          icon: Icons.wb_sunny_outlined,
+                          label: l.chefMealSlotLunch,
+                          selected: _mealSlot == 'lunch',
+                          onTap: () => setState(() => _mealSlot = 'lunch'),
+                        ),
                       ),
-                    ),
-                    trailing: const Icon(Icons.access_time),
-                    onTap: _pickTime,
+                      Gaps.smH,
+                      Expanded(
+                        child: _buildOptionChip(
+                          icon: Icons.nightlight_outlined,
+                          label: l.chefMealSlotDinner,
+                          selected: _mealSlot == 'dinner',
+                          onTap: () => setState(() => _mealSlot = 'dinner'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Gaps.smV,
+                  Text(
+                    _mealSlot == 'dinner'
+                        ? l.chefMealSlotDinnerHint
+                        : (_mealSlot == 'lunch' ? l.chefMealSlotLunchHint : '${l.chefMealSlotLunchHint}\n${l.chefMealSlotDinnerHint}'),
+                    style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
                   ),
                   Gaps.lgV,
                   AppTextField(

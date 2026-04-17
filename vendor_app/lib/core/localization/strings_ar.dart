@@ -32,7 +32,7 @@ class StringsAr {
   static const String passwordLabel = 'كلمة المرور';
   static const String createAccount = 'إنشاء حساب جديد';
   static const String registerSubtitleWithLocation =
-      'مطلوب: الاسم، البريد، كلمة المرور، وموقع تنفيذ الخدمة (العنوان، المدينة، خط العرض والطول من الخرائط) ليظهر للعميل ويُحسب البعد.';
+      'مطلوب: الاسم والبريد وكلمة المرور، وموقع تنفيذ الخدمة (عنوان ومدينة + تحديد الموقع على الخريطة).';
   static const String registerServiceLocationTitle = 'موقع مقدم الخدمة';
   static const String registerStreetAddressLabel = 'عنوان الموقع';
   static const String registerStreetAddressHint = 'مثال: شارع، حي، رقم المبنى';
@@ -41,7 +41,13 @@ class StringsAr {
   static const String registerLatitudeLabel = 'خط العرض (Latitude)';
   static const String registerLongitudeLabel = 'خط الطول (Longitude)';
   static const String registerCoordinatesHint =
-      'من Google Maps: اضغط على الموقع ثم انسخ «خط العرض، خط الطول».';
+      'يفضّل الضغط على الزر أدناه لتحديد موقعك تلقائياً — أسرع وأدق.';
+  static const String registerManualCoordinates = 'إدخال خط العرض والطول يدوياً';
+  static const String registerHideManualCoordinates = 'إخفاء الإحداثيات اليدوية';
+  static const String registerNeedLocationOrManual =
+      'حدّد موقعك: استخدم «موقعي الحالي» أو افتح «إدخال يدوي» وأكمل الإحداثيات.';
+  static const String registerMapsPasteHint =
+      'للإدخال اليدوي: من Google Maps اضغط على موقعك ثم انسخ خط العرض وخط الطول.';
   static const String registerCoordinatesZero =
       'الإحداثيات لا يمكن أن تكون صفراً — حدد موقعك الحقيقي على الخريطة.';
   static const String registerUseMyLocation = 'استخدام موقعي الحالي';
@@ -189,6 +195,45 @@ class StringsAr {
   static const String editEventOffer = 'تعديل العرض';
   static const String noEventOffers = 'لا توجد عروض';
   static const String noEventRequests = 'لا توجد طلبات';
+  // حجوزات الولائم والشوي (مسار منفصل عن المناسبات الخاصة)
+  static const String chefBookingRequests = 'حجوزات الولائم والشوي';
+  static const String noChefBookingRequests = 'لا توجد حجوزات';
+  static const String homeCookingRequests = 'طلبات الطبخ المنزلي';
+  static const String noHomeCookingRequests = 'لا توجد طلبات طبخ منزلي';
+  static const String homeCookingStatusQuoted = 'تم عرض السعر — انتظار العميل';
+  static const String homeCookingStatusPaymentPending = 'أعلن العميل عن التحويل — بانتظار التحقق';
+  static const String homeCookingStatusAccepted = 'مؤكد الدفع — قيد التحضير';
+  static const String homeCookingStatusReady = 'جاهز للاستلام';
+  static const String homeCookingQuoteDialogTitle = 'عرض السعر (ر.س)';
+  static const String homeCookingQuoteAmountHint = 'المبلغ الإجمالي';
+  static const String homeCookingQuoteNotesHint = 'ملاحظات للعميل (اختياري)';
+  static const String homeCookingSendQuote = 'إرسال السعر';
+  static const String homeCookingRejectRequest = 'رفض الطلب';
+  static const String homeCookingMarkReady = 'تعيين كجاهز للاستلام';
+  static const String homeCookingInvalidAmount = 'أدخل مبلغاً صالحاً';
+  static const String homeCookingDeliveryYes = 'توصيل';
+  static const String homeCookingDeliveryNo = 'استلام من المطبخ';
+  static const String homeCookingQuotedAmount = 'المبلغ المعروض';
+  static const String homeCookingStatusReadyShort = 'جاهز — أكّد التسليم للعميل أو للمندوب';
+  static const String homeCookingStatusHandedOver = 'تم التسليم — بانتظار تأكيد استلام العميل';
+  static const String homeCookingStatusCompleted = 'مكتمل — رمز إتمام عند العميل والإدارة';
+  static const String homeCookingMarkHandedOverButton = 'تأكيد التسليم';
+  static const String homeCookingHandoverDialogTitle = 'تأكيد تسليم الطلب';
+  static const String homeCookingHandoverDialogSubtitle =
+      'سواء استلمه العميل بنفسه أو مندوب أو وسيط — بعد التأكيد يرى العميل خيار «تم الاستلام».';
+  static const String homeCookingHandoverNotesHint = 'ملاحظة اختيارية (مثال: اسم المندوب، شركة الشحن)';
+  static const String homeCookingHandoverConfirm = 'تأكيد التسليم';
+  static const String homeCookingHandedOverSuccess = 'تم تسجيل التسليم';
+  static const String homeCookingCompletionRefLabel = 'رمز إتمام الطلب (بعد تأكيد العميل)';
+  static const String chefBookingTypePopularCooking = 'طبخ ذبائح';
+  static const String chefBookingTypeGrilling = 'شواء خارجي';
+  static const String chefBookingStatusAccepted = 'مقبول';
+  static const String chefBookingStatusRejected = 'مرفوض';
+  static const String chefBookingStatusCancelled = 'ملغى';
+  static String chefBookingRespondByLine(String formatted) =>
+      'آخر موعد للرد: $formatted';
+  static const String chefMealSlotLunch = 'غداء';
+  static const String chefMealSlotDinner = 'عشاء';
   static const String accept = 'قبول';
   static const String reject = 'رفض';
   static const String eventStatusPending = 'قيد الانتظار';

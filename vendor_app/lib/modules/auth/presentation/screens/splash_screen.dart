@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:vendor_app/core/theme/design_system.dart';
 import 'package:vendor_app/core/bootstrap/app_bootstrapper.dart';
+import 'package:vendor_app/core/widgets/branded_logo.dart';
 import 'package:vendor_app/core/widgets/loading_view.dart';
 import 'package:vendor_app/core/localization/app_localizations.dart';
 
@@ -35,14 +36,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(110),
-                child: Image.asset(
-                  'assets/images/logo.jpeg',
-                  width: 220,
-                  height: 220,
-                  fit: BoxFit.cover,
-                ),
+              BrandedLogo(
+                assetPath: 'assets/images/logo.jpeg',
+                size: 260,
+                cornerRadius: 130,
               ),
               Gaps.lgV,
               Text(

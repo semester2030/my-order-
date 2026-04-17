@@ -81,6 +81,14 @@ import '../../modules/event_requests/data/datasources/event_requests_remote_ds.d
 import '../../modules/event_requests/data/datasources/event_requests_remote_ds_impl.dart';
 import '../../modules/event_requests/presentation/providers/event_requests_notifier.dart';
 import '../../modules/event_requests/presentation/providers/event_requests_state.dart';
+import '../../modules/chef_booking_requests/data/datasources/chef_booking_requests_remote_ds.dart';
+import '../../modules/chef_booking_requests/data/datasources/chef_booking_requests_remote_ds_impl.dart';
+import '../../modules/chef_booking_requests/presentation/providers/chef_booking_requests_notifier.dart';
+import '../../modules/chef_booking_requests/presentation/providers/chef_booking_requests_state.dart';
+import '../../modules/home_cooking_requests/data/datasources/home_cooking_requests_remote_ds.dart';
+import '../../modules/home_cooking_requests/data/datasources/home_cooking_requests_remote_ds_impl.dart';
+import '../../modules/home_cooking_requests/presentation/providers/home_cooking_requests_notifier.dart';
+import '../../modules/home_cooking_requests/presentation/providers/home_cooking_requests_state.dart';
 import '../utils/result.dart';
 
 /// Router provider (Phase 7: redirect guard for protected routes).
@@ -345,4 +353,30 @@ final eventRequestsNotifierProvider =
     StateNotifierProvider<EventRequestsNotifier, EventRequestsState>((ref) {
   final ds = ref.watch(eventRequestsRemoteDsProvider);
   return EventRequestsNotifier(ds);
+});
+
+/// حجوزات الذبائح والشواء — مسار منفصل عن طلبات المناسبات الخاصة.
+final chefBookingRequestsRemoteDsProvider =
+    Provider<ChefBookingRequestsRemoteDs>((ref) {
+  final dio = ref.watch(apiClientProvider);
+  return ChefBookingRequestsRemoteDsImpl(dio);
+});
+
+final chefBookingRequestsNotifierProvider =
+    StateNotifierProvider<ChefBookingRequestsNotifier, ChefBookingRequestsState>((ref) {
+  final ds = ref.watch(chefBookingRequestsRemoteDsProvider);
+  return ChefBookingRequestsNotifier(ds);
+});
+
+/// طلبات الطبخ المنزلي — مسار منفصل عن حجوزات الذبائح وطلبات الوجبات.
+final homeCookingRequestsRemoteDsProvider =
+    Provider<HomeCookingRequestsRemoteDs>((ref) {
+  final dio = ref.watch(apiClientProvider);
+  return HomeCookingRequestsRemoteDsImpl(dio);
+});
+
+final homeCookingRequestsNotifierProvider =
+    StateNotifierProvider<HomeCookingRequestsNotifier, HomeCookingRequestsState>((ref) {
+  final ds = ref.watch(homeCookingRequestsRemoteDsProvider);
+  return HomeCookingRequestsNotifier(ds);
 });

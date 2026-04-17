@@ -23,10 +23,12 @@ import { EventRequest } from '../event-requests/entities/event-request.entity';
 import { PrivateEventRequest } from '../private-events/entities/private-event-request.entity';
 import { EventOffer } from '../private-events/entities/event-offer.entity';
 import { VendorsModule } from '../vendors/vendors.module';
+import { EventRequestsModule } from '../event-requests/event-requests.module';
 
 @Module({
   imports: [
     forwardRef(() => VendorsModule),
+    EventRequestsModule,
     TypeOrmModule.forFeature([
       AdminUser,
       AdminRole,

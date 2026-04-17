@@ -54,9 +54,11 @@ flutter:
         - asset: assets/fonts/Cairo/Cairo-Bold.ttf
           weight: 700
 
-# أيقونة التطبيق — شيف مطبخ البيت
+# أيقونة التطبيق — مصدر مربع 1024×1024 (نص مطبخ البيت على أبيض)
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/logo.jpeg"
+  image_path: "assets/images/app_launcher_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/app_launcher_icon.png"
   remove_alpha_ios: true

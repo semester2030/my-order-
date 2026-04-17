@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:vendor_app/core/theme/design_system.dart';
+import 'package:vendor_app/core/widgets/branded_logo.dart';
 import 'package:vendor_app/core/routing/route_names.dart';
 import 'package:vendor_app/core/di/providers.dart';
 import 'package:vendor_app/core/config/feature_flags.dart';
@@ -37,6 +38,23 @@ class VendorDrawer extends ConsumerWidget {
     return false;
   }
 
+  static bool _showChefBookingRequests(WidgetRef ref) {
+    final state = ref.watch(profileNotifierProvider);
+    if (state is ProfileLoaded) {
+      final c = state.profile.providerCategory;
+      return c == 'popular_cooking' || c == 'grilling';
+    }
+    return false;
+  }
+
+  static bool _showHomeCookingRequests(WidgetRef ref) {
+    final state = ref.watch(profileNotifierProvider);
+    if (state is ProfileLoaded) {
+      return state.profile.providerCategory == 'home_cooking';
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -50,19 +68,11 @@ class VendorDrawer extends ConsumerWidget {
               padding: EdgeInsets.all(Insets.lg),
               child: Row(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(28),
-                    child: Image.asset(
-                      'assets/images/logo.jpeg',
-                      width: 56,
-                      height: 56,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Icon(
-                        Icons.restaurant,
-                        size: 56,
-                        color: AppColors.primary,
-                      ),
-                    ),
+                  BrandedLogo(
+                    assetPath: 'assets/images/logo.jpeg',
+                    size: 72,
+                    cornerRadius: 36,
+                    displayZoom: 1.28,
                   ),
                   SizedBox(width: Insets.md),
                   Expanded(
@@ -160,6 +170,32 @@ class VendorDrawer extends ConsumerWidget {
                 onTap: () {
                   Navigator.of(context).pop();
                   context.push(RouteNames.sideOrders);
+                },
+              ),
+            ],
+            if (VendorDrawer._showChefBookingRequests(ref)) ...[
+              ListTile(
+                leading: Icon(Icons.event_note, color: AppColors.textSecondary, size: IconSizes.md),
+                title: Text(
+                  l10n.chefBookingRequests,
+                  style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.push(RouteNames.chefBookingRequests);
+                },
+              ),
+            ],
+            if (VendorDrawer._showHomeCookingRequests(ref)) ...[
+              ListTile(
+                leading: Icon(Icons.home_work_outlined, color: AppColors.textSecondary, size: IconSizes.md),
+                title: Text(
+                  l10n.homeCookingRequests,
+                  style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.push(RouteNames.homeCookingRequests);
                 },
               ),
             ],

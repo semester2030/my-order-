@@ -6,6 +6,7 @@ import 'package:vendor_app/core/theme/design_system.dart';
 import 'package:vendor_app/core/localization/app_localizations.dart';
 import 'package:vendor_app/core/utils/validators.dart';
 import 'package:vendor_app/core/widgets/app_text_field.dart';
+import 'package:vendor_app/core/widgets/branded_logo.dart';
 import 'package:vendor_app/core/widgets/primary_button.dart';
 import 'package:vendor_app/core/di/providers.dart';
 import 'package:vendor_app/core/routing/route_names.dart';
@@ -80,19 +81,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(80),
-                    child: Image.asset(
-                      'assets/images/logo.jpeg',
-                      width: 180,
-                      height: 180,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Icon(
-                        Icons.restaurant,
-                        size: 180,
-                        color: AppColors.primary,
-                      ),
-                    ),
+                  child: BrandedLogo(
+                    assetPath: 'assets/images/logo.jpeg',
+                    size: 220,
+                    cornerRadius: 100,
                   ),
                 ),
                 Gaps.lgV,

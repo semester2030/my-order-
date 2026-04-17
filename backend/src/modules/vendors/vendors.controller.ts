@@ -15,6 +15,7 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { storageConfig } from '../../config/storage.config';
@@ -39,8 +40,11 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { User } from '../users/entities/user.entity';
 import { OrderStatus } from '../orders/entities/order.entity';
 import { PrivateEventsService } from '../private-events/private-events.service';
+import { EventRequestsService } from '../event-requests/event-requests.service';
 import { CreateEventOfferDto } from '../private-events/dto/create-event-offer.dto';
 import { AcceptMenuOfferingTermsDto } from './dto/accept-menu-offering-terms.dto';
+import { QuoteHomeCookingDto } from '../event-requests/dto/quote-home-cooking.dto';
+import { HandoverHomeCookingDto } from '../event-requests/dto/handover-home-cooking.dto';
 
 @ApiTags('vendors')
 @Controller('vendors')
@@ -48,7 +52,46 @@ export class VendorsController {
   constructor(
     private readonly vendorsService: VendorsService,
     private readonly privateEventsService: PrivateEventsService,
+    private readonly eventRequestsService: EventRequestsService,
   ) {}
+
+  /** طبخ ذبائح / شواء فقط — يُستخدم لمسارات حجز الطبّاخ */
+  private async resolveChefBookingVendorId(req: {
+    user: User;
+  }): Promise<string> {
+    const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
+    if (!vendorId) {
+      throw new NotFoundException('Vendor not found');
+    }
+    const vendor = await this.vendorsService.getVendor(vendorId);
+    if (!vendor) {
+      throw new NotFoundException('Vendor not found');
+    }
+    const cat = vendor.providerCategory ?? '';
+    if (cat !== 'popular_cooking' && cat !== 'grilling') {
+      throw new ForbiddenException(
+        'طلبات حجز الطبّاخ (ذبائح/شواء) متاحة لمقدّمي طبخ الذبائح والشواء فقط',
+      );
+    }
+    return vendorId;
+  }
+
+  /** طبخ منزلي فقط */
+  private async resolveHomeCookingVendorId(req: { user: User }): Promise<string> {
+    const vendorId = await this.vendorsService.getVendorIdByUserId(req.user.id);
+    if (!vendorId) {
+      throw new NotFoundException('Vendor not found');
+    }
+    const vendor = await this.vendorsService.getVendor(vendorId);
+    if (!vendor) {
+      throw new NotFoundException('Vendor not found');
+    }
+    const cat = vendor.providerCategory ?? '';
+    if (cat !== 'home_cooking') {
+      throw new ForbiddenException('طلبات الطبخ المنزلي متاحة لمقدّمي الطبخ المنزلي فقط');
+    }
+    return vendorId;
+  }
 
   @Post('register')
   @ApiOperation({
@@ -613,6 +656,156 @@ export class VendorsController {
       vendorId,
       requestId,
       'rejected',
+    );
+  }
+
+  // ——— حجز الطبّاخ (طبخ ذبائح + شواء خارجي) — قبول / رفض + قائمة ———
+  @Get('chef-booking-requests')
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'طلبات حجز الطبّاخ الواردة (طبخ ذبائح / شواء) — مع إلغاء تلقائي عند انتهاء المهلة',
+  })
+  async getChefBookingRequests(@Request() req: { user: User }) {
+    const vendorId = await this.resolveChefBookingVendorId(req);
+    return this.eventRequestsService.findChefBookingsForVendor(vendorId);
+  }
+
+  @Post('chef-booking-requests/:requestId/accept')
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'قبول طلب حجز طبّاخ (ذبائح/شواء)' })
+  @HttpCode(HttpStatus.OK)
+  async acceptChefBookingRequest(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+  ) {
+    const vendorId = await this.resolveChefBookingVendorId(req);
+    return this.eventRequestsService.acceptChefBookingByVendor(
+      vendorId,
+      requestId,
+    );
+  }
+
+  @Post('chef-booking-requests/:requestId/reject')
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'اعتذار / رفض طلب حجز طبّاخ (ذبائح/شواء)' })
+  @HttpCode(HttpStatus.OK)
+  async rejectChefBookingRequest(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+  ) {
+    const vendorId = await this.resolveChefBookingVendorId(req);
+    return this.eventRequestsService.rejectChefBookingByVendor(
+      vendorId,
+      requestId,
+    );
+  }
+
+  // ——— الطبخ المنزلي — عرض سعر / رفض / جاهز ———
+  @Get('home-cooking-requests')
+  @UseGuards(JwtAuthGuard, ApprovedVendorGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'طلبات الطبخ المنزلي الواردة للمطبخ' })
+  async getHomeCookingRequests(@Request() req: { user: User }) {
+    const vendorId = await this.resolveHomeCookingVendorId(req);
+    return this.eventRequestsService.findHomeCookingRequestsForVendor(vendorId);
+  }
+
+  @Post('home-cooking-requests/:requestId/quote')
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'عرض سعر لطلب طبخ منزلي (قيد الانتظار)' })
+  @HttpCode(HttpStatus.OK)
+  async quoteHomeCookingRequest(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+    @Body() dto: QuoteHomeCookingDto,
+  ) {
+    const vendorId = await this.resolveHomeCookingVendorId(req);
+    return this.eventRequestsService.quoteHomeCookingByVendor(
+      vendorId,
+      requestId,
+      dto,
+    );
+  }
+
+  @Post('home-cooking-requests/:requestId/reject')
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'رفض طلب طبخ منزلي' })
+  @HttpCode(HttpStatus.OK)
+  async rejectHomeCookingRequest(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+  ) {
+    const vendorId = await this.resolveHomeCookingVendorId(req);
+    return this.eventRequestsService.rejectHomeCookingByVendor(
+      vendorId,
+      requestId,
+    );
+  }
+
+  @Post('home-cooking-requests/:requestId/mark-ready')
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'تمييز طلب طبخ منزلي كجاهز للاستلام' })
+  @HttpCode(HttpStatus.OK)
+  async markHomeCookingReady(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+  ) {
+    const vendorId = await this.resolveHomeCookingVendorId(req);
+    return this.eventRequestsService.markHomeCookingReadyByVendor(
+      vendorId,
+      requestId,
+    );
+  }
+
+  @Post('home-cooking-requests/:requestId/mark-handed-over')
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'تأكيد تسليم طلب الطبخ المنزلي (للعميل أو لمندوب) — بعد حالة جاهز',
+  })
+  @HttpCode(HttpStatus.OK)
+  async markHomeCookingHandedOver(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+    @Body() dto?: HandoverHomeCookingDto,
+  ) {
+    const vendorId = await this.resolveHomeCookingVendorId(req);
+    return this.eventRequestsService.markHomeCookingHandedOverByVendor(
+      vendorId,
+      requestId,
+      dto,
     );
   }
 

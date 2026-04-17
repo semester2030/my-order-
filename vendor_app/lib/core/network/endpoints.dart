@@ -41,9 +41,9 @@ class Endpoints {
   static String vendorMenuItemById(String id) => '/vendors/menu/$id';
   static String vendorMenuItemAvailability(String id) => '/vendors/menu/$id/availability';
 
-  // Services
-  static const String vendorsServices = '/vendors/services';
-  static String vendorServiceById(String id) => '/vendors/services/$id';
+  // Services — في الباكند هي عناصر القائمة (menu) وليست مسار /services
+  static const String vendorsServices = '/vendors/menu';
+  static String vendorServiceById(String id) => '/vendors/menu/$id';
 
   // Staff
   static const String vendorsStaff = '/vendors/staff';
@@ -69,6 +69,24 @@ class Endpoints {
       '/vendors/private-event-requests/$id/accept';
   static String vendorPrivateEventRequestReject(String id) =>
       '/vendors/private-event-requests/$id/reject';
+
+  /// طلبات حجز طبخ الذبائح والشواء (للمورّدين popular_cooking / grilling).
+  static const String vendorsChefBookingRequests = '/vendors/chef-booking-requests';
+  static String vendorChefBookingRequestAccept(String id) =>
+      '/vendors/chef-booking-requests/$id/accept';
+  static String vendorChefBookingRequestReject(String id) =>
+      '/vendors/chef-booking-requests/$id/reject';
+
+  /// طلبات الطبخ المنزلي (عرض سعر / رفض / جاهز).
+  static const String vendorsHomeCookingRequests = '/vendors/home-cooking-requests';
+  static String vendorHomeCookingQuote(String id) =>
+      '/vendors/home-cooking-requests/$id/quote';
+  static String vendorHomeCookingReject(String id) =>
+      '/vendors/home-cooking-requests/$id/reject';
+  static String vendorHomeCookingMarkReady(String id) =>
+      '/vendors/home-cooking-requests/$id/mark-ready';
+  static String vendorHomeCookingMarkHandedOver(String id) =>
+      '/vendors/home-cooking-requests/$id/mark-handed-over';
 
   // Health (optional)
   static const String health = '/health';

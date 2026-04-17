@@ -64,6 +64,8 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showOptional, setShowOptional] = useState(false)
+  const [showManualCoords, setShowManualCoords] = useState(false)
+  const [locating, setLocating] = useState(false)
 
   const [commercialRegistrationFile, setCommercialRegistrationFile] = useState<File | null>(null)
   const [ownerIdFile, setOwnerIdFile] = useState<File | null>(null)
@@ -92,8 +94,8 @@ export default function RegisterPage() {
           website: z.string().url(t('register.invalidUrl')).optional().or(z.literal('')),
           address: z.string().trim().min(3, t('register.addressRequired')),
           city: z.string().trim().min(2, t('register.cityRequired')),
-          latitude: z.string().min(1, t('register.latitudeRequired')),
-          longitude: z.string().min(1, t('register.longitudeRequired')),
+          latitude: z.string(),
+          longitude: z.string(),
           deliveryFee: z.number().optional(),
           deliveryRadius: z.number().optional(),
           estimatedDeliveryTime: z.number().optional(),
@@ -112,8 +114,18 @@ export default function RegisterPage() {
           path: ['confirmPassword'],
         })
         .superRefine((data, ctx) => {
-          const lat = parseFloat(data.latitude.replace(',', '.'))
-          const lng = parseFloat(data.longitude.replace(',', '.'))
+          const latStr = (data.latitude ?? '').trim()
+          const lngStr = (data.longitude ?? '').trim()
+          if (!latStr || !lngStr) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t('register.needLocationOrManual'),
+              path: ['latitude'],
+            })
+            return
+          }
+          const lat = parseFloat(latStr.replace(',', '.'))
+          const lng = parseFloat(lngStr.replace(',', '.'))
           if (Number.isNaN(lat)) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
@@ -158,6 +170,7 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     watch,
   } = useForm<RegisterFormData>({
@@ -186,6 +199,29 @@ export default function RegisterPage() {
   })
 
   const providerCategory = watch('providerCategory')
+
+  const fillFromBrowserLocation = () => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setError(t('register.noBrowserGeolocation'))
+      setShowManualCoords(true)
+      return
+    }
+    setLocating(true)
+    setError(null)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setValue('latitude', pos.coords.latitude.toFixed(6), { shouldValidate: true, shouldDirty: true })
+        setValue('longitude', pos.coords.longitude.toFixed(6), { shouldValidate: true, shouldDirty: true })
+        setLocating(false)
+      },
+      () => {
+        setLocating(false)
+        setError(t('register.browserLocationDenied'))
+        setShowManualCoords(true)
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 },
+    )
+  }
 
   const addPopularCookingAddOn = () => {
     const nextId = addOnIdCounter + 1
@@ -324,7 +360,12 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={handleSubmit(onSubmit, (formErrors) => {
+              if (formErrors.latitude || formErrors.longitude) setShowManualCoords(true)
+            })}
+            className="space-y-6"
+          >
             {/* الضروري فقط */}
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-text-primary">
@@ -424,6 +465,14 @@ export default function RegisterPage() {
                 {t('register.serviceLocationTitle')}
               </h2>
               <p className="text-xs text-text-secondary">{t('register.coordinatesHint')}</p>
+              <button
+                type="button"
+                onClick={fillFromBrowserLocation}
+                disabled={locating || isSubmitting}
+                className="w-full sm:w-auto px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {locating ? t('register.gettingLocation') : t('register.useBrowserLocation')}
+              </button>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-text-primary mb-2">
@@ -438,7 +487,7 @@ export default function RegisterPage() {
                     <p className="mt-1 text-sm text-error">{errors.address.message}</p>
                   )}
                 </div>
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-text-primary mb-2">
                     {t('register.city')} <span className="text-error">*</span>
                   </label>
@@ -449,37 +498,49 @@ export default function RegisterPage() {
                   />
                   {errors.city && <p className="mt-1 text-sm text-error">{errors.city.message}</p>}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    {t('register.latitude')} <span className="text-error">*</span>
-                  </label>
-                  <input
-                    {...register('latitude')}
-                    type="text"
-                    inputMode="decimal"
-                    placeholder="24.7136"
-                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  {errors.latitude && (
-                    <p className="mt-1 text-sm text-error">{errors.latitude.message}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    {t('register.longitude')} <span className="text-error">*</span>
-                  </label>
-                  <input
-                    {...register('longitude')}
-                    type="text"
-                    inputMode="decimal"
-                    placeholder="46.6753"
-                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  {errors.longitude && (
-                    <p className="mt-1 text-sm text-error">{errors.longitude.message}</p>
-                  )}
-                </div>
               </div>
+              <button
+                type="button"
+                onClick={() => setShowManualCoords((v) => !v)}
+                className="text-sm text-primary hover:underline font-medium"
+              >
+                {showManualCoords ? t('register.hideManualCoordinates') : t('register.manualCoordinates')}
+              </button>
+              {showManualCoords && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                  <p className="md:col-span-2 text-xs text-text-secondary">{t('register.mapsPasteHint')}</p>
+                  <div>
+                    <label className="block text-sm font-medium text-text-primary mb-2">
+                      {t('register.latitude')} <span className="text-error">*</span>
+                    </label>
+                    <input
+                      {...register('latitude')}
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="24.7136"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                    {errors.latitude && (
+                      <p className="mt-1 text-sm text-error">{errors.latitude.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-text-primary mb-2">
+                      {t('register.longitude')} <span className="text-error">*</span>
+                    </label>
+                    <input
+                      {...register('longitude')}
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="46.6753"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                    {errors.longitude && (
+                      <p className="mt-1 text-sm text-error">{errors.longitude.message}</p>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* خدمات إضافية للطبخ الشعبي (جريش، قرصان، ادامات…) — تظهر للعميل لطلبها */}

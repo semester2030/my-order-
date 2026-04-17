@@ -30,6 +30,10 @@ class RouteNames {
 
   // Profile
   static const String profile = '/profile';
+  /// حجوزات طبخ الذبائح والشواء الخارجي (طلبات event-requests المصفّاة).
+  static const String myChefBookings = '/my-chef-bookings';
+  /// طلبات الطبخ المنزلي (عرض سعر → دفع → تحضير → جاهز).
+  static const String myHomeCookingRequests = '/my-home-cooking-requests';
   static const String settings = '/settings';
   static const String editProfile = '/edit-profile';
   static const String privacyPolicy = '/privacy-policy';

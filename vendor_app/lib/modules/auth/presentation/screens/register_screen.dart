@@ -6,6 +6,7 @@ import 'package:vendor_app/core/localization/app_localizations.dart';
 import 'package:vendor_app/core/theme/design_system.dart';
 import 'package:vendor_app/core/utils/validators.dart';
 import 'package:vendor_app/core/widgets/app_text_field.dart';
+import 'package:vendor_app/core/widgets/branded_logo.dart';
 import 'package:vendor_app/core/widgets/primary_button.dart';
 import 'package:vendor_app/core/di/providers.dart';
 import 'package:vendor_app/core/routing/route_names.dart';
@@ -41,6 +42,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedProviderCategory;
   bool _locationBusy = false;
+  /// إظهار حقول الإحداثيات فقط عند الطلب (بدل عرضها دائماً).
+  bool _showManualCoords = false;
 
   @override
   void dispose() {
@@ -114,15 +117,25 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final lng = double.tryParse(
       _longitudeController.text.trim().replaceAll(',', '.'),
     );
-    if (lat == null || lng == null) return;
+    final l10n = AppLocalizations.of(context);
+    if (lat == null || lng == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.registerNeedLocationOrManual),
+          backgroundColor: SemanticColors.error,
+        ),
+      );
+      setState(() => _showManualCoords = true);
+      return;
+    }
     if (lat.abs() < 1e-9 && lng.abs() < 1e-9) {
-      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.registerCoordinatesZero),
           backgroundColor: SemanticColors.error,
         ),
       );
+      setState(() => _showManualCoords = true);
       return;
     }
     final request = RegisterVendorRequest(
@@ -202,19 +215,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(80),
-                    child: Image.asset(
-                      'assets/images/logo.jpeg',
-                      width: 180,
-                      height: 180,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Icon(
-                        Icons.restaurant,
-                        size: 180,
-                        color: AppColors.primary,
-                      ),
-                    ),
+                  child: BrandedLogo(
+                    assetPath: 'assets/images/logo.jpeg',
+                    size: 220,
+                    cornerRadius: 100,
                   ),
                 ),
                 Gaps.lgV,
@@ -301,15 +305,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
                 ),
                 Gaps.mdV,
-                OutlinedButton.icon(
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                  ),
                   onPressed: (_locationBusy || authState is AuthLoading) ? null : _useCurrentLocation,
                   icon: _locationBusy
                       ? const SizedBox(
-                          width: 18,
-                          height: 18,
+                          width: 20,
+                          height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: AppColors.primary,
+                            color: Colors.white,
                           ),
                         )
                       : const Icon(Icons.my_location_outlined),
@@ -345,37 +354,59 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     fillColor: AppColors.surface,
                   ),
                 ),
-                Gaps.mdV,
-                AppTextField(
-                  controller: _latitudeController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-                  validator: Validators.latitude,
-                  decoration: InputDecoration(
-                    labelText: l10n.registerLatitudeLabel,
-                    hintText: '24.7136',
-                    border: OutlineInputBorder(
-                      borderRadius: AppRadius.mdAll,
+                Gaps.smV,
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton(
+                    onPressed: () => setState(() => _showManualCoords = !_showManualCoords),
+                    child: Text(
+                      _showManualCoords
+                          ? l10n.registerHideManualCoordinates
+                          : l10n.registerManualCoordinates,
+                      style: TextStyles.bodyMedium.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    filled: true,
-                    fillColor: AppColors.surface,
                   ),
                 ),
-                Gaps.mdV,
-                AppTextField(
-                  controller: _longitudeController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-                  validator: Validators.longitude,
-                  decoration: InputDecoration(
-                    labelText: l10n.registerLongitudeLabel,
-                    hintText: '46.6753',
-                    border: OutlineInputBorder(
-                      borderRadius: AppRadius.mdAll,
-                    ),
-                    filled: true,
-                    fillColor: AppColors.surface,
+                if (_showManualCoords) ...[
+                  Text(
+                    l10n.registerMapsPasteHint,
+                    style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
                   ),
-                ),
-                Gaps.mdV,
+                  Gaps.smV,
+                  AppTextField(
+                    controller: _latitudeController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                    validator: Validators.latitude,
+                    decoration: InputDecoration(
+                      labelText: l10n.registerLatitudeLabel,
+                      hintText: '24.7136',
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.mdAll,
+                      ),
+                      filled: true,
+                      fillColor: AppColors.surface,
+                    ),
+                  ),
+                  Gaps.mdV,
+                  AppTextField(
+                    controller: _longitudeController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                    validator: Validators.longitude,
+                    decoration: InputDecoration(
+                      labelText: l10n.registerLongitudeLabel,
+                      hintText: '46.6753',
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.mdAll,
+                      ),
+                      filled: true,
+                      fillColor: AppColors.surface,
+                    ),
+                  ),
+                  Gaps.mdV,
+                ],
                 DropdownButtonFormField<String?>(
                   value: _selectedProviderCategory,
                   decoration: InputDecoration(

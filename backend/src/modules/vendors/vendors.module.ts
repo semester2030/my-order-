@@ -18,6 +18,7 @@ import { Driver } from '../drivers/entities/driver.entity';
 import { UsersModule } from '../users/users.module';
 import { JobsModule } from '../jobs/jobs.module';
 import { PrivateEventsModule } from '../private-events/private-events.module';
+import { EventRequestsModule } from '../event-requests/event-requests.module';
 import { ApprovedVendorGuard } from './guards/approved-vendor.guard';
 import { VendorOperationalComplianceGuard } from './guards/vendor-operational-compliance.guard';
 
@@ -49,6 +50,7 @@ import { VendorOperationalComplianceGuard } from './guards/vendor-operational-co
     UsersModule,
     forwardRef(() => JobsModule),
     PrivateEventsModule,
+    EventRequestsModule,
   ],
   controllers: [VendorsController],
   providers: [

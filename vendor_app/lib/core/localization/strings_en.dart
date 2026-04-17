@@ -32,7 +32,7 @@ class StringsEn {
   static const String passwordLabel = 'Password';
   static const String createAccount = 'Create account';
   static const String registerSubtitleWithLocation =
-      'Required: name, email, password, and your service location (street address, city, latitude & longitude from Maps) so customers see distance correctly.';
+      'Required: name, email, password, and your service location (street, city, and a map fix for distance).';
   static const String registerServiceLocationTitle = 'Service location';
   static const String registerStreetAddressLabel = 'Street address';
   static const String registerStreetAddressHint = 'e.g. street, district, building';
@@ -41,7 +41,13 @@ class StringsEn {
   static const String registerLatitudeLabel = 'Latitude';
   static const String registerLongitudeLabel = 'Longitude';
   static const String registerCoordinatesHint =
-      'From Google Maps: tap the place, then copy latitude & longitude.';
+      'Prefer the button below to set your location automatically — faster and more accurate.';
+  static const String registerManualCoordinates = 'Enter latitude & longitude manually';
+  static const String registerHideManualCoordinates = 'Hide manual coordinates';
+  static const String registerNeedLocationOrManual =
+      'Set your location: use "Current location" or open manual entry and fill coordinates.';
+  static const String registerMapsPasteHint =
+      'For manual entry: in Google Maps tap your place, then copy latitude and longitude.';
   static const String registerCoordinatesZero =
       'Coordinates cannot be zero — pick your real location on the map.';
   static const String registerUseMyLocation = 'Use my current location';
@@ -188,6 +194,47 @@ class StringsEn {
   static const String editEventOffer = 'Edit Offer';
   static const String noEventOffers = 'No offers';
   static const String noEventRequests = 'No requests';
+  // Slaughter & BBQ bookings (separate from private events)
+  static const String chefBookingRequests = 'Slaughter & BBQ bookings';
+  static const String noChefBookingRequests = 'No bookings yet';
+  static const String homeCookingRequests = 'Home cooking requests';
+  static const String noHomeCookingRequests = 'No home cooking requests yet';
+  static const String homeCookingStatusQuoted = 'Quoted — awaiting customer';
+  static const String homeCookingStatusPaymentPending =
+      'Customer declared transfer — pending verification';
+  static const String homeCookingStatusAccepted = 'Payment verified — preparing';
+  static const String homeCookingStatusReady = 'Ready for pickup';
+  static const String homeCookingQuoteDialogTitle = 'Quote (SAR)';
+  static const String homeCookingQuoteAmountHint = 'Total amount';
+  static const String homeCookingQuoteNotesHint = 'Notes for customer (optional)';
+  static const String homeCookingSendQuote = 'Send quote';
+  static const String homeCookingRejectRequest = 'Reject request';
+  static const String homeCookingMarkReady = 'Mark ready for pickup';
+  static const String homeCookingInvalidAmount = 'Enter a valid amount';
+  static const String homeCookingDeliveryYes = 'Delivery';
+  static const String homeCookingDeliveryNo = 'Pickup';
+  static const String homeCookingQuotedAmount = 'Quoted amount';
+  static const String homeCookingStatusReadyShort = 'Ready — confirm handover to customer or courier';
+  static const String homeCookingStatusHandedOver = 'Handed over — awaiting customer receipt confirmation';
+  static const String homeCookingStatusCompleted = 'Completed — completion code on customer & admin';
+  static const String homeCookingMarkHandedOverButton = 'Confirm handover';
+  static const String homeCookingHandoverDialogTitle = 'Confirm handover';
+  static const String homeCookingHandoverDialogSubtitle =
+      'Whether the customer picked up in person or a courier/intermediary received the order.';
+  static const String homeCookingHandoverNotesHint =
+      'Optional note (e.g. courier name, delivery company)';
+  static const String homeCookingHandoverConfirm = 'Confirm handover';
+  static const String homeCookingHandedOverSuccess = 'Handover recorded';
+  static const String homeCookingCompletionRefLabel = 'Completion code (after customer confirms)';
+  static const String chefBookingTypePopularCooking = 'Popular cooking';
+  static const String chefBookingTypeGrilling = 'Outdoor grilling';
+  static const String chefBookingStatusAccepted = 'Accepted';
+  static const String chefBookingStatusRejected = 'Rejected';
+  static const String chefBookingStatusCancelled = 'Cancelled';
+  static String chefBookingRespondByLine(String formatted) =>
+      'Response deadline: $formatted';
+  static const String chefMealSlotLunch = 'Lunch';
+  static const String chefMealSlotDinner = 'Dinner';
   static const String accept = 'Accept';
   static const String reject = 'Reject';
   static const String eventStatusPending = 'Pending';

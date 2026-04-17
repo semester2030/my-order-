@@ -48,6 +48,98 @@ class AppLocalizations {
   String get myOrders => isAr ? StringsAr.myOrders : StringsEn.myOrders;
   String get viewOrderHistory =>
       isAr ? StringsAr.viewOrderHistory : StringsEn.viewOrderHistory;
+  String get myChefBookings =>
+      isAr ? StringsAr.myChefBookings : StringsEn.myChefBookings;
+  String get myChefBookingsSubtitle =>
+      isAr ? StringsAr.myChefBookingsSubtitle : StringsEn.myChefBookingsSubtitle;
+  String get myHomeCookingRequests =>
+      isAr ? StringsAr.myHomeCookingRequests : StringsEn.myHomeCookingRequests;
+  String get myHomeCookingRequestsSubtitle =>
+      isAr ? StringsAr.myHomeCookingRequestsSubtitle : StringsEn.myHomeCookingRequestsSubtitle;
+  String get noHomeCookingRequests =>
+      isAr ? StringsAr.noHomeCookingRequests : StringsEn.noHomeCookingRequests;
+  String get homeCookingStatusPending =>
+      isAr ? StringsAr.homeCookingStatusPending : StringsEn.homeCookingStatusPending;
+  String get homeCookingStatusQuoted =>
+      isAr ? StringsAr.homeCookingStatusQuoted : StringsEn.homeCookingStatusQuoted;
+  String get homeCookingStatusPaymentPending =>
+      isAr ? StringsAr.homeCookingStatusPaymentPending : StringsEn.homeCookingStatusPaymentPending;
+  String get homeCookingStatusAccepted =>
+      isAr ? StringsAr.homeCookingStatusAccepted : StringsEn.homeCookingStatusAccepted;
+  String get homeCookingStatusReady =>
+      isAr ? StringsAr.homeCookingStatusReady : StringsEn.homeCookingStatusReady;
+  String get homeCookingStatusRejected =>
+      isAr ? StringsAr.homeCookingStatusRejected : StringsEn.homeCookingStatusRejected;
+  String get homeCookingStatusCancelled =>
+      isAr ? StringsAr.homeCookingStatusCancelled : StringsEn.homeCookingStatusCancelled;
+  String get homeCookingQuotedAmount =>
+      isAr ? StringsAr.homeCookingQuotedAmount : StringsEn.homeCookingQuotedAmount;
+  String get homeCookingQuoteNotes =>
+      isAr ? StringsAr.homeCookingQuoteNotes : StringsEn.homeCookingQuoteNotes;
+  String get homeCookingDeliveryYes =>
+      isAr ? StringsAr.homeCookingDeliveryYes : StringsEn.homeCookingDeliveryYes;
+  String get homeCookingDeliveryNo =>
+      isAr ? StringsAr.homeCookingDeliveryNo : StringsEn.homeCookingDeliveryNo;
+  String get homeCookingDeclarePayment =>
+      isAr ? StringsAr.homeCookingDeclarePayment : StringsEn.homeCookingDeclarePayment;
+  String get homeCookingDeclarePaymentHint =>
+      isAr ? StringsAr.homeCookingDeclarePaymentHint : StringsEn.homeCookingDeclarePaymentHint;
+  String get homeCookingPaymentReferenceLabel =>
+      isAr ? StringsAr.homeCookingPaymentReferenceLabel : StringsEn.homeCookingPaymentReferenceLabel;
+  String get homeCookingPaymentNotesOptional =>
+      isAr ? StringsAr.homeCookingPaymentNotesOptional : StringsEn.homeCookingPaymentNotesOptional;
+  String get homeCookingSubmitDeclaration =>
+      isAr ? StringsAr.homeCookingSubmitDeclaration : StringsEn.homeCookingSubmitDeclaration;
+  String get homeCookingDeclareSuccess =>
+      isAr ? StringsAr.homeCookingDeclareSuccess : StringsEn.homeCookingDeclareSuccess;
+  String get homeCookingLoadError =>
+      isAr ? StringsAr.homeCookingLoadError : StringsEn.homeCookingLoadError;
+  String get homeCookingStatusReadyShort =>
+      isAr ? StringsAr.homeCookingStatusReadyShort : StringsEn.homeCookingStatusReadyShort;
+  String get homeCookingStatusHandedOver =>
+      isAr ? StringsAr.homeCookingStatusHandedOver : StringsEn.homeCookingStatusHandedOver;
+  String get homeCookingStatusCompleted =>
+      isAr ? StringsAr.homeCookingStatusCompleted : StringsEn.homeCookingStatusCompleted;
+  String get homeCookingConfirmReceiptTitle =>
+      isAr ? StringsAr.homeCookingConfirmReceiptTitle : StringsEn.homeCookingConfirmReceiptTitle;
+  String get homeCookingConfirmReceiptMessage =>
+      isAr ? StringsAr.homeCookingConfirmReceiptMessage : StringsEn.homeCookingConfirmReceiptMessage;
+  String get homeCookingConfirmReceiptButton =>
+      isAr ? StringsAr.homeCookingConfirmReceiptButton : StringsEn.homeCookingConfirmReceiptButton;
+  String get homeCookingCompletionCertificate =>
+      isAr ? StringsAr.homeCookingCompletionCertificate : StringsEn.homeCookingCompletionCertificate;
+  String get homeCookingCompletionCertificateHint =>
+      isAr ? StringsAr.homeCookingCompletionCertificateHint : StringsEn.homeCookingCompletionCertificateHint;
+  String get homeCookingReceiptConfirmedSnackbar =>
+      isAr ? StringsAr.homeCookingReceiptConfirmedSnackbar : StringsEn.homeCookingReceiptConfirmedSnackbar;
+  String get noChefBookings =>
+      isAr ? StringsAr.noChefBookings : StringsEn.noChefBookings;
+  String get chefBookingTypePopularCooking =>
+      isAr ? StringsAr.chefBookingTypePopularCooking : StringsEn.chefBookingTypePopularCooking;
+  String get chefBookingTypeGrilling =>
+      isAr ? StringsAr.chefBookingTypeGrilling : StringsEn.chefBookingTypeGrilling;
+  String get chefBookingStatusPending =>
+      isAr ? StringsAr.chefBookingStatusPending : StringsEn.chefBookingStatusPending;
+  String get chefBookingStatusAccepted =>
+      isAr ? StringsAr.chefBookingStatusAccepted : StringsEn.chefBookingStatusAccepted;
+  String get chefBookingStatusRejected =>
+      isAr ? StringsAr.chefBookingStatusRejected : StringsEn.chefBookingStatusRejected;
+  String get chefBookingStatusCancelled =>
+      isAr ? StringsAr.chefBookingStatusCancelled : StringsEn.chefBookingStatusCancelled;
+  String get chefBookingCancelTitle =>
+      isAr ? StringsAr.chefBookingCancelTitle : StringsEn.chefBookingCancelTitle;
+  String get chefBookingCancelMessage =>
+      isAr ? StringsAr.chefBookingCancelMessage : StringsEn.chefBookingCancelMessage;
+  String get chefBookingConfirmCancel =>
+      isAr ? StringsAr.chefBookingConfirmCancel : StringsEn.chefBookingConfirmCancel;
+  String get chefBookingCancelButton =>
+      isAr ? StringsAr.chefBookingCancelButton : StringsEn.chefBookingCancelButton;
+  String get chefBookingCancelledSnackbar =>
+      isAr ? StringsAr.chefBookingCancelledSnackbar : StringsEn.chefBookingCancelledSnackbar;
+  String get chefBookingCancelFailed =>
+      isAr ? StringsAr.chefBookingCancelFailed : StringsEn.chefBookingCancelFailed;
+  String chefBookingRespondByLine(String formatted) =>
+      isAr ? StringsAr.chefBookingRespondByLine(formatted) : StringsEn.chefBookingRespondByLine(formatted);
   String get settings => isAr ? StringsAr.settings : StringsEn.settings;
   String get appSettings =>
       isAr ? StringsAr.appSettings : StringsEn.appSettings;
@@ -309,6 +401,18 @@ class AppLocalizations {
   String get date => isAr ? StringsAr.date : StringsEn.date;
   String get selectDate => isAr ? StringsAr.selectDate : StringsEn.selectDate;
   String get startTime => isAr ? StringsAr.startTime : StringsEn.startTime;
+  String get chefMealSlotTitle =>
+      isAr ? StringsAr.chefMealSlotTitle : StringsEn.chefMealSlotTitle;
+  String get chefMealSlotLunch =>
+      isAr ? StringsAr.chefMealSlotLunch : StringsEn.chefMealSlotLunch;
+  String get chefMealSlotDinner =>
+      isAr ? StringsAr.chefMealSlotDinner : StringsEn.chefMealSlotDinner;
+  String get chefMealSlotLunchHint =>
+      isAr ? StringsAr.chefMealSlotLunchHint : StringsEn.chefMealSlotLunchHint;
+  String get chefMealSlotDinnerHint =>
+      isAr ? StringsAr.chefMealSlotDinnerHint : StringsEn.chefMealSlotDinnerHint;
+  String get selectMealSlot =>
+      isAr ? StringsAr.selectMealSlot : StringsEn.selectMealSlot;
   String get selectTime => isAr ? StringsAr.selectTime : StringsEn.selectTime;
   String get howToReceive =>
       isAr ? StringsAr.howToReceive : StringsEn.howToReceive;

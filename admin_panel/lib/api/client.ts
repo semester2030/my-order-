@@ -481,3 +481,47 @@ export function fetchDisputes(params?: {
     `/admin/disputes${query ? `?${query}` : ''}`,
   );
 }
+
+/** طلبات الطبخ المنزلي بانتظار تحقق التحويل البنكي */
+export function fetchHomeCookingPaymentQueue(params?: {
+  page?: number;
+  limit?: number;
+}): Promise<{
+  items: Record<string, unknown>[];
+  total: number;
+  page: number;
+  limit: number;
+}> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const query = q.toString();
+  return adminFetch(
+    `/admin/home-cooking-payment-queue${query ? `?${query}` : ''}`,
+  );
+}
+
+export function verifyHomeCookingPayment(
+  requestId: string,
+): Promise<Record<string, unknown>> {
+  return adminPost(`/admin/home-cooking-requests/${requestId}/verify-payment`);
+}
+
+/** أرشيف طلبات الطبخ المنزلي المكتملة (رمز إتمام بعد استلام العميل) */
+export function fetchHomeCookingCompleted(params?: {
+  page?: number;
+  limit?: number;
+}): Promise<{
+  items: Record<string, unknown>[];
+  total: number;
+  page: number;
+  limit: number;
+}> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const query = q.toString();
+  return adminFetch(
+    `/admin/home-cooking-completed${query ? `?${query}` : ''}`,
+  );
+}

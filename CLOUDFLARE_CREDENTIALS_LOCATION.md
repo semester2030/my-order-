@@ -7,11 +7,13 @@
 backend/.env
 ```
 
-### **القيم المطلوبة:**
+### **القيم المطلوبة (عناصر نائبة — لا تلصق أسراراً حقيقية في Git):**
 ```env
-CLOUDFLARE_ACCOUNT_ID=b81437d6fc599957546de6c856a539eb
-CLOUDFLARE_API_TOKEN=hCJX4TmKtWYYEIvmfmWr9ClskAisOwKn3g_ivumP
+CLOUDFLARE_ACCOUNT_ID=YOUR_CLOUDFLARE_ACCOUNT_ID
+CLOUDFLARE_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
 ```
+
+**للتطوير المحلي:** انسخ الملف إلى `backend/.env` واملأ القيم من لوحة Cloudflare ومن Render؛ **لا ترفع** `.env` إلى Git (يجب أن يكون في `.gitignore`).
 
 ---
 
@@ -102,9 +104,8 @@ this.client.post('/direct_upload', {...})
 
 ## 🎯 **ما تم إضافته:**
 
-✅ **تم إضافة Credentials في المكان الصحيح:**
-- `backend/.env` ✅
-- `CLOUDFLARE_ACCOUNT_ID` ✅
-- `CLOUDFLARE_API_TOKEN` ✅
+✅ **الموقع الصحيح للقيم الحقيقية:**
+- محلياً: `backend/.env` (غير مرفوع إلى Git)
+- إنتاج: متغيرات البيئة في **Render** فقط
 
-**كل شيء جاهز!** 🎉
+**كل شيء جاهز بعد** تعبئة `.env` محلياً أو Render وإعادة النشر.

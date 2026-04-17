@@ -7,8 +7,14 @@ import {
   IsNumber,
   Min,
   IsUUID,
+  ValidateIf,
+  IsNotEmpty,
+  Matches,
 } from 'class-validator';
-import { EventRequestType } from '../entities/event-request.entity';
+import {
+  EventRequestType,
+  ChefMealSlot,
+} from '../entities/event-request.entity';
 
 export class AddOnDto {
   name: string;
@@ -25,8 +31,21 @@ export class CreateEventRequestDto {
   @IsString()
   scheduledDate: string; // YYYY-MM-DD
 
+  /** طبخ منزلي فقط — HH:mm أو HH:mm:ss */
+  @ValidateIf((o: CreateEventRequestDto) => o.requestType === EventRequestType.HOME_COOKING)
   @IsString()
-  scheduledTime: string; // HH:mm
+  @IsNotEmpty()
+  @Matches(/^\d{2}:\d{2}(:\d{2})?$/)
+  scheduledTime?: string;
+
+  /** طبخ ذبائح / شواء فقط */
+  @ValidateIf(
+    (o: CreateEventRequestDto) =>
+      o.requestType === EventRequestType.POPULAR_COOKING ||
+      o.requestType === EventRequestType.GRILLING,
+  )
+  @IsEnum(ChefMealSlot)
+  mealSlot?: ChefMealSlot;
 
   @IsOptional()
   @IsNumber()

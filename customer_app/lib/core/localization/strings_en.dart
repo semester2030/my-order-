@@ -19,6 +19,62 @@ class StringsEn {
   static const String managePaymentCards = 'Add and manage payment cards';
   static const String myOrders = 'My Orders';
   static const String viewOrderHistory = 'View order history';
+  static const String myChefBookings = 'Slaughter & BBQ bookings';
+  static const String myChefBookingsSubtitle =
+      'Track popular cooking and outdoor grilling requests';
+  static const String myHomeCookingRequests = 'Home cooking requests';
+  static const String myHomeCookingRequestsSubtitle =
+      'Quotes, bank transfer confirmation, and pickup — separate from meal orders';
+  static const String noHomeCookingRequests = 'No home cooking requests yet';
+  static const String homeCookingStatusPending = 'Awaiting quote from kitchen';
+  static const String homeCookingStatusQuoted = 'Quoted — transfer then declare payment';
+  static const String homeCookingStatusPaymentPending = 'Awaiting admin payment verification';
+  static const String homeCookingStatusAccepted = 'Being prepared';
+  static const String homeCookingStatusReady = 'Ready for pickup';
+  static const String homeCookingStatusRejected = 'Declined by kitchen';
+  static const String homeCookingStatusCancelled = 'Cancelled';
+  static const String homeCookingQuotedAmount = 'Quoted amount';
+  static const String homeCookingQuoteNotes = 'Kitchen notes';
+  static const String homeCookingDeliveryYes = 'Delivery';
+  static const String homeCookingDeliveryNo = 'Pickup from kitchen';
+  static const String homeCookingDeclarePayment = 'Declare bank transfer';
+  static const String homeCookingDeclarePaymentHint =
+      'After you transfer, enter the reference as it appears on your statement.';
+  static const String homeCookingPaymentReferenceLabel = 'Transfer reference';
+  static const String homeCookingPaymentNotesOptional = 'Notes (optional)';
+  static const String homeCookingSubmitDeclaration = 'Submit declaration';
+  static const String homeCookingDeclareSuccess =
+      'Declaration sent. We will verify shortly.';
+  static const String homeCookingLoadError = 'Could not load this request';
+  static const String homeCookingStatusReadyShort = 'Ready — awaiting kitchen handover';
+  static const String homeCookingStatusHandedOver =
+      'Handed over by the kitchen — you can confirm receipt';
+  static const String homeCookingStatusCompleted = 'Request closed successfully';
+  static const String homeCookingConfirmReceiptTitle = 'Confirm receipt';
+  static const String homeCookingConfirmReceiptMessage =
+      'I confirm I received the order in the agreed condition. For any follow-up I will contact support and quote the completion code.';
+  static const String homeCookingConfirmReceiptButton = 'I have received it — close request';
+  static const String homeCookingCompletionCertificate = 'Completion certificate code';
+  static const String homeCookingCompletionCertificateHint =
+      'Keep this code — it is available to admin for audits and disputes.';
+  static const String homeCookingReceiptConfirmedSnackbar =
+      'Thank you. Your request is now closed.';
+  static const String noChefBookings = 'No slaughter or BBQ bookings yet';
+  static const String chefBookingTypePopularCooking = 'Popular cooking';
+  static const String chefBookingTypeGrilling = 'Outdoor grilling';
+  static const String chefBookingStatusPending = 'Awaiting chef response';
+  static const String chefBookingStatusAccepted = 'Accepted';
+  static const String chefBookingStatusRejected = 'Rejected';
+  static const String chefBookingStatusCancelled = 'Cancelled';
+  static const String chefBookingCancelTitle = 'Cancel booking';
+  static const String chefBookingCancelMessage =
+      'You can only cancel requests that are still pending. Continue?';
+  static const String chefBookingConfirmCancel = 'Cancel request';
+  static const String chefBookingCancelButton = 'Cancel request';
+  static const String chefBookingCancelledSnackbar = 'Request cancelled';
+  static const String chefBookingCancelFailed = 'Could not cancel the request';
+  static String chefBookingRespondByLine(String formatted) =>
+      'Chef response deadline: $formatted';
   static const String settings = 'Settings';
   static const String appSettings = 'App settings and preferences';
   static const String logout = 'Logout';
@@ -195,6 +251,12 @@ class StringsEn {
   static const String date = 'Date';
   static const String selectDate = 'Select date';
   static const String startTime = 'Start time';
+  static const String chefMealSlotTitle = 'Meal';
+  static const String chefMealSlotLunch = 'Lunch';
+  static const String chefMealSlotDinner = 'Dinner';
+  static const String chefMealSlotLunchHint = 'Chef is usually on site from about 10:00 to 15:00';
+  static const String chefMealSlotDinnerHint = 'Usually from late afternoon until about 22:00–00:00';
+  static const String selectMealSlot = 'Please choose lunch or dinner';
   static const String selectTime = 'Select time';
   static const String howToReceive = 'How do you want to receive your order?';
   static const String pickupOrder = 'Pickup order';

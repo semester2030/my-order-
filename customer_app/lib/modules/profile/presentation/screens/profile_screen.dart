@@ -105,6 +105,24 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 Gaps.mdV,
                 ProfileTile(
+                  icon: Icons.restaurant_menu,
+                  title: l10n.myChefBookings,
+                  subtitle: l10n.myChefBookingsSubtitle,
+                  onTap: () {
+                    context.push(RouteNames.myChefBookings);
+                  },
+                ),
+                Gaps.mdV,
+                ProfileTile(
+                  icon: Icons.home_work_outlined,
+                  title: l10n.myHomeCookingRequests,
+                  subtitle: l10n.myHomeCookingRequestsSubtitle,
+                  onTap: () {
+                    context.push(RouteNames.myHomeCookingRequests);
+                  },
+                ),
+                Gaps.mdV,
+                ProfileTile(
                   icon: Icons.settings_outlined,
                   title: l10n.settings,
                   subtitle: l10n.appSettings,

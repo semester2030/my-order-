@@ -31,6 +31,8 @@ import '../../modules/event_offers/presentation/screens/event_offers_screen.dart
 import '../../modules/event_offers/presentation/screens/add_event_offer_screen.dart';
 import '../../modules/event_offers/presentation/screens/edit_event_offer_screen.dart';
 import '../../modules/event_requests/presentation/screens/event_requests_screen.dart';
+import '../../modules/chef_booking_requests/presentation/screens/chef_booking_requests_screen.dart';
+import '../../modules/home_cooking_requests/presentation/screens/home_cooking_requests_screen.dart';
 
 /// Builds GoRouter for Vendor App (Phase 7: + redirect guards).
 GoRouter createAppRouter(Ref ref) {
@@ -58,7 +60,9 @@ GoRouter createAppRouter(Ref ref) {
           path == RouteNames.verifyEmail ||
           path == RouteNames.eventOffers ||
           path.startsWith('${RouteNames.eventOffers}/') ||
-          path == RouteNames.eventRequests;
+          path == RouteNames.eventRequests ||
+          path == RouteNames.chefBookingRequests ||
+          path == RouteNames.homeCookingRequests;
       if (!isProtected) return null;
       try {
         final secureStorage = ref.read(secureStorageProvider);
@@ -291,6 +295,22 @@ GoRouter createAppRouter(Ref ref) {
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
           child: const EventRequestsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.chefBookingRequests,
+        name: 'chefBookingRequests',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const ChefBookingRequestsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.homeCookingRequests,
+        name: 'homeCookingRequests',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const HomeCookingRequestsScreen(),
         ),
       ),
     ],

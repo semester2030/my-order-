@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/widgets/branded_logo.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../providers/auth_notifier.dart';
@@ -80,14 +81,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(110),
-              child: Image.asset(
-                'assets/images/icons/logo.jpeg',
-                width: 220,
-                height: 220,
-                fit: BoxFit.cover,
-              ),
+            BrandedLogo(
+              assetPath: 'assets/images/icons/logo.jpeg',
+              size: 280,
+              cornerRadius: 140,
+              tileColor: Colors.white,
             ),
             Gaps.xlV,
             Text(

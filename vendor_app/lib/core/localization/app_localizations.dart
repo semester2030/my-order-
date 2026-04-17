@@ -59,6 +59,14 @@ class AppLocalizations {
       isAr ? StringsAr.registerLongitudeLabel : StringsEn.registerLongitudeLabel;
   String get registerCoordinatesHint =>
       isAr ? StringsAr.registerCoordinatesHint : StringsEn.registerCoordinatesHint;
+  String get registerManualCoordinates =>
+      isAr ? StringsAr.registerManualCoordinates : StringsEn.registerManualCoordinates;
+  String get registerHideManualCoordinates =>
+      isAr ? StringsAr.registerHideManualCoordinates : StringsEn.registerHideManualCoordinates;
+  String get registerNeedLocationOrManual =>
+      isAr ? StringsAr.registerNeedLocationOrManual : StringsEn.registerNeedLocationOrManual;
+  String get registerMapsPasteHint =>
+      isAr ? StringsAr.registerMapsPasteHint : StringsEn.registerMapsPasteHint;
   String get registerCoordinatesZero =>
       isAr ? StringsAr.registerCoordinatesZero : StringsEn.registerCoordinatesZero;
   String get registerUseMyLocation =>
@@ -239,6 +247,78 @@ class AppLocalizations {
   String get editEventOffer => isAr ? StringsAr.editEventOffer : StringsEn.editEventOffer;
   String get noEventOffers => isAr ? StringsAr.noEventOffers : StringsEn.noEventOffers;
   String get noEventRequests => isAr ? StringsAr.noEventRequests : StringsEn.noEventRequests;
+  String get chefBookingRequests =>
+      isAr ? StringsAr.chefBookingRequests : StringsEn.chefBookingRequests;
+  String get noChefBookingRequests =>
+      isAr ? StringsAr.noChefBookingRequests : StringsEn.noChefBookingRequests;
+  String get homeCookingRequests =>
+      isAr ? StringsAr.homeCookingRequests : StringsEn.homeCookingRequests;
+  String get noHomeCookingRequests =>
+      isAr ? StringsAr.noHomeCookingRequests : StringsEn.noHomeCookingRequests;
+  String get homeCookingStatusQuoted =>
+      isAr ? StringsAr.homeCookingStatusQuoted : StringsEn.homeCookingStatusQuoted;
+  String get homeCookingStatusPaymentPending =>
+      isAr ? StringsAr.homeCookingStatusPaymentPending : StringsEn.homeCookingStatusPaymentPending;
+  String get homeCookingStatusAccepted =>
+      isAr ? StringsAr.homeCookingStatusAccepted : StringsEn.homeCookingStatusAccepted;
+  String get homeCookingStatusReady =>
+      isAr ? StringsAr.homeCookingStatusReady : StringsEn.homeCookingStatusReady;
+  String get homeCookingQuoteDialogTitle =>
+      isAr ? StringsAr.homeCookingQuoteDialogTitle : StringsEn.homeCookingQuoteDialogTitle;
+  String get homeCookingQuoteAmountHint =>
+      isAr ? StringsAr.homeCookingQuoteAmountHint : StringsEn.homeCookingQuoteAmountHint;
+  String get homeCookingQuoteNotesHint =>
+      isAr ? StringsAr.homeCookingQuoteNotesHint : StringsEn.homeCookingQuoteNotesHint;
+  String get homeCookingSendQuote =>
+      isAr ? StringsAr.homeCookingSendQuote : StringsEn.homeCookingSendQuote;
+  String get homeCookingRejectRequest =>
+      isAr ? StringsAr.homeCookingRejectRequest : StringsEn.homeCookingRejectRequest;
+  String get homeCookingMarkReady =>
+      isAr ? StringsAr.homeCookingMarkReady : StringsEn.homeCookingMarkReady;
+  String get homeCookingInvalidAmount =>
+      isAr ? StringsAr.homeCookingInvalidAmount : StringsEn.homeCookingInvalidAmount;
+  String get homeCookingDeliveryYes =>
+      isAr ? StringsAr.homeCookingDeliveryYes : StringsEn.homeCookingDeliveryYes;
+  String get homeCookingDeliveryNo =>
+      isAr ? StringsAr.homeCookingDeliveryNo : StringsEn.homeCookingDeliveryNo;
+  String get homeCookingQuotedAmount =>
+      isAr ? StringsAr.homeCookingQuotedAmount : StringsEn.homeCookingQuotedAmount;
+  String get homeCookingStatusReadyShort =>
+      isAr ? StringsAr.homeCookingStatusReadyShort : StringsEn.homeCookingStatusReadyShort;
+  String get homeCookingStatusHandedOver =>
+      isAr ? StringsAr.homeCookingStatusHandedOver : StringsEn.homeCookingStatusHandedOver;
+  String get homeCookingStatusCompleted =>
+      isAr ? StringsAr.homeCookingStatusCompleted : StringsEn.homeCookingStatusCompleted;
+  String get homeCookingMarkHandedOverButton =>
+      isAr ? StringsAr.homeCookingMarkHandedOverButton : StringsEn.homeCookingMarkHandedOverButton;
+  String get homeCookingHandoverDialogTitle =>
+      isAr ? StringsAr.homeCookingHandoverDialogTitle : StringsEn.homeCookingHandoverDialogTitle;
+  String get homeCookingHandoverDialogSubtitle =>
+      isAr ? StringsAr.homeCookingHandoverDialogSubtitle : StringsEn.homeCookingHandoverDialogSubtitle;
+  String get homeCookingHandoverNotesHint =>
+      isAr ? StringsAr.homeCookingHandoverNotesHint : StringsEn.homeCookingHandoverNotesHint;
+  String get homeCookingHandoverConfirm =>
+      isAr ? StringsAr.homeCookingHandoverConfirm : StringsEn.homeCookingHandoverConfirm;
+  String get homeCookingHandedOverSuccess =>
+      isAr ? StringsAr.homeCookingHandedOverSuccess : StringsEn.homeCookingHandedOverSuccess;
+  String get homeCookingCompletionRefLabel =>
+      isAr ? StringsAr.homeCookingCompletionRefLabel : StringsEn.homeCookingCompletionRefLabel;
+  String get chefBookingTypePopularCooking =>
+      isAr ? StringsAr.chefBookingTypePopularCooking : StringsEn.chefBookingTypePopularCooking;
+  String get chefBookingTypeGrilling =>
+      isAr ? StringsAr.chefBookingTypeGrilling : StringsEn.chefBookingTypeGrilling;
+  String get chefBookingStatusAccepted =>
+      isAr ? StringsAr.chefBookingStatusAccepted : StringsEn.chefBookingStatusAccepted;
+  String get chefBookingStatusRejected =>
+      isAr ? StringsAr.chefBookingStatusRejected : StringsEn.chefBookingStatusRejected;
+  String get chefBookingStatusCancelled =>
+      isAr ? StringsAr.chefBookingStatusCancelled : StringsEn.chefBookingStatusCancelled;
+  String chefBookingRespondByLine(String formatted) =>
+      isAr ? StringsAr.chefBookingRespondByLine(formatted) : StringsEn.chefBookingRespondByLine(formatted);
+  String get chefMealSlotLunch =>
+      isAr ? StringsAr.chefMealSlotLunch : StringsEn.chefMealSlotLunch;
+  String get chefMealSlotDinner =>
+      isAr ? StringsAr.chefMealSlotDinner : StringsEn.chefMealSlotDinner;
   String get accept => isAr ? StringsAr.accept : StringsEn.accept;
   String get reject => isAr ? StringsAr.reject : StringsEn.reject;
   String get eventStatusPending => isAr ? StringsAr.eventStatusPending : StringsEn.eventStatusPending;

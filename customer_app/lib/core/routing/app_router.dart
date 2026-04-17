@@ -23,6 +23,9 @@ import '../../../modules/vendors/presentation/screens/vendor_screen.dart';
 import '../../../modules/vendors/presentation/screens/vendor_reviews_screen.dart';
 import '../../../modules/vendors/presentation/screens/request_chef_screen.dart';
 import '../../../modules/vendors/presentation/screens/request_private_event_screen.dart';
+import '../../../modules/vendors/presentation/screens/my_chef_bookings_screen.dart';
+import '../../../modules/vendors/presentation/screens/my_home_cooking_requests_screen.dart';
+import '../../../modules/vendors/presentation/screens/home_cooking_request_detail_screen.dart';
 import '../../../modules/profile/presentation/screens/profile_screen.dart';
 import '../../../modules/profile/presentation/screens/edit_name_screen.dart';
 import '../../../modules/profile/presentation/screens/settings_screen.dart';
@@ -284,6 +287,38 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'profile',
         builder: (context, state) {
           return const ProfileScreen();
+        },
+        redirect: (context, state) async {
+          return await authGuard.redirectIfNotAuthenticated(context, state);
+        },
+      ),
+      GoRoute(
+        path: RouteNames.myChefBookings,
+        name: 'my-chef-bookings',
+        builder: (context, state) {
+          return const MyChefBookingsScreen();
+        },
+        redirect: (context, state) async {
+          return await authGuard.redirectIfNotAuthenticated(context, state);
+        },
+      ),
+
+      GoRoute(
+        path: RouteNames.myHomeCookingRequests,
+        name: 'my-home-cooking-requests',
+        builder: (context, state) {
+          return const MyHomeCookingRequestsScreen();
+        },
+        redirect: (context, state) async {
+          return await authGuard.redirectIfNotAuthenticated(context, state);
+        },
+      ),
+      GoRoute(
+        path: '${RouteNames.myHomeCookingRequests}/:id',
+        name: 'my-home-cooking-request-detail',
+        builder: (context, state) {
+          final id = state.pathParameters['id'] ?? '';
+          return HomeCookingRequestDetailScreen(requestId: id);
         },
         redirect: (context, state) async {
           return await authGuard.redirectIfNotAuthenticated(context, state);

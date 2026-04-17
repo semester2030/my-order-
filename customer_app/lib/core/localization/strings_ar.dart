@@ -19,6 +19,59 @@ class StringsAr {
   static const String managePaymentCards = 'إضافة وإدارة البطاقات';
   static const String myOrders = 'طلباتي';
   static const String viewOrderHistory = 'عرض سجل الطلبات';
+  static const String myChefBookings = 'حجوزات الولائم والشوي';
+  static const String myChefBookingsSubtitle = 'متابعة طلبات طبخ الذبائح والشواء الخارجي';
+  static const String myHomeCookingRequests = 'طلبات الطبخ المنزلي';
+  static const String myHomeCookingRequestsSubtitle =
+      'عرض السعر والتحويل البنكي ومتابعة الجاهزية — منفصلة عن طلبات الوجبات';
+  static const String noHomeCookingRequests = 'لا توجد طلبات طبخ منزلي بعد';
+  static const String homeCookingStatusPending = 'بانتظار عرض السعر من المطبخ';
+  static const String homeCookingStatusQuoted = 'تم عرض السعر — أكمل التحويل ثم أعلن عنه';
+  static const String homeCookingStatusPaymentPending = 'بانتظار تأكيد الإدارة للتحويل';
+  static const String homeCookingStatusAccepted = 'قيد التحضير';
+  static const String homeCookingStatusReady = 'جاهز للاستلام';
+  static const String homeCookingStatusRejected = 'مرفوض من المطبخ';
+  static const String homeCookingStatusCancelled = 'ملغى';
+  static const String homeCookingQuotedAmount = 'المبلغ المعروض';
+  static const String homeCookingQuoteNotes = 'ملاحظات المطبخ';
+  static const String homeCookingDeliveryYes = 'توصيل';
+  static const String homeCookingDeliveryNo = 'استلام من المطبخ';
+  static const String homeCookingDeclarePayment = 'تأكيد التحويل للإدارة';
+  static const String homeCookingDeclarePaymentHint =
+      'بعد التحويل البنكي أدخل مرجع العملية كما يظهر في كشف الحساب.';
+  static const String homeCookingPaymentReferenceLabel = 'مرجع التحويل';
+  static const String homeCookingPaymentNotesOptional = 'ملاحظات (اختياري)';
+  static const String homeCookingSubmitDeclaration = 'إرسال إعلان التحويل';
+  static const String homeCookingDeclareSuccess = 'تم إرسال إعلان التحويل. سنتحقق قريباً.';
+  static const String homeCookingLoadError = 'تعذّر تحميل الطلب';
+  static const String homeCookingStatusReadyShort = 'جاهز — بانتظار تسليم المطبخ';
+  static const String homeCookingStatusHandedOver =
+      'سلّم المطبخ الطلب — يمكنك الآن تأكيد الاستلام';
+  static const String homeCookingStatusCompleted = 'تم إغلاق الطلب بنجاح';
+  static const String homeCookingConfirmReceiptTitle = 'تأكيد استلام الطلب';
+  static const String homeCookingConfirmReceiptMessage =
+      'أؤكد أنني استلمت الطلب كاملاً بحالته المتفق عليها، وأن أي ملاحظة لاحقة سأتواصل بها عبر الدعم مع ذكر رمز الإتمام.';
+  static const String homeCookingConfirmReceiptButton = 'تم الاستلام وإغلاق الطلب';
+  static const String homeCookingCompletionCertificate = 'رمز إتمام الطلب';
+  static const String homeCookingCompletionCertificateHint =
+      'احتفظ بهذا الرقم — يظهر في لوحة الإدارة للمراجعة عند الحاجة.';
+  static const String homeCookingReceiptConfirmedSnackbar = 'شكراً لتأكيدك. تم إغلاق الطلب.';
+  static const String noChefBookings = 'لا توجد حجوزات من هذا النوع بعد';
+  static const String chefBookingTypePopularCooking = 'طبخ ذبائح';
+  static const String chefBookingTypeGrilling = 'شواء خارجي';
+  static const String chefBookingStatusPending = 'قيد انتظار رد الطبّاخ';
+  static const String chefBookingStatusAccepted = 'مقبول';
+  static const String chefBookingStatusRejected = 'مرفوض';
+  static const String chefBookingStatusCancelled = 'ملغى';
+  static const String chefBookingCancelTitle = 'إلغاء الحجز';
+  static const String chefBookingCancelMessage =
+      'سيتم إلغاء الطلب فقط إن كان قيد الانتظار. هل تريد المتابعة؟';
+  static const String chefBookingConfirmCancel = 'إلغاء الطلب';
+  static const String chefBookingCancelButton = 'إلغاء الطلب';
+  static const String chefBookingCancelledSnackbar = 'تم إلغاء الطلب';
+  static const String chefBookingCancelFailed = 'تعذّر إلغاء الطلب';
+  static String chefBookingRespondByLine(String formatted) =>
+      'آخر موعد لرد الطبّاخ: $formatted';
   static const String settings = 'الإعدادات';
   static const String appSettings = 'إعدادات التطبيق';
   static const String logout = 'تسجيل الخروج';
@@ -192,6 +245,12 @@ class StringsAr {
   static const String date = 'التاريخ';
   static const String selectDate = 'اختر التاريخ';
   static const String startTime = 'وقت البدء';
+  static const String chefMealSlotTitle = 'الوجبة';
+  static const String chefMealSlotLunch = 'غداء';
+  static const String chefMealSlotDinner = 'عشاء';
+  static const String chefMealSlotLunchHint = 'الطبّاخ عادة من 10 صباحاً إلى 3 عصراً';
+  static const String chefMealSlotDinnerHint = 'عادة من بعد العصر إلى حوالي 10–12 ليلاً';
+  static const String selectMealSlot = 'يرجى اختيار الوجبة (غداء أو عشاء)';
   static const String selectTime = 'اختر الوقت';
   static const String howToReceive = 'كيف تريد استلام الطلب؟';
   static const String pickupOrder = 'استلام الطلب';

@@ -19,9 +19,41 @@ export enum EventRequestType {
 
 export enum EventRequestStatus {
   PENDING = 'pending',
+  /** طبخ منزلي: المطبخ أرسل سعراً وانتظر إجراء العميل/الدفع */
+  QUOTED = 'quoted',
+  /** طبخ منزلي: العميل أعلن التحويل — بانتظار تحقق الإدارة */
+  PAYMENT_PENDING = 'payment_pending',
+  /** طبخ منزلي: بعد التحقق من الدفع — قيد التحضير (أو كاش عند الاستلام حسب السياسة) */
   ACCEPTED = 'accepted',
+  /** طبخ منزلي: جاهز للاستلام */
+  READY = 'ready',
+  /** طبخ منزلي: تم التسليم للعميل أو للوسيط (مندوب) — بانتظار تأكيد استلام العميل */
+  HANDED_OVER = 'handed_over',
+  /** طبخ منزلي: أكد العميل الاستلام وأُغلق الطلب */
+  COMPLETED = 'completed',
   REJECTED = 'rejected',
   CANCELLED = 'cancelled',
+}
+
+/** وجبة حجز الولائم/الشوي — بدون وقت حر من العميل */
+export enum ChefMealSlot {
+  LUNCH = 'lunch',
+  DINNER = 'dinner',
+}
+
+/** أنواع طلبات الحجز التي تستخدم الوجبة + قيود التعارض */
+export const CHEF_BOOKING_TYPES: EventRequestType[] = [
+  EventRequestType.POPULAR_COOKING,
+  EventRequestType.GRILLING,
+];
+
+export function isChefBookingType(t: EventRequestType): boolean {
+  return CHEF_BOOKING_TYPES.includes(t);
+}
+
+/** وقت مرجعي مخزّن للعرض/التقارير (النافذة الفعلية ثابتة في المنتج) */
+export function scheduledTimeForChefMealSlot(slot: ChefMealSlot): string {
+  return slot === ChefMealSlot.LUNCH ? '10:00:00' : '16:00:00';
 }
 
 @Entity('event_requests')
@@ -51,6 +83,15 @@ export class EventRequest {
   @Column({ type: 'time', name: 'scheduled_time' })
   scheduledTime: string;
 
+  /** غداء/عشاء — لطبخ الذبائح والشواء فقط */
+  @Column({
+    type: 'enum',
+    enum: ChefMealSlot,
+    name: 'meal_slot',
+    nullable: true,
+  })
+  mealSlot: ChefMealSlot | null;
+
   @Column({ default: 1, name: 'guests_count' })
   guestsCount: number;
 
@@ -79,6 +120,59 @@ export class EventRequest {
     default: EventRequestStatus.PENDING,
   })
   status: EventRequestStatus;
+
+  /** سعر عرض المطبخ المنزلي (ريال) */
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    nullable: true,
+    name: 'quoted_amount',
+  })
+  quotedAmount: string | null;
+
+  @Column({ type: 'text', nullable: true, name: 'quote_notes' })
+  quoteNotes: string | null;
+
+  @Column({ name: 'quoted_at', type: 'timestamptz', nullable: true })
+  quotedAt: Date | null;
+
+  @Column({ type: 'text', nullable: true, name: 'payment_reference' })
+  paymentReference: string | null;
+
+  @Column({ name: 'payment_declared_at', type: 'timestamptz', nullable: true })
+  paymentDeclaredAt: Date | null;
+
+  @Column({ name: 'payment_verified_at', type: 'timestamptz', nullable: true })
+  paymentVerifiedAt: Date | null;
+
+  @Column({ name: 'payment_verified_by_admin_id', type: 'uuid', nullable: true })
+  paymentVerifiedByAdminId: string | null;
+
+  @Column({ name: 'ready_at', type: 'timestamptz', nullable: true })
+  readyAt: Date | null;
+
+  @Column({ name: 'handed_over_at', type: 'timestamptz', nullable: true })
+  handedOverAt: Date | null;
+
+  @Column({ type: 'text', nullable: true, name: 'handover_notes' })
+  handoverNotes: string | null;
+
+  @Column({ name: 'completed_at', type: 'timestamptz', nullable: true })
+  completedAt: Date | null;
+
+  /** رمز إتمام يظهر للعميل وللإدارة بعد تأكيد الاستلام (مثال: HC-260329-...) */
+  @Column({
+    type: 'varchar',
+    length: 32,
+    nullable: true,
+    name: 'completion_certificate_code',
+  })
+  completionCertificateCode: string | null;
+
+  /** آخر موعد لرد الطبّاخ (طبخ ذبائح / شواء فقط) — بعده يُلغى الطلب تلقائياً إن بقي pending */
+  @Column({ name: 'respond_by', type: 'timestamptz', nullable: true })
+  respondBy: Date | null;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

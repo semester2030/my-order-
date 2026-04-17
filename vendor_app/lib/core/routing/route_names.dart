@@ -35,4 +35,8 @@ class RouteNames {
   static const String eventOffersAdd = '/event-offers/add';
   static String eventOfferEdit(String id) => '/event-offers/$id/edit';
   static const String eventRequests = '/event-requests';
+
+  /// حجوزات الولائم والشوي (ليس طلبات المناسبات الخاصة).
+  static const String chefBookingRequests = '/chef-booking-requests';
+  static const String homeCookingRequests = '/home-cooking-requests';
 }
