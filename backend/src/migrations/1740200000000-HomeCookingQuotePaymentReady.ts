@@ -56,17 +56,10 @@ export class HomeCookingQuotePaymentReady1740200000000
       ADD COLUMN IF NOT EXISTS "ready_at" TIMESTAMP WITH TIME ZONE NULL
     `);
 
-    await queryRunner.query(`
-      CREATE INDEX IF NOT EXISTS "IDX_event_requests_home_payment_pending"
-      ON "event_requests" ("created_at" DESC)
-      WHERE "request_type" = 'home_cooking' AND "status" = 'payment_pending'
-    `);
+    // Partial index on payment_pending: see 1740310000000 (PG disallows new enum value in same txn).
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `DROP INDEX IF EXISTS "IDX_event_requests_home_payment_pending"`,
-    );
     await queryRunner.query(
       `ALTER TABLE "event_requests" DROP COLUMN IF EXISTS "ready_at"`,
     );
