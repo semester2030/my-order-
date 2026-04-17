@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ConfirmPaymentDto {
   @ApiProperty({ example: 'uuid', description: 'Payment ID' })
@@ -7,11 +7,12 @@ export class ConfirmPaymentDto {
   @IsNotEmpty()
   paymentId: string;
 
-  @ApiProperty({
-    example: 'txn_123456',
-    description: 'Transaction ID from gateway',
+  @ApiPropertyOptional({
+    deprecated: true,
+    description:
+      'يُتجاهَل أمنياً — لا يُستخدم لإثبات نجاح الدفع. الإكمال من السيرفر/webhook فقط.',
   })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  transactionId: string;
+  transactionId?: string;
 }

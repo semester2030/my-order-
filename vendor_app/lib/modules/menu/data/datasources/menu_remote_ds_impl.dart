@@ -54,6 +54,9 @@ class MenuRemoteDsImpl implements MenuRemoteDs {
   /// الباك اند قد يرجع image بدل imageUrl، أو video/videoAssets — توحيد المفاتيح.
   static Map<String, dynamic> _normalizeMenuItemJson(Map<String, dynamic> e) {
     final m = Map<String, dynamic>.from(e);
+    if (!m.containsKey('id') && m.containsKey('menu_item_id')) {
+      m['id'] = m['menu_item_id'];
+    }
     if (m.containsKey('image') && !m.containsKey('imageUrl')) {
       m['imageUrl'] = m['image'];
     }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getDatabaseConfig } from './config/database.config.js';
+import paymentConfig from './config/payment.config.js';
 import { AppController } from './app.controller';
 
 // Modules
@@ -30,6 +31,7 @@ import { PrivateEventsModule } from './modules/private-events/private-events.mod
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+      load: [paymentConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

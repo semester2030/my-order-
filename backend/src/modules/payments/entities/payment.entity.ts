@@ -8,6 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Order } from '../../orders/entities/order.entity';
+import { EventRequest } from '../../event-requests/entities/event-request.entity';
 
 export enum PaymentMethod {
   APPLE_PAY = 'apple_pay',
@@ -28,8 +29,11 @@ export class Payment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'order_id' })
-  orderId: string;
+  @Column({ name: 'order_id', nullable: true })
+  orderId: string | null;
+
+  @Column({ name: 'event_request_id', nullable: true })
+  eventRequestId: string | null;
 
   @Column({
     type: 'enum',
@@ -63,7 +67,14 @@ export class Payment {
   updatedAt: Date;
 
   // Relations
-  @ManyToOne(() => Order, (order) => order.payments, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Order, (order) => order.payments, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
   @JoinColumn({ name: 'order_id' })
-  order: Order;
+  order: Order | null;
+
+  @ManyToOne(() => EventRequest, { onDelete: 'CASCADE', nullable: true })
+  @JoinColumn({ name: 'event_request_id' })
+  eventRequest: EventRequest | null;
 }

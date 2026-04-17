@@ -293,13 +293,14 @@ export class AdminService {
       order: { createdAt: 'DESC' },
       skip,
       take: limit,
-      relations: ['order'],
+      relations: ['order', 'eventRequest'],
     });
 
     return {
       items: items.map((p) => ({
         id: p.id,
         orderId: p.orderId,
+        eventRequestId: p.eventRequestId,
         method: p.method,
         status: p.status,
         amount: Number(p.amount),

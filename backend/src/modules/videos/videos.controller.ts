@@ -68,31 +68,46 @@ export class VideosController {
   // Otherwise /upload/:menuItemId will catch /upload/init and /upload/complete
 
   @Post('upload/init')
-  @ApiOperation({ summary: 'Initialize video upload' })
+  @ApiOperation({
+    summary: 'Initialize media upload (Cloudflare Stream)',
+    description:
+      'menuItemId اختياري: عند غيابه يُسمح برفع (مثلاً صورة غلاف) قبل إنشاء menu item. عند التوفر يُتحقق من ملكية الصنف وحدود الفيديو.',
+  })
   @HttpCode(HttpStatus.OK)
   async initUpload(
     @Request() req: { user: User },
-    @Body() body: { menuItemId: string; fileName: string; fileSize: number },
+    @Body()
+    body: {
+      menuItemId?: string;
+      fileName: string;
+      fileSize?: number;
+      fileSizeBytes?: number;
+    },
   ) {
     const vendorId = await this.getVendorId(req);
+    const fileSize = Number(body.fileSize ?? body.fileSizeBytes ?? 0);
     return this.videosService.initUpload(
       body.menuItemId,
       body.fileName,
-      body.fileSize,
+      fileSize,
       vendorId,
     );
   }
 
   @Post('upload/complete')
-  @ApiOperation({ summary: 'Complete video upload' })
+  @ApiOperation({
+    summary: 'Complete media upload',
+    description:
+      'بدون menuItemId: يُرجع { url } لاستخدامه كصورة (قبل إنشاء الوجبة). مع menuItemId: يُنشأ/يُحدَّث سجل video_assets كالسابق.',
+  })
   @HttpCode(HttpStatus.OK)
   async completeUpload(
     @Request() req: { user: User },
     @Body()
     body: {
       uploadId: string;
-      menuItemId: string;
-      cloudflareAssetId: string;
+      menuItemId?: string;
+      cloudflareAssetId?: string;
     },
   ) {
     const vendorId = await this.getVendorId(req);

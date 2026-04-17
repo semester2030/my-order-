@@ -62,13 +62,19 @@ export class VideosService {
   }
 
   async initUpload(
-    menuItemId: string,
+    menuItemId: string | undefined,
     fileName: string,
     fileSize: number,
     vendorId: string,
   ) {
-    await this.ensureVendorCanAddVideo(menuItemId, vendorId);
+    const mid = menuItemId?.trim();
+    if (mid) {
+      await this.ensureVendorCanAddVideo(mid, vendorId);
+    }
     // Validate file size (max 500MB)
+    if (!Number.isFinite(fileSize) || fileSize < 1) {
+      throw new BadRequestException('fileSize أو fileSizeBytes مطلوب وصالح');
+    }
     if (fileSize > 500 * 1024 * 1024) {
       throw new Error('File size must be less than 500MB');
     }
@@ -87,16 +93,76 @@ export class VideosService {
     };
   }
 
+  /**
+   * إكمال رفع بدون ربط بـ menu item (مثلاً صورة غلاف قبل إنشاء الوجبة).
+   * يُرجع { url } للتخزين في حقل image عند إنشاء القائمة.
+   */
+  private async completeUnattachedMediaUpload(
+    cfId: string,
+    vendorId: string,
+  ): Promise<{ url: string }> {
+    const existing = await this.videoAssetRepository.findOne({
+      where: { cloudflareAssetId: cfId },
+      relations: ['menuItem'],
+    });
+    if (existing?.menuItem) {
+      const ownerId = (existing.menuItem as MenuItem).vendorId;
+      if (ownerId !== vendorId) {
+        throw new ForbiddenException(
+          'This media asset belongs to another vendor',
+        );
+      }
+      const url =
+        (existing.thumbnailUrl || existing.playbackUrl || '').trim() || '';
+      if (url) {
+        return { url };
+      }
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    let assetDetails: {
+      playbackUrl: string;
+      thumbnailUrl: string | null;
+      duration: number;
+    };
+    try {
+      assetDetails =
+        await this.cloudflareStreamService.getAssetDetails(cfId);
+    } catch {
+      const accountId =
+        this.configService.get<string>('CLOUDFLARE_ACCOUNT_ID') || 'unknown';
+      assetDetails = {
+        playbackUrl: `https://customer-${accountId}.cloudflarestream.com/${cfId}/manifest/video.m3u8`,
+        thumbnailUrl: null,
+        duration: 0,
+      };
+    }
+
+    const thumb = assetDetails.thumbnailUrl?.trim();
+    const play = assetDetails.playbackUrl?.trim();
+    const url =
+      thumb ||
+      play ||
+      `https://customer-${this.configService.get<string>('CLOUDFLARE_ACCOUNT_ID') || 'unknown'}.cloudflarestream.com/${cfId}/manifest/video.m3u8`;
+
+    return { url };
+  }
+
   async completeUpload(
     uploadId: string,
-    menuItemId: string,
-    cloudflareAssetId: string,
+    menuItemId: string | undefined,
+    cloudflareAssetId: string | undefined,
     vendorId: string,
   ) {
-    if (!cloudflareAssetId?.trim()) {
-      throw new BadRequestException('cloudflareAssetId is required');
+    const cfId = (cloudflareAssetId?.trim() || uploadId?.trim()) ?? '';
+    if (!cfId) {
+      throw new BadRequestException('uploadId أو cloudflareAssetId مطلوب');
     }
-    const cfId = cloudflareAssetId.trim();
+
+    const attachedMenuId = menuItemId?.trim() ?? '';
+    if (!attachedMenuId) {
+      return this.completeUnattachedMediaUpload(cfId, vendorId);
+    }
 
     // إكمال متكرر آمن: يمنع فشل unique على cloudflare_asset_id ويعيد السجل إن وُجد
     const already = await this.videoAssetRepository.findOne({
@@ -110,7 +176,7 @@ export class VideosService {
           'This video asset belongs to another vendor',
         );
       }
-      if (already.menuItemId !== menuItemId) {
+      if (already.menuItemId !== attachedMenuId) {
         throw new BadRequestException(
           'cloudflareAssetId is already linked to a different menu item',
         );
@@ -121,7 +187,7 @@ export class VideosService {
       });
     }
 
-    await this.ensureVendorCanAddVideo(menuItemId, vendorId);
+    await this.ensureVendorCanAddVideo(attachedMenuId, vendorId);
 
     // Wait a bit for Cloudflare to process the video after upload
     await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -151,7 +217,7 @@ export class VideosService {
     }
 
     const existingVideos = await this.videoAssetRepository.find({
-      where: { menuItemId },
+      where: { menuItemId: attachedMenuId },
     });
 
     const hasPrimaryVideo = existingVideos.some((v) => v.isPrimary);
@@ -159,7 +225,7 @@ export class VideosService {
 
     if (isPrimary && hasPrimaryVideo) {
       await this.videoAssetRepository.update(
-        { menuItemId, isPrimary: true },
+        { menuItemId: attachedMenuId, isPrimary: true },
         { isPrimary: false },
       );
     }
@@ -169,7 +235,7 @@ export class VideosService {
     const durationInSeconds = Math.round(assetDetails.duration);
 
     const videoAsset = this.videoAssetRepository.create({
-      menuItemId,
+      menuItemId: attachedMenuId,
       cloudflareAssetId: cfId,
       playbackUrl: assetDetails.playbackUrl,
       thumbnailUrl: assetDetails.thumbnailUrl,

@@ -22,6 +22,7 @@ import { CreateEventRequestDto } from './dto/create-event-request.dto';
 import { QuoteHomeCookingDto } from './dto/quote-home-cooking.dto';
 import { DeclareHomeCookingPaymentDto } from './dto/declare-home-cooking-payment.dto';
 import { HandoverHomeCookingDto } from './dto/handover-home-cooking.dto';
+import { PaymentsService } from '../payments/payments.service';
 
 const PG_UNIQUE_VIOLATION = '23505';
 
@@ -39,6 +40,7 @@ export class EventRequestsService {
     @InjectRepository(EventRequest)
     private readonly eventRequestRepository: Repository<EventRequest>,
     private readonly configService: ConfigService,
+    private readonly paymentsService: PaymentsService,
   ) {}
 
   private vendorResponseHours(): number {
@@ -396,6 +398,7 @@ export class EventRequestsService {
     if (row.quotedAmount == null) {
       throw new ConflictException('لا يوجد سعر معروض');
     }
+    await this.paymentsService.assertNoBlockingHomeCookingCardPayment(row.id);
     const ref = dto.paymentReference.trim();
     if (ref.length < 3) {
       throw new BadRequestException('أدخل مرجع التحويل (3 أحرف على الأقل)');
