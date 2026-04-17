@@ -16,7 +16,20 @@ export class PaymentsLinkEventRequest1740420000000 implements MigrationInterface
     if (!paymentsTable) {
       return;
     }
+    // إن وُجد العمود لكن فشل إنشاء الفهرس سابقاً (مثلاً ::text في الـ predicate)، نُصلح الفهرس فقط.
     if (paymentsTable.columns.find((c) => c.name === 'event_request_id')) {
+      await queryRunner.query(
+        `DROP INDEX IF EXISTS "UQ_payments_home_one_active_per_event"`,
+      );
+      await queryRunner.query(`
+        CREATE UNIQUE INDEX IF NOT EXISTS "UQ_payments_home_one_active_per_event"
+        ON "payments" ("event_request_id")
+        WHERE "event_request_id" IS NOT NULL
+          AND "status" IN (
+            'pending'::"payment_status_enum",
+            'processing'::"payment_status_enum"
+          )
+      `);
       return;
     }
 
@@ -51,11 +64,15 @@ export class PaymentsLinkEventRequest1740420000000 implements MigrationInterface
       )
     `);
 
+    // لا تستخدم ::text على enum في predicate الفهرس — PG يرفضها (ليست IMMUTABLE).
     await queryRunner.query(`
       CREATE UNIQUE INDEX "UQ_payments_home_one_active_per_event"
       ON "payments" ("event_request_id")
       WHERE "event_request_id" IS NOT NULL
-        AND ("status")::text IN ('pending', 'processing')
+        AND "status" IN (
+          'pending'::"payment_status_enum",
+          'processing'::"payment_status_enum"
+        )
     `);
 
     await queryRunner.query(`
