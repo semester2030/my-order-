@@ -16,6 +16,7 @@ import 'package:vendor_app/modules/videos/presentation/widgets/video_picker_shee
 import 'package:vendor_app/modules/videos/presentation/screens/videos_screen.dart';
 import 'package:vendor_app/modules/menu/presentation/providers/menu_state.dart';
 import 'package:vendor_app/modules/menu/presentation/utils/vendor_terms_precheck.dart';
+import 'package:vendor_app/modules/profile/presentation/providers/profile_state.dart';
 
 /// شاشة إضافة وجبة — ثيم موحد (Phase 10).
 class AddMenuItemScreen extends ConsumerStatefulWidget {
@@ -77,10 +78,8 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final isHomeCooking = ref.read(profileNotifierProvider).maybeWhen(
-          loaded: (p) => p.providerCategory == 'home_cooking',
-          orElse: () => false,
-        );
+    final isHomeCooking =
+        ref.read(profileNotifierProvider).isHomeCookingCategory;
 
     if (isHomeCooking) {
       if (_descriptionController.text.trim().length < 3) {
@@ -321,10 +320,8 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
                   controller: _descriptionController,
                   maxLines: 3,
                   validator: (v) {
-                    final isHome = ref.read(profileNotifierProvider).maybeWhen(
-                          loaded: (p) => p.providerCategory == 'home_cooking',
-                          orElse: () => false,
-                        );
+                    final isHome =
+                        ref.read(profileNotifierProvider).isHomeCookingCategory;
                     if (isHome && (v == null || v.trim().length < 3)) {
                       return 'الوصف إلزامي لمطبخ منزلي (٣ أحرف على الأقل)';
                     }
@@ -341,10 +338,8 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
                 Gaps.mdV,
                 Builder(
                   builder: (context) {
-                    final isHome = ref.watch(profileNotifierProvider).maybeWhen(
-                      loaded: (p) => p.providerCategory == 'home_cooking',
-                      orElse: () => false,
-                    );
+                    final isHome =
+                        ref.watch(profileNotifierProvider).isHomeCookingCategory;
                     return AppTextField(
                       controller: _priceController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),

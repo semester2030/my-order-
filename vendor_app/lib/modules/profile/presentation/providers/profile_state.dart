@@ -46,3 +46,14 @@ final class ProfileSaveError extends ProfileState {
   @override
   List<Object?> get props => [message];
 }
+
+extension ProfileStateHomeCookingX on ProfileState {
+  /// `ProfileState` ليس Freezed — لا يوجد [maybeWhen]؛ استخدم هذا للتحقق من فئة المقدّم.
+  bool get isHomeCookingCategory {
+    return switch (this) {
+      ProfileLoaded(:final profile) =>
+        profile.providerCategory == 'home_cooking',
+      _ => false,
+    };
+  }
+}

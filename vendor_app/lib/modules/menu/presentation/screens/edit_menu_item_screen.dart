@@ -10,6 +10,7 @@ import 'package:vendor_app/core/widgets/primary_button.dart';
 import 'package:vendor_app/core/widgets/error_state.dart';
 import 'package:vendor_app/core/widgets/loading_view.dart';
 import 'package:vendor_app/core/di/providers.dart';
+import 'package:vendor_app/modules/profile/presentation/providers/profile_state.dart';
 import 'package:vendor_app/modules/menu/domain/entities/menu_item.dart';
 import 'package:vendor_app/modules/menu/presentation/providers/menu_state.dart';
 import 'package:vendor_app/modules/videos/presentation/screens/videos_screen.dart';
@@ -52,10 +53,8 @@ class _EditMenuItemScreenState extends ConsumerState<EditMenuItemScreen> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    final isHomeCooking = ref.read(profileNotifierProvider).maybeWhen(
-          loaded: (p) => p.providerCategory == 'home_cooking',
-          orElse: () => false,
-        );
+    final isHomeCooking =
+        ref.read(profileNotifierProvider).isHomeCookingCategory;
     if (isHomeCooking && _descriptionController.text.trim().length < 3) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -272,10 +271,9 @@ class _EditMenuItemScreenState extends ConsumerState<EditMenuItemScreen> {
                       controller: _descriptionController,
                       maxLines: 3,
                       validator: (v) {
-                        final isHome = ref.read(profileNotifierProvider).maybeWhen(
-                              loaded: (p) => p.providerCategory == 'home_cooking',
-                              orElse: () => false,
-                            );
+                        final isHome = ref
+                            .read(profileNotifierProvider)
+                            .isHomeCookingCategory;
                         if (isHome && (v == null || v.trim().length < 3)) {
                           return 'الوصف إلزامي لمطبخ منزلي (٣ أحرف على الأقل)';
                         }
@@ -292,10 +290,8 @@ class _EditMenuItemScreenState extends ConsumerState<EditMenuItemScreen> {
                     Gaps.mdV,
                     Builder(
                       builder: (context) {
-                        final isHome = ref.watch(profileNotifierProvider).maybeWhen(
-                          loaded: (p) => p.providerCategory == 'home_cooking',
-                          orElse: () => false,
-                        );
+                        final isHome =
+                            ref.watch(profileNotifierProvider).isHomeCookingCategory;
                         return AppTextField(
                           controller: _priceController,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
