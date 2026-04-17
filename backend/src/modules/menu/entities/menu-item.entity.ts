@@ -27,8 +27,9 @@ export class MenuItem {
   @Column({ nullable: true })
   description: string;
 
-  @Column('decimal', { precision: 10, scale: 2 })
-  price: number;
+  /** null = بدون سعر معروض (مطبخ منزلي — التسعير عند الطلب/التفاوض) */
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  price: number | null;
 
   @Column({ nullable: true })
   image: string;

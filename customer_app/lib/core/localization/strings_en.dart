@@ -179,11 +179,13 @@ class StringsEn {
 
   // === Feed ===
   static const String viewChef = 'View Chef';
-  static const String readyMeals = 'Ready Meals';
-  static const String readyMealsTooltip = 'View ready meals with fixed prices';
+  static const String readyMeals = 'Signature dishes';
+  static const String readyMealsTooltip =
+      'Portfolio of what this cook offers — book via home cooking request, not a product cart';
   static const String bookChef = 'Book Chef';
-  static const String requestCooking = 'Order Your Custom Meal';
-  static const String requestCookingTooltip = 'Request a dish not on the menu';
+  static const String requestCooking = 'Book home cooking';
+  static const String requestCookingTooltip =
+      'Book an in-home cooking service — not a ready-meal restaurant checkout';
   static const String requestEvent = 'Request Event';
   static const String bookYourEvent = 'Book your event';
   static const String unavailableNow = 'Unavailable now';
@@ -258,6 +260,20 @@ class StringsEn {
   static const String chefMealSlotDinnerHint = 'Usually from late afternoon until about 22:00–00:00';
   static const String selectMealSlot = 'Please choose lunch or dinner';
   static const String selectTime = 'Select time';
+  static const String homeCookingScheduleTitle = 'Cooking schedule';
+  static const String homeCookingScheduleSubtitle =
+      'Breakfast, lunch, or dinner (reference window), or pick a custom time';
+  static const String homeCookingMealBreakfast = 'Breakfast';
+  static const String homeCookingCustomTime = 'Custom time';
+  static const String homeCookingPresetTimeHint =
+      'A reference time is stored (~8:00 breakfast, ~12:30 lunch, ~19:00 dinner) with your date for coordination.';
+  static const String homeCookingCustomTimeHint =
+      'Pick the exact hour and minute you want on the booking day.';
+  static const String homeCookingSelectMealSlot = 'Please choose breakfast, lunch, or dinner';
+  static const String homeCookingSelectCustomTime = 'Please pick a time';
+  static const String homeCookingVendorBanner =
+      'This list shows what the cook masters — tap to open the home-cooking booking flow (not the shopping cart).';
+  static const String priceOnRequest = 'Price on request';
   static const String howToReceive = 'How do you want to receive your order?';
   static const String pickupOrder = 'Pickup order';
   static const String deliveryOrder = 'Delivery order';

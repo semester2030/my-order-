@@ -124,7 +124,9 @@ class MenuItemTile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${menuItem.price.toStringAsFixed(2)} SAR',
+                        menuItem.price != null
+                            ? '${menuItem.price!.toStringAsFixed(2)} SAR'
+                            : l.priceOnRequest,
                         style: TextStyles.titleMedium.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,

@@ -24,10 +24,12 @@ export class AddMenuItemDto {
   @IsString()
   description?: string;
 
-  @ApiProperty({ example: 45.5, description: 'Menu item price' })
+  /** اختياري لمطبخ منزلي (null/إهمال = بدون سعر معروض — التسعير عند الطلب) */
+  @ApiPropertyOptional({ example: 45.5, description: 'Menu item price' })
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  price: number;
+  price?: number;
 
   @ApiPropertyOptional({ example: true, description: 'Is signature dish' })
   @IsOptional()

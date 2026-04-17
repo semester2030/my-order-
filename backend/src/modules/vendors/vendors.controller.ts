@@ -370,7 +370,7 @@ export class VendorsController {
     body: {
       name: string;
       description?: string;
-      price: string;
+      price?: string;
       isSignature?: string;
       isAvailable?: string;
     },
@@ -380,10 +380,18 @@ export class VendorsController {
     if (!vendorId) {
       throw new NotFoundException('Vendor not found for this user');
     }
+    const rawPrice = body.price?.trim();
+    const parsedPrice =
+      rawPrice === undefined || rawPrice === ''
+        ? undefined
+        : Number.parseFloat(rawPrice);
     return this.vendorsService.addMenuItem(vendorId, {
       name: body.name,
       description: body.description,
-      price: parseFloat(body.price),
+      price:
+        parsedPrice === undefined || Number.isNaN(parsedPrice)
+          ? undefined
+          : parsedPrice,
       image: files?.image?.[0]?.filename,
       isSignature: body.isSignature === 'true',
       isAvailable: body.isAvailable !== 'false',
@@ -419,10 +427,22 @@ export class VendorsController {
     if (!vendorId) {
       throw new NotFoundException('Vendor not found for this user');
     }
+    const rawUpPrice = body.price?.trim();
+    const parsedUpPrice =
+      rawUpPrice === undefined
+        ? undefined
+        : rawUpPrice === ''
+          ? null
+          : Number.parseFloat(rawUpPrice);
     return this.vendorsService.updateMenuItem(vendorId, menuItemId, {
       name: body.name,
       description: body.description,
-      price: body.price ? parseFloat(body.price) : undefined,
+      price:
+        parsedUpPrice === undefined
+          ? undefined
+          : Number.isNaN(parsedUpPrice)
+            ? undefined
+            : parsedUpPrice,
       image: files?.image?.[0]?.filename,
       isSignature:
         body.isSignature !== undefined

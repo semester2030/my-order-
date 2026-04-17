@@ -8,7 +8,7 @@ class CreateEventRequestParams {
   final String scheduledDate;
   /// للطبخ المنزلي فقط — للذبائح/الشوي يُرسل [mealSlot] بدلاً منه.
   final String? scheduledTime;
-  /// `lunch` | `dinner` لطبخ الذبائح والشواء الخارجي.
+  /// طبخ ذبائح/شواء: `lunch` | `dinner`. طبخ منزلي: `breakfast` | `lunch` | `dinner` أو اتركه فارغاً مع [scheduledTime].
   final String? mealSlot;
   final int guestsCount;
   final String? addressId;

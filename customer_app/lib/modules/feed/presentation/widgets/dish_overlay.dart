@@ -212,7 +212,9 @@ class DishOverlay extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '${item.menuItem.price.toStringAsFixed(2)} SAR',
+                      item.menuItem.price != null
+                          ? '${item.menuItem.price!.toStringAsFixed(2)} SAR'
+                          : l.priceOnRequest,
                       style: VideoOverlayTheme.titleStyle.copyWith(
                         fontSize: FontSizes.headlineMedium,
                         color: AppColors.accent,

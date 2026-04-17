@@ -174,6 +174,35 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
                   ),
                   Gaps.mdV,
                 ],
+                if (vendor.isHomeCooking) ...[
+                  Material(
+                    color: AppColors.primaryContainer.withValues(alpha: 0.45),
+                    borderRadius: AppRadius.mdAll,
+                    child: InkWell(
+                      borderRadius: AppRadius.mdAll,
+                      onTap: () => context.push(
+                        '${RouteNames.requestChef}/${vendor.id}',
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(Insets.md),
+                        child: Row(
+                          children: [
+                            Icon(Icons.restaurant_menu, color: AppColors.primary, size: 22),
+                            Gaps.smH,
+                            Expanded(
+                              child: Text(
+                                l.homeCookingVendorBanner,
+                                style: TextStyles.bodyMedium,
+                              ),
+                            ),
+                            Icon(Icons.chevron_left, color: AppColors.primary, size: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Gaps.mdV,
+                ],
                 // Address and phone
                 Row(
                   children: [
@@ -313,7 +342,11 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
                     padding: const EdgeInsets.only(bottom: Insets.md),
                     child: MenuItemTile(
                       menuItem: item,
-                      onTap: () => _handleAddToCart(item),
+                      onTap: vendor.isHomeCooking
+                          ? () => context.push(
+                                '${RouteNames.requestChef}/${vendor.id}?dish=${item.id}',
+                              )
+                          : () => _handleAddToCart(item),
                     ),
                   );
                 },

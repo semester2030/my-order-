@@ -7,8 +7,8 @@ class MenuItemDto {
   final String id;
   final String name;
   final String? description;
-  @JsonKey(fromJson: _doubleFromJson)
-  final double price;
+  @JsonKey(fromJson: _nullablePriceFromJson, toJson: _nullablePriceToJson)
+  final double? price;
   final String? image;
   @JsonKey(name: 'is_signature', fromJson: _boolFromJson)
   final bool isSignature;
@@ -19,7 +19,7 @@ class MenuItemDto {
     required this.id,
     required this.name,
     this.description,
-    required this.price,
+    this.price,
     this.image,
     required this.isSignature,
     required this.isAvailable,
@@ -30,18 +30,23 @@ class MenuItemDto {
 
   Map<String, dynamic> toJson() => _$MenuItemDtoToJson(this);
 
-  static double _doubleFromJson(dynamic value) {
+  static double? _nullablePriceFromJson(dynamic value) {
+    if (value == null) return null;
     if (value is double) return value;
     if (value is int) return value.toDouble();
     if (value is String) {
+      final t = value.trim();
+      if (t.isEmpty) return null;
       try {
-        return double.parse(value);
-      } catch (e) {
-        return 0.0;
+        return double.parse(t);
+      } catch (_) {
+        return null;
       }
     }
-    return 0.0;
+    return null;
   }
+
+  static Object? _nullablePriceToJson(double? value) => value;
 
   static bool _boolFromJson(dynamic value) {
     if (value is bool) return value;

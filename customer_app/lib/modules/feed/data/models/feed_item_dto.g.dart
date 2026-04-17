@@ -46,7 +46,7 @@ FeedItemDto _$FeedItemDtoFromJson(Map<String, dynamic> json) => FeedItemDto(
       id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String?,
-      price: FeedItemDto._doubleFromJson(json['price']),
+      price: FeedItemDto._nullablePriceFromJson(json['price']),
       image: json['image'] as String?,
       isSignature: FeedItemDto._boolFromJson(json['isSignature']),
       vendor: VendorDto.fromJson(json['vendor'] as Map<String, dynamic>),

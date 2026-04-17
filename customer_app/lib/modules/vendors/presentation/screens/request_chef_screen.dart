@@ -23,11 +23,14 @@ class RequestChefScreen extends ConsumerStatefulWidget {
   final String vendorId;
   /// فئة من الـ Feed (مثلاً popular_cooking) — تُستخدم إذا كان المورد لم يُحدّد فئته بعد.
   final String? feedCategory;
+  /// يُمرَّر من صفحة المورّد (مثلاً ?dish=) لتحديد طبق من المعرض مسبقاً.
+  final String? initialDishId;
 
   const RequestChefScreen({
     super.key,
     required this.vendorId,
     this.feedCategory,
+    this.initialDishId,
   });
 
   @override
@@ -53,6 +56,19 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
   final Set<String> _selectedAddOnNames = {};
   /// للشواء الخارجي: أنواع شواء ومقبلات شائعة (تُدمج مع الملاحظات عند الإرسال).
   final Set<String> _selectedGrillingOptions = {};
+  /// طبخ منزلي: وقت حر بدل نافذة فطور/غداء/عشاء
+  bool _homeUseCustomTime = false;
+  /// `breakfast` | `lunch` | `dinner` — عندما لا يُستخدم وقت مخصص
+  String? _homeMealSlot;
+
+  @override
+  void initState() {
+    super.initState();
+    final pre = widget.initialDishId?.trim();
+    if (pre != null && pre.isNotEmpty) {
+      _selectedDishIds.add(pre);
+    }
+  }
 
   @override
   void dispose() {
@@ -271,6 +287,28 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
         );
         return;
       }
+    } else if (vendorForFlow.isHomeCooking) {
+      if (_homeUseCustomTime) {
+        if (_selectedTime == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l.homeCookingSelectCustomTime),
+              backgroundColor: AppColors.error,
+            ),
+          );
+          return;
+        }
+      } else {
+        if (_homeMealSlot == null || _homeMealSlot!.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l.homeCookingSelectMealSlot),
+              backgroundColor: AppColors.error,
+            ),
+          );
+          return;
+        }
+      }
     } else if (_selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -338,15 +376,24 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
       final notesForApi = rt == 'grilling'
           ? _composeGrillingNotes(l)
           : (_notesController.text.trim().isEmpty ? null : _notesController.text.trim());
+      final isHome = vendorData?.isHomeCooking == true;
+      final String? scheduledTimeApi = onSiteSubmit
+          ? null
+          : (isHome && !_homeUseCustomTime
+              ? null
+              : (_selectedTime != null
+                  ? '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'
+                  : null));
+      final String? mealSlotApi = onSiteSubmit
+          ? _mealSlot
+          : (isHome && !_homeUseCustomTime ? _homeMealSlot : null);
       await repo.createEventRequest(
         CreateEventRequestParams(
           vendorId: widget.vendorId,
           requestType: rt,
           scheduledDate: '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}',
-          scheduledTime: onSiteSubmit
-              ? null
-              : '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}',
-          mealSlot: onSiteSubmit ? _mealSlot : null,
+          scheduledTime: scheduledTimeApi,
+          mealSlot: mealSlotApi,
           guestsCount: _guestsCount,
           addressId: onSiteSubmit ? _selectedAddressId : null,
           addOns: addOnsForApi,
@@ -793,33 +840,95 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                   ),
                   Gaps.lgV,
                   _buildSectionCard(
-                    icon: Icons.access_time,
-                    title: l.startTime,
-                    child: InkWell(
-                      onTap: _pickTime,
-                      borderRadius: AppRadius.mdAll,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: Insets.sm),
-                        child: Row(
+                    icon: Icons.schedule,
+                    title: l.homeCookingScheduleTitle,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          l.homeCookingScheduleSubtitle,
+                          style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                        ),
+                        Gaps.mdV,
+                        Wrap(
+                          spacing: Insets.sm,
+                          runSpacing: Insets.sm,
                           children: [
-                            Icon(Icons.schedule, color: AppColors.primary, size: 28),
-                            Gaps.mdH,
-                            Expanded(
-                              child: Text(
-                                _selectedTime != null
-                                    ? _selectedTime!.format(context)
-                                    : l.selectTime,
-                                style: TextStyles.bodyLarge.copyWith(
-                                  color: _selectedTime != null ? AppColors.textPrimary : AppColors.textSecondary,
+                            ChoiceChip(
+                              label: Text(l.homeCookingMealBreakfast),
+                              selected: !_homeUseCustomTime && _homeMealSlot == 'breakfast',
+                              onSelected: (_) => setState(() {
+                                _homeUseCustomTime = false;
+                                _homeMealSlot = 'breakfast';
+                              }),
+                            ),
+                            ChoiceChip(
+                              label: Text(l.chefMealSlotLunch),
+                              selected: !_homeUseCustomTime && _homeMealSlot == 'lunch',
+                              onSelected: (_) => setState(() {
+                                _homeUseCustomTime = false;
+                                _homeMealSlot = 'lunch';
+                              }),
+                            ),
+                            ChoiceChip(
+                              label: Text(l.chefMealSlotDinner),
+                              selected: !_homeUseCustomTime && _homeMealSlot == 'dinner',
+                              onSelected: (_) => setState(() {
+                                _homeUseCustomTime = false;
+                                _homeMealSlot = 'dinner';
+                              }),
+                            ),
+                            ChoiceChip(
+                              label: Text(l.homeCookingCustomTime),
+                              selected: _homeUseCustomTime,
+                              onSelected: (_) => setState(() {
+                                _homeUseCustomTime = true;
+                                _homeMealSlot = null;
+                              }),
+                            ),
+                          ],
+                        ),
+                        Gaps.smV,
+                        Text(
+                          _homeUseCustomTime
+                              ? l.homeCookingCustomTimeHint
+                              : l.homeCookingPresetTimeHint,
+                          style: TextStyles.bodySmall.copyWith(color: AppColors.textTertiary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (_homeUseCustomTime) ...[
+                    Gaps.lgV,
+                    _buildSectionCard(
+                      icon: Icons.access_time,
+                      title: l.startTime,
+                      child: InkWell(
+                        onTap: _pickTime,
+                        borderRadius: AppRadius.mdAll,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: Insets.sm),
+                          child: Row(
+                            children: [
+                              Icon(Icons.schedule, color: AppColors.primary, size: 28),
+                              Gaps.mdH,
+                              Expanded(
+                                child: Text(
+                                  _selectedTime != null
+                                      ? _selectedTime!.format(context)
+                                      : l.selectTime,
+                                  style: TextStyles.bodyLarge.copyWith(
+                                    color: _selectedTime != null ? AppColors.textPrimary : AppColors.textSecondary,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Icon(Icons.chevron_left, color: AppColors.textTertiary),
-                          ],
+                              Icon(Icons.chevron_left, color: AppColors.textTertiary),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                   Gaps.lgV,
                   _buildSectionCard(
                     icon: Icons.delivery_dining,

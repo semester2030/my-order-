@@ -6,7 +6,7 @@ class MenuItem with EquatableMixin {
     required this.id,
     required this.name,
     this.description,
-    required this.price,
+    this.price,
     this.imageUrl,
     this.videoUrl,
     this.videoThumbnailUrl,
@@ -17,7 +17,7 @@ class MenuItem with EquatableMixin {
   final String id;
   final String name;
   final String? description;
-  final double price;
+  final double? price;
   final String? imageUrl;
   /// رابط الفيديو (مثل الويب).
   final String? videoUrl;

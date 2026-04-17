@@ -175,11 +175,11 @@ class StringsAr {
 
   // === Feed ===
   static const String viewChef = 'عرض الطباخ';
-  static const String readyMeals = 'وجبات جاهزة';
-  static const String readyMealsTooltip = 'عرض قائمة الوجبات الجاهزة بأسعار ثابتة';
+  static const String readyMeals = 'أطباق يتقنها';
+  static const String readyMealsTooltip = 'معرض أطباق لعرض التخصص — الطلب عبر «احجز الطبخ المنزلي» وليس كسلة منتجات';
   static const String bookChef = 'احجز الطباخ';
-  static const String requestCooking = 'اطلب وجبتك المخصصة';
-  static const String requestCookingTooltip = 'اطلب طبخة غير موجودة في القائمة';
+  static const String requestCooking = 'احجز الطبخ المنزلي';
+  static const String requestCookingTooltip = 'حجز خدمة طبخ في المنزل — وليس طلب وجبة جاهزة كالمطاعم';
   static const String requestEvent = 'طلب مناسبة';
   static const String bookYourEvent = 'احجز مناسبتك';
   static const String unavailableNow = 'غير متوفر حالياً';
@@ -252,6 +252,20 @@ class StringsAr {
   static const String chefMealSlotDinnerHint = 'عادة من بعد العصر إلى حوالي 10–12 ليلاً';
   static const String selectMealSlot = 'يرجى اختيار الوجبة (غداء أو عشاء)';
   static const String selectTime = 'اختر الوقت';
+  static const String homeCookingScheduleTitle = 'موعد الطبخ';
+  static const String homeCookingScheduleSubtitle =
+      'فطور أو غداء أو عشاء (وقت تقريبي للتنسيق)، أو «وقت محدد» لطلب وقت مختلف تماماً';
+  static const String homeCookingMealBreakfast = 'فطور';
+  static const String homeCookingCustomTime = 'وقت محدد';
+  static const String homeCookingPresetTimeHint =
+      'يُحفظ وقت مرجعي تقريبي (فطور ~٨ ص، غداء ~١٢:٣٠، عشاء ~٧ م) مع التاريخ للتواصل.';
+  static const String homeCookingCustomTimeHint =
+      'اختر الساعة والدقيقة التي تناسبك ضمن يوم الحجز.';
+  static const String homeCookingSelectMealSlot = 'اختر فطوراً أو غداءً أو عشاءً';
+  static const String homeCookingSelectCustomTime = 'اختر الوقت من الساعة والدقيقة';
+  static const String homeCookingVendorBanner =
+      'هذه القائمة لعرض ما يتقنه الطبّاخ — اضغط للانتقال إلى حجز الطبخ المنزلي (وليس إضافة للسلة).';
+  static const String priceOnRequest = 'السعر عند الطلب';
   static const String howToReceive = 'كيف تريد استلام الطلب؟';
   static const String pickupOrder = 'استلام الطلب';
   static const String deliveryOrder = 'توصيل الطلب';

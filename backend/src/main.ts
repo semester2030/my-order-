@@ -12,7 +12,7 @@ async function bootstrap() {
     const dataSource = app.get(DataSource);
     const pending = await dataSource.showMigrations();
     if (pending) {
-      await dataSource.runMigrations();
+      await dataSource.runMigrations({ transaction: 'each' });
       console.log('Migrations completed.');
     }
   } catch (err: any) {

@@ -43,13 +43,57 @@ class _EditMenuItemScreenState extends ConsumerState<EditMenuItemScreen> {
   void _fillFromItem(MenuItem item) {
     _nameController.text = item.name;
     _descriptionController.text = item.description ?? '';
-    _priceController.text = item.price.toStringAsFixed(item.price.truncateToDouble() == item.price ? 0 : 2);
+    _priceController.text = item.price == null
+        ? ''
+        : item.price!.toStringAsFixed(
+            item.price!.truncateToDouble() == item.price! ? 0 : 2,
+          );
   }
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+    final isHomeCooking = ref.read(profileNotifierProvider).maybeWhen(
+          loaded: (p) => p.providerCategory == 'home_cooking',
+          orElse: () => false,
+        );
+    if (isHomeCooking && _descriptionController.text.trim().length < 3) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('الوصف إلزامي لمطبخ منزلي (ثلاثة أحرف على الأقل)'),
+            backgroundColor: SemanticColors.error,
+          ),
+        );
+      }
+      return;
+    }
     final current = await ref.read(menuItemByIdProvider(widget.itemId).future);
-    final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
+    final priceTrim = _priceController.text.trim();
+    final double? price = isHomeCooking && priceTrim.isEmpty
+        ? null
+        : double.tryParse(priceTrim);
+    if (!isHomeCooking && (price == null || price < 0.01)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('أدخل سعراً صالحاً (0.01 على الأقل)'),
+            backgroundColor: SemanticColors.error,
+          ),
+        );
+      }
+      return;
+    }
+    if (isHomeCooking && priceTrim.isNotEmpty && (price == null || price < 0)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('أدخل سعراً صالحاً أو اترك الحقل فارغاً'),
+            backgroundColor: SemanticColors.error,
+          ),
+        );
+      }
+      return;
+    }
     final item = MenuItem(
       id: widget.itemId,
       name: _nameController.text.trim(),
@@ -227,6 +271,16 @@ class _EditMenuItemScreenState extends ConsumerState<EditMenuItemScreen> {
                     AppTextField(
                       controller: _descriptionController,
                       maxLines: 3,
+                      validator: (v) {
+                        final isHome = ref.read(profileNotifierProvider).maybeWhen(
+                              loaded: (p) => p.providerCategory == 'home_cooking',
+                              orElse: () => false,
+                            );
+                        if (isHome && (v == null || v.trim().length < 3)) {
+                          return 'الوصف إلزامي لمطبخ منزلي (٣ أحرف على الأقل)';
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         labelText: 'الوصف',
                         alignLabelWithHint: true,
@@ -236,21 +290,40 @@ class _EditMenuItemScreenState extends ConsumerState<EditMenuItemScreen> {
                       ),
                     ),
                     Gaps.mdV,
-                    AppTextField(
-                      controller: _priceController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (v) {
-                        if (v == null || v.trim().isEmpty) return 'السعر مطلوب';
-                        final n = double.tryParse(v.trim());
-                        if (n == null || n < 0) return 'أدخل سعراً صالحاً';
-                        return null;
+                    Builder(
+                      builder: (context) {
+                        final isHome = ref.watch(profileNotifierProvider).maybeWhen(
+                          loaded: (p) => p.providerCategory == 'home_cooking',
+                          orElse: () => false,
+                        );
+                        return AppTextField(
+                          controller: _priceController,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          validator: (v) {
+                            if (isHome) {
+                              if (v == null || v.trim().isEmpty) return null;
+                              final n = double.tryParse(v.trim());
+                              if (n == null || n < 0) {
+                                return 'أدخل سعراً صالحاً أو اترك الحقل فارغاً';
+                              }
+                              return null;
+                            }
+                            if (v == null || v.trim().isEmpty) return 'السعر مطلوب';
+                            final n = double.tryParse(v.trim());
+                            if (n == null || n < 0.01) {
+                              return 'أدخل سعراً صالحاً (0.01 على الأقل)';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            labelText: isHome ? 'السعر (ر.س) — اختياري' : 'السعر (ر.س)',
+                            helperText: isHome ? 'فارغ = التفاوض عند الطلب' : null,
+                            border: OutlineInputBorder(borderRadius: AppRadius.mdAll),
+                            filled: true,
+                            fillColor: AppColors.surface,
+                          ),
+                        );
                       },
-                      decoration: InputDecoration(
-                        labelText: 'السعر (ر.س)',
-                        border: OutlineInputBorder(borderRadius: AppRadius.mdAll),
-                        filled: true,
-                        fillColor: AppColors.surface,
-                      ),
                     ),
                     Gaps.lgV,
                     OutlinedButton.icon(

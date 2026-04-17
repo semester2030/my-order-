@@ -41,6 +41,10 @@ class Vendor extends Equatable {
   bool get isGrilling =>
       providerCategory != null && providerCategory == 'grilling';
 
+  /// طبخ منزلي (عرض أطباق + حجز خدمة)
+  bool get isHomeCooking =>
+      providerCategory != null && providerCategory == 'home_cooking';
+
   @override
   List<Object?> get props => [
         id,

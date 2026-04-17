@@ -48,6 +48,8 @@ export const getDatabaseConfig = (
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     migrations: [__dirname + '/../migrations/*{.ts,.js}'],
     migrationsTableName: 'migrations',
+    /** PostgreSQL: قيم enum جديدة لا تُعتبر «آمنة» إلا بعد commit — لا تشغّل كل الهجرات المعلّقة في txn واحدة */
+    migrationsTransactionMode: 'each',
     synchronize: configService.get<string>('NODE_ENV') === 'development',
     logging: configService.get<string>('NODE_ENV') === 'development',
   };

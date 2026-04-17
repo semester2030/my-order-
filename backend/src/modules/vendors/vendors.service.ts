@@ -771,7 +771,11 @@ export class VendorsService {
       name: item.name,
       description: item.description,
       price:
-        typeof item.price === 'string' ? parseFloat(item.price) : item.price,
+        item.price === null || item.price === undefined
+          ? null
+          : typeof item.price === 'string'
+            ? parseFloat(item.price)
+            : item.price,
       image: item.image,
       isSignature: item.isSignature,
       isAvailable: item.isAvailable,
@@ -806,18 +810,54 @@ export class VendorsService {
     data: {
       name: string;
       description?: string;
-      price: number;
+      price?: number;
       image?: string;
       isSignature?: boolean;
       isAvailable?: boolean;
     },
   ): Promise<MenuItem> {
     await this.assertMenuOfferingTermsAcceptedForAddMenuItem(vendorId);
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+    });
+    if (!vendor) {
+      throw new NotFoundException('المورّد غير موجود');
+    }
+    const isHomeCooking = vendor.providerCategory === 'home_cooking';
+
+    if (isHomeCooking) {
+      const desc = (data.description ?? '').trim();
+      if (desc.length < 3) {
+        throw new BadRequestException(
+          'الوصف إلزامي لمطبخ منزلي (ثلاثة أحرف على الأقل)',
+        );
+      }
+      if (!data.image?.trim()) {
+        throw new BadRequestException('صورة الطبق إلزامية لمطبخ منزلي');
+      }
+      if (
+        data.price !== undefined &&
+        (!Number.isFinite(data.price) || data.price < 0)
+      ) {
+        throw new BadRequestException('السعر غير صالح');
+      }
+    } else {
+      if (data.price == null || !Number.isFinite(data.price) || data.price < 0.01) {
+        throw new BadRequestException('السعر مطلوب (0.01 ر.س على الأقل)');
+      }
+    }
+
+    const priceCol: number | null = isHomeCooking
+      ? data.price !== undefined && Number.isFinite(data.price)
+        ? Number(data.price)
+        : null
+      : Number(data.price);
+
     const menuItem = this.menuItemRepository.create({
       vendorId,
       name: data.name,
-      description: data.description,
-      price: data.price,
+      description: data.description?.trim() || null,
+      price: priceCol,
       image: data.image,
       isSignature: data.isSignature || false,
       isAvailable: data.isAvailable ?? true,
@@ -832,7 +872,7 @@ export class VendorsService {
     data: {
       name?: string;
       description?: string;
-      price?: number;
+      price?: number | null;
       image?: string;
       isSignature?: boolean;
       isAvailable?: boolean;
@@ -846,12 +886,52 @@ export class VendorsService {
       throw new NotFoundException('Menu item not found');
     }
 
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+    });
+    const isHomeCooking = vendor?.providerCategory === 'home_cooking';
+
     if (data.name !== undefined) menuItem.name = data.name;
     if (data.description !== undefined) menuItem.description = data.description;
-    if (data.price !== undefined) menuItem.price = data.price;
+    if (data.price !== undefined) {
+      if (data.price === null) {
+        if (!isHomeCooking) {
+          throw new BadRequestException('لا يمكن إزالة السعر إلا لمطبخ منزلي');
+        }
+        menuItem.price = null;
+      } else {
+        menuItem.price = data.price;
+      }
+    }
     if (data.image !== undefined) menuItem.image = data.image;
     if (data.isSignature !== undefined) menuItem.isSignature = data.isSignature;
     if (data.isAvailable !== undefined) menuItem.isAvailable = data.isAvailable;
+
+    if (isHomeCooking) {
+      const desc = (menuItem.description ?? '').trim();
+      if (desc.length < 3) {
+        throw new BadRequestException(
+          'الوصف إلزامي لمطبخ منزلي (ثلاثة أحرف على الأقل)',
+        );
+      }
+      if (!menuItem.image?.trim()) {
+        throw new BadRequestException('صورة الطبق إلزامية لمطبخ منزلي');
+      }
+      if (
+        menuItem.price !== null &&
+        (!Number.isFinite(Number(menuItem.price)) || Number(menuItem.price) < 0)
+      ) {
+        throw new BadRequestException('السعر غير صالح');
+      }
+    } else {
+      if (
+        menuItem.price === null ||
+        !Number.isFinite(Number(menuItem.price)) ||
+        Number(menuItem.price) < 0.01
+      ) {
+        throw new BadRequestException('السعر مطلوب (0.01 ر.س على الأقل)');
+      }
+    }
 
     return this.menuItemRepository.save(menuItem);
   }

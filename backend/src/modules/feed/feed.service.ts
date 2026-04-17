@@ -313,7 +313,10 @@ export class FeedService {
       id: item.menuItem.id,
       name: item.menuItem.name,
       description: item.menuItem.description,
-      price: parseFloat(item.menuItem.price.toString()),
+      price:
+        item.menuItem.price == null
+          ? null
+          : parseFloat(item.menuItem.price.toString()),
       image: item.menuItem.image,
       isSignature: item.menuItem.isSignature,
       vendor: {

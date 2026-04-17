@@ -4,7 +4,7 @@ class MenuItemDto {
     required this.id,
     required this.name,
     this.description,
-    required this.price,
+    this.price,
     this.imageUrl,
     this.videoUrl,
     this.videoThumbnailUrl,
@@ -15,7 +15,7 @@ class MenuItemDto {
   final String id;
   final String name;
   final String? description;
-  final double price;
+  final double? price;
   final String? imageUrl;
   final String? videoUrl;
   final String? videoThumbnailUrl;
@@ -27,13 +27,24 @@ class MenuItemDto {
       id: json['id'] as String? ?? '',
       name: json['name'] as String? ?? '',
       description: json['description'] as String?,
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      price: _priceFromJson(json['price']),
       imageUrl: json['imageUrl'] as String?,
       videoUrl: json['videoUrl'] as String?,
       videoThumbnailUrl: json['videoThumbnailUrl'] as String?,
       isAvailable: _toBool(json['isAvailable'] ?? json['is_available']),
       category: json['category'] as String?,
     );
+  }
+
+  static double? _priceFromJson(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      final t = value.trim();
+      if (t.isEmpty) return null;
+      return double.tryParse(t);
+    }
+    return null;
   }
 
   static bool _toBool(dynamic value) {

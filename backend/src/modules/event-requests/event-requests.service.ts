@@ -16,6 +16,7 @@ import {
   CHEF_BOOKING_TYPES,
   isChefBookingType,
   scheduledTimeForChefMealSlot,
+  scheduledTimeForHomeCookingPresetSlot,
 } from './entities/event-request.entity';
 import { CreateEventRequestDto } from './dto/create-event-request.dto';
 import { QuoteHomeCookingDto } from './dto/quote-home-cooking.dto';
@@ -106,13 +107,28 @@ export class EventRequestsService {
       if (dto.mealSlot == null) {
         throw new BadRequestException('يجب اختيار الوجبة: غداء أو عشاء');
       }
+      if (dto.mealSlot === ChefMealSlot.BREAKFAST) {
+        throw new BadRequestException(
+          'وجبة الإفطار متاحة للطبخ المنزلي فقط — اختر غداء أو عشاء',
+        );
+      }
       mealSlot = dto.mealSlot;
       scheduledTime = scheduledTimeForChefMealSlot(mealSlot);
-    } else {
-      if (!dto.scheduledTime?.trim()) {
-        throw new BadRequestException('وقت الحجز مطلوب للطبخ المنزلي');
+    } else if (dto.requestType === EventRequestType.HOME_COOKING) {
+      if (dto.mealSlot != null) {
+        mealSlot = dto.mealSlot;
+        scheduledTime = scheduledTimeForHomeCookingPresetSlot(dto.mealSlot);
+      } else {
+        if (!dto.scheduledTime?.trim()) {
+          throw new BadRequestException(
+            'اختر وجبة (فطور أو غداء أو عشاء) أو حدّد وقتاً مخصصاً للحجز',
+          );
+        }
+        mealSlot = null;
+        scheduledTime = this.normalizeHomeCookingTime(dto.scheduledTime);
       }
-      scheduledTime = this.normalizeHomeCookingTime(dto.scheduledTime);
+    } else {
+      throw new BadRequestException('نوع الطلب غير مدعوم');
     }
 
     const hours = this.vendorResponseHours();

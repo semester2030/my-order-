@@ -252,7 +252,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final vendorId = state.pathParameters['id'] ?? '';
           final category = state.uri.queryParameters['category'];
-          return RequestChefScreen(vendorId: vendorId, feedCategory: category);
+          final dish = state.uri.queryParameters['dish'];
+          return RequestChefScreen(
+            vendorId: vendorId,
+            feedCategory: category,
+            initialDishId: dish,
+          );
         },
         redirect: (context, state) async {
           return await authGuard.redirectIfNotAuthenticated(context, state);

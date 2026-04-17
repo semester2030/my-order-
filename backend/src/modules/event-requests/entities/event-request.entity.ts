@@ -35,8 +35,9 @@ export enum EventRequestStatus {
   CANCELLED = 'cancelled',
 }
 
-/** وجبة حجز الولائم/الشوي — بدون وقت حر من العميل */
+/** وجبة حجز الولائم/الشوي: غداء أو عشاء فقط. للطبخ المنزلي: إفطار/غداء/عشاء كنافذة زمنية مرجعية. */
 export enum ChefMealSlot {
+  BREAKFAST = 'breakfast',
   LUNCH = 'lunch',
   DINNER = 'dinner',
 }
@@ -51,9 +52,24 @@ export function isChefBookingType(t: EventRequestType): boolean {
   return CHEF_BOOKING_TYPES.includes(t);
 }
 
-/** وقت مرجعي مخزّن للعرض/التقارير (النافذة الفعلية ثابتة في المنتج) */
+/** وقت مرجعي لطبخ الذبائح/الشواء (النافذة الفعلية ثابتة في المنتج) */
 export function scheduledTimeForChefMealSlot(slot: ChefMealSlot): string {
-  return slot === ChefMealSlot.LUNCH ? '10:00:00' : '16:00:00';
+  if (slot === ChefMealSlot.LUNCH) return '10:00:00';
+  return '16:00:00';
+}
+
+/** وقت مرجعي للطبخ المنزلي عند اختيار فطور/غداء/عشاء (يمكن للعميل أيضاً اختيار وقت حر) */
+export function scheduledTimeForHomeCookingPresetSlot(slot: ChefMealSlot): string {
+  switch (slot) {
+    case ChefMealSlot.BREAKFAST:
+      return '08:00:00';
+    case ChefMealSlot.LUNCH:
+      return '12:30:00';
+    case ChefMealSlot.DINNER:
+      return '19:00:00';
+    default:
+      return '12:30:00';
+  }
 }
 
 @Entity('event_requests')

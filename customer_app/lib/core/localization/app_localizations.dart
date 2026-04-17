@@ -414,6 +414,25 @@ class AppLocalizations {
   String get selectMealSlot =>
       isAr ? StringsAr.selectMealSlot : StringsEn.selectMealSlot;
   String get selectTime => isAr ? StringsAr.selectTime : StringsEn.selectTime;
+  String get homeCookingScheduleTitle =>
+      isAr ? StringsAr.homeCookingScheduleTitle : StringsEn.homeCookingScheduleTitle;
+  String get homeCookingScheduleSubtitle =>
+      isAr ? StringsAr.homeCookingScheduleSubtitle : StringsEn.homeCookingScheduleSubtitle;
+  String get homeCookingMealBreakfast =>
+      isAr ? StringsAr.homeCookingMealBreakfast : StringsEn.homeCookingMealBreakfast;
+  String get homeCookingCustomTime =>
+      isAr ? StringsAr.homeCookingCustomTime : StringsEn.homeCookingCustomTime;
+  String get homeCookingPresetTimeHint =>
+      isAr ? StringsAr.homeCookingPresetTimeHint : StringsEn.homeCookingPresetTimeHint;
+  String get homeCookingCustomTimeHint =>
+      isAr ? StringsAr.homeCookingCustomTimeHint : StringsEn.homeCookingCustomTimeHint;
+  String get homeCookingSelectMealSlot =>
+      isAr ? StringsAr.homeCookingSelectMealSlot : StringsEn.homeCookingSelectMealSlot;
+  String get homeCookingSelectCustomTime =>
+      isAr ? StringsAr.homeCookingSelectCustomTime : StringsEn.homeCookingSelectCustomTime;
+  String get homeCookingVendorBanner =>
+      isAr ? StringsAr.homeCookingVendorBanner : StringsEn.homeCookingVendorBanner;
+  String get priceOnRequest => isAr ? StringsAr.priceOnRequest : StringsEn.priceOnRequest;
   String get howToReceive =>
       isAr ? StringsAr.howToReceive : StringsEn.howToReceive;
   String get pickupOrder => isAr ? StringsAr.pickupOrder : StringsEn.pickupOrder;

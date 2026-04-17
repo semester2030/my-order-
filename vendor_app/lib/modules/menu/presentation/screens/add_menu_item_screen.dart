@@ -77,6 +77,36 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final isHomeCooking = ref.read(profileNotifierProvider).maybeWhen(
+          loaded: (p) => p.providerCategory == 'home_cooking',
+          orElse: () => false,
+        );
+
+    if (isHomeCooking) {
+      if (_descriptionController.text.trim().length < 3) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('الوصف إلزامي لمطبخ منزلي (ثلاثة أحرف على الأقل)'),
+              backgroundColor: SemanticColors.error,
+            ),
+          );
+        }
+        return;
+      }
+      if (_selectedImagePath == null || _selectedImagePath!.trim().isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('صورة الطبق إلزامية لمطبخ منزلي'),
+              backgroundColor: SemanticColors.error,
+            ),
+          );
+        }
+        return;
+      }
+    }
+
     if (_selectedVideoPath == null || _selectedVideoPath!.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -128,7 +158,32 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
       if (result.isFailure) return;
     }
 
-    final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
+    final priceRaw = _priceController.text.trim();
+    final double? price = isHomeCooking && priceRaw.isEmpty
+        ? null
+        : (double.tryParse(priceRaw) ?? (isHomeCooking ? null : 0.0));
+    if (!isHomeCooking && (price == null || price < 0.01)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('أدخل سعراً صالحاً (0.01 على الأقل)'),
+            backgroundColor: SemanticColors.error,
+          ),
+        );
+      }
+      return;
+    }
+    if (isHomeCooking && priceRaw.isNotEmpty && (price == null || price < 0)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('أدخل سعراً صالحاً أو اترك الحقل فارغاً للتفاوض'),
+            backgroundColor: SemanticColors.error,
+          ),
+        );
+      }
+      return;
+    }
     final item = MenuItem(
       id: '',
       name: _nameController.text.trim(),
@@ -265,6 +320,16 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
                 AppTextField(
                   controller: _descriptionController,
                   maxLines: 3,
+                  validator: (v) {
+                    final isHome = ref.read(profileNotifierProvider).maybeWhen(
+                          loaded: (p) => p.providerCategory == 'home_cooking',
+                          orElse: () => false,
+                        );
+                    if (isHome && (v == null || v.trim().length < 3)) {
+                      return 'الوصف إلزامي لمطبخ منزلي (٣ أحرف على الأقل)';
+                    }
+                    return null;
+                  },
                   decoration: InputDecoration(
                     labelText: 'الوصف',
                     alignLabelWithHint: true,
@@ -274,21 +339,36 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
                   ),
                 ),
                 Gaps.mdV,
-                AppTextField(
-                  controller: _priceController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'السعر مطلوب';
-                    final n = double.tryParse(v.trim());
-                    if (n == null || n < 0) return 'أدخل سعراً صالحاً';
-                    return null;
+                Builder(
+                  builder: (context) {
+                    final isHome = ref.watch(profileNotifierProvider).maybeWhen(
+                      loaded: (p) => p.providerCategory == 'home_cooking',
+                      orElse: () => false,
+                    );
+                    return AppTextField(
+                      controller: _priceController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      validator: (v) {
+                        if (isHome) {
+                          if (v == null || v.trim().isEmpty) return null;
+                          final n = double.tryParse(v.trim());
+                          if (n == null || n < 0) return 'أدخل سعراً صالحاً أو اترك الحقل فارغاً';
+                          return null;
+                        }
+                        if (v == null || v.trim().isEmpty) return 'السعر مطلوب';
+                        final n = double.tryParse(v.trim());
+                        if (n == null || n < 0.01) return 'أدخل سعراً صالحاً (0.01 على الأقل)';
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        labelText: isHome ? 'السعر (ر.س) — اختياري' : 'السعر (ر.س)',
+                        helperText: isHome ? 'اتركه فارغاً إذا رغبت بالتفاوض عند الطلب' : null,
+                        border: OutlineInputBorder(borderRadius: AppRadius.mdAll),
+                        filled: true,
+                        fillColor: AppColors.surface,
+                      ),
+                    );
                   },
-                  decoration: InputDecoration(
-                    labelText: 'السعر (ر.س)',
-                    border: OutlineInputBorder(borderRadius: AppRadius.mdAll),
-                    filled: true,
-                    fillColor: AppColors.surface,
-                  ),
                 ),
                 Gaps.mdV,
                 OutlinedButton.icon(

@@ -10,7 +10,7 @@ MenuItemDto _$MenuItemDtoFromJson(Map<String, dynamic> json) => MenuItemDto(
       id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String?,
-      price: MenuItemDto._doubleFromJson(json['price']),
+      price: MenuItemDto._nullablePriceFromJson(json['price']),
       image: json['image'] as String?,
       isSignature: MenuItemDto._boolFromJson(json['is_signature']),
       isAvailable: MenuItemDto._boolFromJson(json['is_available']),

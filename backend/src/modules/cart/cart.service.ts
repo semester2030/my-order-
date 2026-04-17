@@ -101,7 +101,10 @@ export class CartService {
           id: item.menuItem.id,
           name: item.menuItem.name,
           image: item.menuItem.image,
-          price: parseFloat(item.menuItem.price.toString()),
+          price:
+            item.menuItem.price == null
+              ? null
+              : parseFloat(item.menuItem.price.toString()),
         },
         quantity: item.quantity,
         price: parseFloat(item.price.toString()),
@@ -132,6 +135,17 @@ export class CartService {
 
     if (!menuItem.isAvailable) {
       throw new BadRequestException('Menu item is not available');
+    }
+
+    if (menuItem.vendor?.providerCategory === 'home_cooking') {
+      throw new BadRequestException(
+        'أطباق الطبخ المنزلي للعرض والطلب عبر «احجز الطبخ المنزلي» وليست للسلة',
+      );
+    }
+    if (menuItem.price === null || menuItem.price === undefined) {
+      throw new BadRequestException(
+        'لا يمكن إضافة هذا الصنف للسلة دون سعر معروض',
+      );
     }
 
     // Get or create cart

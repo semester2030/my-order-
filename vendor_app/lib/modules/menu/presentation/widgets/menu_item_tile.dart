@@ -101,7 +101,9 @@ class MenuItemTile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        Formatters.currency(item.price),
+                        item.price != null
+                            ? Formatters.currency(item.price)
+                            : 'السعر عند الطلب',
                         style: TextStyles.titleMedium.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w700,
