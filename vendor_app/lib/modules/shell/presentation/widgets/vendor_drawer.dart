@@ -107,9 +107,17 @@ class VendorDrawer extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.receipt_long, color: AppColors.textSecondary, size: IconSizes.md),
+              leading: Icon(
+                VendorDrawer._showHomeCookingRequests(ref)
+                    ? Icons.home_work_outlined
+                    : Icons.receipt_long,
+                color: AppColors.textSecondary,
+                size: IconSizes.md,
+              ),
               title: Text(
-                l10n.orders,
+                VendorDrawer._showHomeCookingRequests(ref)
+                    ? l10n.homeCookingRequests
+                    : l10n.orders,
                 style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
               ),
               selected: currentRoute == RouteNames.shell &&
@@ -183,19 +191,6 @@ class VendorDrawer extends ConsumerWidget {
                 onTap: () {
                   Navigator.of(context).pop();
                   context.push(RouteNames.chefBookingRequests);
-                },
-              ),
-            ],
-            if (VendorDrawer._showHomeCookingRequests(ref)) ...[
-              ListTile(
-                leading: Icon(Icons.home_work_outlined, color: AppColors.textSecondary, size: IconSizes.md),
-                title: Text(
-                  l10n.homeCookingRequests,
-                  style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
-                ),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  context.push(RouteNames.homeCookingRequests);
                 },
               ),
             ],

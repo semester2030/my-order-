@@ -9,7 +9,11 @@ import { Vendor } from '../vendors/entities/vendor.entity';
 import { VendorStaff } from '../vendors/entities/vendor-staff.entity';
 import { VendorStatus } from '../vendors/enums/vendor-status.enum';
 import { Driver } from '../drivers/entities/driver.entity';
-import { EventRequest } from '../event-requests/entities/event-request.entity';
+import {
+  EventRequest,
+  EventRequestStatus,
+  EventRequestType,
+} from '../event-requests/entities/event-request.entity';
 import { PrivateEventRequest } from '../private-events/entities/private-event-request.entity';
 import { EventOffer } from '../private-events/entities/event-offer.entity';
 import { User } from '../users/entities/user.entity';
@@ -314,6 +318,45 @@ export class AdminService {
       total,
       page,
       limit,
+    };
+  }
+
+  /**
+   * طلبات طبخ منزلي «نشطة» للمتابعة (ليست طلبات السلة — جدول orders).
+   * تُستخدم في لوحة «طلبات حية» بجانب طلبات قيد التوصيل.
+   */
+  async getHomeCookingLiveList(opts?: { limit?: number }) {
+    const limit = Math.min(100, Math.max(1, opts?.limit ?? 50));
+    const items = await this.eventRequestRepo.find({
+      where: {
+        requestType: EventRequestType.HOME_COOKING,
+        status: In([
+          EventRequestStatus.ACCEPTED,
+          EventRequestStatus.READY,
+          EventRequestStatus.HANDED_OVER,
+        ]),
+      },
+      relations: ['user', 'vendor'],
+      order: { createdAt: 'DESC' },
+      take: limit,
+    });
+    return {
+      items: items.map((r) => ({
+        id: r.id,
+        status: r.status,
+        vendorId: r.vendorId,
+        vendorName:
+          r.vendor?.tradeName?.trim() ||
+          r.vendor?.name?.trim() ||
+          null,
+        userPhone: r.user?.phone ?? null,
+        userEmail: r.user?.email ?? null,
+        quotedAmount:
+          r.quotedAmount != null ? Number.parseFloat(String(r.quotedAmount)) : null,
+        scheduledDate: r.scheduledDate,
+        scheduledTime: r.scheduledTime,
+        createdAt: r.createdAt,
+      })),
     };
   }
 

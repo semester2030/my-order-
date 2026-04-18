@@ -314,6 +314,18 @@ export function fetchPayoutRequests(params?: {
   );
 }
 
+/** طبخ منزلي نشط (مقبول / جاهز / مُسلَّم) — ليس من جدول orders */
+export function fetchHomeCookingLive(params?: {
+  limit?: number;
+}): Promise<{ items: Record<string, unknown>[] }> {
+  const q = new URLSearchParams();
+  if (params?.limit) q.set('limit', String(params.limit));
+  const query = q.toString();
+  return adminFetch<{ items: Record<string, unknown>[] }>(
+    `/admin/home-cooking-live${query ? `?${query}` : ''}`,
+  );
+}
+
 export function fetchAuditLogs(params?: {
   page?: number;
   limit?: number;

@@ -8,10 +8,13 @@ class VendorBottomNav extends StatelessWidget {
     super.key,
     this.currentIndex = 0,
     this.onTap,
+    this.ordersTabLabel,
   });
 
   final int currentIndex;
   final void Function(int index)? onTap;
+  /// إن وُجد (مثلاً «طلبات الطبخ المنزلي») يُستبدل تسمية تبويب الطلبات.
+  final String? ordersTabLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,7 @@ class VendorBottomNav extends StatelessWidget {
         BottomNavigationBarItem(
           icon: const Icon(Icons.receipt_long_outlined),
           activeIcon: const Icon(Icons.receipt_long),
-          label: l10n.orders,
+          label: ordersTabLabel ?? l10n.orders,
         ),
         BottomNavigationBarItem(
           icon: const Icon(Icons.ondemand_video_outlined),

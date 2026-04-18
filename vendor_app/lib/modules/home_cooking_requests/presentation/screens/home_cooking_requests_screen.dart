@@ -9,7 +9,10 @@ import 'package:vendor_app/modules/home_cooking_requests/presentation/providers/
 
 /// طلبات الطبخ المنزلي — عرض سعر / رفض / جاهز (منفصلة عن طلبات الوجبات الجاهزة).
 class HomeCookingRequestsScreen extends ConsumerStatefulWidget {
-  const HomeCookingRequestsScreen({super.key});
+  const HomeCookingRequestsScreen({super.key, this.showDrawerButton = false});
+
+  /// داخل [ShellScreen]: زر القائمة لفتح الـ Drawer.
+  final bool showDrawerButton;
 
   @override
   ConsumerState<HomeCookingRequestsScreen> createState() => _HomeCookingRequestsScreenState();
@@ -222,6 +225,12 @@ class _HomeCookingRequestsScreenState extends ConsumerState<HomeCookingRequestsS
         backgroundColor: AppColors.background,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
+        leading: widget.showDrawerButton
+            ? IconButton(
+                icon: Icon(Icons.menu, color: AppColors.textPrimary),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              )
+            : null,
         title: Text(
           l10n.homeCookingRequests,
           style: TextStyles.headlineSmall.copyWith(color: AppColors.textPrimary),

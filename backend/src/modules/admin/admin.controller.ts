@@ -171,6 +171,17 @@ export class AdminController {
     });
   }
 
+  @Get('home-cooking-live')
+  @ApiOperation({
+    summary:
+      'طبخ منزلي نشط (مقبول / جاهز / مُسلَّم) — ليس من جدول orders',
+  })
+  async getHomeCookingLive(@Query('limit') limit?: string) {
+    return this.adminService.getHomeCookingLiveList({
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
+  }
+
   @Get('disputes')
   @ApiOperation({
     summary:

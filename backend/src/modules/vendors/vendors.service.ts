@@ -13,7 +13,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { Repository, MoreThanOrEqual, LessThanOrEqual, Between } from 'typeorm';
+import { Repository, MoreThanOrEqual, LessThanOrEqual, Between, In } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { EmailService } from '../email/email.service';
 import {
@@ -37,7 +37,11 @@ import { Order } from '../orders/entities/order.entity';
 import { OrderStatus } from '../orders/entities/order.entity';
 import { MenuItem } from '../menu/entities/menu-item.entity';
 import { JobsService } from '../jobs/jobs.service';
-import { EventRequest } from '../event-requests/entities/event-request.entity';
+import {
+  EventRequest,
+  EventRequestStatus,
+  EventRequestType,
+} from '../event-requests/entities/event-request.entity';
 import { PrivateEventRequest } from '../private-events/entities/private-event-request.entity';
 import { EventOffer } from '../private-events/entities/event-offer.entity';
 import { Driver } from '../drivers/entities/driver.entity';
@@ -1010,14 +1014,74 @@ export class VendorsService {
       relations: ['items', 'items.menuItem'],
     });
 
+    const hcWhere: any = {
+      vendorId,
+      requestType: EventRequestType.HOME_COOKING,
+    };
+    if (startDate && endDate) {
+      hcWhere.createdAt = Between(startDate, endDate);
+    } else if (startDate) {
+      hcWhere.createdAt = MoreThanOrEqual(startDate);
+    } else if (endDate) {
+      hcWhere.createdAt = LessThanOrEqual(endDate);
+    }
+
+    const homeCookingRows = await this.eventRequestRepository.find({
+      where: hcWhere,
+    });
+
     const totalOrders = orders.length;
-    const totalRevenue = orders
+    const revenueDelivered = orders
       .filter((o) => o.status === OrderStatus.DELIVERED)
       .reduce((sum, o) => sum + parseFloat(o.total.toString()), 0);
 
-    const pendingOrders = orders.filter(
-      (o) => o.status === OrderStatus.PENDING,
+    const completedDeliveryOrders = orders.filter(
+      (o) => o.status === OrderStatus.DELIVERED,
     ).length;
+
+    const hcCompleted = homeCookingRows.filter(
+      (r) => r.status === EventRequestStatus.COMPLETED,
+    );
+    const completedHomeCooking = hcCompleted.length;
+    const revenueHomeCooking = hcCompleted.reduce((sum, r) => {
+      if (r.quotedAmount == null) return sum;
+      const q = parseFloat(String(r.quotedAmount));
+      return sum + (Number.isFinite(q) ? q : 0);
+    }, 0);
+
+    const totalRevenue = revenueDelivered + revenueHomeCooking;
+
+    /** طلبات السلة/التوصيل النشطة (قبل التسليم النهائي) */
+    const pendingCartPipeline = orders.filter((o) =>
+      [
+        OrderStatus.PENDING,
+        OrderStatus.CONFIRMED,
+        OrderStatus.PREPARING,
+        OrderStatus.READY,
+        OrderStatus.OUT_FOR_DELIVERY,
+      ].includes(o.status),
+    ).length;
+
+    /** طلبات طبخ منزلي لم تُغلق بعد */
+    const pendingHomeCookingPipeline = homeCookingRows.filter((r) =>
+      [
+        EventRequestStatus.PENDING,
+        EventRequestStatus.QUOTED,
+        EventRequestStatus.PAYMENT_PENDING,
+        EventRequestStatus.ACCEPTED,
+        EventRequestStatus.READY,
+        EventRequestStatus.HANDED_OVER,
+      ].includes(r.status),
+    ).length;
+
+    const pendingOrders = pendingCartPipeline + pendingHomeCookingPipeline;
+
+    const completedOrders = completedDeliveryOrders + completedHomeCooking;
+
+    const menuItemsCount = await this.menuItemRepository.count({
+      where: { vendorId },
+    });
+
     const preparingOrders = orders.filter(
       (o) => o.status === OrderStatus.PREPARING,
     ).length;
@@ -1052,6 +1116,10 @@ export class VendorsService {
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
 
+    const completedCountForAvg = completedOrders;
+    const averageOrderValue =
+      completedCountForAvg > 0 ? totalRevenue / completedCountForAvg : 0;
+
     return {
       totalOrders,
       totalRevenue,
@@ -1059,7 +1127,10 @@ export class VendorsService {
       preparingOrders,
       readyOrders,
       topItems,
-      averageOrderValue: totalOrders > 0 ? totalRevenue / totalOrders : 0,
+      averageOrderValue,
+      /** حقول يتوقعها تطبيق المزوّد (لوحة التحكم / التحليلات) */
+      completedOrders,
+      menuItemsCount,
     };
   }
 
