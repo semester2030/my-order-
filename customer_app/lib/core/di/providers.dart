@@ -16,6 +16,9 @@ import '../../modules/payments/data/datasources/payments_remote_ds.dart';
 import '../../modules/vendors/domain/repositories/vendors_repo.dart';
 import '../../modules/vendors/data/repositories/vendors_repo_impl.dart';
 import '../../modules/vendors/data/datasources/vendors_remote_ds.dart';
+import '../../modules/service_experience/domain/repositories/service_experience_repo.dart';
+import '../../modules/service_experience/data/repositories/service_experience_repo_impl.dart';
+import '../../modules/service_experience/data/datasources/service_experience_remote_ds.dart';
 import '../../modules/profile/domain/repositories/profile_repo.dart';
 import '../../modules/profile/data/repositories/profile_repo_impl.dart';
 import '../../modules/profile/data/datasources/profile_remote_ds.dart';
@@ -69,6 +72,13 @@ final vendorsRepositoryProvider = Provider<VendorsRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   final remoteDataSource = VendorsRemoteDataSourceImpl(apiClient: apiClient);
   return VendorsRepositoryImpl(remoteDataSource: remoteDataSource);
+});
+
+final serviceExperienceRepositoryProvider =
+    Provider<ServiceExperienceRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  final remote = ServiceExperienceRemoteDataSourceImpl(apiClient: apiClient);
+  return ServiceExperienceRepositoryImpl(remoteDataSource: remote);
 });
 
 /// Profile repository provider

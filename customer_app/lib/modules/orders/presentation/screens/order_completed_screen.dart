@@ -9,6 +9,7 @@ import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/di/providers.dart';
 import '../../domain/entities/order.dart';
 import '../providers/order_details_notifier.dart';
 import '../widgets/rating_stars.dart';
@@ -239,6 +240,18 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
                   width: double.infinity,
                   isLoading: _isSubmitting,
                 ),
+                Gaps.smV,
+                TextButton(
+                  onPressed: _isSubmitting
+                      ? null
+                      : () => context.push(
+                            '${RouteNames.serviceQualityTicket}?subjectType=order&subjectId=${widget.orderId}',
+                          ),
+                  child: Text(
+                    l.reportQualityAction,
+                    style: TextStyles.button.copyWith(color: AppColors.textSecondary),
+                  ),
+                ),
                 Gaps.mdV,
                 TextButton(
                   onPressed: () {
@@ -267,20 +280,12 @@ class _OrderCompletedScreenState extends ConsumerState<OrderCompletedScreen> {
     });
 
     try {
-      // TODO: Implement rating submission API call
-      // await ref.read(orderDetailsNotifierProvider(widget.orderId).notifier)
-      //     .submitRating(_rating, _review);
-      
-      // Use _review to avoid unused field warning
-      // This will be used when API is implemented
-      final reviewText = _review ?? '';
-      // Suppress unused variable warning - will be used in API call
-      if (reviewText.isEmpty) {
-        // Review is optional, so empty is valid
-      }
-
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
+      await ref.read(serviceExperienceRepositoryProvider).submitReview(
+            subjectType: 'order',
+            subjectId: widget.orderId,
+            stars: _rating,
+            publicComment: _review,
+          );
 
       if (!mounted) return;
 

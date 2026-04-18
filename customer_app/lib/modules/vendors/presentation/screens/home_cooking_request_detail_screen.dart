@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/providers.dart';
+import '../../../../core/routing/route_names.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/design_system.dart';
 import '../providers/my_home_cooking_notifier.dart';
@@ -406,6 +408,26 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
             ),
             Gaps.smV,
             Text(l10n.homeCookingCompletionCertificateHint, style: TextStyles.bodySmall),
+          ],
+          if (status == 'completed') ...[
+            Gaps.lgV,
+            FilledButton.tonal(
+              onPressed: _busy
+                  ? null
+                  : () => context.push(
+                        '${RouteNames.rating}/$id?subjectType=event_request',
+                      ),
+              child: Text(l10n.rateServiceAction),
+            ),
+            Gaps.smV,
+            OutlinedButton(
+              onPressed: _busy
+                  ? null
+                  : () => context.push(
+                        '${RouteNames.serviceQualityTicket}?subjectType=event_request&subjectId=$id',
+                      ),
+              child: Text(l10n.reportQualityAction),
+            ),
           ],
           if (status == 'handed_over') ...[
             Gaps.lgV,

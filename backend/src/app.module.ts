@@ -26,6 +26,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { AdminModule } from './modules/admin/admin.module';
 import { EventRequestsModule } from './modules/event-requests/event-requests.module';
 import { PrivateEventsModule } from './modules/private-events/private-events.module';
+import { ServiceExperienceModule } from './modules/service-experience/service-experience.module';
 
 @Module({
   controllers: [AppController],
@@ -61,6 +62,7 @@ import { PrivateEventsModule } from './modules/private-events/private-events.mod
     AdminModule,
     EventRequestsModule,
     PrivateEventsModule,
+    ServiceExperienceModule,
   ],
 })
 export class AppModule {}

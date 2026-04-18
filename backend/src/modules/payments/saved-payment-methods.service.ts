@@ -24,20 +24,25 @@ export class SavedPaymentMethodsService {
     throw new BadRequestException('سنة الانتهاء غير صالحة');
   }
 
+  /** شكل الاستجابة للعميل — مصدر واحد لتفادي التكرار بين القائمة والإنشاء */
+  private toSavedCardResponse(row: SavedPaymentMethod) {
+    return {
+      id: row.id,
+      brand: row.brand,
+      last4: row.last4,
+      expMonth: row.expMonth,
+      expYear: row.expYear,
+      holderName: row.holderName,
+      createdAt: row.createdAt.toISOString(),
+    };
+  }
+
   async listForUser(userId: string) {
     const rows = await this.repo.find({
       where: { userId, brand: BRAND_MADA },
       order: { createdAt: 'DESC' },
     });
-    return rows.map((r) => ({
-      id: r.id,
-      brand: r.brand,
-      last4: r.last4,
-      expMonth: r.expMonth,
-      expYear: r.expYear,
-      holderName: r.holderName,
-      createdAt: r.createdAt.toISOString(),
-    }));
+    return rows.map((r) => this.toSavedCardResponse(r));
   }
 
   async create(userId: string, dto: CreateSavedPaymentMethodDto) {
@@ -61,15 +66,7 @@ export class SavedPaymentMethodsService {
       holderName: dto.holderName.trim(),
     });
     const saved = await this.repo.save(row);
-    return {
-      id: saved.id,
-      brand: saved.brand,
-      last4: saved.last4,
-      expMonth: saved.expMonth,
-      expYear: saved.expYear,
-      holderName: saved.holderName,
-      createdAt: saved.createdAt.toISOString(),
-    };
+    return this.toSavedCardResponse(saved);
   }
 
   async delete(userId: string, id: string): Promise<void> {

@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Query,
   Param,
   Body,
@@ -21,6 +22,9 @@ import { OrderStatus } from '../orders/entities/order.entity';
 import { RejectReasonDto } from './dto/reject-reason.dto';
 import { ForceOrderStatusDto } from './dto/force-order-status.dto';
 import { EventRequestsService } from '../event-requests/event-requests.service';
+import { ServiceExperienceService } from '../service-experience/service-experience.service';
+import { AdminUpdateQualityTicketDto } from '../service-experience/dto/admin-update-quality-ticket.dto';
+import { QualityTicketStatus } from '../service-experience/service-experience.constants';
 
 @ApiTags('admin')
 @Controller('admin')
@@ -31,6 +35,7 @@ export class AdminController {
     private readonly adminService: AdminService,
     private readonly auditService: AuditService,
     private readonly eventRequestsService: EventRequestsService,
+    private readonly serviceExperienceService: ServiceExperienceService,
   ) {}
 
   @Get('dashboard')
@@ -354,5 +359,29 @@ export class AdminController {
       page: page ? parseInt(page, 10) : 1,
       limit: limit ? parseInt(limit, 10) : 20,
     };
+  }
+
+  @Get('service-quality-tickets')
+  @ApiOperation({ summary: 'قائمة بلاغات الجودة (خاصة بالإدارة)' })
+  async listServiceQualityTickets(
+    @Query('status') status?: QualityTicketStatus,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.serviceExperienceService.listQualityTicketsForAdmin({
+      status,
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
+  }
+
+  @Patch('service-quality-tickets/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'تحديث حالة تذكرة جودة أو ملاحظات الإدارة' })
+  async updateServiceQualityTicket(
+    @Param('id') id: string,
+    @Body() dto: AdminUpdateQualityTicketDto,
+  ) {
+    return this.serviceExperienceService.updateQualityTicketByAdmin(id, dto);
   }
 }

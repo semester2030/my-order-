@@ -83,6 +83,20 @@ class VendorsRepositoryImpl implements VendorsRepository {
   }
 
   @override
+  Future<Map<String, dynamic>> getMyCustomerEventRequestById(
+    String requestId,
+  ) async {
+    return remoteDataSource.getMyEventRequestById(requestId);
+  }
+
+  @override
+  Future<Map<String, dynamic>> confirmChefServiceCompletion(
+    String requestId,
+  ) async {
+    return remoteDataSource.confirmChefServiceCompletion(requestId);
+  }
+
+  @override
   Future<void> declareHomeCookingPayment(
     String requestId, {
     required String paymentReference,

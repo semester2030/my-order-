@@ -73,6 +73,22 @@ export class EventRequestsController {
     );
   }
 
+  @Post(':id/confirm-service-completion')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'تأكيد إتمام خدمة حجز الطبّاخ (ذبائح/شواء) — بعد القبول؛ يُفعّل التقييم',
+  })
+  async confirmChefServiceCompletion(
+    @Request() req: { user: User },
+    @Param('id') id: string,
+  ) {
+    return this.eventRequestsService.confirmChefServiceCompletionByCustomer(
+      req.user.id,
+      id,
+    );
+  }
+
   @Post(':id/cancel')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'إلغاء طلب حجز/طباخة (قيد الانتظار فقط)' })

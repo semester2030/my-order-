@@ -140,6 +140,36 @@ class AppLocalizations {
       isAr ? StringsAr.chefBookingStatusRejected : StringsEn.chefBookingStatusRejected;
   String get chefBookingStatusCancelled =>
       isAr ? StringsAr.chefBookingStatusCancelled : StringsEn.chefBookingStatusCancelled;
+  String get chefBookingStatusCompleted =>
+      isAr ? StringsAr.chefBookingStatusCompleted : StringsEn.chefBookingStatusCompleted;
+  String get chefBookingConfirmCompletionButton =>
+      isAr ? StringsAr.chefBookingConfirmCompletionButton : StringsEn.chefBookingConfirmCompletionButton;
+  String get chefBookingCompletionConfirmedSnack =>
+      isAr ? StringsAr.chefBookingCompletionConfirmedSnack : StringsEn.chefBookingCompletionConfirmedSnack;
+  String get rateServiceAction =>
+      isAr ? StringsAr.rateServiceAction : StringsEn.rateServiceAction;
+  String get reportQualityAction =>
+      isAr ? StringsAr.reportQualityAction : StringsEn.reportQualityAction;
+  String get serviceQualityReportTitle =>
+      isAr ? StringsAr.serviceQualityReportTitle : StringsEn.serviceQualityReportTitle;
+  String get serviceQualityCategoryLabel =>
+      isAr ? StringsAr.serviceQualityCategoryLabel : StringsEn.serviceQualityCategoryLabel;
+  String get serviceQualityMessageLabel =>
+      isAr ? StringsAr.serviceQualityMessageLabel : StringsEn.serviceQualityMessageLabel;
+  String get serviceQualitySubmit =>
+      isAr ? StringsAr.serviceQualitySubmit : StringsEn.serviceQualitySubmit;
+  String get serviceQualitySentSnack =>
+      isAr ? StringsAr.serviceQualitySentSnack : StringsEn.serviceQualitySentSnack;
+  String get qualityCategoryQuality =>
+      isAr ? StringsAr.qualityCategoryQuality : StringsEn.qualityCategoryQuality;
+  String get qualityCategoryHygiene =>
+      isAr ? StringsAr.qualityCategoryHygiene : StringsEn.qualityCategoryHygiene;
+  String get qualityCategoryDelay =>
+      isAr ? StringsAr.qualityCategoryDelay : StringsEn.qualityCategoryDelay;
+  String get qualityCategoryBilling =>
+      isAr ? StringsAr.qualityCategoryBilling : StringsEn.qualityCategoryBilling;
+  String get qualityCategoryOther =>
+      isAr ? StringsAr.qualityCategoryOther : StringsEn.qualityCategoryOther;
   String get chefBookingCancelTitle =>
       isAr ? StringsAr.chefBookingCancelTitle : StringsEn.chefBookingCancelTitle;
   String get chefBookingCancelMessage =>

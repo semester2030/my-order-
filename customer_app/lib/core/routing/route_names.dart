@@ -22,6 +22,8 @@ class RouteNames {
   static const String orderConfirmation = '/order-confirmation';
   static const String orderCompleted = '/order-completed';
   static const String rating = '/rating';
+  /// بلاغ جودة خاص بالإدارة — `?subjectType=event_request&subjectId=uuid`
+  static const String serviceQualityTicket = '/service-quality-ticket';
 
   // Addresses
   static const String addresses = '/addresses';

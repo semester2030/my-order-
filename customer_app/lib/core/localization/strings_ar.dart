@@ -73,6 +73,23 @@ class StringsAr {
   static const String chefBookingStatusAccepted = 'مقبول';
   static const String chefBookingStatusRejected = 'مرفوض';
   static const String chefBookingStatusCancelled = 'ملغى';
+  static const String chefBookingStatusCompleted = 'مكتمل';
+  static const String chefBookingConfirmCompletionButton = 'تأكيد إتمام الخدمة';
+  static const String chefBookingCompletionConfirmedSnack =
+      'تم تأكيد الإتمام — يمكنك التقييم أو إرسال بلاغ للإدارة.';
+  static const String rateServiceAction = 'تقييم الخدمة';
+  static const String reportQualityAction = 'بلاغ للإدارة';
+  static const String serviceQualityReportTitle = 'بلاغ جودة (خاص بالإدارة)';
+  static const String serviceQualityCategoryLabel = 'التصنيف';
+  static const String serviceQualityMessageLabel = 'وصف المشكلة';
+  static const String serviceQualitySubmit = 'إرسال البلاغ';
+  static const String serviceQualitySentSnack =
+      'تم إرسال البلاغ. سيتابعه فريق الإدارة.';
+  static const String qualityCategoryQuality = 'جودة الطعام أو الخدمة';
+  static const String qualityCategoryHygiene = 'النظافة';
+  static const String qualityCategoryDelay = 'التأخير';
+  static const String qualityCategoryBilling = 'الدفع أو السعر';
+  static const String qualityCategoryOther = 'أخرى';
   static const String chefBookingCancelTitle = 'إلغاء الحجز';
   static const String chefBookingCancelMessage =
       'سيتم إلغاء الطلب فقط إن كان قيد الانتظار. هل تريد المتابعة؟';

@@ -110,6 +110,16 @@ class Endpoints {
   static String confirmHomeCookingReceipt(String id) =>
       '$eventRequests/$id/confirm-home-cooking-receipt';
   static String cancelEventRequest(String id) => '$eventRequests/$id/cancel';
+  static String confirmChefServiceCompletion(String id) =>
+      '$eventRequests/$id/confirm-service-completion';
+
+  /// تجربة الخدمة: تقييمات عامة + بلاغات (مصدر واحد للطلبات وحجوزات الطبّاخ)
+  static const String serviceExperience = '/service-experience';
+  static const String serviceExperienceReviews = '$serviceExperience/reviews';
+  static const String serviceExperienceQualityTickets =
+      '$serviceExperience/quality-tickets';
+  static String publicVendorServiceReviews(String vendorId) =>
+      '$serviceExperience/public/vendors/$vendorId/reviews';
 
   // Private Event Requests (المناسبات الخاصة)
   static const String privateEventRequests = '/private-event-requests';

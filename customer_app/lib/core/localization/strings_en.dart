@@ -76,6 +76,23 @@ class StringsEn {
   static const String chefBookingStatusAccepted = 'Accepted';
   static const String chefBookingStatusRejected = 'Rejected';
   static const String chefBookingStatusCancelled = 'Cancelled';
+  static const String chefBookingStatusCompleted = 'Completed';
+  static const String chefBookingConfirmCompletionButton = 'Confirm service completed';
+  static const String chefBookingCompletionConfirmedSnack =
+      'Marked as completed — you can rate or report to admin.';
+  static const String rateServiceAction = 'Rate service';
+  static const String reportQualityAction = 'Report to admin';
+  static const String serviceQualityReportTitle = 'Quality report (admin only)';
+  static const String serviceQualityCategoryLabel = 'Category';
+  static const String serviceQualityMessageLabel = 'Describe the issue';
+  static const String serviceQualitySubmit = 'Submit report';
+  static const String serviceQualitySentSnack =
+      'Report sent. Our team will review it.';
+  static const String qualityCategoryQuality = 'Food or service quality';
+  static const String qualityCategoryHygiene = 'Hygiene';
+  static const String qualityCategoryDelay = 'Delay';
+  static const String qualityCategoryBilling = 'Payment or pricing';
+  static const String qualityCategoryOther = 'Other';
   static const String chefBookingCancelTitle = 'Cancel booking';
   static const String chefBookingCancelMessage =
       'You can only cancel requests that are still pending. Continue?';

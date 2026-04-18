@@ -27,6 +27,7 @@ import '../../../modules/vendors/presentation/screens/my_requests_hub_screen.dar
 import '../../../modules/vendors/presentation/screens/my_chef_bookings_screen.dart';
 import '../../../modules/vendors/presentation/screens/my_home_cooking_requests_screen.dart';
 import '../../../modules/vendors/presentation/screens/home_cooking_request_detail_screen.dart';
+import '../../../modules/service_experience/presentation/screens/service_quality_ticket_screen.dart';
 import '../../../modules/profile/presentation/screens/profile_screen.dart';
 import '../../../modules/profile/presentation/screens/edit_name_screen.dart';
 import '../../../modules/profile/presentation/screens/settings_screen.dart';
@@ -175,8 +176,27 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '${RouteNames.rating}/:orderId',
         name: 'rating',
         builder: (context, state) {
-          final orderId = state.pathParameters['orderId'] ?? '';
-          return RatingScreen(orderId: orderId);
+          final subjectId = state.pathParameters['orderId'] ?? '';
+          final subjectType = state.uri.queryParameters['subjectType'] ?? 'order';
+          return RatingScreen(
+            subjectId: subjectId,
+            subjectType: subjectType,
+          );
+        },
+        redirect: (context, state) async {
+          return await authGuard.redirectIfNotAuthenticated(context, state);
+        },
+      ),
+
+      GoRoute(
+        path: RouteNames.serviceQualityTicket,
+        name: 'service-quality-ticket',
+        builder: (context, state) {
+          final q = state.uri.queryParameters;
+          return ServiceQualityTicketScreen(
+            subjectType: q['subjectType'] ?? 'event_request',
+            subjectId: q['subjectId'] ?? '',
+          );
         },
         redirect: (context, state) async {
           return await authGuard.redirectIfNotAuthenticated(context, state);

@@ -12,6 +12,7 @@ abstract class VendorsRemoteDataSource {
   Future<void> createEventRequest(Map<String, dynamic> body);
   Future<List<Map<String, dynamic>>> getMyEventRequests();
   Future<Map<String, dynamic>> getMyEventRequestById(String requestId);
+  Future<Map<String, dynamic>> confirmChefServiceCompletion(String requestId);
   Future<void> declareHomeCookingPayment(
     String requestId, {
     required String paymentReference,
@@ -116,6 +117,22 @@ class VendorsRemoteDataSourceImpl implements VendorsRemoteDataSource {
   Future<Map<String, dynamic>> getMyEventRequestById(String requestId) async {
     try {
       final response = await apiClient.get(Endpoints.eventRequestById(requestId));
+      return Map<String, dynamic>.from(response.data as Map);
+    } on DioException catch (e) {
+      if (e.error is NetworkException) {
+        throw e.error as NetworkException;
+      }
+      throw NetworkException.unknown(message: e.message ?? 'Unknown error');
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> confirmChefServiceCompletion(String requestId) async {
+    try {
+      final response = await apiClient.post(
+        Endpoints.confirmChefServiceCompletion(requestId),
+        data: <String, dynamic>{},
+      );
       return Map<String, dynamic>.from(response.data as Map);
     } on DioException catch (e) {
       if (e.error is NetworkException) {

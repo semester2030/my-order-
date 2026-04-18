@@ -2,10 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/di/providers.dart';
+import '../../../../core/routing/route_names.dart';
 import '../providers/my_chef_bookings_notifier.dart';
 
 /// طلبات حجز الطبّاخ — طبخ الذبائح والشواء الخارجي فقط.
@@ -47,6 +50,8 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
 
   String _statusLabel(AppLocalizations l10n, String? status) {
     switch (status) {
+      case 'completed':
+        return l10n.chefBookingStatusCompleted;
       case 'accepted':
         return l10n.chefBookingStatusAccepted;
       case 'rejected':
@@ -78,6 +83,21 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
       if (n is String && n.isNotEmpty) return n;
     }
     return '—';
+  }
+
+  Future<void> _confirmChefCompletion(BuildContext context, String id) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      await ref.read(vendorsRepositoryProvider).confirmChefServiceCompletion(id);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.chefBookingCompletionConfirmedSnack)),
+      );
+      await ref.read(myChefBookingsNotifierProvider.notifier).load();
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
 
   Future<void> _confirmCancel(String id) async {
@@ -169,6 +189,7 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
 
                     Color statusColor;
                     switch (status) {
+                      case 'completed':
                       case 'accepted':
                         statusColor = SemanticColors.success;
                         break;
@@ -221,6 +242,29 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
                               OutlinedButton(
                                 onPressed: () => _confirmCancel(id),
                                 child: Text(l10n.chefBookingCancelButton),
+                              ),
+                            ],
+                            if (status == 'accepted') ...[
+                              Gaps.mdV,
+                              FilledButton(
+                                onPressed: () => _confirmChefCompletion(context, id),
+                                child: Text(l10n.chefBookingConfirmCompletionButton),
+                              ),
+                            ],
+                            if (status == 'completed') ...[
+                              Gaps.mdV,
+                              FilledButton.tonal(
+                                onPressed: () => context.push(
+                                      '${RouteNames.rating}/$id?subjectType=event_request',
+                                    ),
+                                child: Text(l10n.rateServiceAction),
+                              ),
+                              Gaps.smV,
+                              OutlinedButton(
+                                onPressed: () => context.push(
+                                      '${RouteNames.serviceQualityTicket}?subjectType=event_request&subjectId=$id',
+                                    ),
+                                child: Text(l10n.reportQualityAction),
                               ),
                             ],
                           ],

@@ -149,6 +149,7 @@ export class PayoutsService {
       return saved;
     }
 
+    // Mock: إكمال فوري. مع PSP حقيقي: غالباً SUBMITTED ثم PROCESSING ثم إكمال عبر webhook (أو reversed).
     saved.status = PayoutRequestStatus.COMPLETED;
     saved.providerPayoutId = res.providerPayoutId ?? null;
     saved.completedAt = new Date();

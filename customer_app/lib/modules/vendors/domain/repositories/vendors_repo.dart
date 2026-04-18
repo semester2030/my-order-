@@ -81,6 +81,9 @@ abstract class VendorsRepository {
   /// طلبات الطبخ المنزلي فقط (`request_type == home_cooking`).
   Future<List<Map<String, dynamic>>> getMyHomeCookingRequests();
   Future<Map<String, dynamic>> getMyHomeCookingRequestById(String requestId);
+  /// أي طلب `event-requests` يخص العميل (طبخ منزلي أو ذبائح/شواء) — للتقييم الموحّد.
+  Future<Map<String, dynamic>> getMyCustomerEventRequestById(String requestId);
+  Future<Map<String, dynamic>> confirmChefServiceCompletion(String requestId);
   Future<void> declareHomeCookingPayment(
     String requestId, {
     required String paymentReference,

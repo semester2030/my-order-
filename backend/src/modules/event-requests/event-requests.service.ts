@@ -607,4 +607,38 @@ export class EventRequestsService {
     row.status = EventRequestStatus.CANCELLED;
     return this.eventRequestRepository.save(row);
   }
+
+  /**
+   * تأكيد إتمام خدمة حجز الطبّاخ (ذبائح/شواء) من العميل — بعد قبول المقدّم.
+   * يُمكّن التقييم والبلاغات بنفس مسار الطبخ المنزلي (حالة completed).
+   */
+  async confirmChefServiceCompletionByCustomer(
+    userId: string,
+    requestId: string,
+  ): Promise<EventRequest> {
+    await this.expireStaleChefBookingRequests();
+    const row = await this.eventRequestRepository.findOne({
+      where: { id: requestId, userId },
+      relations: ['vendor', 'address'],
+    });
+    if (!row) {
+      throw new NotFoundException('الطلب غير موجود');
+    }
+    if (!isChefBookingType(row.requestType)) {
+      throw new BadRequestException(
+        'هذا الإجراء لحجوزات طبخ الذبائح والشواء فقط',
+      );
+    }
+    if (row.status === EventRequestStatus.COMPLETED) {
+      return row;
+    }
+    if (row.status !== EventRequestStatus.ACCEPTED) {
+      throw new ConflictException(
+        'يمكن تأكيد إتمام الخدمة بعد قبول الطبّاخ فقط',
+      );
+    }
+    row.status = EventRequestStatus.COMPLETED;
+    row.completedAt = new Date();
+    return this.eventRequestRepository.save(row);
+  }
 }
