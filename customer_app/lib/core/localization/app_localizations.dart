@@ -210,6 +210,16 @@ class AppLocalizations {
   String get connected => isAr ? StringsAr.connected : StringsEn.connected;
   String get noCardsSaved =>
       isAr ? StringsAr.noCardsSaved : StringsEn.noCardsSaved;
+  String get madaSavedCardsTitle =>
+      isAr ? StringsAr.madaSavedCardsTitle : StringsEn.madaSavedCardsTitle;
+  String get saveCardServerPrivacyNote =>
+      isAr ? StringsAr.saveCardServerPrivacyNote : StringsEn.saveCardServerPrivacyNote;
+  String get deleteSavedCardConfirm =>
+      isAr ? StringsAr.deleteSavedCardConfirm : StringsEn.deleteSavedCardConfirm;
+  String get savedCardDeletedSuccess =>
+      isAr ? StringsAr.savedCardDeletedSuccess : StringsEn.savedCardDeletedSuccess;
+  String get loadSavedCardsFailed =>
+      isAr ? StringsAr.loadSavedCardsFailed : StringsEn.loadSavedCardsFailed;
   String get notConnected =>
       isAr ? StringsAr.notConnected : StringsEn.notConnected;
 

@@ -402,6 +402,85 @@ class AppLocalizations {
   String get vendorCombinedTermsLegalVersionLabel =>
       isAr ? StringsAr.vendorCombinedTermsLegalVersionLabel : StringsEn.vendorCombinedTermsLegalVersionLabel;
 
+  /// سياسة الخصوصية والشروط — نفس أقسام تطبيق العميل (داخل التطبيق).
+  String get legalLastUpdated => isAr ? StringsAr.legalLastUpdated : StringsEn.legalLastUpdated;
+  String get privacySection1Title =>
+      isAr ? StringsAr.privacySection1Title : StringsEn.privacySection1Title;
+  String get privacySection1Body =>
+      isAr ? StringsAr.privacySection1Body : StringsEn.privacySection1Body;
+  String get privacySection2Title =>
+      isAr ? StringsAr.privacySection2Title : StringsEn.privacySection2Title;
+  String get privacySection2Body =>
+      isAr ? StringsAr.privacySection2Body : StringsEn.privacySection2Body;
+  String get privacySection3Title =>
+      isAr ? StringsAr.privacySection3Title : StringsEn.privacySection3Title;
+  String get privacySection3Body =>
+      isAr ? StringsAr.privacySection3Body : StringsEn.privacySection3Body;
+  String get privacySection4Title =>
+      isAr ? StringsAr.privacySection4Title : StringsEn.privacySection4Title;
+  String get privacySection4Body =>
+      isAr ? StringsAr.privacySection4Body : StringsEn.privacySection4Body;
+  String get privacySection5Title =>
+      isAr ? StringsAr.privacySection5Title : StringsEn.privacySection5Title;
+  String get privacySection5Body =>
+      isAr ? StringsAr.privacySection5Body : StringsEn.privacySection5Body;
+  String get privacySection6Title =>
+      isAr ? StringsAr.privacySection6Title : StringsEn.privacySection6Title;
+  String get privacySection6Body =>
+      isAr ? StringsAr.privacySection6Body : StringsEn.privacySection6Body;
+  String get termsSection1Title =>
+      isAr ? StringsAr.termsSection1Title : StringsEn.termsSection1Title;
+  String get termsSection1Body =>
+      isAr ? StringsAr.termsSection1Body : StringsEn.termsSection1Body;
+  String get termsSection2Title =>
+      isAr ? StringsAr.termsSection2Title : StringsEn.termsSection2Title;
+  String get termsSection2Body =>
+      isAr ? StringsAr.termsSection2Body : StringsEn.termsSection2Body;
+  String get termsSection3Title =>
+      isAr ? StringsAr.termsSection3Title : StringsEn.termsSection3Title;
+  String get termsSection3Body =>
+      isAr ? StringsAr.termsSection3Body : StringsEn.termsSection3Body;
+  String get termsSection4Title =>
+      isAr ? StringsAr.termsSection4Title : StringsEn.termsSection4Title;
+  String get termsSection4Body =>
+      isAr ? StringsAr.termsSection4Body : StringsEn.termsSection4Body;
+  String get termsSection5Title =>
+      isAr ? StringsAr.termsSection5Title : StringsEn.termsSection5Title;
+  String get termsSection5Body =>
+      isAr ? StringsAr.termsSection5Body : StringsEn.termsSection5Body;
+  String get termsSection6Title =>
+      isAr ? StringsAr.termsSection6Title : StringsEn.termsSection6Title;
+  String get termsSection6Body =>
+      isAr ? StringsAr.termsSection6Body : StringsEn.termsSection6Body;
+  String get termsSection7Title =>
+      isAr ? StringsAr.termsSection7Title : StringsEn.termsSection7Title;
+  String get termsSection7Body =>
+      isAr ? StringsAr.termsSection7Body : StringsEn.termsSection7Body;
+  String get termsSection8Title =>
+      isAr ? StringsAr.termsSection8Title : StringsEn.termsSection8Title;
+  String get termsSection8Body =>
+      isAr ? StringsAr.termsSection8Body : StringsEn.termsSection8Body;
+  String get termsSection9Title =>
+      isAr ? StringsAr.termsSection9Title : StringsEn.termsSection9Title;
+  String get termsSection9Body =>
+      isAr ? StringsAr.termsSection9Body : StringsEn.termsSection9Body;
+  String get termsSection10Title =>
+      isAr ? StringsAr.termsSection10Title : StringsEn.termsSection10Title;
+  String get termsSection10Body =>
+      isAr ? StringsAr.termsSection10Body : StringsEn.termsSection10Body;
+  String get termsSection11Title =>
+      isAr ? StringsAr.termsSection11Title : StringsEn.termsSection11Title;
+  String get termsSection11Body =>
+      isAr ? StringsAr.termsSection11Body : StringsEn.termsSection11Body;
+  String get termsSection12Title =>
+      isAr ? StringsAr.termsSection12Title : StringsEn.termsSection12Title;
+  String get termsSection12Body =>
+      isAr ? StringsAr.termsSection12Body : StringsEn.termsSection12Body;
+  String get termsSection13Title =>
+      isAr ? StringsAr.termsSection13Title : StringsEn.termsSection13Title;
+  String get termsSection13Body =>
+      isAr ? StringsAr.termsSection13Body : StringsEn.termsSection13Body;
+
   static const List<Locale> supportedLocales = [
     Locale('ar'),
     Locale('en'),

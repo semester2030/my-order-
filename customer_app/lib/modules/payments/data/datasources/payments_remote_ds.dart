@@ -5,12 +5,18 @@ import '../../../../core/errors/network_exceptions.dart';
 import '../models/payment_dto.dart';
 import '../models/payment_init_dto.dart';
 import '../models/payment_confirm_dto.dart';
+import '../models/saved_payment_method_dto.dart';
 
 abstract class PaymentsRemoteDataSource {
   Future<PaymentDto> initiatePayment(String orderId, String method);
   Future<PaymentDto> confirmPayment(String paymentId, String transactionId);
   Future<PaymentDto> getPayment(String paymentId);
   Future<List<PaymentDto>> getOrderPayments(String orderId);
+  Future<List<SavedPaymentMethodDto>> listSavedPaymentMethods();
+  Future<SavedPaymentMethodDto> createSavedPaymentMethod(
+    CreateSavedPaymentMethodPayload body,
+  );
+  Future<void> deleteSavedPaymentMethod(String id);
 }
 
 class PaymentsRemoteDataSourceImpl implements PaymentsRemoteDataSource {
@@ -81,6 +87,52 @@ class PaymentsRemoteDataSourceImpl implements PaymentsRemoteDataSource {
       );
       final List<dynamic> data = response.data as List<dynamic>;
       return data.map((json) => PaymentDto.fromJson(json as Map<String, dynamic>)).toList();
+    } on DioException catch (e) {
+      if (e.error is NetworkException) {
+        throw e.error as NetworkException;
+      }
+      throw NetworkException.unknown(message: e.message ?? 'Unknown error');
+    }
+  }
+
+  @override
+  Future<List<SavedPaymentMethodDto>> listSavedPaymentMethods() async {
+    try {
+      final response = await apiClient.get(Endpoints.savedPaymentMethods);
+      final List<dynamic> data = response.data as List<dynamic>;
+      return data
+          .map((json) => SavedPaymentMethodDto.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      if (e.error is NetworkException) {
+        throw e.error as NetworkException;
+      }
+      throw NetworkException.unknown(message: e.message ?? 'Unknown error');
+    }
+  }
+
+  @override
+  Future<SavedPaymentMethodDto> createSavedPaymentMethod(
+    CreateSavedPaymentMethodPayload body,
+  ) async {
+    try {
+      final response = await apiClient.post(
+        Endpoints.savedPaymentMethods,
+        data: body.toJson(),
+      );
+      return SavedPaymentMethodDto.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      if (e.error is NetworkException) {
+        throw e.error as NetworkException;
+      }
+      throw NetworkException.unknown(message: e.message ?? 'Unknown error');
+    }
+  }
+
+  @override
+  Future<void> deleteSavedPaymentMethod(String id) async {
+    try {
+      await apiClient.delete(Endpoints.savedPaymentMethodById(id));
     } on DioException catch (e) {
       if (e.error is NetworkException) {
         throw e.error as NetworkException;

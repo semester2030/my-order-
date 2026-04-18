@@ -120,6 +120,12 @@ class StringsAr {
   static const String savedPaymentMethods = 'طرق الدفع المحفوظة';
   static const String connected = 'متصل';
   static const String noCardsSaved = 'لا توجد بطاقات محفوظة';
+  static const String madaSavedCardsTitle = 'بطاقات مدى المحفوظة';
+  static const String saveCardServerPrivacyNote =
+      'يُرسل للخادم آخر 4 أرقام وتاريخ الانتهاء واسم الحامل فقط. لا يُخزَّن الرقم الكامل ولا رمز الأمان (CVV).';
+  static const String deleteSavedCardConfirm = 'حذف هذه البطاقة من حسابك؟';
+  static const String savedCardDeletedSuccess = 'تم حذف البطاقة';
+  static const String loadSavedCardsFailed = 'تعذر تحميل البطاقات المحفوظة';
   static const String notConnected = 'غير متصل';
 
   // الإعدادات

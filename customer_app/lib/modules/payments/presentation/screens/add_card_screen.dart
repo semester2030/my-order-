@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/di/providers.dart';
+import '../../../../core/errors/network_exceptions.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/widgets/primary_button.dart';
@@ -23,7 +25,6 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
   final _expiryDateController = TextEditingController();
   final _cvvController = TextEditingController();
   bool _isSaving = false;
-  String _cardType = 'Mada'; // Default to Mada
 
   @override
   void dispose() {
@@ -35,8 +36,11 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
   }
 
   void _formatCardNumber(String value) {
-    // Remove all non-digits
-    final digitsOnly = value.replaceAll(RegExp(r'\D'), '');
+    // Remove all non-digits (مدى قد تصل 19 رقماً)
+    var digitsOnly = value.replaceAll(RegExp(r'\D'), '');
+    if (digitsOnly.length > 19) {
+      digitsOnly = digitsOnly.substring(0, 19);
+    }
     
     // Format as XXXX XXXX XXXX XXXX
     final buffer = StringBuffer();
@@ -74,6 +78,24 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
     }
   }
 
+  String _digitsOnly(String raw) => raw.replaceAll(RegExp(r'\D'), '');
+
+  String _deriveLast4() {
+    final d = _digitsOnly(_cardNumberController.text);
+    if (d.length < 4) return '';
+    return d.substring(d.length - 4);
+  }
+
+  ({int month, int year})? _parseExpiry() {
+    final t = _expiryDateController.text.trim();
+    final m = RegExp(r'^(\d{2})/(\d{2})$').firstMatch(t);
+    if (m == null) return null;
+    final month = int.tryParse(m.group(1)!);
+    final yy = int.tryParse(m.group(2)!);
+    if (month == null || yy == null || month < 1 || month > 12) return null;
+    return (month: month, year: 2000 + yy);
+  }
+
   Future<void> _handleSaveCard() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -84,9 +106,21 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
     });
 
     try {
-      // TODO: Implement API call to save card
-      // For now, simulate API call
-      await Future.delayed(const Duration(seconds: 1));
+      final expiry = _parseExpiry();
+      if (expiry == null) {
+        throw Exception('Invalid expiry');
+      }
+      final last4 = _deriveLast4();
+      if (last4.length != 4) {
+        throw Exception('last4');
+      }
+
+      await ref.read(paymentsRepositoryProvider).createSavedPaymentMethod(
+            holderName: _cardHolderNameController.text.trim(),
+            last4: last4,
+            expMonth: expiry.month,
+            expYear: expiry.year,
+          );
 
       if (!mounted) return;
       final l = AppLocalizations.of(context);
@@ -105,9 +139,10 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
     } catch (e) {
       if (!mounted) return;
       final l = AppLocalizations.of(context);
+      final msg = e is NetworkException ? e.message : '${l.addCardFailed}: $e';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${l.addCardFailed}: ${e.toString()}'),
+          content: Text(msg),
           backgroundColor: SemanticColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -143,43 +178,30 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Card Type Selection
               Text(
-                'Card Type',
+                l.cardType,
                 style: TextStyles.titleMedium,
               ),
               Gaps.smV,
               Container(
-                padding: const EdgeInsets.all(Insets.sm),
+                width: double.infinity,
+                padding: const EdgeInsets.all(Insets.md),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
+                  color: AppColors.primaryContainer,
                   borderRadius: AppRadius.mdAll,
+                  border: Border.all(color: AppColors.primary, width: 1),
                 ),
                 child: Row(
                   children: [
+                    Icon(Icons.credit_card, color: AppColors.primary),
+                    Gaps.mdH,
                     Expanded(
-                      child: _CardTypeOption(
-                        title: 'Mada',
-                        icon: Icons.credit_card,
-                        isSelected: _cardType == 'Mada',
-                        onTap: () {
-                          setState(() {
-                            _cardType = 'Mada';
-                          });
-                        },
-                      ),
-                    ),
-                    Gaps.smH,
-                    Expanded(
-                      child: _CardTypeOption(
-                        title: 'Visa/Mastercard',
-                        icon: Icons.payment,
-                        isSelected: _cardType == 'Visa/Mastercard',
-                        onTap: () {
-                          setState(() {
-                            _cardType = 'Visa/Mastercard';
-                          });
-                        },
+                      child: Text(
+                        'Mada / مدى',
+                        style: TextStyles.titleSmall.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -197,7 +219,6 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(19), // 16 digits + 3 spaces
                 ],
                 decoration: InputDecoration(
                   hintText: '1234 5678 9012 3456',
@@ -208,8 +229,8 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
                     return 'Please enter card number';
                   }
                   final digitsOnly = value.replaceAll(' ', '');
-                  if (digitsOnly.length < 16) {
-                    return 'Card number must be 16 digits';
+                  if (digitsOnly.length < 16 || digitsOnly.length > 19) {
+                    return 'Card number must be 16–19 digits';
                   }
                   return null;
                 },
@@ -254,8 +275,8 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
                           controller: _expiryDateController,
                           keyboardType: TextInputType.number,
                           inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(5), // MM/YY
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9/]')),
+                            LengthLimitingTextInputFormatter(5),
                           ],
                           decoration: InputDecoration(
                             hintText: 'MM/YY',
@@ -337,7 +358,7 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
                     Gaps.smH,
                     Expanded(
                       child: Text(
-                        'Your card information is encrypted and secure',
+                        l.saveCardServerPrivacyNote,
                         style: TextStyles.bodySmall.copyWith(
                           color: AppColors.info,
                         ),
@@ -348,57 +369,6 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CardTypeOption extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _CardTypeOption({
-    required this.title,
-    required this.icon,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: AppRadius.smAll,
-      child: Container(
-        padding: const EdgeInsets.all(Insets.md),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryContainer : AppColors.surface,
-          borderRadius: AppRadius.smAll,
-          border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
-              size: IconSizes.md,
-            ),
-            Gaps.smH,
-            Text(
-              title,
-              style: TextStyles.bodyMedium.copyWith(
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
-          ],
         ),
       ),
     );

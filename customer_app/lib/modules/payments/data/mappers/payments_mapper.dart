@@ -1,5 +1,7 @@
 import '../../domain/entities/payment.dart';
+import '../../domain/entities/saved_payment_method.dart';
 import '../models/payment_dto.dart';
+import '../models/saved_payment_method_dto.dart';
 
 class PaymentsMapper {
   static Payment mapPaymentFromDto(PaymentDto dto) {
@@ -45,5 +47,17 @@ class PaymentsMapper {
       default:
         throw Exception('Unknown payment status: $status');
     }
+  }
+
+  static SavedPaymentMethod mapSavedFromDto(SavedPaymentMethodDto dto) {
+    return SavedPaymentMethod(
+      id: dto.id,
+      brand: dto.brand,
+      last4: dto.last4,
+      expMonth: dto.expMonth,
+      expYear: dto.expYear,
+      holderName: dto.holderName,
+      createdAt: dto.createdAt != null ? DateTime.tryParse(dto.createdAt!) : null,
+    );
   }
 }

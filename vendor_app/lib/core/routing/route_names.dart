@@ -29,6 +29,9 @@ class RouteNames {
   static const String changePassword = '/change-password';
   static const String verifyEmail = '/verify-email';
   static const String deleteAccount = '/delete-account';
+  /// نفس مسارات تطبيق العميل — محتوى قانوني داخل التطبيق.
+  static const String privacyPolicy = '/privacy-policy';
+  static const String terms = '/terms';
 
   // المناسبات الخاصة (للمقدمين private_events)
   static const String eventOffers = '/event-offers';

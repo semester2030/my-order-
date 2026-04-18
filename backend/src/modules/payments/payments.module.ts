@@ -5,6 +5,8 @@ import { PaymentsController } from './payments.controller';
 import { PaymentsWebhookController } from './payments-webhook.controller';
 import { PaymentsService } from './payments.service';
 import { Payment } from './entities/payment.entity';
+import { SavedPaymentMethod } from './entities/saved-payment-method.entity';
+import { SavedPaymentMethodsService } from './saved-payment-methods.service';
 import { Order } from '../orders/entities/order.entity';
 import { EventRequest } from '../event-requests/entities/event-request.entity';
 import { PAYMENT_GATEWAY } from './gateway/payment-gateway.port';
@@ -14,11 +16,12 @@ import type { PaymentConfig } from '../../config/payment.config';
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([Payment, Order, EventRequest]),
+    TypeOrmModule.forFeature([Payment, Order, EventRequest, SavedPaymentMethod]),
   ],
   controllers: [PaymentsController, PaymentsWebhookController],
   providers: [
     PaymentsService,
+    SavedPaymentMethodsService,
     {
       provide: PAYMENT_GATEWAY,
       useFactory: (configService: ConfigService) => {
@@ -34,6 +37,6 @@ import type { PaymentConfig } from '../../config/payment.config';
       inject: [ConfigService],
     },
   ],
-  exports: [PaymentsService, TypeOrmModule],
+  exports: [PaymentsService, SavedPaymentMethodsService, TypeOrmModule],
 })
 export class PaymentsModule {}

@@ -123,6 +123,12 @@ class StringsEn {
   static const String savedPaymentMethods = 'Saved Payment Methods';
   static const String connected = 'Connected';
   static const String noCardsSaved = 'No cards saved';
+  static const String madaSavedCardsTitle = 'Saved Mada cards';
+  static const String saveCardServerPrivacyNote =
+      'Only the last 4 digits, expiry, and cardholder name are sent to the server. Full card number and CVV are not stored.';
+  static const String deleteSavedCardConfirm = 'Remove this card from your account?';
+  static const String savedCardDeletedSuccess = 'Card removed';
+  static const String loadSavedCardsFailed = 'Could not load saved cards';
   static const String notConnected = 'Not connected';
 
   // Settings

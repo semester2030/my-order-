@@ -82,6 +82,9 @@ class Endpoints {
   static const String confirmPayment = '$payments/confirm';
   static const String getPayment = '$payments/{id}';
   static const String getOrderPayments = '$payments/order/{orderId}';
+  static const String savedPaymentMethods = '$payments/saved-methods';
+  static String savedPaymentMethodById(String id) =>
+      '$payments/saved-methods/$id';
 
   // Vendors
   static const String vendors = '/vendors';

@@ -14,6 +14,7 @@ import '../../modules/auth/presentation/screens/verify_email_screen.dart';
 import '../../modules/auth/presentation/screens/splash_screen.dart';
 import '../../modules/profile/presentation/screens/change_password_screen.dart';
 import '../../modules/profile/presentation/screens/delete_account_screen.dart';
+import '../../modules/profile/presentation/screens/legal_content_screen.dart';
 import '../../modules/profile/presentation/screens/edit_profile_screen.dart';
 import '../../modules/orders/presentation/screens/order_detail_screen.dart';
 import '../../modules/menu/presentation/screens/add_menu_item_screen.dart';
@@ -62,7 +63,9 @@ GoRouter createAppRouter(Ref ref) {
           path.startsWith('${RouteNames.eventOffers}/') ||
           path == RouteNames.eventRequests ||
           path == RouteNames.chefBookingRequests ||
-          path == RouteNames.homeCookingRequests;
+          path == RouteNames.homeCookingRequests ||
+          path == RouteNames.privacyPolicy ||
+          path == RouteNames.terms;
       if (!isProtected) return null;
       try {
         final secureStorage = ref.read(secureStorageProvider);
@@ -160,6 +163,22 @@ GoRouter createAppRouter(Ref ref) {
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
           child: const DeleteAccountScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.privacyPolicy,
+        name: 'privacyPolicy',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const LegalContentScreen(type: LegalContentType.privacy),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.terms,
+        name: 'terms',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const LegalContentScreen(type: LegalContentType.terms),
         ),
       ),
       GoRoute(
