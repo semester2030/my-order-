@@ -22,6 +22,7 @@ import {
 } from '../event-requests/entities/event-request.entity';
 import { Order, OrderStatus } from '../orders/entities/order.entity';
 import { Vendor } from '../vendors/entities/vendor.entity';
+import { User } from '../users/entities/user.entity';
 
 const PG_UNIQUE_VIOLATION = '23505';
 
@@ -243,12 +244,52 @@ export class ServiceExperienceService {
     });
   }
 
+  private adminCustomerSlice(
+    u: User | null | undefined,
+  ): { id: string; name: string | null; email: string | null; phone: string | null } | null {
+    if (!u) return null;
+    return {
+      id: u.id,
+      name: u.name ?? null,
+      email: u.email ?? null,
+      phone: u.phone ?? null,
+    };
+  }
+
+  private adminVendorSlice(
+    v: Vendor | null | undefined,
+  ): { id: string; name: string; tradeName: string | null } | null {
+    if (!v) return null;
+    return {
+      id: v.id,
+      name: v.name,
+      tradeName: v.tradeName ?? null,
+    };
+  }
+
+  private mapQualityTicketAdmin(t: ServiceQualityTicket) {
+    return {
+      id: t.id,
+      subjectType: t.subjectType,
+      subjectId: t.subjectId,
+      category: t.category,
+      privateMessage: t.privateMessage,
+      detailScores: t.detailScores,
+      status: t.status,
+      adminNotes: t.adminNotes,
+      createdAt: t.createdAt.toISOString(),
+      updatedAt: t.updatedAt.toISOString(),
+      vendor: this.adminVendorSlice(t.vendor),
+      customer: this.adminCustomerSlice(t.customer),
+    };
+  }
+
   async listQualityTicketsForAdmin(opts: {
     status?: QualityTicketStatus;
     page?: number;
     limit?: number;
   }): Promise<{
-    items: ServiceQualityTicket[];
+    items: ReturnType<ServiceExperienceService['mapQualityTicketAdmin']>[];
     total: number;
     page: number;
     limit: number;
@@ -264,17 +305,93 @@ export class ServiceExperienceService {
       qb.andWhere('t.status = :st', { st: opts.status });
     }
     const total = await qb.getCount();
-    const items = await qb
+    const rows = await qb
       .skip((page - 1) * limit)
       .take(limit)
       .getMany();
+    return {
+      items: rows.map((t) => this.mapQualityTicketAdmin(t)),
+      total,
+      page,
+      limit,
+    };
+  }
+
+  async getQualityTicketByIdForAdmin(
+    id: string,
+  ): Promise<ReturnType<ServiceExperienceService['mapQualityTicketAdmin']>> {
+    const row = await this.ticketRepo.findOne({
+      where: { id },
+      relations: ['customer', 'vendor'],
+    });
+    if (!row) {
+      throw new NotFoundException('التذكرة غير موجودة');
+    }
+    return this.mapQualityTicketAdmin(row);
+  }
+
+  async listServiceReviewsForAdmin(opts: {
+    vendorId?: string;
+    subjectType?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{
+    items: Array<{
+      id: string;
+      subjectType: string;
+      subjectId: string;
+      stars: number;
+      publicComment: string | null;
+      createdAt: string;
+      vendor: ReturnType<ServiceExperienceService['adminVendorSlice']>;
+      customer: ReturnType<ServiceExperienceService['adminCustomerSlice']>;
+    }>;
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const page = Math.max(1, opts.page ?? 1);
+    const limit = Math.min(100, Math.max(1, opts.limit ?? 20));
+    let subjectEnum: ServiceReviewSubjectType | undefined;
+    if (opts.subjectType?.trim()) {
+      const v = opts.subjectType.trim() as ServiceReviewSubjectType;
+      if (!Object.values(ServiceReviewSubjectType).includes(v)) {
+        throw new BadRequestException('subject_type غير صالح');
+      }
+      subjectEnum = v;
+    }
+    const qb = this.reviewRepo
+      .createQueryBuilder('r')
+      .leftJoinAndSelect('r.customer', 'customer')
+      .leftJoinAndSelect('r.vendor', 'vendor')
+      .orderBy('r.createdAt', 'DESC');
+    if (opts.vendorId?.trim()) {
+      qb.andWhere('r.vendorId = :vid', { vid: opts.vendorId.trim() });
+    }
+    if (subjectEnum) {
+      qb.andWhere('r.subjectType = :st', { st: subjectEnum });
+    }
+    const [rows, total] = await qb
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+    const items = rows.map((r) => ({
+      id: r.id,
+      subjectType: r.subjectType,
+      subjectId: r.subjectId,
+      stars: r.stars,
+      publicComment: r.publicComment,
+      createdAt: r.createdAt.toISOString(),
+      vendor: this.adminVendorSlice(r.vendor),
+      customer: this.adminCustomerSlice(r.customer),
+    }));
     return { items, total, page, limit };
   }
 
   async updateQualityTicketByAdmin(
     id: string,
     dto: AdminUpdateQualityTicketDto,
-  ): Promise<ServiceQualityTicket> {
+  ): Promise<ReturnType<ServiceExperienceService['mapQualityTicketAdmin']>> {
     const row = await this.ticketRepo.findOne({
       where: { id },
       relations: ['customer', 'vendor'],
@@ -288,6 +405,7 @@ export class ServiceExperienceService {
     if (dto.adminNotes !== undefined) {
       row.adminNotes = dto.adminNotes?.trim() || null;
     }
-    return this.ticketRepo.save(row);
+    await this.ticketRepo.save(row);
+    return this.getQualityTicketByIdForAdmin(id);
   }
 }

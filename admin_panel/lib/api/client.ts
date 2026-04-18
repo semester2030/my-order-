@@ -482,6 +482,55 @@ export function fetchDisputes(params?: {
   );
 }
 
+/** بلاغات جودة خاصة (رسالة العميل للإدارة) */
+export function fetchServiceQualityTickets(params?: {
+  status?: string;
+  page?: number;
+  limit?: number;
+}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  const q = new URLSearchParams();
+  if (params?.status) q.set('status', params.status);
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const query = q.toString();
+  return adminFetch<PaginatedResponse<Record<string, unknown>>>(
+    `/admin/service-quality-tickets${query ? `?${query}` : ''}`,
+  );
+}
+
+export function fetchServiceQualityTicketById(
+  id: string,
+): Promise<Record<string, unknown>> {
+  return adminFetch<Record<string, unknown>>(
+    `/admin/service-quality-tickets/${id}`,
+  );
+}
+
+export function updateServiceQualityTicket(
+  id: string,
+  body: { status?: string; adminNotes?: string },
+): Promise<Record<string, unknown>> {
+  return adminPatch(`/admin/service-quality-tickets/${id}`, body);
+}
+
+/** تقييمات نجمية عامة (مرتبطة بطلب أو حجز) */
+export function fetchServiceReviews(params?: {
+  vendorId?: string;
+  subjectType?: string;
+  page?: number;
+  limit?: number;
+}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  const q = new URLSearchParams();
+  if (params?.vendorId) q.set('vendorId', params.vendorId);
+  if (params?.subjectType) q.set('subjectType', params.subjectType);
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const query = q.toString();
+  return adminFetch<PaginatedResponse<Record<string, unknown>>>(
+    `/admin/service-reviews${query ? `?${query}` : ''}`,
+  );
+}
+
 /** طلبات الطبخ المنزلي بانتظار تحقق التحويل البنكي */
 export function fetchHomeCookingPaymentQueue(params?: {
   page?: number;

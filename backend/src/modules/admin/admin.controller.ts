@@ -375,6 +375,30 @@ export class AdminController {
     });
   }
 
+  @Get('service-quality-tickets/:id')
+  @ApiOperation({ summary: 'تفاصيل بلاغ جودة (رسالة العميل + المقدّم)' })
+  async getServiceQualityTicket(@Param('id') id: string) {
+    return this.serviceExperienceService.getQualityTicketByIdForAdmin(id);
+  }
+
+  @Get('service-reviews')
+  @ApiOperation({
+    summary: 'تقييمات الخدمة العامة (نجوم وتعليق) — للإدارة',
+  })
+  async listServiceReviewsForAdmin(
+    @Query('vendorId') vendorId?: string,
+    @Query('subjectType') subjectType?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.serviceExperienceService.listServiceReviewsForAdmin({
+      vendorId,
+      subjectType,
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
+  }
+
   @Patch('service-quality-tickets/:id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'تحديث حالة تذكرة جودة أو ملاحظات الإدارة' })
