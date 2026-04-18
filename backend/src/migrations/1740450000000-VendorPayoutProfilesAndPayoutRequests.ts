@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class VendorPayoutProfilesAndPayoutRequests1740450000000
   implements MigrationInterface
@@ -6,22 +6,27 @@ export class VendorPayoutProfilesAndPayoutRequests1740450000000
   name = 'VendorPayoutProfilesAndPayoutRequests1740450000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    /** أنواع ENUM قد تُنشأ مسبقاً عبر synchronize أو تشغيل جزئي — لا تفشل إن وُجدت */
     await queryRunner.query(`
-      CREATE TYPE "vendor_payout_profile_status_enum" AS ENUM (
-        'unverified',
-        'pending_kyc',
-        'verified',
-        'suspended'
-      )
+      DO $$ BEGIN
+        CREATE TYPE "vendor_payout_profile_status_enum" AS ENUM (
+          'unverified',
+          'pending_kyc',
+          'verified',
+          'suspended'
+        );
+      EXCEPTION WHEN duplicate_object THEN null; END $$;
     `);
     await queryRunner.query(`
-      CREATE TYPE "payout_request_status_enum" AS ENUM (
-        'pending',
-        'submitted',
-        'processing',
-        'completed',
-        'failed'
-      )
+      DO $$ BEGIN
+        CREATE TYPE "payout_request_status_enum" AS ENUM (
+          'pending',
+          'submitted',
+          'processing',
+          'completed',
+          'failed'
+        );
+      EXCEPTION WHEN duplicate_object THEN null; END $$;
     `);
 
     await queryRunner.createTable(
@@ -66,15 +71,21 @@ export class VendorPayoutProfilesAndPayoutRequests1740450000000
       true,
     );
 
-    await queryRunner.createForeignKey(
-      'vendor_payout_profiles',
-      new TableForeignKey({
-        columnNames: ['vendor_id'],
-        referencedTableName: 'vendors',
-        referencedColumnNames: ['id'],
-        onDelete: 'CASCADE',
-      }),
-    );
+    /** مفتاح أجنبي قد يكون موجوداً (synchronize أو تشغيل جزئي) */
+    await queryRunner.query(`
+      DO $$ BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.table_constraints
+          WHERE table_schema = 'public'
+            AND table_name = 'vendor_payout_profiles'
+            AND constraint_type = 'FOREIGN KEY'
+        ) THEN
+          ALTER TABLE "vendor_payout_profiles"
+          ADD CONSTRAINT "FK_vendor_payout_profiles_vendor"
+          FOREIGN KEY ("vendor_id") REFERENCES "vendors"("id") ON DELETE CASCADE;
+        END IF;
+      END $$;
+    `);
 
     await queryRunner.createTable(
       new Table({
@@ -158,18 +169,23 @@ export class VendorPayoutProfilesAndPayoutRequests1740450000000
       true,
     );
 
-    await queryRunner.createForeignKey(
-      'payout_requests',
-      new TableForeignKey({
-        columnNames: ['vendor_id'],
-        referencedTableName: 'vendors',
-        referencedColumnNames: ['id'],
-        onDelete: 'RESTRICT',
-      }),
-    );
+    await queryRunner.query(`
+      DO $$ BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.table_constraints
+          WHERE table_schema = 'public'
+            AND table_name = 'payout_requests'
+            AND constraint_type = 'FOREIGN KEY'
+        ) THEN
+          ALTER TABLE "payout_requests"
+          ADD CONSTRAINT "FK_payout_requests_vendor"
+          FOREIGN KEY ("vendor_id") REFERENCES "vendors"("id") ON DELETE RESTRICT;
+        END IF;
+      END $$;
+    `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_payout_requests_vendor_id_created"
+      CREATE INDEX IF NOT EXISTS "IDX_payout_requests_vendor_id_created"
       ON "payout_requests" ("vendor_id", "created_at" DESC)
     `);
   }
