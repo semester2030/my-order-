@@ -15,6 +15,15 @@ class ProviderCategories {
     grilling,
   ];
 
+  /// فيديو الاكتشاف: فئات تعرض البرومو (زر عريض أسفل + اختصار حجز جانبي) وليست «سلة منتجات».
+  static bool usesFeedPromoVideoLayout(String? category) {
+    if (category == null || category.isEmpty) return false;
+    return category == homeCooking ||
+        category == popularCooking ||
+        category == grilling ||
+        category == privateEvents;
+  }
+
   static String label(String value) {
     switch (value) {
       case homeCooking:

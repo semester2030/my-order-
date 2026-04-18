@@ -13,6 +13,7 @@ import 'package:vendor_app/modules/menu/domain/entities/menu_item.dart';
 import 'package:vendor_app/modules/menu/presentation/providers/menu_state.dart';
 import 'package:vendor_app/modules/menu/presentation/utils/vendor_terms_precheck.dart';
 import 'package:vendor_app/modules/menu/presentation/widgets/menu_item_tile.dart';
+import 'package:vendor_app/modules/profile/presentation/providers/profile_state.dart';
 
 /// شاشة قائمة الوجبات — ثيم موحد (Phase 10).
 /// [showDrawerButton]: عند true تُعرض أيقونة القائمة لفتح Drawer الـ Shell.
@@ -110,6 +111,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
 
     if (state is MenuLoaded) {
       final result = state.result;
+      final isHome = ref.watch(profileNotifierProvider).isHomeCookingCategory;
+      final addLabel = isHome ? AppLocalizations.of(context).addKitchenPromo : AppLocalizations.of(context).addMeal;
       if (result.data.isEmpty) {
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -130,7 +133,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                       TextButton.icon(
                         onPressed: () => _goToAddMenuItem(context),
                         icon: const Icon(Icons.add),
-                        label: Text(AppLocalizations.of(context).addMeal),
+                        label: Text(addLabel),
                       ),
                     ],
                   ),

@@ -32,6 +32,49 @@ class DishOverlay extends StatelessWidget {
   bool get _primaryIsServiceBookingNotCart =>
       _isChefOnsiteService || _isPrivateEvents;
 
+  bool get _usesFeedPromoLayout =>
+      ProviderCategories.usesFeedPromoVideoLayout(item.vendor.providerCategory);
+
+  void _onPromoOpenVendorProfile(BuildContext context) {
+    context.push('${RouteNames.vendorDetails}/${item.vendor.id}');
+  }
+
+  (IconData icon, String title, String hint) _promoBottomCta(AppLocalizations l) {
+    final c = item.vendor.providerCategory ?? '';
+    switch (c) {
+      case ProviderCategories.homeCooking:
+        return (
+          Icons.menu_book_rounded,
+          l.homeCookingFeedPrimaryCta,
+          l.homeCookingFeedPrimaryCtaHint,
+        );
+      case ProviderCategories.popularCooking:
+        return (
+          Icons.home_work_outlined,
+          l.popularCookingFeedPrimaryCta,
+          l.popularCookingFeedPrimaryCtaHint,
+        );
+      case ProviderCategories.grilling:
+        return (
+          Icons.local_fire_department,
+          l.grillingFeedPrimaryCta,
+          l.grillingFeedPrimaryCtaHint,
+        );
+      case ProviderCategories.privateEvents:
+        return (
+          Icons.celebration_outlined,
+          l.privateEventsFeedPrimaryCta,
+          l.privateEventsFeedPrimaryCtaHint,
+        );
+      default:
+        return (
+          Icons.menu_book_rounded,
+          l.homeCookingFeedPrimaryCta,
+          l.homeCookingFeedPrimaryCtaHint,
+        );
+    }
+  }
+
   String get _requestChefQuery {
     final c = item.vendor.providerCategory;
     if (c == ProviderCategories.popularCooking) {
@@ -48,7 +91,7 @@ class DishOverlay extends StatelessWidget {
       context.push('${RouteNames.requestPrivateEvent}/${item.vendor.id}');
     } else {
       context.push(
-        '${RouteNames.requestChef}/${item.vendor.id}${_requestChefQuery}',
+        '${RouteNames.requestChef}/${item.vendor.id}$_requestChefQuery',
       );
     }
   }
@@ -241,60 +284,110 @@ class DishOverlay extends StatelessWidget {
                   ],
                 ),
                 Gaps.lgV,
-                // CTA: عرض الطباخ + (مناسبات: احجز مناسبتك | ذبائح/شواء: احجز الطباخ | منزلي: أضف للسلة)
-                Row(
-                  children: [
-                    Expanded(
-                      child: ViewChefButton(
-                        onTap: () {
-                          context.push(
-                            '${RouteNames.vendorDetails}/${item.vendor.id}',
-                          );
-                        },
-                      ),
-                    ),
-                    Gaps.mdH,
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _primaryIsServiceBookingNotCart
-                            ? (acceptsCustomRequests
-                                ? () => _onPrimaryServiceCta(context)
-                                : null)
-                            : onAddToCart,
-                        style: VideoOverlayTheme.ctaButtonStyle,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _isPrivateEvents
-                                  ? Icons.event_available_rounded
-                                  : _isChefOnsiteService
-                                      ? Icons.restaurant_menu
-                                      : Icons.shopping_cart,
-                              size: IconSizes.xs,
-                            ),
-                            Gaps.xsH,
-                            Flexible(
-                              child: Text(
-                                _isPrivateEvents
-                                    ? l.bookYourEvent
-                                    : _isChefOnsiteService
-                                        ? l.bookChef
-                                        : l.addToCart,
-                                style: TextStyles.button.copyWith(
-                                  fontSize: FontSizes.bodySmall,
+                // فئات البرومو (منزلي / ذبائح / شواء / مناسبات): زر عريض واحد — ليس «أضف للسلة».
+                if (_usesFeedPromoLayout)
+                  Builder(
+                    builder: (ctx) {
+                      final spec = _promoBottomCta(l);
+                      return Tooltip(
+                        message: spec.$3,
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => _onPromoOpenVendorProfile(ctx),
+                            style: VideoOverlayTheme.ctaButtonStyle.copyWith(
+                              padding: WidgetStateProperty.all(
+                                const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                  horizontal: Insets.lg,
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
+                              ),
+                              minimumSize: WidgetStateProperty.all(
+                                const Size(double.infinity, 52),
+                              ),
+                              textStyle: WidgetStateProperty.all(
+                                TextStyles.button.copyWith(
+                                  color: AppColors.textOnPrimary,
+                                  fontSize: FontSizes.bodyMedium,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
-                          ],
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(spec.$1, size: 22),
+                                Gaps.smH,
+                                Flexible(
+                                  child: Text(
+                                    spec.$2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ViewChefButton(
+                          onTap: () {
+                            context.push(
+                              '${RouteNames.vendorDetails}/${item.vendor.id}',
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                      Gaps.mdH,
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _primaryIsServiceBookingNotCart
+                              ? (acceptsCustomRequests
+                                  ? () => _onPrimaryServiceCta(context)
+                                  : null)
+                              : onAddToCart,
+                          style: VideoOverlayTheme.ctaButtonStyle,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                _isPrivateEvents
+                                    ? Icons.event_available_rounded
+                                    : _isChefOnsiteService
+                                        ? Icons.restaurant_menu
+                                        : Icons.shopping_cart,
+                                size: IconSizes.xs,
+                              ),
+                              Gaps.xsH,
+                              Flexible(
+                                child: Text(
+                                  _isPrivateEvents
+                                      ? l.bookYourEvent
+                                      : _isChefOnsiteService
+                                          ? l.bookChef
+                                          : l.addToCart,
+                                  style: TextStyles.button.copyWith(
+                                    fontSize: FontSizes.bodySmall,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),

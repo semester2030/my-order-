@@ -186,6 +186,18 @@ class StringsEn {
   static const String requestCooking = 'Book home cooking';
   static const String requestCookingTooltip =
       'Book an in-home cooking service — not a ready-meal restaurant checkout';
+  static const String homeCookingFeedPrimaryCta = 'Browse dishes & book';
+  static const String homeCookingFeedPrimaryCtaHint =
+      'Open the chef’s dishes and book home cooking — not a product-style cart.';
+  static const String popularCookingFeedPrimaryCta = 'View the service & book your chef';
+  static const String popularCookingFeedPrimaryCtaHint =
+      'On-site slaughter cooking at your place — then book the chef (promo, not a product cart).';
+  static const String grillingFeedPrimaryCta = 'See the BBQ offer & book';
+  static const String grillingFeedPrimaryCtaHint =
+      'Review the outdoor grilling service at your location — booking request, not a cart.';
+  static const String privateEventsFeedPrimaryCta = 'Packages & events — browse & book';
+  static const String privateEventsFeedPrimaryCtaHint =
+      'Explore catering and buffets, then request your event — a booking flow, not a cart.';
   static const String requestEvent = 'Request Event';
   static const String bookYourEvent = 'Book your event';
   static const String unavailableNow = 'Unavailable now';

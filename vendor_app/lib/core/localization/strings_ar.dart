@@ -7,7 +7,7 @@ class StringsAr {
   static const String dashboard = 'لوحة التحكم';
   static const String orders = 'الطلبات';
   static const String menu = 'الوجبات';
-  static const String services = 'الخدمات';
+  static const String services = 'الوجبات';
   static const String staff = 'الموظفون';
   static const String settings = 'الإعدادات';
   static const String sideOrders = 'الطلبات الجانبية';
@@ -122,6 +122,11 @@ class StringsAr {
   static const String totalRevenue = 'إجمالي الإيرادات';
 
   static const String addMeal = 'إضافة وجبة';
+  /// إعلان تعريفي للمطبخ المنزلي (وليس صنفاً للسلة).
+  static const String addKitchenPromo = 'إضافة إعلان تعريفي للمطبخ';
+  static const String kitchenPromoHeadlineLabel = 'عنوان الإعلان';
+  static const String kitchenPromoDescriptionChipsTitle = 'عبارات جاهزة — اضغط للاختيار أو اكتب ما تريدين';
+  static const String kitchenPromoImageOptionalHint = 'صورة الغلاف اختيارية؛ يمكن الاكتفاء بالفيديو والوصف.';
   static const String editMeal = 'تعديل الوجبة';
   static const String mealName = 'اسم الوجبة';
   static const String description = 'الوصف';
@@ -140,10 +145,11 @@ class StringsAr {
   static const String unavailable = 'غير متوفر';
 
   static const String addService = 'إضافة خدمة';
+  static const String addMealForMenu = 'إضافة وجبة';
   static const String editService = 'تعديل الخدمة';
   static const String serviceName = 'اسم الخدمة';
-  static const String myServices = 'ما أقدمه للزبائن';
-  static const String noServices = 'لا توجد خدمات';
+  static const String myServices = 'الوجبات المعروضة للعملاء';
+  static const String noServices = 'لا توجد وجبات';
   static const String serviceNotFound = 'الخدمة غير موجودة';
   static const String active = 'نشط';
   static const String inactive = 'غير نشط';

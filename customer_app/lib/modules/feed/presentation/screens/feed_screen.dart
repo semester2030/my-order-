@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/video/video_controller_pool.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
@@ -451,7 +452,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                   return FeedVideoCard(
                     item: item,
                     isPlaying: isPlaying,
-                    onAddToCart: () => _onAddToCart(item),
+                    onAddToCart: ProviderCategories.usesFeedPromoVideoLayout(
+                      item.vendor.providerCategory,
+                    )
+                        ? null
+                        : () => _onAddToCart(item),
                     acceptsCustomRequests: item.vendor.acceptsCustomRequests,
                     topChromeInset: _dishOverlayTopInset,
                   );

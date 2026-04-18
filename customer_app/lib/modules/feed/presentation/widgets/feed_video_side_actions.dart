@@ -9,8 +9,8 @@ import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/feed_item.dart';
 
 /// أزرار على يمين الفيديو (نمط تيك توك).
-/// — الطبخ المنزلي: وجبات جاهزة + "اطلب وجبتك المخصصة" (طلب وجبة غير القائمة).
-/// — طبخ الذبائح + الشواء الخارجي: "احجز الطباخ" — الطباخ يأتي عند العميل.
+/// — فئات البرومو (منزلي، ذبائح، شواء، مناسبات): زر حجز واحد بأيقونة مناسبة — صفحة الطبّاخ من الزر العريض أسفل المقطع.
+/// — غير ذلك: «عرض الطباخ / أطباق يتقنها» + زر الحجز إن وُجد.
 class FeedVideoSideActions extends StatelessWidget {
   final FeedItem item;
   /// إن كانت الخدمة غير متاحة يظهر الزر معطّلاً مع توضيح.
@@ -34,6 +34,34 @@ class FeedVideoSideActions extends StatelessWidget {
         cat == ProviderCategories.privateEvents;
   }
 
+  bool get _usesFeedPromoLayout =>
+      ProviderCategories.usesFeedPromoVideoLayout(item.vendor.providerCategory);
+
+  IconData _promoSideBookingIcon() {
+    final c = item.vendor.providerCategory;
+    switch (c) {
+      case ProviderCategories.homeCooking:
+        return Icons.restaurant_menu;
+      case ProviderCategories.popularCooking:
+        return Icons.home_work_outlined;
+      case ProviderCategories.grilling:
+        return Icons.local_fire_department;
+      case ProviderCategories.privateEvents:
+        return Icons.celebration_outlined;
+      default:
+        return Icons.restaurant_menu;
+    }
+  }
+
+  String? _promoSideBookingTooltip(AppLocalizations l) {
+    switch (item.vendor.providerCategory) {
+      case ProviderCategories.homeCooking:
+        return l.requestCookingTooltip;
+      default:
+        return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -43,49 +71,47 @@ class FeedVideoSideActions extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _SideActionButton(
-            icon: _isPopularCooking ? Icons.person_rounded : Icons.lunch_dining,
-            label: _isPopularCooking ? l.viewChef : l.readyMeals,
-            tooltip: _isPopularCooking ? null : l.readyMealsTooltip,
-            onTap: () {
-              context.push(
-                '${RouteNames.vendorDetails}/${item.vendor.id}',
-              );
-            },
-          ),
-          if (_showRequestChefButton) ...[
-            Gaps.mdV,
+          if (!_usesFeedPromoLayout)
             _SideActionButton(
-              icon: Icons.restaurant_menu,
+              icon: _isPopularCooking ? Icons.person_rounded : Icons.lunch_dining,
+              label: _isPopularCooking ? l.viewChef : l.readyMeals,
+              tooltip: _isPopularCooking ? null : l.readyMealsTooltip,
+              onTap: () {
+                context.push(
+                  '${RouteNames.vendorDetails}/${item.vendor.id}',
+                );
+              },
+            ),
+          if (!_usesFeedPromoLayout && _showRequestChefButton) Gaps.mdV,
+          if (_showRequestChefButton)
+            _SideActionButton(
+              icon: _usesFeedPromoLayout ? _promoSideBookingIcon() : Icons.restaurant_menu,
               label: _getRequestLabel(l),
-              tooltip: item.vendor.providerCategory == ProviderCategories.homeCooking
-                  ? l.requestCookingTooltip
-                  : null,
+              tooltip: _usesFeedPromoLayout ? _promoSideBookingTooltip(l) : null,
               onTap: acceptsCustomRequests
                   ? () {
                       if (item.vendor.providerCategory ==
                           ProviderCategories.privateEvents) {
                         context.push(
-                            '${RouteNames.requestPrivateEvent}/${item.vendor.id}',
+                          '${RouteNames.requestPrivateEvent}/${item.vendor.id}',
                         );
                       } else if (item.vendor.isPopularCooking) {
                         context.push(
-                            '${RouteNames.requestChef}/${item.vendor.id}?category=${ProviderCategories.popularCooking}',
+                          '${RouteNames.requestChef}/${item.vendor.id}?category=${ProviderCategories.popularCooking}',
                         );
                       } else if (item.vendor.isGrilling) {
                         context.push(
-                            '${RouteNames.requestChef}/${item.vendor.id}?category=${ProviderCategories.grilling}',
+                          '${RouteNames.requestChef}/${item.vendor.id}?category=${ProviderCategories.grilling}',
                         );
                       } else {
                         context.push(
-                            '${RouteNames.requestChef}/${item.vendor.id}',
+                          '${RouteNames.requestChef}/${item.vendor.id}',
                         );
                       }
                     }
                   : null,
               disabledTooltip: l.unavailableNow,
             ),
-          ],
         ],
       ),
     );

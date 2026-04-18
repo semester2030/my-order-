@@ -26,7 +26,22 @@ class MenuItemDto {
   });
 
   factory MenuItemDto.fromJson(Map<String, dynamic> json) =>
-      _$MenuItemDtoFromJson(json);
+      _$MenuItemDtoFromJson(_normalizeMenuItemKeys(json));
+
+  /// يدعم استجابة الـ API بصيغة camelCase (`isAvailable`) أو snake_case (`is_available`).
+  static Map<String, dynamic> _normalizeMenuItemKeys(Map<String, dynamic> json) {
+    final m = Map<String, dynamic>.from(json);
+    if (m.containsKey('isAvailable') && !m.containsKey('is_available')) {
+      m['is_available'] = m['isAvailable'];
+    }
+    if (m.containsKey('isSignature') && !m.containsKey('is_signature')) {
+      m['is_signature'] = m['isSignature'];
+    }
+    if (m.containsKey('imageUrl') && !m.containsKey('image')) {
+      m['image'] = m['imageUrl'];
+    }
+    return m;
+  }
 
   Map<String, dynamic> toJson() => _$MenuItemDtoToJson(this);
 

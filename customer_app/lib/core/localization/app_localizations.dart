@@ -291,6 +291,22 @@ class AppLocalizations {
   String get requestCooking => isAr ? StringsAr.requestCooking : StringsEn.requestCooking;
   String get requestCookingTooltip =>
       isAr ? StringsAr.requestCookingTooltip : StringsEn.requestCookingTooltip;
+  String get homeCookingFeedPrimaryCta =>
+      isAr ? StringsAr.homeCookingFeedPrimaryCta : StringsEn.homeCookingFeedPrimaryCta;
+  String get homeCookingFeedPrimaryCtaHint =>
+      isAr ? StringsAr.homeCookingFeedPrimaryCtaHint : StringsEn.homeCookingFeedPrimaryCtaHint;
+  String get popularCookingFeedPrimaryCta =>
+      isAr ? StringsAr.popularCookingFeedPrimaryCta : StringsEn.popularCookingFeedPrimaryCta;
+  String get popularCookingFeedPrimaryCtaHint =>
+      isAr ? StringsAr.popularCookingFeedPrimaryCtaHint : StringsEn.popularCookingFeedPrimaryCtaHint;
+  String get grillingFeedPrimaryCta =>
+      isAr ? StringsAr.grillingFeedPrimaryCta : StringsEn.grillingFeedPrimaryCta;
+  String get grillingFeedPrimaryCtaHint =>
+      isAr ? StringsAr.grillingFeedPrimaryCtaHint : StringsEn.grillingFeedPrimaryCtaHint;
+  String get privateEventsFeedPrimaryCta =>
+      isAr ? StringsAr.privateEventsFeedPrimaryCta : StringsEn.privateEventsFeedPrimaryCta;
+  String get privateEventsFeedPrimaryCtaHint =>
+      isAr ? StringsAr.privateEventsFeedPrimaryCtaHint : StringsEn.privateEventsFeedPrimaryCtaHint;
   String get requestEvent => isAr ? StringsAr.requestEvent : StringsEn.requestEvent;
   String get bookYourEvent => isAr ? StringsAr.bookYourEvent : StringsEn.bookYourEvent;
   String get unavailableNow => isAr ? StringsAr.unavailableNow : StringsEn.unavailableNow;

@@ -165,6 +165,14 @@ class AppLocalizations {
   String get totalRevenue => isAr ? StringsAr.totalRevenue : StringsEn.totalRevenue;
 
   String get addMeal => isAr ? StringsAr.addMeal : StringsEn.addMeal;
+  String get addKitchenPromo => isAr ? StringsAr.addKitchenPromo : StringsEn.addKitchenPromo;
+  String get kitchenPromoHeadlineLabel =>
+      isAr ? StringsAr.kitchenPromoHeadlineLabel : StringsEn.kitchenPromoHeadlineLabel;
+  String get kitchenPromoDescriptionChipsTitle =>
+      isAr ? StringsAr.kitchenPromoDescriptionChipsTitle : StringsEn.kitchenPromoDescriptionChipsTitle;
+  String get kitchenPromoImageOptionalHint =>
+      isAr ? StringsAr.kitchenPromoImageOptionalHint : StringsEn.kitchenPromoImageOptionalHint;
+  String get addMealForMenu => isAr ? StringsAr.addMealForMenu : StringsEn.addMealForMenu;
   String get editMeal => isAr ? StringsAr.editMeal : StringsEn.editMeal;
   String get mealName => isAr ? StringsAr.mealName : StringsEn.mealName;
   String get description => isAr ? StringsAr.description : StringsEn.description;

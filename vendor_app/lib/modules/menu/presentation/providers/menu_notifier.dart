@@ -53,9 +53,9 @@ class MenuNotifier extends StateNotifier<MenuState> {
     );
   }
 
-  Future<bool> addItem(MenuItem item) async {
+  Future<bool> addItem(MenuItem item, {bool kitchenProfilePromo = false}) async {
     state = const MenuSaving();
-    final result = await _repo.addItem(item);
+    final result = await _repo.addItem(item, kitchenProfilePromo: kitchenProfilePromo);
     return result.when(
       success: (_) {
         loadMenu(page: 1);
@@ -69,9 +69,9 @@ class MenuNotifier extends StateNotifier<MenuState> {
   }
 
   /// يضيف وجبة ويرجع العنصر المُنشأ (لرفع الفيديو بعده).
-  Future<MenuItem?> addItemAndReturnCreated(MenuItem item) async {
+  Future<MenuItem?> addItemAndReturnCreated(MenuItem item, {bool kitchenProfilePromo = false}) async {
     state = const MenuSaving();
-    final result = await _repo.addItem(item);
+    final result = await _repo.addItem(item, kitchenProfilePromo: kitchenProfilePromo);
     return result.when(
       success: (created) {
         loadMenu(page: 1);

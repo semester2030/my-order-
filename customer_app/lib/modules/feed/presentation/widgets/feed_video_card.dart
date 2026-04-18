@@ -104,7 +104,7 @@ class _FeedVideoCardState extends State<FeedVideoCard> {
             // Overlay gradient
             _buildOverlay(),
 
-            // Content overlay (bottom: chef + dish, price, عرض الطباخ + أضف للسلة)
+            // Content overlay (bottom: chef + dish, price, CTAs — للطبخ المنزلي زر عريض واحد بدل السلة)
             DishOverlay(
               item: widget.item,
               onAddToCart: widget.onAddToCart,

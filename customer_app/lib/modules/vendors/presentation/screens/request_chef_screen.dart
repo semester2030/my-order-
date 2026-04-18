@@ -277,6 +277,10 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
     );
     if (vendorForFlow == null) return;
     final onSite = _onSiteChefBooking(vendorForFlow);
+    /// يطابق شرط الباكند: طبخ منزلي بدون عنوان إلزامي — يعتمد على `providerCategory` أو `?category=` من الـ Feed.
+    final isHomeFlow = !onSite &&
+        (vendorForFlow.isHomeCooking ||
+            widget.feedCategory == ProviderCategories.homeCooking);
     if (onSite) {
       if (_mealSlot == null || _mealSlot!.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -287,7 +291,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
         );
         return;
       }
-    } else if (vendorForFlow.isHomeCooking) {
+    } else if (isHomeFlow) {
       if (_homeUseCustomTime) {
         if (_selectedTime == null) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -376,7 +380,9 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
       final notesForApi = rt == 'grilling'
           ? _composeGrillingNotes(l)
           : (_notesController.text.trim().isEmpty ? null : _notesController.text.trim());
-      final isHome = vendorData?.isHomeCooking == true;
+      final isHome = !onSiteSubmit &&
+          (vendorData?.isHomeCooking == true ||
+              widget.feedCategory == ProviderCategories.homeCooking);
       final String? scheduledTimeApi = onSiteSubmit
           ? null
           : (isHome && !_homeUseCustomTime

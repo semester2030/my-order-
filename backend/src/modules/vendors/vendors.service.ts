@@ -779,6 +779,7 @@ export class VendorsService {
       image: item.image,
       isSignature: item.isSignature,
       isAvailable: item.isAvailable,
+      profilePromo: item.profilePromo,
       orderCount: item.orderCount,
       createdAt: item.createdAt.toISOString(),
       updatedAt: item.updatedAt.toISOString(),
@@ -814,6 +815,8 @@ export class VendorsService {
       image?: string;
       isSignature?: boolean;
       isAvailable?: boolean;
+      /** إعلان تعريفي — صورة اختيارية */
+      profilePromo?: boolean;
     },
   ): Promise<MenuItem> {
     await this.assertMenuOfferingTermsAcceptedForAddMenuItem(vendorId);
@@ -824,6 +827,7 @@ export class VendorsService {
       throw new NotFoundException('المورّد غير موجود');
     }
     const isHomeCooking = vendor.providerCategory === 'home_cooking';
+    const profilePromo = data.profilePromo === true;
 
     if (isHomeCooking) {
       const desc = (data.description ?? '').trim();
@@ -832,8 +836,8 @@ export class VendorsService {
           'الوصف إلزامي لمطبخ منزلي (ثلاثة أحرف على الأقل)',
         );
       }
-      if (!data.image?.trim()) {
-        throw new BadRequestException('صورة الطبق إلزامية لمطبخ منزلي');
+      if (!profilePromo && !data.image?.trim()) {
+        throw new BadRequestException('صورة الطبق إلزامية لوجبات المعرض');
       }
       if (
         data.price !== undefined &&
@@ -861,6 +865,7 @@ export class VendorsService {
       image: data.image,
       isSignature: data.isSignature || false,
       isAvailable: data.isAvailable ?? true,
+      profilePromo: isHomeCooking ? profilePromo : false,
     });
 
     return this.menuItemRepository.save(menuItem);
@@ -914,8 +919,8 @@ export class VendorsService {
           'الوصف إلزامي لمطبخ منزلي (ثلاثة أحرف على الأقل)',
         );
       }
-      if (!menuItem.image?.trim()) {
-        throw new BadRequestException('صورة الطبق إلزامية لمطبخ منزلي');
+      if (!menuItem.profilePromo && !menuItem.image?.trim()) {
+        throw new BadRequestException('صورة الطبق إلزامية لوجبات المعرض');
       }
       if (
         menuItem.price !== null &&

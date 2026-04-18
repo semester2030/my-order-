@@ -180,6 +180,19 @@ class StringsAr {
   static const String bookChef = 'احجز الطباخ';
   static const String requestCooking = 'احجز الطبخ المنزلي';
   static const String requestCookingTooltip = 'حجز خدمة طبخ في المنزل — وليس طلب وجبة جاهزة كالمطاعم';
+  /// زر أسفل مقطع الطبخ المنزلي (برومو) — يستبدل «أضف للسلة».
+  static const String homeCookingFeedPrimaryCta = 'استكشف الأطباق والحجز';
+  static const String homeCookingFeedPrimaryCtaHint =
+      'عرض قائمة الطباخة واختيار الأطباق ثم حجز الطبخ المنزلي — ليس إضافة لسلة منتجات.';
+  static const String popularCookingFeedPrimaryCta = 'اطّلع على الخدمة واحجز الطبّاخ';
+  static const String popularCookingFeedPrimaryCtaHint =
+      'تفاصيل طبخ الذبائح عندك في موقعك — ثم حجز الطبّاخ (برومو وليس سلة منتجات).';
+  static const String grillingFeedPrimaryCta = 'استكشف عرض الشواء واحجز';
+  static const String grillingFeedPrimaryCtaHint =
+      'عرض خدمة الشواء في موقعك ثم إرسال طلب الحجز — وليس إضافة لسلة.';
+  static const String privateEventsFeedPrimaryCta = 'الباقات والمناسبات — استعرض واحجز';
+  static const String privateEventsFeedPrimaryCtaHint =
+      'معرفة العروض والبوفيه ثم طلب مناسبتك — مسار حجز وليس سلة.';
   static const String requestEvent = 'طلب مناسبة';
   static const String bookYourEvent = 'احجز مناسبتك';
   static const String unavailableNow = 'غير متوفر حالياً';

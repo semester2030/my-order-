@@ -86,13 +86,24 @@ class VideosRepoImpl implements VideosRepo {
         return res.Failure(GenericFailure('الملف غير موجود'));
       }
       final name = fileName ?? filePath.split(RegExp(r'[/\\]')).last;
+      final lower = name.toLowerCase();
+      final mime = lower.endsWith('.png')
+          ? 'image/png'
+          : (lower.endsWith('.jpg') || lower.endsWith('.jpeg'))
+              ? 'image/jpeg'
+              : lower.endsWith('.webp')
+                  ? 'image/webp'
+                  : lower.endsWith('.gif')
+                      ? 'image/gif'
+                      : 'application/octet-stream';
       final init = await _remoteDs.initUpload(
         fileName: name,
-        mimeType: 'application/octet-stream',
+        mimeType: mime,
         fileSizeBytes: await file.length(),
       );
       if (init.uploadUrl != null && init.uploadUrl!.isNotEmpty) {
-        await _remoteDs.uploadToUrl(
+        // Cloudflare Stream/Basic يتوقع POST multipart — PUT يرجع خطأ «Basic uploads must be made using POST method».
+        await _remoteDs.uploadFileToCloudflareUrl(
           init.uploadUrl!,
           filePath,
           onProgress: onProgress,

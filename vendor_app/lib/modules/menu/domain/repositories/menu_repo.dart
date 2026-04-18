@@ -14,7 +14,7 @@ abstract interface class MenuRepo {
 
   Future<res.Result<MenuItem, Failure>> getItemById(String id);
 
-  Future<res.Result<MenuItem, Failure>> addItem(MenuItem item);
+  Future<res.Result<MenuItem, Failure>> addItem(MenuItem item, {bool kitchenProfilePromo = false});
 
   Future<res.Result<MenuItem, Failure>> updateItem(MenuItem item);
 

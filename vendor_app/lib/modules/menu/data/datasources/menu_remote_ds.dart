@@ -12,7 +12,7 @@ abstract interface class MenuRemoteDs {
 
   Future<MenuItemDto> getItemById(String id);
 
-  Future<MenuItemDto> addItem(MenuItemDto dto);
+  Future<MenuItemDto> addItem(MenuItemDto dto, {bool kitchenProfilePromo = false});
 
   Future<MenuItemDto> updateItem(MenuItemDto dto);
 

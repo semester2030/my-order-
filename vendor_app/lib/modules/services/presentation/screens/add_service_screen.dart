@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:vendor_app/core/theme/design_system.dart';
+import 'package:vendor_app/core/localization/app_localizations.dart';
 import 'package:vendor_app/core/utils/validators.dart';
 import 'package:vendor_app/core/widgets/app_text_field.dart';
 import 'package:vendor_app/core/widgets/primary_button.dart';
 import 'package:vendor_app/core/di/providers.dart';
+import 'package:vendor_app/modules/profile/presentation/providers/profile_state.dart';
 import 'package:vendor_app/modules/services/domain/entities/service_item.dart';
 import 'package:vendor_app/modules/videos/presentation/widgets/video_picker_sheet.dart';
 import 'package:vendor_app/modules/services/presentation/providers/services_state.dart';
@@ -36,6 +38,19 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+    final isHome = ref.read(profileNotifierProvider).isHomeCookingCategory;
+    if (isHome &&
+        (_selectedImagePath == null || _selectedImagePath!.trim().isEmpty)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('صورة الوجبة إلزامية لتظهر في تطبيق العملاء'),
+            backgroundColor: SemanticColors.error,
+          ),
+        );
+      }
+      return;
+    }
     final priceStr = _priceController.text.trim();
     final price = priceStr.isEmpty ? null : double.tryParse(priceStr);
     if (price != null && price < 0) return;
@@ -72,6 +87,10 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final isHome = ref.watch(profileNotifierProvider).isHomeCookingCategory;
+    final title = isHome ? l.addMealForMenu : l.addService;
+    final nameLabel = isHome ? l.mealName : l.serviceName;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -79,7 +98,7 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         title: Text(
-          'إضافة خدمة',
+          title,
           style: TextStyles.headlineSmall.copyWith(color: AppColors.textPrimary),
         ),
       ),
@@ -94,9 +113,9 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
                 Gaps.lgV,
                 AppTextField(
                   controller: _nameController,
-                  validator: (v) => Validators.required(v, 'اسم الخدمة'),
+                  validator: (v) => Validators.required(v, nameLabel),
                   decoration: InputDecoration(
-                    labelText: 'اسم الخدمة',
+                    labelText: nameLabel,
                     border: OutlineInputBorder(borderRadius: AppRadius.mdAll),
                     filled: true,
                     fillColor: AppColors.surface,
@@ -107,7 +126,7 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
                   controller: _descriptionController,
                   maxLines: 3,
                   decoration: InputDecoration(
-                    labelText: 'الوصف',
+                    labelText: l.description,
                     alignLabelWithHint: true,
                     border: OutlineInputBorder(borderRadius: AppRadius.mdAll),
                     filled: true,
@@ -125,7 +144,7 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
                     return null;
                   },
                   decoration: InputDecoration(
-                    labelText: 'السعر (ر.س) — اختياري',
+                    labelText: l.priceSarOptional,
                     border: OutlineInputBorder(borderRadius: AppRadius.mdAll),
                     filled: true,
                     fillColor: AppColors.surface,
@@ -138,11 +157,11 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
                     onImagePicked: (path) => setState(() => _selectedImagePath = path),
                   ),
                   icon: const Icon(Icons.add_photo_alternate),
-                  label: Text(_selectedImagePath == null ? 'إضافة صورة' : 'تم اختيار صورة'),
+                  label: Text(_selectedImagePath == null ? l.addImage : l.imageSelected),
                 ),
                 Gaps.xlV,
                 PrimaryButton(
-                  label: _saving ? 'جاري الحفظ...' : 'حفظ',
+                  label: _saving ? l.saving : l.save,
                   onPressed: _saving ? null : _save,
                 ),
                 Gaps.xxlV,

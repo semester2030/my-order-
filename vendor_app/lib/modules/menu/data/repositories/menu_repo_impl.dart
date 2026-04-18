@@ -39,10 +39,10 @@ class MenuRepoImpl implements MenuRepo {
   }
 
   @override
-  Future<res.Result<MenuItem, Failure>> addItem(MenuItem item) async {
+  Future<res.Result<MenuItem, Failure>> addItem(MenuItem item, {bool kitchenProfilePromo = false}) async {
     try {
       final dto = MenuMapper.toDto(item);
-      final added = await _remoteDs.addItem(dto);
+      final added = await _remoteDs.addItem(dto, kitchenProfilePromo: kitchenProfilePromo);
       return res.Success(MenuMapper.toMenuItem(added));
     } catch (e) {
       return res.Failure(ErrorMapper.toFailure(e));

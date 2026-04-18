@@ -157,7 +157,11 @@ export class AddressesService {
       );
     }
 
-    await this.addressRepository.delete(id);
+    // تعطيل ناعم: الطلبات قد تشير إلى العنوان عبر FK — الحذف الصلب يسبب 500
+    await this.addressRepository.update(
+      { id, userId },
+      { isActive: false, isDefault: false },
+    );
     return { message: 'Address deleted successfully' };
   }
 }

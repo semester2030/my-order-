@@ -67,6 +67,9 @@ class MenuRemoteDsImpl implements MenuRemoteDs {
     if (m.containsKey('is_available') && !m.containsKey('isAvailable')) {
       m['isAvailable'] = m['is_available'];
     }
+    if (m.containsKey('profile_promo') && !m.containsKey('profilePromo')) {
+      m['profilePromo'] = m['profile_promo'];
+    }
     // الباك اند يرجع videoAssets[] أو video_assets[] مع playbackUrl/playback_url و thumbnailUrl/thumbnail_url
     final videoAssets = m['videoAssets'] ?? m['video_assets'];
     if (videoAssets is List && videoAssets.isNotEmpty) {
@@ -98,10 +101,36 @@ class MenuRemoteDsImpl implements MenuRemoteDs {
   }
 
   @override
-  Future<MenuItemDto> addItem(MenuItemDto dto) async {
+  Future<MenuItemDto> addItem(MenuItemDto dto, {bool kitchenProfilePromo = false}) async {
+    final formData = FormData.fromMap(<String, dynamic>{
+      'name': dto.name,
+      if (dto.description != null && dto.description!.trim().isNotEmpty)
+        'description': dto.description,
+      if (dto.price != null) 'price': dto.price.toString(),
+      'isSignature': 'false',
+      'isAvailable': dto.isAvailable ? 'true' : 'false',
+      if (kitchenProfilePromo) 'profilePromo': 'true',
+    });
+
+    final path = dto.imageUrl;
+    if (path != null &&
+        path.isNotEmpty &&
+        !path.startsWith('http://') &&
+        !path.startsWith('https://')) {
+      final name = path.contains('/') ? path.split('/').last : path.split('\\').last;
+      formData.files.add(
+        MapEntry(
+          'image',
+          await MultipartFile.fromFile(path, filename: name),
+        ),
+      );
+    } else if (path != null && path.trim().isNotEmpty && (path.startsWith('http://') || path.startsWith('https://'))) {
+      formData.fields.add(MapEntry('imageUrl', path.trim()));
+    }
+
     final response = await _dio.post<Map<String, dynamic>>(
       Endpoints.vendorsMenu,
-      data: dto.toJson(),
+      data: formData,
     );
     final data = response.data;
     if (data == null) {
@@ -112,9 +141,33 @@ class MenuRemoteDsImpl implements MenuRemoteDs {
 
   @override
   Future<MenuItemDto> updateItem(MenuItemDto dto) async {
+    final formData = FormData.fromMap(<String, dynamic>{
+      'name': dto.name,
+      if (dto.description != null) 'description': dto.description,
+      if (dto.price != null) 'price': dto.price.toString(),
+      'isSignature': 'false',
+      'isAvailable': dto.isAvailable ? 'true' : 'false',
+    });
+
+    final path = dto.imageUrl;
+    if (path != null &&
+        path.isNotEmpty &&
+        !path.startsWith('http://') &&
+        !path.startsWith('https://')) {
+      final name = path.contains('/') ? path.split('/').last : path.split('\\').last;
+      formData.files.add(
+        MapEntry(
+          'image',
+          await MultipartFile.fromFile(path, filename: name),
+        ),
+      );
+    } else if (path != null && path.trim().isNotEmpty && (path.startsWith('http://') || path.startsWith('https://'))) {
+      formData.fields.add(MapEntry('imageUrl', path.trim()));
+    }
+
     final response = await _dio.put<Map<String, dynamic>>(
       Endpoints.vendorMenuItemById(dto.id),
-      data: dto.toJson(),
+      data: formData,
     );
     final data = response.data;
     if (data == null) {

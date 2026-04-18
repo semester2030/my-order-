@@ -45,7 +45,7 @@ class MenuRemoteDsStub implements MenuRemoteDs {
   }
 
   @override
-  Future<MenuItemDto> addItem(MenuItemDto dto) async {
+  Future<MenuItemDto> addItem(MenuItemDto dto, {bool kitchenProfilePromo = false}) async {
     await Future.delayed(const Duration(milliseconds: 300));
     final id = 'menu-${DateTime.now().millisecondsSinceEpoch}';
     final added = MenuItemDto(

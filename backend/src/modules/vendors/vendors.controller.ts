@@ -373,6 +373,10 @@ export class VendorsController {
       price?: string;
       isSignature?: string;
       isAvailable?: string;
+      /** رابط صورة جاهز (مثلاً Cloudflare) عندما لا يُرفع ملف */
+      imageUrl?: string;
+      /** إعلان تعريفي للمطبخ المنزلي — الصورة غير إلزامية */
+      profilePromo?: string;
     },
     @UploadedFiles() files?: { image?: any[] },
   ) {
@@ -385,6 +389,8 @@ export class VendorsController {
       rawPrice === undefined || rawPrice === ''
         ? undefined
         : Number.parseFloat(rawPrice);
+    const fileName = files?.image?.[0]?.filename;
+    const urlImage = body.imageUrl?.trim();
     return this.vendorsService.addMenuItem(vendorId, {
       name: body.name,
       description: body.description,
@@ -392,9 +398,10 @@ export class VendorsController {
         parsedPrice === undefined || Number.isNaN(parsedPrice)
           ? undefined
           : parsedPrice,
-      image: files?.image?.[0]?.filename,
+      image: fileName || urlImage || undefined,
       isSignature: body.isSignature === 'true',
       isAvailable: body.isAvailable !== 'false',
+      profilePromo: body.profilePromo === 'true',
     });
   }
 
@@ -420,6 +427,7 @@ export class VendorsController {
       price?: string;
       isSignature?: string;
       isAvailable?: string;
+      imageUrl?: string;
     },
     @UploadedFiles() files?: { image?: any[] },
   ) {
@@ -434,7 +442,16 @@ export class VendorsController {
         : rawUpPrice === ''
           ? null
           : Number.parseFloat(rawUpPrice);
-    return this.vendorsService.updateMenuItem(vendorId, menuItemId, {
+    const upFile = files?.image?.[0]?.filename;
+    const upUrl = body.imageUrl?.trim();
+    const patch: {
+      name?: string;
+      description?: string;
+      price?: number | null;
+      image?: string;
+      isSignature?: boolean;
+      isAvailable?: boolean;
+    } = {
       name: body.name,
       description: body.description,
       price:
@@ -443,7 +460,6 @@ export class VendorsController {
           : Number.isNaN(parsedUpPrice)
             ? undefined
             : parsedUpPrice,
-      image: files?.image?.[0]?.filename,
       isSignature:
         body.isSignature !== undefined
           ? body.isSignature === 'true'
@@ -452,7 +468,13 @@ export class VendorsController {
         body.isAvailable !== undefined
           ? body.isAvailable !== 'false'
           : undefined,
-    });
+    };
+    if (upFile) {
+      patch.image = upFile;
+    } else if (body.imageUrl !== undefined) {
+      patch.image = upUrl || undefined;
+    }
+    return this.vendorsService.updateMenuItem(vendorId, menuItemId, patch);
   }
 
   @Delete('menu/:id')

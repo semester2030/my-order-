@@ -85,7 +85,7 @@ class ServicesRemoteDsImpl implements ServicesRemoteDs {
       'name': dto.name,
       if (dto.description != null && dto.description!.trim().isNotEmpty)
         'description': dto.description,
-      'price': (dto.price ?? 0).toString(),
+      if (dto.price != null) 'price': dto.price.toString(),
       'isSignature': 'false',
       'isAvailable': dto.isActive ? 'true' : 'false',
     });
@@ -102,6 +102,8 @@ class ServicesRemoteDsImpl implements ServicesRemoteDs {
           await MultipartFile.fromFile(path, filename: name),
         ),
       );
+    } else if (path != null && path.trim().isNotEmpty && (path.startsWith('http://') || path.startsWith('https://'))) {
+      formData.fields.add(MapEntry('imageUrl', path.trim()));
     }
 
     final response = await _dio.post<Map<String, dynamic>>(
@@ -137,6 +139,8 @@ class ServicesRemoteDsImpl implements ServicesRemoteDs {
           await MultipartFile.fromFile(path, filename: name),
         ),
       );
+    } else if (path != null && path.trim().isNotEmpty && (path.startsWith('http://') || path.startsWith('https://'))) {
+      formData.fields.add(MapEntry('imageUrl', path.trim()));
     }
 
     final response = await _dio.put<Map<String, dynamic>>(

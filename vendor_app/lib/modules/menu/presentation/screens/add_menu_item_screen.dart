@@ -18,6 +18,18 @@ import 'package:vendor_app/modules/menu/presentation/providers/menu_state.dart';
 import 'package:vendor_app/modules/menu/presentation/utils/vendor_terms_precheck.dart';
 import 'package:vendor_app/modules/profile/presentation/providers/profile_state.dart';
 
+const _kitchenPromoPhrasesAr = <String>[
+  'ننفّذ جميع الأطباق الخليجية بأعلى معايير الجودة والتميّز.',
+  'نقدّم طهيًا منزليًا أصيلًا بمكوّنات مختارة ووصفات تراثية مدروسة.',
+  'نسعد بخدمتكم في المناسبات والتجمعات العائلية بجودة مطبخ منزلي محترف.',
+];
+
+const _kitchenPromoPhrasesEn = <String>[
+  'We prepare Gulf cuisine to the highest quality standards.',
+  'Authentic home cooking with carefully selected ingredients and heritage recipes.',
+  'We are glad to serve your family gatherings with professional home-kitchen quality.',
+];
+
 /// شاشة إضافة وجبة — ثيم موحد (Phase 10).
 class AddMenuItemScreen extends ConsumerStatefulWidget {
   const AddMenuItemScreen({super.key});
@@ -93,17 +105,6 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
         }
         return;
       }
-      if (_selectedImagePath == null || _selectedImagePath!.trim().isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('صورة الطبق إلزامية لمطبخ منزلي'),
-              backgroundColor: SemanticColors.error,
-            ),
-          );
-        }
-        return;
-      }
     }
 
     if (_selectedVideoPath == null || _selectedVideoPath!.isEmpty) {
@@ -119,8 +120,10 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
     }
 
     String? imageUrl = _selectedImagePath;
-    // Phase 19: رفع الصورة مع تقدّم الرفع إن كان المسار محلياً.
-    if (_selectedImagePath != null && !_selectedImagePath!.startsWith('http')) {
+    // رفع الصورة عند اختيار ملف محلي فقط (الإعلان التعريفي: الصورة اختيارية).
+    if (_selectedImagePath != null &&
+        _selectedImagePath!.trim().isNotEmpty &&
+        !_selectedImagePath!.startsWith('http')) {
       final progress = ValueNotifier<double>(0.0);
       if (mounted) {
         showDialog<void>(
@@ -197,7 +200,10 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
     );
 
     // 1) إنشاء الصنف أولاً (الباك اند يحفظ الفيديو في video_assets منفصل)
-    final createdItem = await ref.read(menuNotifierProvider.notifier).addItemAndReturnCreated(item);
+    final createdItem = await ref.read(menuNotifierProvider.notifier).addItemAndReturnCreated(
+          item,
+          kitchenProfilePromo: isHomeCooking,
+        );
     if (!mounted) return;
     if (createdItem == null) return; // فشل الإنشاء أو حدث خطأ
 
@@ -270,6 +276,8 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
   @override
   Widget build(BuildContext context) {
     if (_checkingMenuOfferingTerms) {
+      final loc = AppLocalizations.of(context);
+      final homeWhileCheck = ref.watch(profileNotifierProvider).isHomeCookingCategory;
       return Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
@@ -277,13 +285,19 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
           foregroundColor: AppColors.textPrimary,
           elevation: 0,
           title: Text(
-            AppLocalizations.of(context).addMeal,
+            homeWhileCheck ? loc.addKitchenPromo : loc.addMeal,
             style: TextStyles.headlineSmall.copyWith(color: AppColors.textPrimary),
           ),
         ),
         body: const Center(child: LoadingView()),
       );
     }
+
+    final l = AppLocalizations.of(context);
+    final isHome = ref.watch(profileNotifierProvider).isHomeCookingCategory;
+    final titleText = isHome ? l.addKitchenPromo : l.addMeal;
+    final nameLabel = isHome ? l.kitchenPromoHeadlineLabel : l.mealName;
+    final phrases = l.isAr ? _kitchenPromoPhrasesAr : _kitchenPromoPhrasesEn;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -292,7 +306,7 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         title: Text(
-          'إضافة وجبة',
+          titleText,
           style: TextStyles.headlineSmall.copyWith(color: AppColors.textPrimary),
         ),
       ),
@@ -307,28 +321,57 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
                 Gaps.lgV,
                 AppTextField(
                   controller: _nameController,
-                  validator: (v) => Validators.required(v, 'اسم الوجبة'),
+                  validator: (v) => Validators.required(v, nameLabel),
                   decoration: InputDecoration(
-                    labelText: 'اسم الوجبة',
+                    labelText: nameLabel,
                     border: OutlineInputBorder(borderRadius: AppRadius.mdAll),
                     filled: true,
                     fillColor: AppColors.surface,
                   ),
                 ),
                 Gaps.mdV,
+                if (isHome) ...[
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      l.kitchenPromoDescriptionChipsTitle,
+                      style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                    ),
+                  ),
+                  Gaps.smV,
+                  Wrap(
+                    spacing: Insets.sm,
+                    runSpacing: Insets.sm,
+                    children: [
+                      for (final phrase in phrases)
+                        ActionChip(
+                          label: Text(
+                            phrase,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyles.bodySmall,
+                          ),
+                          onPressed: () => setState(() {
+                            _descriptionController.text = phrase;
+                          }),
+                        ),
+                    ],
+                  ),
+                  Gaps.mdV,
+                ],
                 AppTextField(
                   controller: _descriptionController,
                   maxLines: 3,
                   validator: (v) {
-                    final isHome =
+                    final home =
                         ref.read(profileNotifierProvider).isHomeCookingCategory;
-                    if (isHome && (v == null || v.trim().length < 3)) {
+                    if (home && (v == null || v.trim().length < 3)) {
                       return 'الوصف إلزامي لمطبخ منزلي (٣ أحرف على الأقل)';
                     }
                     return null;
                   },
                   decoration: InputDecoration(
-                    labelText: 'الوصف',
+                    labelText: l.description,
                     alignLabelWithHint: true,
                     border: OutlineInputBorder(borderRadius: AppRadius.mdAll),
                     filled: true,
@@ -366,13 +409,21 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
                   },
                 ),
                 Gaps.mdV,
+                if (isHome)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: Insets.sm),
+                    child: Text(
+                      l.kitchenPromoImageOptionalHint,
+                      style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                    ),
+                  ),
                 OutlinedButton.icon(
                   onPressed: () => VideoPickerSheet.show(
                     context,
                     onImagePicked: (path) => setState(() => _selectedImagePath = path),
                   ),
                   icon: const Icon(Icons.add_photo_alternate),
-                  label: Text(_selectedImagePath == null ? 'إضافة صورة' : 'تم اختيار صورة'),
+                  label: Text(_selectedImagePath == null ? l.addImage : l.imageSelected),
                 ),
                 Gaps.smV,
                 OutlinedButton.icon(
@@ -417,7 +468,7 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
                 ),
                 Gaps.xlV,
                 PrimaryButton(
-                  label: _saving ? 'جاري الحفظ...' : 'حفظ',
+                  label: _saving ? l.saving : l.save,
                   onPressed: _saving ? null : _save,
                 ),
                 Gaps.xxlV,

@@ -7,7 +7,7 @@ class StringsEn {
   static const String dashboard = 'Dashboard';
   static const String orders = 'Orders';
   static const String menu = 'Menu';
-  static const String services = 'Services';
+  static const String services = 'Meals';
   static const String staff = 'Staff';
   static const String settings = 'Settings';
   static const String sideOrders = 'Side Orders';
@@ -121,6 +121,12 @@ class StringsEn {
   static const String totalRevenue = 'Total Revenue';
 
   static const String addMeal = 'Add Meal';
+  static const String addKitchenPromo = 'Add kitchen profile promo';
+  static const String kitchenPromoHeadlineLabel = 'Promo headline';
+  static const String kitchenPromoDescriptionChipsTitle =
+      'Suggested phrases — tap to insert or edit below';
+  static const String kitchenPromoImageOptionalHint =
+      'Cover image is optional; video and text are enough.';
   static const String editMeal = 'Edit Meal';
   static const String mealName = 'Meal Name';
   static const String description = 'Description';
@@ -139,10 +145,11 @@ class StringsEn {
   static const String unavailable = 'Unavailable';
 
   static const String addService = 'Add Service';
+  static const String addMealForMenu = 'Add dish';
   static const String editService = 'Edit Service';
   static const String serviceName = 'Service Name';
-  static const String myServices = 'What I Offer';
-  static const String noServices = 'No services';
+  static const String myServices = 'Dishes shown to customers';
+  static const String noServices = 'No dishes yet';
   static const String serviceNotFound = 'Service not found';
   static const String active = 'Active';
   static const String inactive = 'Inactive';

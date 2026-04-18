@@ -40,6 +40,10 @@ export class MenuItem {
   @Column({ default: true, name: 'is_available' })
   isAvailable: boolean;
 
+  /** طبخ منزلي: عنصر عرض/إعلان تعريفي — الصورة اختيارية عند الإنشاء */
+  @Column({ default: false, name: 'profile_promo' })
+  profilePromo: boolean;
+
   @Column({ default: 0, name: 'order_count' })
   orderCount: number;
 
