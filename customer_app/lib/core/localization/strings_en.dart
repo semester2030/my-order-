@@ -27,7 +27,8 @@ class StringsEn {
       'Quotes, bank transfer confirmation, and pickup — separate from meal orders';
   static const String noHomeCookingRequests = 'No home cooking requests yet';
   static const String homeCookingStatusPending = 'Awaiting quote from kitchen';
-  static const String homeCookingStatusQuoted = 'Quoted — transfer then declare payment';
+  static const String homeCookingStatusQuoted =
+      'Quoted — pay by card or transfer, then declare if you used the bank';
   static const String homeCookingStatusPaymentPending = 'Awaiting admin payment verification';
   static const String homeCookingStatusAccepted = 'Being prepared';
   static const String homeCookingStatusReady = 'Ready for pickup';
@@ -45,6 +46,15 @@ class StringsEn {
   static const String homeCookingSubmitDeclaration = 'Submit declaration';
   static const String homeCookingDeclareSuccess =
       'Declaration sent. We will verify shortly.';
+  static const String homeCookingCardPaymentTitle = 'Card payment';
+  static const String homeCookingCardPaymentHint =
+      'Mada, Apple Pay, or STC Pay — same flow as cart checkout. In test mode tap Complete payment after the session starts.';
+  static const String homeCookingCardPayMada = 'Mada';
+  static const String homeCookingCardPayApple = 'Apple Pay';
+  static const String homeCookingCardPayStc = 'STC Pay';
+  static const String homeCookingCardCompleteButton = 'Complete payment';
+  static const String homeCookingCardSuccess = 'Payment recorded successfully';
+  static const String homeCookingMrsoolDeliveryCaption = 'Mrsool app';
   static const String homeCookingLoadError = 'Could not load this request';
   static const String homeCookingStatusReadyShort = 'Ready — awaiting kitchen handover';
   static const String homeCookingStatusHandedOver =

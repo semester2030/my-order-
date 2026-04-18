@@ -30,6 +30,9 @@ class RouteNames {
 
   // Profile
   static const String profile = '/profile';
+  /// مركز «طلباتي»: الطبخ المنزلي + حجوزات الولائم والشوي.
+  static const String myRequestsHub = '/my-requests';
+
   /// حجوزات طبخ الذبائح والشواء الخارجي (طلبات event-requests المصفّاة).
   static const String myChefBookings = '/my-chef-bookings';
   /// طلبات الطبخ المنزلي (عرض سعر → دفع → تحضير → جاهز).

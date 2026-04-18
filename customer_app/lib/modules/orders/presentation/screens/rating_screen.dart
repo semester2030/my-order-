@@ -221,7 +221,7 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
                   onPressed: _isSubmitting
                       ? null
                       : () {
-                          context.go(RouteNames.orders);
+                          context.go(RouteNames.categories);
                         },
                   child: Text(
                     'Skip',
@@ -269,8 +269,7 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
         ),
       );
 
-      // Navigate to orders
-      context.go(RouteNames.orders);
+      context.go(RouteNames.categories);
     } catch (e) {
       if (!mounted) return;
 

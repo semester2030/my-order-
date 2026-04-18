@@ -186,6 +186,9 @@ class AppLocalizations {
   String get saving => isAr ? StringsAr.saving : StringsEn.saving;
   String get cancel => isAr ? StringsAr.cancel : StringsEn.cancel;
   String get noMeals => isAr ? StringsAr.noMeals : StringsEn.noMeals;
+  String get emptyPromoMenuTab =>
+      isAr ? StringsAr.emptyPromoMenuTab : StringsEn.emptyPromoMenuTab;
+  String get noVideosYet => isAr ? StringsAr.noVideosYet : StringsEn.noVideosYet;
   String get mealNotFound => isAr ? StringsAr.mealNotFound : StringsEn.mealNotFound;
   String get available => isAr ? StringsAr.available : StringsEn.available;
   String get unavailable => isAr ? StringsAr.unavailable : StringsEn.unavailable;

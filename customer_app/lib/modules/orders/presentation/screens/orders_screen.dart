@@ -45,7 +45,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           style: TextStyles.headlineMedium,
         ),
       ),
-      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 2),
+      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 3),
       body: ordersState.when(
         initial: () => const LoadingView(),
         loading: () => const LoadingView(),

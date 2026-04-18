@@ -1,3 +1,4 @@
+import '../../../../core/network/endpoints.dart';
 import '../../domain/entities/feed_item.dart';
 import '../../domain/entities/video_asset.dart';
 import '../models/feed_item_dto.dart' as dto;
@@ -33,7 +34,7 @@ class FeedMapper {
       name: itemDto.name,
       description: itemDto.description,
       price: itemDto.price,
-      image: itemDto.image,
+      image: Endpoints.resolveMenuImageUrl(itemDto.image),
       isSignature: itemDto.isSignature,
     );
   }

@@ -17,6 +17,10 @@ abstract class VendorsRemoteDataSource {
     required String paymentReference,
     String? notes,
   });
+  Future<Map<String, dynamic>> initiateHomeCookingCardPayment(
+    String eventRequestId,
+    String method,
+  );
   Future<Map<String, dynamic>> confirmHomeCookingReceipt(String requestId);
   Future<void> cancelEventRequest(String requestId);
   Future<List<Map<String, dynamic>>> getVendorEventOffers(String vendorId);
@@ -113,6 +117,32 @@ class VendorsRemoteDataSourceImpl implements VendorsRemoteDataSource {
     try {
       final response = await apiClient.get(Endpoints.eventRequestById(requestId));
       return Map<String, dynamic>.from(response.data as Map);
+    } on DioException catch (e) {
+      if (e.error is NetworkException) {
+        throw e.error as NetworkException;
+      }
+      throw NetworkException.unknown(message: e.message ?? 'Unknown error');
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> initiateHomeCookingCardPayment(
+    String eventRequestId,
+    String method,
+  ) async {
+    try {
+      final response = await apiClient.post(
+        Endpoints.initiateHomeCookingCardPayment,
+        data: <String, dynamic>{
+          'eventRequestId': eventRequestId,
+          'method': method,
+        },
+      );
+      final data = response.data;
+      if (data is! Map) {
+        throw NetworkException.unknown(message: 'Invalid payment response');
+      }
+      return Map<String, dynamic>.from(data);
     } on DioException catch (e) {
       if (e.error is NetworkException) {
         throw e.error as NetworkException;

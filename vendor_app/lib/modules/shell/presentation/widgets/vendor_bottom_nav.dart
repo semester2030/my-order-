@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vendor_app/core/theme/design_system.dart';
 import 'package:vendor_app/core/localization/app_localizations.dart';
 
-/// الشريط السفلي — ثيم موحد (Phase 13: Dashboard, Orders, Menu, Services, Staff, Settings).
+/// الشريط السفلي — ثيم موحد (Dashboard, Orders, Menu, Services, Settings).
 class VendorBottomNav extends StatelessWidget {
   const VendorBottomNav({
     super.key,
@@ -17,7 +17,7 @@ class VendorBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return BottomNavigationBar(
-      currentIndex: currentIndex.clamp(0, 5),
+      currentIndex: currentIndex.clamp(0, 4),
       onTap: onTap ?? (_) {},
       backgroundColor: AppColors.surfaceElevated,
       selectedItemColor: AppColors.primary,
@@ -37,19 +37,14 @@ class VendorBottomNav extends StatelessWidget {
           label: l10n.orders,
         ),
         BottomNavigationBarItem(
-          icon: const Icon(Icons.restaurant_menu_outlined),
-          activeIcon: const Icon(Icons.restaurant_menu),
+          icon: const Icon(Icons.ondemand_video_outlined),
+          activeIcon: const Icon(Icons.ondemand_video),
           label: l10n.menu,
         ),
         BottomNavigationBarItem(
-          icon: const Icon(Icons.handyman_outlined),
-          activeIcon: const Icon(Icons.handyman),
+          icon: const Icon(Icons.restaurant_menu_outlined),
+          activeIcon: const Icon(Icons.restaurant_menu),
           label: l10n.services,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.people_outline),
-          activeIcon: const Icon(Icons.people),
-          label: l10n.staff,
         ),
         BottomNavigationBarItem(
           icon: const Icon(Icons.settings_outlined),

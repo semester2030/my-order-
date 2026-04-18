@@ -128,7 +128,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      EmptyState(message: AppLocalizations.of(context).noMeals),
+                      EmptyState(message: AppLocalizations.of(context).emptyPromoMenuTab),
                       Gaps.lgV,
                       TextButton.icon(
                         onPressed: () => _goToAddMenuItem(context),

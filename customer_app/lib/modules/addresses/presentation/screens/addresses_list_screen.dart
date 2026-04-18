@@ -51,7 +51,7 @@ class _AddressesListScreenState extends ConsumerState<AddressesListScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 4),
+      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 3),
       body: addressState.when(
         initial: () => const LoadingView(),
         loading: () => const LoadingView(),

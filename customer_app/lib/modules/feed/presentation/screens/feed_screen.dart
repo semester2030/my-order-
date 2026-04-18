@@ -4,17 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
-import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/video/video_controller_pool.dart';
 import '../../../../core/widgets/error_state.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/localization/app_localizations.dart';
-import '../../domain/entities/feed_item.dart';
 import '../providers/feed_notifier.dart';
 import '../widgets/feed_video_card.dart';
-import '../../../cart/presentation/providers/cart_notifier.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key, this.category});
@@ -47,47 +44,6 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   void _onPageChanged(int index) {
     setState(() => _currentIndex = index);
     VideoControllerPool.pauseAll();
-  }
-
-  Future<void> _onAddToCart(FeedItem item) async {
-    try {
-      await ref.read(cartNotifierProvider.notifier).addToCart(
-            item.menuItem.id,
-            1,
-          );
-      if (!mounted) return;
-      final l = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.addedToCartNamed(item.menuItem.name)),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: AppRadius.mdAll,
-          ),
-          action: SnackBarAction(
-            label: l.viewCart,
-            textColor: AppColors.textInverse,
-            onPressed: () {
-              context.go(RouteNames.cart);
-            },
-          ),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      final l = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${l.addToCartFailed}: ${e.toString()}'),
-          backgroundColor: SemanticColors.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: AppRadius.mdAll,
-          ),
-        ),
-      );
-    }
   }
 
   /// شريط علوي واحد: يمنع تكدّس سطرَي «اسم الفئة» و«الفلتر» فوق صندوق الطباخ/الوجبة في [DishOverlay].
@@ -452,11 +408,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                   return FeedVideoCard(
                     item: item,
                     isPlaying: isPlaying,
-                    onAddToCart: ProviderCategories.usesFeedPromoVideoLayout(
-                      item.vendor.providerCategory,
-                    )
-                        ? null
-                        : () => _onAddToCart(item),
+                    onAddToCart: null,
                     acceptsCustomRequests: item.vendor.acceptsCustomRequests,
                     topChromeInset: _dishOverlayTopInset,
                   );

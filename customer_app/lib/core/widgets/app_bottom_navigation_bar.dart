@@ -14,10 +14,26 @@ class AppBottomNavigationBar extends StatelessWidget {
 
   int _getIndexForRoute(String route) {
     if (route == RouteNames.categories || route.startsWith(RouteNames.feed)) return 0;
-    if (route.startsWith(RouteNames.cart)) return 1;
-    if (route.startsWith(RouteNames.orders)) return 2;
-    if (route.startsWith(RouteNames.payment) || route.startsWith(RouteNames.paymentMethods)) return 3;
-    if (route.startsWith(RouteNames.profile) || route.startsWith(RouteNames.settings) || route.startsWith(RouteNames.addresses)) return 4;
+    if (route.startsWith(RouteNames.myRequestsHub) ||
+        route.startsWith(RouteNames.myChefBookings) ||
+        route.startsWith(RouteNames.myHomeCookingRequests)) {
+      return 1;
+    }
+    if (route.startsWith(RouteNames.payment) ||
+        route.startsWith(RouteNames.paymentMethods) ||
+        route.startsWith(RouteNames.checkout) ||
+        route.startsWith(RouteNames.addCard)) {
+      return 2;
+    }
+    if (route.startsWith(RouteNames.profile) ||
+        route.startsWith(RouteNames.settings) ||
+        route.startsWith(RouteNames.addresses) ||
+        route.startsWith(RouteNames.editProfile) ||
+        route.startsWith(RouteNames.privacyPolicy) ||
+        route.startsWith(RouteNames.terms) ||
+        route.startsWith(RouteNames.deleteAccount)) {
+      return 3;
+    }
     return 0;
   }
 
@@ -27,15 +43,12 @@ class AppBottomNavigationBar extends StatelessWidget {
         context.go(RouteNames.categories);
         break;
       case 1:
-        context.go(RouteNames.cart);
+        context.go(RouteNames.myRequestsHub);
         break;
       case 2:
-        context.go(RouteNames.orders);
-        break;
-      case 3:
         context.go(RouteNames.paymentMethods);
         break;
-      case 4:
+      case 3:
         context.go(RouteNames.profile);
         break;
     }
@@ -61,11 +74,8 @@ class AppBottomNavigationBar extends StatelessWidget {
           label: l10n.discover,
         ),
         BottomNavigationBarItem(
-          icon: const Icon(Icons.shopping_cart),
-          label: l10n.cart,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.receipt),
+          icon: const _MyRequestsHubNavIcon(selected: false),
+          activeIcon: const _MyRequestsHubNavIcon(selected: true),
           label: l10n.orders,
         ),
         BottomNavigationBarItem(
@@ -77,6 +87,36 @@ class AppBottomNavigationBar extends StatelessWidget {
           label: l10n.profile,
         ),
       ],
+    );
+  }
+}
+
+/// أيقونتان صغيرتان داخل خانة واحدة لتمثيل الطبخ المنزلي + الولائم والشوي.
+class _MyRequestsHubNavIcon extends StatelessWidget {
+  const _MyRequestsHubNavIcon({required this.selected});
+
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? AppColors.primary : AppColors.textTertiary;
+    return SizedBox(
+      width: 30,
+      height: 24,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            left: 0,
+            child: Icon(Icons.home_work_outlined, size: 18, color: color),
+          ),
+          Positioned(
+            right: 0,
+            child: Icon(Icons.restaurant_menu, size: 18, color: color),
+          ),
+        ],
+      ),
     );
   }
 }

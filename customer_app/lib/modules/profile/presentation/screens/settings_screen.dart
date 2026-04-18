@@ -23,7 +23,7 @@ class SettingsScreen extends ConsumerWidget {
           style: TextStyles.titleLarge,
         ),
       ),
-      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 4),
+      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 3),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(Insets.lg),

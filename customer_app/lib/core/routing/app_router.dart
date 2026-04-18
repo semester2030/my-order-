@@ -23,6 +23,7 @@ import '../../../modules/vendors/presentation/screens/vendor_screen.dart';
 import '../../../modules/vendors/presentation/screens/vendor_reviews_screen.dart';
 import '../../../modules/vendors/presentation/screens/request_chef_screen.dart';
 import '../../../modules/vendors/presentation/screens/request_private_event_screen.dart';
+import '../../../modules/vendors/presentation/screens/my_requests_hub_screen.dart';
 import '../../../modules/vendors/presentation/screens/my_chef_bookings_screen.dart';
 import '../../../modules/vendors/presentation/screens/my_home_cooking_requests_screen.dart';
 import '../../../modules/vendors/presentation/screens/home_cooking_request_detail_screen.dart';
@@ -52,6 +53,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           path == RouteNames.login;
       if (isSplash || isAuthRoute) return null;
       if (!isAuth) return RouteNames.splash;
+      // السلة وطلبات السلة غير مستخدمة — الطلبات عبر الحجز فقط.
+      if (path == RouteNames.cart || path == RouteNames.orders) {
+        return RouteNames.categories;
+      }
       return null;
     },
     routes: [
@@ -292,6 +297,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'profile',
         builder: (context, state) {
           return const ProfileScreen();
+        },
+        redirect: (context, state) async {
+          return await authGuard.redirectIfNotAuthenticated(context, state);
+        },
+      ),
+      GoRoute(
+        path: RouteNames.myRequestsHub,
+        name: 'my-requests-hub',
+        builder: (context, state) {
+          return const MyRequestsHubScreen();
         },
         redirect: (context, state) async {
           return await authGuard.redirectIfNotAuthenticated(context, state);

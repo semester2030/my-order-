@@ -26,7 +26,8 @@ class StringsAr {
       'عرض السعر والتحويل البنكي ومتابعة الجاهزية — منفصلة عن طلبات الوجبات';
   static const String noHomeCookingRequests = 'لا توجد طلبات طبخ منزلي بعد';
   static const String homeCookingStatusPending = 'بانتظار عرض السعر من المطبخ';
-  static const String homeCookingStatusQuoted = 'تم عرض السعر — أكمل التحويل ثم أعلن عنه';
+  static const String homeCookingStatusQuoted =
+      'تم عرض السعر — ادفع بالبطاقة أو حوِّل ثم أعلن للإدارة';
   static const String homeCookingStatusPaymentPending = 'بانتظار تأكيد الإدارة للتحويل';
   static const String homeCookingStatusAccepted = 'قيد التحضير';
   static const String homeCookingStatusReady = 'جاهز للاستلام';
@@ -43,6 +44,15 @@ class StringsAr {
   static const String homeCookingPaymentNotesOptional = 'ملاحظات (اختياري)';
   static const String homeCookingSubmitDeclaration = 'إرسال إعلان التحويل';
   static const String homeCookingDeclareSuccess = 'تم إرسال إعلان التحويل. سنتحقق قريباً.';
+  static const String homeCookingCardPaymentTitle = 'الدفع بالبطاقة';
+  static const String homeCookingCardPaymentHint =
+      'مدى أو Apple Pay أو STC Pay — نفس مسار دفع السلة. في وضع الاختبار اضغط «أكمل الدفع» بعد بدء الجلسة.';
+  static const String homeCookingCardPayMada = 'مدى';
+  static const String homeCookingCardPayApple = 'Apple Pay';
+  static const String homeCookingCardPayStc = 'STC Pay';
+  static const String homeCookingCardCompleteButton = 'أكمل الدفع';
+  static const String homeCookingCardSuccess = 'تم تسجيل الدفع بنجاح';
+  static const String homeCookingMrsoolDeliveryCaption = 'تطبيق مرسول';
   static const String homeCookingLoadError = 'تعذّر تحميل الطلب';
   static const String homeCookingStatusReadyShort = 'جاهز — بانتظار تسليم المطبخ';
   static const String homeCookingStatusHandedOver =

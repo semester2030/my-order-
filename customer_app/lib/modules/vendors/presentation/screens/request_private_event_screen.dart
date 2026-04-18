@@ -166,7 +166,7 @@ class _RequestPrivateEventScreenState
         ),
       );
       context.pop();
-      context.go(RouteNames.orders);
+      context.go(RouteNames.profile);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

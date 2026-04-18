@@ -72,12 +72,12 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const EmptyState(message: 'لا توجد خدمات'),
+                      EmptyState(message: AppLocalizations.of(context).noServices),
                       Gaps.lgV,
                       TextButton.icon(
                         onPressed: () => context.push(RouteNames.servicesAdd),
                         icon: const Icon(Icons.add),
-                        label: const Text('إضافة خدمة'),
+                        label: Text(AppLocalizations.of(context).addService),
                       ),
                     ],
                   ),

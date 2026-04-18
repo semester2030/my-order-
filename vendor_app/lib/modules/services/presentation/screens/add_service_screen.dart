@@ -89,8 +89,8 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final isHome = ref.watch(profileNotifierProvider).isHomeCookingCategory;
-    final title = isHome ? l.addMealForMenu : l.addService;
-    final nameLabel = isHome ? l.mealName : l.serviceName;
+    final title = l.addService;
+    final nameLabel = l.serviceName;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(

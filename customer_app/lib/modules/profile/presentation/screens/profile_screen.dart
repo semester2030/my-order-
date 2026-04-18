@@ -30,7 +30,7 @@ class ProfileScreen extends ConsumerWidget {
           style: TextStyles.titleLarge,
         ),
       ),
-      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 4),
+      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 3),
       body: profileState.when(
         initial: () => const LoadingView(),
         loading: () => const LoadingView(),
@@ -92,33 +92,6 @@ class ProfileScreen extends ConsumerWidget {
                   subtitle: l10n.managePaymentCards,
                   onTap: () {
                     context.push(RouteNames.paymentMethods);
-                  },
-                ),
-                Gaps.mdV,
-                ProfileTile(
-                  icon: Icons.receipt_long_outlined,
-                  title: l10n.myOrders,
-                  subtitle: l10n.viewOrderHistory,
-                  onTap: () {
-                    context.go(RouteNames.orders);
-                  },
-                ),
-                Gaps.mdV,
-                ProfileTile(
-                  icon: Icons.restaurant_menu,
-                  title: l10n.myChefBookings,
-                  subtitle: l10n.myChefBookingsSubtitle,
-                  onTap: () {
-                    context.push(RouteNames.myChefBookings);
-                  },
-                ),
-                Gaps.mdV,
-                ProfileTile(
-                  icon: Icons.home_work_outlined,
-                  title: l10n.myHomeCookingRequests,
-                  subtitle: l10n.myHomeCookingRequestsSubtitle,
-                  onTap: () {
-                    context.push(RouteNames.myHomeCookingRequests);
                   },
                 ),
                 Gaps.mdV,

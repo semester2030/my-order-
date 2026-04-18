@@ -153,7 +153,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 1),
+      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 0),
       body: cartState.when(
         initial: () => const LoadingView(),
         loading: () => const LoadingView(),

@@ -13,7 +13,6 @@ import '../../domain/entities/menu_item.dart';
 import '../providers/vendor_notifier.dart';
 import '../widgets/menu_item_tile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../cart/presentation/providers/cart_notifier.dart';
 
 class VendorScreen extends ConsumerStatefulWidget {
   final String vendorId;
@@ -342,11 +341,9 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
                     padding: const EdgeInsets.only(bottom: Insets.md),
                     child: MenuItemTile(
                       menuItem: item,
-                      onTap: vendor.isHomeCooking
-                          ? () => context.push(
-                                '${RouteNames.requestChef}/${vendor.id}?dish=${item.id}',
-                              )
-                          : () => _handleAddToCart(item),
+                      onTap: () => context.push(
+                            '${RouteNames.requestChef}/${vendor.id}?dish=${item.id}',
+                          ),
                     ),
                   );
                 },
@@ -356,40 +353,6 @@ class _VendorScreenState extends ConsumerState<VendorScreen> {
           ),
       ],
     );
-  }
-
-  Future<void> _handleAddToCart(MenuItem item) async {
-    final l = AppLocalizations.of(context);
-    if (!item.isAvailable) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.itemNotAvailable(item.name)),
-          backgroundColor: SemanticColors.error,
-        ),
-      );
-      return;
-    }
-
-    try {
-      await ref.read(cartNotifierProvider.notifier).addToCart(item.id, 1);
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.itemAddedToCart(item.name)),
-          backgroundColor: SemanticColors.success,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${l.addToCartFailed}: ${e.toString()}'),
-          backgroundColor: SemanticColors.error,
-        ),
-      );
-    }
   }
 }
 

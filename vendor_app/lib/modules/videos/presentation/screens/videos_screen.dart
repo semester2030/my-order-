@@ -175,7 +175,7 @@ class _VideosScreenState extends ConsumerState<VideosScreen> {
                         SliverFillRemaining(
                           child: Center(
                             child: Text(
-                              l10n.noMeals,
+                              l10n.noVideosYet,
                               style: TextStyles.bodyLarge.copyWith(color: AppColors.textSecondary),
                             ),
                           ),

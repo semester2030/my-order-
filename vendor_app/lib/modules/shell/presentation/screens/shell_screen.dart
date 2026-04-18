@@ -8,11 +8,10 @@ import 'package:vendor_app/modules/menu/presentation/screens/menu_screen.dart';
 import 'package:vendor_app/modules/orders/presentation/screens/orders_screen.dart';
 import 'package:vendor_app/modules/profile/presentation/screens/settings_screen.dart';
 import 'package:vendor_app/modules/services/presentation/screens/services_screen.dart';
-import 'package:vendor_app/modules/staff/presentation/screens/staff_screen.dart';
 import 'package:vendor_app/modules/shell/presentation/widgets/vendor_bottom_nav.dart';
 import 'package:vendor_app/modules/shell/presentation/widgets/vendor_drawer.dart';
 
-/// Shell — ثيم موحد: Drawer + body (Dashboard / Orders / Menu / Services / Staff / Settings) + Bottom Nav (Phase 13).
+/// Shell — ثيم موحد: Drawer + body (Dashboard / Orders / Menu / Services / Settings) + Bottom Nav.
 class ShellScreen extends ConsumerStatefulWidget {
   const ShellScreen({super.key});
 
@@ -35,7 +34,6 @@ class _ShellScreenState extends ConsumerState<ShellScreen> {
           OrdersScreen(showDrawerButton: true),
           MenuScreen(showDrawerButton: true),
           ServicesScreen(showDrawerButton: true),
-          StaffScreen(showDrawerButton: true),
           SettingsScreen(showDrawerButton: true),
         ],
       ),

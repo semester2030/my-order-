@@ -10,7 +10,7 @@ import 'package:vendor_app/core/config/feature_flags.dart';
 import 'package:vendor_app/core/localization/app_localizations.dart';
 import 'package:vendor_app/modules/profile/presentation/providers/profile_state.dart';
 
-/// القائمة الجانبية — ثيم موحد (Phase 12: + الطلبات الجانبية لـ popular_cooking، Phase 13: + الموظفون).
+/// القائمة الجانبية — ثيم موحد (الطلبات الجانبية لـ popular_cooking، إلخ).
 class VendorDrawer extends ConsumerWidget {
   const VendorDrawer({
     super.key,
@@ -125,7 +125,7 @@ class VendorDrawer extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.restaurant_menu, color: AppColors.textSecondary, size: IconSizes.md),
+              leading: Icon(Icons.ondemand_video_outlined, color: AppColors.textSecondary, size: IconSizes.md),
               title: Text(
                 l10n.menu,
                 style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
@@ -143,7 +143,7 @@ class VendorDrawer extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.handyman, color: AppColors.textSecondary, size: IconSizes.md),
+              leading: Icon(Icons.restaurant_menu, color: AppColors.textSecondary, size: IconSizes.md),
               title: Text(
                 l10n.services,
                 style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
@@ -224,24 +224,6 @@ class VendorDrawer extends ConsumerWidget {
               ),
             ],
             ListTile(
-              leading: Icon(Icons.people, color: AppColors.textSecondary, size: IconSizes.md),
-              title: Text(
-                l10n.staff,
-                style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
-              ),
-              selected: currentRoute == RouteNames.shell &&
-                  ref.watch(selectedShellTabIndexProvider) == 4,
-              onTap: () {
-                ref.read(selectedShellTabIndexProvider.notifier).state = 4;
-                Navigator.of(context).pop();
-                if (onTapItem != null) {
-                  onTapItem!(RouteNames.shell);
-                } else {
-                  context.go(RouteNames.shell);
-                }
-              },
-            ),
-            ListTile(
               leading: Icon(Icons.analytics_outlined, color: AppColors.textSecondary, size: IconSizes.md),
               title: Text(
                 l10n.analytics,
@@ -270,9 +252,9 @@ class VendorDrawer extends ConsumerWidget {
                 style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
               ),
               selected: currentRoute == RouteNames.shell &&
-                  ref.watch(selectedShellTabIndexProvider) == 5,
+                  ref.watch(selectedShellTabIndexProvider) == 4,
               onTap: () {
-                ref.read(selectedShellTabIndexProvider.notifier).state = 5;
+                ref.read(selectedShellTabIndexProvider.notifier).state = 4;
                 Navigator.of(context).pop();
                 if (onTapItem != null) {
                   onTapItem!(RouteNames.shell);

@@ -157,6 +157,62 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
     }
   }
 
+  Future<void> _completeHomeCookingCardPayment(String requestId, String method) async {
+    final l10n = AppLocalizations.of(context);
+    setState(() => _busy = true);
+    try {
+      final init =
+          await ref.read(vendorsRepositoryProvider).initiateHomeCookingCardPayment(requestId, method);
+      if (!mounted) return;
+      final paymentId = init['id']?.toString();
+      if (paymentId == null || paymentId.isEmpty) {
+        throw Exception(l10n.isAr ? 'استجابة غير صالحة من الخادم' : 'Invalid server response');
+      }
+      final secret = init['clientSecret']?.toString();
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(l10n.homeCookingCardPaymentTitle),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (secret != null && secret.isNotEmpty) ...[
+                  SelectableText(secret, style: TextStyles.bodySmall),
+                  Gaps.smV,
+                ],
+                Text(l10n.homeCookingCardPaymentHint, style: TextStyles.bodySmall),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.homeCookingCardCompleteButton),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
+      await ref.read(paymentsRepositoryProvider).confirmPayment(
+            paymentId,
+            'client_confirmed_${DateTime.now().millisecondsSinceEpoch}',
+          );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.homeCookingCardSuccess)),
+      );
+      await _load();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _showDeclareDialog(String id) async {
     final l10n = AppLocalizations.of(context);
     final refCtrl = TextEditingController();
@@ -359,6 +415,29 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
             ),
           ],
           if (status == 'quoted') ...[
+            Gaps.lgV,
+            Text(l10n.homeCookingCardPaymentTitle, style: TextStyles.titleSmall),
+            Gaps.smV,
+            Text(l10n.homeCookingCardPaymentHint, style: TextStyles.bodySmall),
+            Gaps.mdV,
+            Wrap(
+              spacing: Insets.sm,
+              runSpacing: Insets.sm,
+              children: [
+                OutlinedButton(
+                  onPressed: _busy ? null : () => _completeHomeCookingCardPayment(id, 'mada'),
+                  child: Text(l10n.homeCookingCardPayMada),
+                ),
+                OutlinedButton(
+                  onPressed: _busy ? null : () => _completeHomeCookingCardPayment(id, 'apple_pay'),
+                  child: Text(l10n.homeCookingCardPayApple),
+                ),
+                OutlinedButton(
+                  onPressed: _busy ? null : () => _completeHomeCookingCardPayment(id, 'stc_pay'),
+                  child: Text(l10n.homeCookingCardPayStc),
+                ),
+              ],
+            ),
             Gaps.lgV,
             Text(l10n.homeCookingDeclarePaymentHint, style: TextStyles.bodySmall),
             Gaps.mdV,

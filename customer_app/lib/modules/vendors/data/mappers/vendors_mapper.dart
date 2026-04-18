@@ -1,3 +1,4 @@
+import '../../../../core/network/endpoints.dart';
 import '../../domain/entities/vendor.dart';
 import '../../domain/entities/menu_item.dart';
 import '../models/vendor_dto.dart';
@@ -31,7 +32,7 @@ class VendorsMapper {
       name: dto.name,
       description: dto.description,
       price: dto.price,
-      image: dto.image,
+      image: Endpoints.resolveMenuImageUrl(dto.image),
       isSignature: dto.isSignature,
       isAvailable: dto.isAvailable,
     );

@@ -226,6 +226,7 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
   Widget _buildOptionChip({
     required IconData icon,
     required String label,
+    String? caption,
     required bool selected,
     required VoidCallback onTap,
   }) {
@@ -237,22 +238,40 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
         borderRadius: AppRadius.mdAll,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: Insets.md, horizontal: Insets.sm),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 20, color: selected ? AppColors.primary : AppColors.textSecondary),
-              Gaps.smV,
-              Flexible(
-                child: Text(
-                  label,
-                  style: TextStyles.labelMedium.copyWith(
-                    color: selected ? AppColors.primary : AppColors.textSecondary,
-                    fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 20, color: selected ? AppColors.primary : AppColors.textSecondary),
+                  Gaps.smH,
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: TextStyles.labelMedium.copyWith(
+                        color: selected ? AppColors.primary : AppColors.textSecondary,
+                        fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
+                ],
               ),
+              if (caption != null && caption.isNotEmpty) ...[
+                Gaps.xsV,
+                Text(
+                  caption,
+                  style: TextStyles.labelSmall.copyWith(
+                    color: selected ? AppColors.primary.withValues(alpha: 0.85) : AppColors.textTertiary,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ],
           ),
         ),
@@ -419,7 +438,11 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
         ),
       );
       context.pop();
-      context.go(RouteNames.orders);
+      if (isHome || onSiteSubmit) {
+        context.go(RouteNames.myRequestsHub);
+      } else {
+        context.go(RouteNames.categories);
+      }
     } catch (e) {
       if (!mounted) return;
       final l = AppLocalizations.of(context);
@@ -955,8 +978,9 @@ class _RequestChefScreenState extends ConsumerState<RequestChefScreen> {
                             Gaps.smH,
                             Expanded(
                               child: _buildOptionChip(
-                                icon: Icons.delivery_dining,
+                                icon: Icons.directions_car_outlined,
                                 label: l.deliveryOrder,
+                                caption: l.homeCookingMrsoolDeliveryCaption,
                                 selected: _delivery,
                                 onTap: () => setState(() => _delivery = true),
                               ),

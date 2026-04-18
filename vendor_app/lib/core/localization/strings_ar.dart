@@ -6,8 +6,8 @@ class StringsAr {
   static const String splashTagline = 'تطبيق الطباخ ومقدم الخدمة';
   static const String dashboard = 'لوحة التحكم';
   static const String orders = 'الطلبات';
-  static const String menu = 'الوجبات';
-  static const String services = 'الوجبات';
+  static const String menu = 'إعلان الفيديو';
+  static const String services = 'الأطباق المتاحة';
   static const String staff = 'الموظفون';
   static const String settings = 'الإعدادات';
   static const String sideOrders = 'الطلبات الجانبية';
@@ -17,7 +17,7 @@ class StringsAr {
   static const String videosMaxReached = 'الحد الأقصى ٢٠ مقطع. احذف مقطعاً لإضافة جديد.';
   static const String videosDeleteConfirm = 'حذف هذا المقطع؟';
   static const String videosDeleted = 'تم حذف المقطع';
-  static const String videoMealLabel = 'الوجبة';
+  static const String videoMealLabel = 'عنصر القائمة المرتبط';
   static const String delete = 'حذف';
   static const String copy = 'نسخ';
 
@@ -140,17 +140,19 @@ class StringsAr {
   static const String saving = 'جاري الحفظ...';
   static const String cancel = 'إلغاء';
   static const String noMeals = 'لا توجد وجبات';
+  static const String emptyPromoMenuTab = 'لا توجد عناصر للإعلان بعد';
+  static const String noVideosYet = 'لا توجد مقاطع فيديو بعد';
   static const String mealNotFound = 'الوجبة غير موجودة';
   static const String available = 'متوفر';
   static const String unavailable = 'غير متوفر';
 
-  static const String addService = 'إضافة خدمة';
+  static const String addService = 'إضافة طبق متاح';
   static const String addMealForMenu = 'إضافة وجبة';
-  static const String editService = 'تعديل الخدمة';
-  static const String serviceName = 'اسم الخدمة';
-  static const String myServices = 'الوجبات المعروضة للعملاء';
-  static const String noServices = 'لا توجد وجبات';
-  static const String serviceNotFound = 'الخدمة غير موجودة';
+  static const String editService = 'تعديل طبق متاح';
+  static const String serviceName = 'اسم الطبق';
+  static const String myServices = 'الأطباق المتاحة';
+  static const String noServices = 'لا توجد أطباق متاحة بعد';
+  static const String serviceNotFound = 'الطبق غير موجود';
   static const String active = 'نشط';
   static const String inactive = 'غير نشط';
 

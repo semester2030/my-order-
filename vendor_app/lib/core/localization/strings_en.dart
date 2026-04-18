@@ -6,8 +6,8 @@ class StringsEn {
   static const String splashTagline = 'Chef & Service Provider App';
   static const String dashboard = 'Dashboard';
   static const String orders = 'Orders';
-  static const String menu = 'Menu';
-  static const String services = 'Meals';
+  static const String menu = 'Video promo';
+  static const String services = 'Available dishes';
   static const String staff = 'Staff';
   static const String settings = 'Settings';
   static const String sideOrders = 'Side Orders';
@@ -17,7 +17,7 @@ class StringsEn {
   static const String videosMaxReached = 'Maximum 20 videos. Delete one to add a new video.';
   static const String videosDeleteConfirm = 'Delete this video?';
   static const String videosDeleted = 'Video deleted';
-  static const String videoMealLabel = 'Meal';
+  static const String videoMealLabel = 'Linked menu item';
   static const String delete = 'Delete';
   static const String copy = 'Copy';
 
@@ -140,17 +140,19 @@ class StringsEn {
   static const String saving = 'Saving...';
   static const String cancel = 'Cancel';
   static const String noMeals = 'No meals';
+  static const String emptyPromoMenuTab = 'No promo items yet';
+  static const String noVideosYet = 'No videos yet';
   static const String mealNotFound = 'Meal not found';
   static const String available = 'Available';
   static const String unavailable = 'Unavailable';
 
-  static const String addService = 'Add Service';
+  static const String addService = 'Add available dish';
   static const String addMealForMenu = 'Add dish';
-  static const String editService = 'Edit Service';
-  static const String serviceName = 'Service Name';
-  static const String myServices = 'Dishes shown to customers';
-  static const String noServices = 'No dishes yet';
-  static const String serviceNotFound = 'Service not found';
+  static const String editService = 'Edit available dish';
+  static const String serviceName = 'Dish name';
+  static const String myServices = 'Available dishes';
+  static const String noServices = 'No available dishes yet';
+  static const String serviceNotFound = 'Dish not found';
   static const String active = 'Active';
   static const String inactive = 'Inactive';
 

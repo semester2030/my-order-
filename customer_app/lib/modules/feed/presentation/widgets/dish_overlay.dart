@@ -334,7 +334,7 @@ class DishOverlay extends StatelessWidget {
                       );
                     },
                   )
-                else
+                else if (_primaryIsServiceBookingNotCart)
                   Row(
                     children: [
                       Expanded(
@@ -349,11 +349,9 @@ class DishOverlay extends StatelessWidget {
                       Gaps.mdH,
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: _primaryIsServiceBookingNotCart
-                              ? (acceptsCustomRequests
-                                  ? () => _onPrimaryServiceCta(context)
-                                  : null)
-                              : onAddToCart,
+                          onPressed: acceptsCustomRequests
+                              ? () => _onPrimaryServiceCta(context)
+                              : null,
                           style: VideoOverlayTheme.ctaButtonStyle,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -362,19 +360,13 @@ class DishOverlay extends StatelessWidget {
                               Icon(
                                 _isPrivateEvents
                                     ? Icons.event_available_rounded
-                                    : _isChefOnsiteService
-                                        ? Icons.restaurant_menu
-                                        : Icons.shopping_cart,
+                                    : Icons.restaurant_menu,
                                 size: IconSizes.xs,
                               ),
                               Gaps.xsH,
                               Flexible(
                                 child: Text(
-                                  _isPrivateEvents
-                                      ? l.bookYourEvent
-                                      : _isChefOnsiteService
-                                          ? l.bookChef
-                                          : l.addToCart,
+                                  _isPrivateEvents ? l.bookYourEvent : l.bookChef,
                                   style: TextStyles.button.copyWith(
                                     fontSize: FontSizes.bodySmall,
                                   ),
@@ -387,6 +379,17 @@ class DishOverlay extends StatelessWidget {
                         ),
                       ),
                     ],
+                  )
+                else
+                  SizedBox(
+                    width: double.infinity,
+                    child: ViewChefButton(
+                      onTap: () {
+                        context.push(
+                          '${RouteNames.vendorDetails}/${item.vendor.id}',
+                        );
+                      },
+                    ),
                   ),
               ],
             ),

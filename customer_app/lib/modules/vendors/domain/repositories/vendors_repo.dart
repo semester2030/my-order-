@@ -86,6 +86,11 @@ abstract class VendorsRepository {
     required String paymentReference,
     String? notes,
   });
+  /// بدء دفع بالبطاقة لطلب طبخ منزلي بعد عرض السعر (`POST /payments/initiate-home-cooking`).
+  Future<Map<String, dynamic>> initiateHomeCookingCardPayment(
+    String eventRequestId,
+    String method,
+  );
   /// إغلاق الطلب بعد تأكيد الاستلام — يعيد السجل بما فيه رمز الإتمام.
   Future<Map<String, dynamic>> confirmHomeCookingReceipt(String requestId);
   Future<void> cancelMyEventRequest(String requestId);

@@ -27,7 +27,7 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
           style: TextStyles.titleLarge,
         ),
       ),
-      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 3),
+      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 2),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(Insets.lg),
         child: Column(

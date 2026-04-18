@@ -92,6 +92,20 @@ class AppLocalizations {
       isAr ? StringsAr.homeCookingSubmitDeclaration : StringsEn.homeCookingSubmitDeclaration;
   String get homeCookingDeclareSuccess =>
       isAr ? StringsAr.homeCookingDeclareSuccess : StringsEn.homeCookingDeclareSuccess;
+  String get homeCookingCardPaymentTitle =>
+      isAr ? StringsAr.homeCookingCardPaymentTitle : StringsEn.homeCookingCardPaymentTitle;
+  String get homeCookingCardPaymentHint =>
+      isAr ? StringsAr.homeCookingCardPaymentHint : StringsEn.homeCookingCardPaymentHint;
+  String get homeCookingCardPayMada =>
+      isAr ? StringsAr.homeCookingCardPayMada : StringsEn.homeCookingCardPayMada;
+  String get homeCookingCardPayApple =>
+      isAr ? StringsAr.homeCookingCardPayApple : StringsEn.homeCookingCardPayApple;
+  String get homeCookingCardPayStc =>
+      isAr ? StringsAr.homeCookingCardPayStc : StringsEn.homeCookingCardPayStc;
+  String get homeCookingCardCompleteButton =>
+      isAr ? StringsAr.homeCookingCardCompleteButton : StringsEn.homeCookingCardCompleteButton;
+  String get homeCookingCardSuccess =>
+      isAr ? StringsAr.homeCookingCardSuccess : StringsEn.homeCookingCardSuccess;
   String get homeCookingLoadError =>
       isAr ? StringsAr.homeCookingLoadError : StringsEn.homeCookingLoadError;
   String get homeCookingStatusReadyShort =>
@@ -456,6 +470,8 @@ class AppLocalizations {
       isAr ? StringsAr.deliveryOrder : StringsEn.deliveryOrder;
   String get deliveryToAddress =>
       isAr ? StringsAr.deliveryToAddress : StringsEn.deliveryToAddress;
+  String get homeCookingMrsoolDeliveryCaption =>
+      isAr ? StringsAr.homeCookingMrsoolDeliveryCaption : StringsEn.homeCookingMrsoolDeliveryCaption;
   String get pickupFromChef =>
       isAr ? StringsAr.pickupFromChef : StringsEn.pickupFromChef;
   String get additionalNotes =>

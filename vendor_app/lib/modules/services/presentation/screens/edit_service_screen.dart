@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:vendor_app/core/theme/design_system.dart';
+import 'package:vendor_app/core/localization/app_localizations.dart';
 import 'package:vendor_app/core/utils/validators.dart';
 import 'package:vendor_app/core/widgets/app_text_field.dart';
 import 'package:vendor_app/core/widgets/primary_button.dart';
@@ -83,6 +84,7 @@ class _EditServiceScreenState extends ConsumerState<EditServiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final itemAsync = ref.watch(serviceItemByIdProvider(widget.itemId));
 
     return Scaffold(
@@ -92,7 +94,7 @@ class _EditServiceScreenState extends ConsumerState<EditServiceScreen> {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         title: Text(
-          'تعديل الخدمة',
+          l.editService,
           style: TextStyles.headlineSmall.copyWith(color: AppColors.textPrimary),
         ),
       ),
@@ -100,7 +102,7 @@ class _EditServiceScreenState extends ConsumerState<EditServiceScreen> {
         data: (item) {
           if (item == null) {
             return ErrorState(
-              message: 'الخدمة غير موجودة',
+              message: l.serviceNotFound,
               onRetry: () => ref.invalidate(serviceItemByIdProvider(widget.itemId)),
             );
           }
@@ -118,9 +120,9 @@ class _EditServiceScreenState extends ConsumerState<EditServiceScreen> {
                     Gaps.lgV,
                     AppTextField(
                       controller: _nameController,
-                      validator: (v) => Validators.required(v, 'اسم الخدمة'),
+                      validator: (v) => Validators.required(v, l.serviceName),
                       decoration: InputDecoration(
-                        labelText: 'اسم الخدمة',
+                        labelText: l.serviceName,
                         border: OutlineInputBorder(borderRadius: AppRadius.mdAll),
                         filled: true,
                         fillColor: AppColors.surface,

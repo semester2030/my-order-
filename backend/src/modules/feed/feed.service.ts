@@ -277,6 +277,8 @@ export class FeedService {
         };
       })
       .filter((item): item is FeedItem => item !== null)
+      // فيديو قصير فقط: لا نُدخل عناصر بلا فيديو أساسي (تجنّب ظهور صورة الوجبة كـ«فيد» كامل الشاشة).
+      .filter((item) => item.primaryVideo != null)
       .filter((item) => {
         // فلتر المسافة: إظهار الطباخات ضمن النطاق المحدد فقط
         if (maxDistance != null && (item.distance ?? Infinity) > maxDistance) {

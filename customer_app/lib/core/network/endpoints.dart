@@ -11,6 +11,32 @@ class Endpoints {
     return 'https://my-order.onrender.com/api';
   }
 
+  /// أصل الخادم بدون لاحقة `/api` — لروابط الملفات الثابتة مثل `/uploads/...`.
+  static String get publicOrigin {
+    final b = baseUrl.trimRight();
+    if (b.endsWith('/api')) return b.substring(0, b.length - 4);
+    if (b.endsWith('/api/')) return b.substring(0, b.length - 5);
+    try {
+      final u = Uri.parse(b);
+      final segs = u.pathSegments;
+      if (segs.isNotEmpty && segs.last == 'api') {
+        return u.resolve('../').toString().replaceAll(RegExp(r'/$'), '');
+      }
+    } catch (_) {}
+    return b;
+  }
+
+  /// يحوّل قيمة `image` من الـ API (اسم ملف أو مسار نسبي أو URL كامل) إلى URL جاهز للعرض.
+  static String? resolveMenuImageUrl(String? raw) {
+    if (raw == null) return null;
+    final t = raw.trim();
+    if (t.isEmpty) return null;
+    if (t.startsWith('http://') || t.startsWith('https://')) return t;
+    final origin = publicOrigin;
+    if (t.startsWith('/')) return '$origin$t';
+    return '$origin/uploads/$t';
+  }
+
   // Auth
   static const String auth = '/auth';
   static const String customerRegister = '$auth/customer/register';
@@ -51,6 +77,8 @@ class Endpoints {
   // Payments
   static const String payments = '/payments';
   static const String initiatePayment = '$payments/initiate';
+  static const String initiateHomeCookingCardPayment =
+      '$payments/initiate-home-cooking';
   static const String confirmPayment = '$payments/confirm';
   static const String getPayment = '$payments/{id}';
   static const String getOrderPayments = '$payments/order/{orderId}';
