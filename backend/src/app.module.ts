@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getDatabaseConfig } from './config/database.config.js';
 import paymentConfig from './config/payment.config.js';
+import payoutConfig from './config/payout.config.js';
 import { AppController } from './app.controller';
 
 // Modules
@@ -20,6 +21,7 @@ import { DeliveryModule } from './modules/delivery/delivery.module';
 import { DriversModule } from './modules/drivers/drivers.module';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { PayoutsModule } from './modules/payouts/payouts.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { EventRequestsModule } from './modules/event-requests/event-requests.module';
@@ -31,7 +33,7 @@ import { PrivateEventsModule } from './modules/private-events/private-events.mod
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load: [paymentConfig],
+      load: [paymentConfig, payoutConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -54,6 +56,7 @@ import { PrivateEventsModule } from './modules/private-events/private-events.mod
     DriversModule,
     JobsModule,
     PaymentsModule,
+    PayoutsModule,
     NotificationsModule,
     AdminModule,
     EventRequestsModule,
