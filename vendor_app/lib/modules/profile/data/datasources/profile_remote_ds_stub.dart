@@ -21,7 +21,10 @@ class ProfileRemoteDsStub implements ProfileRemoteDs {
   }
 
   @override
-  Future<VendorProfileDto> updateProfile(VendorProfileDto dto) async {
+  Future<VendorProfileDto> updateProfile(
+    VendorProfileDto dto, {
+    bool bankingFieldsOnly = false,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 300));
     _cached = dto;
     return dto;

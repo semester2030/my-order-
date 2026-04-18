@@ -501,6 +501,22 @@ export class VendorsService {
     if (dto.isActive !== undefined) vendor.isActive = dto.isActive;
     if (dto.popularCookingAddOns !== undefined)
       vendor.popularCookingAddOns = dto.popularCookingAddOns;
+    if (dto.bankName !== undefined) {
+      vendor.bankName = dto.bankName?.trim() || null;
+    }
+    if (dto.bankAccountNumber !== undefined) {
+      vendor.bankAccountNumber = dto.bankAccountNumber?.trim() || null;
+    }
+    if (dto.iban !== undefined) {
+      const t = dto.iban?.trim().toUpperCase() ?? '';
+      vendor.iban = t.length > 0 ? t : null;
+    }
+    if (dto.accountHolderName !== undefined) {
+      vendor.accountHolderName = dto.accountHolderName?.trim() || null;
+    }
+    if (dto.swiftCode !== undefined) {
+      vendor.swiftCode = dto.swiftCode?.trim() || null;
+    }
 
     return this.vendorRepository.save(vendor);
   }

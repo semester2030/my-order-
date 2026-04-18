@@ -79,6 +79,16 @@ class StringsEn {
 
   static const String editProfile = 'Edit Profile';
   static const String changePassword = 'Change Password';
+  static const String payoutBankTitle = 'Bank payout details';
+  static const String payoutBankSubtitle =
+      'Your earnings are transferred to this account (IBAN). Customers pay through the platform by card — you do not add a card to receive payouts.';
+  static const String labelBankName = 'Bank name';
+  static const String labelBankAccountNumber = 'Account number';
+  static const String labelIban = 'IBAN';
+  static const String labelAccountHolderName = 'Account holder name';
+  static const String labelSwiftCode = 'SWIFT (optional)';
+  static const String ibanHint = 'Saudi format: SA followed by 22 digits (24 characters).';
+  static const String savePayoutBank = 'Save payout details';
   static const String verifyEmail = 'Verify email';
   static const String verifyEmailDescription =
       'After admin approval, confirm your email with a code sent to your registered address to add meals or upload video.';

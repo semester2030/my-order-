@@ -55,4 +55,14 @@ class Validators {
     if (n < -180 || n > 180) return 'خط الطول يجب أن يكون بين -180 و 180';
     return null;
   }
+
+  /// آيبان سعودي: SA + 22 رقماً (بدون مسافات). فارغ = صالح (اختياري).
+  static String? saIbanOptional(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+    final t = value.trim().replaceAll(RegExp(r'\s'), '').toUpperCase();
+    if (!RegExp(r'^SA\d{22}$').hasMatch(t)) {
+      return 'آيبان غير صالح — يجب أن يبدأ بـ SA متبوعاً بـ 22 رقماً';
+    }
+    return null;
+  }
 }

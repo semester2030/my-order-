@@ -2,7 +2,10 @@ import { registerAs } from '@nestjs/config';
 
 export interface PaymentConfig {
   nodeEnv: string;
-  /** مزوّد الدفع: حالياً mock فقط — عند التعاقد مع PSP يُضاف مثلاً hyperpay دون تغيير قاعدة التحقق */
+  /**
+   * مزوّد الدفع: `mock` للتجارب.
+   * لأي قيمة أخرى يُحمَّل NotImplementedPaymentGateway — نفّذ PaymentGatewayPort وسجّله في payments.module.ts.
+   */
   provider: string;
   webhook: {
     /** سر مشترك لتوقيع webhook (HMAC). في الإنتاج يجب ضبطه وعدم قبول webhook بدون توقيع صالح */

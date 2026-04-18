@@ -21,6 +21,11 @@ class ProfileMapper {
       isAcceptingOrders: dto.isAcceptingOrders,
       registrationStatus: dto.registrationStatus,
       rejectionReason: dto.rejectionReason,
+      bankName: dto.bankName,
+      bankAccountNumber: dto.bankAccountNumber,
+      iban: dto.iban,
+      accountHolderName: dto.accountHolderName,
+      swiftCode: dto.swiftCode,
     );
   }
 
@@ -40,6 +45,11 @@ class ProfileMapper {
       isAcceptingOrders: entity.isAcceptingOrders,
       registrationStatus: entity.registrationStatus,
       rejectionReason: entity.rejectionReason,
+      bankName: entity.bankName,
+      bankAccountNumber: entity.bankAccountNumber,
+      iban: entity.iban,
+      accountHolderName: entity.accountHolderName,
+      swiftCode: entity.swiftCode,
     );
   }
 }

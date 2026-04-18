@@ -11,6 +11,7 @@ import { Order } from '../orders/entities/order.entity';
 import { EventRequest } from '../event-requests/entities/event-request.entity';
 import { PAYMENT_GATEWAY } from './gateway/payment-gateway.port';
 import { MockPaymentGateway } from './gateway/mock-payment.gateway';
+import { NotImplementedPaymentGateway } from './gateway/not-implemented-payment.gateway';
 import type { PaymentConfig } from '../../config/payment.config';
 
 @Module({
@@ -27,12 +28,10 @@ import type { PaymentConfig } from '../../config/payment.config';
       useFactory: (configService: ConfigService) => {
         const cfg = configService.get<PaymentConfig>('payment');
         const p = (cfg?.provider ?? 'mock').trim().toLowerCase();
-        if (p !== 'mock') {
-          throw new Error(
-            `Unsupported PAYMENT_PROVIDER "${p}". Use "mock" until a real gateway adapter is registered.`,
-          );
+        if (p === 'mock') {
+          return new MockPaymentGateway();
         }
-        return new MockPaymentGateway();
+        return new NotImplementedPaymentGateway(p);
       },
       inject: [ConfigService],
     },

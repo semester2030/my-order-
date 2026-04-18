@@ -65,7 +65,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate() || _profileId == null) return;
     final current = ref.read(profileNotifierProvider);
-    final registrationStatus = current is ProfileLoaded ? current.profile.registrationStatus : null;
+    if (current is! ProfileLoaded) return;
+    final o = current.profile;
     final profile = VendorProfile(
       id: _profileId!,
       name: _nameController.text.trim(),
@@ -75,10 +76,17 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
       address: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
       city: _cityController.text.trim().isEmpty ? null : _cityController.text.trim(),
-      providerCategory: null,
-      isActive: true,
-      isAcceptingOrders: true,
-      registrationStatus: registrationStatus,
+      providerCategory: o.providerCategory,
+      popularCookingAddOns: o.popularCookingAddOns,
+      isActive: o.isActive,
+      isAcceptingOrders: o.isAcceptingOrders,
+      registrationStatus: o.registrationStatus,
+      rejectionReason: o.rejectionReason,
+      bankName: o.bankName,
+      bankAccountNumber: o.bankAccountNumber,
+      iban: o.iban,
+      accountHolderName: o.accountHolderName,
+      swiftCode: o.swiftCode,
     );
     final ok = await ref.read(profileNotifierProvider.notifier).updateProfile(profile);
     if (!mounted) return;

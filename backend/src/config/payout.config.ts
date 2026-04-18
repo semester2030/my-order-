@@ -3,8 +3,8 @@ import { registerAs } from '@nestjs/config';
 export interface PayoutConfig {
   nodeEnv: string;
   /**
-   * مزوّد التحويل للمقدّمين: mock حتى التعاقد مع PSP يدعم payouts / Connect.
-   * عند الربط: يُضاف محوّل حقيقي دون تغيير جداول payout_requests.
+   * مزوّد التحويل للمقدّمين: `mock` للتجارب (إكمال في DB).
+   * لأي قيمة أخرى: NotImplementedPayoutGateway — نفّذ PayoutGatewayPort في payouts.module.ts.
    */
   provider: string;
 }

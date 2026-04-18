@@ -18,6 +18,7 @@ import { Order } from '../orders/entities/order.entity';
 import { OrderStatus } from '../orders/entities/order.entity';
 import { Payment } from '../payments/entities/payment.entity';
 import { PaymentStatus } from '../payments/entities/payment.entity';
+import { PayoutRequest } from '../payouts/entities/payout-request.entity';
 import { AuditService } from './audit.service';
 import { VendorsService } from '../vendors/vendors.service';
 
@@ -42,6 +43,8 @@ export class AdminService {
     private readonly privateEventRequestRepo: Repository<PrivateEventRequest>,
     @InjectRepository(EventOffer)
     private readonly eventOfferRepo: Repository<EventOffer>,
+    @InjectRepository(PayoutRequest)
+    private readonly payoutRequestRepo: Repository<PayoutRequest>,
     private readonly auditService: AuditService,
     private readonly vendorsService: VendorsService,
   ) {}
@@ -307,6 +310,43 @@ export class AdminService {
         transactionId: p.transactionId,
         failureReason: p.failureReason,
         createdAt: p.createdAt,
+      })),
+      total,
+      page,
+      limit,
+    };
+  }
+
+  async getPayoutRequestsList(options: { page?: number; limit?: number }) {
+    const page = Math.max(1, options.page ?? 1);
+    const limit = Math.min(100, Math.max(1, options.limit ?? 20));
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await this.payoutRequestRepo.findAndCount({
+      order: { createdAt: 'DESC' },
+      skip,
+      take: limit,
+      relations: ['vendor'],
+    });
+
+    return {
+      items: items.map((r) => ({
+        id: r.id,
+        vendorId: r.vendorId,
+        vendorName:
+          r.vendor?.tradeName?.trim() ||
+          r.vendor?.name?.trim() ||
+          null,
+        amount: Number(r.amount),
+        currency: r.currency,
+        status: r.status,
+        sourceType: r.sourceType,
+        sourceId: r.sourceId,
+        idempotencyKey: r.idempotencyKey,
+        providerPayoutId: r.providerPayoutId,
+        failureReason: r.failureReason,
+        createdAt: r.createdAt,
+        completedAt: r.completedAt,
       })),
       total,
       page,

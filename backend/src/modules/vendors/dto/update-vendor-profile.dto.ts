@@ -12,8 +12,9 @@ import {
   Max,
   IsArray,
   ValidateNested,
+  ValidateIf,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { VendorType } from '../entities/vendor.entity';
 
@@ -195,4 +196,42 @@ export class UpdateVendorProfileDto {
   @ValidateNested({ each: true })
   @Type(() => PopularCookingAddOnItemDto)
   popularCookingAddOns?: { name: string; price: number }[];
+
+  /** بيانات التحويل البنكي — يُستخدمها النظام عند تفعيل التحويلات الحقيقية (آيبان سعودي). */
+  @ApiPropertyOptional({ example: 'البنك الأهلي' })
+  @IsOptional()
+  @IsString()
+  bankName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  bankAccountNumber?: string;
+
+  @ApiPropertyOptional({
+    example: 'SA0380000000608010167519',
+    description: 'SA + 22 رقماً',
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === null) return null;
+    if (value === undefined) return undefined;
+    if (typeof value === 'string' && value.trim() === '') return null;
+    return String(value).trim().replace(/\s+/g, '').toUpperCase();
+  })
+  @ValidateIf((_o, v) => v != null && String(v).length > 0)
+  @Matches(/^SA\d{22}$/, {
+    message: 'يجب أن يكون الآيبان بصيغة SA متبوعاً بـ 22 رقماً',
+  })
+  iban?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  accountHolderName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  swiftCode?: string;
 }

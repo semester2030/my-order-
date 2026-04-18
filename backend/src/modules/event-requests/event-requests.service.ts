@@ -3,6 +3,7 @@ import {
   Injectable,
   BadRequestException,
   ConflictException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -23,6 +24,7 @@ import { QuoteHomeCookingDto } from './dto/quote-home-cooking.dto';
 import { DeclareHomeCookingPaymentDto } from './dto/declare-home-cooking-payment.dto';
 import { HandoverHomeCookingDto } from './dto/handover-home-cooking.dto';
 import { PaymentsService } from '../payments/payments.service';
+import { PayoutsService } from '../payouts/payouts.service';
 
 const PG_UNIQUE_VIOLATION = '23505';
 
@@ -36,11 +38,14 @@ function isPostgresUniqueViolation(err: unknown): boolean {
 
 @Injectable()
 export class EventRequestsService {
+  private readonly logger = new Logger(EventRequestsService.name);
+
   constructor(
     @InjectRepository(EventRequest)
     private readonly eventRequestRepository: Repository<EventRequest>,
     private readonly configService: ConfigService,
     private readonly paymentsService: PaymentsService,
+    private readonly payoutsService: PayoutsService,
   ) {}
 
   private vendorResponseHours(): number {
@@ -341,7 +346,9 @@ export class EventRequestsService {
       row.status = EventRequestStatus.COMPLETED;
       row.completedAt = new Date();
       try {
-        return await this.eventRequestRepository.save(row);
+        const saved = await this.eventRequestRepository.save(row);
+        this.scheduleVendorPayoutAfterHomeCookingCompleted(saved);
+        return saved;
       } catch (e) {
         if (!isPostgresUniqueViolation(e)) {
           throw e;
@@ -354,6 +361,69 @@ export class EventRequestsService {
     throw new ConflictException(
       'تعذّر إنشاء رمز إتمام فريد، يرجى المحاولة لاحقاً',
     );
+  }
+
+  /**
+   * بعد إغلاق الطبخ المنزلي: تسجيل طلب تحويل للمقدّم (بوابة mock = إكمال في DB).
+   * لا يُعاد رمي الخطأ للعميل — يُسجَّل فقط لإعادة محاولة تشغيلية لاحقاً.
+   */
+  private scheduleVendorPayoutAfterHomeCookingCompleted(row: EventRequest): void {
+    void (async () => {
+      try {
+        await this.recordVendorPayoutAfterHomeCookingCompleted(row);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        this.logger.warn(
+          `home_cooking vendor payout failed (eventRequest=${row.id}): ${msg}`,
+        );
+      }
+    })();
+  }
+
+  private async recordVendorPayoutAfterHomeCookingCompleted(
+    row: EventRequest,
+  ): Promise<void> {
+    if (row.requestType !== EventRequestType.HOME_COOKING) {
+      return;
+    }
+    if (!row.vendorId) {
+      return;
+    }
+    if (row.quotedAmount == null) {
+      return;
+    }
+    const total = Number.parseFloat(String(row.quotedAmount));
+    if (!Number.isFinite(total) || total < 0.01) {
+      return;
+    }
+    const shareRaw = this.configService.get<string>(
+      'HOME_COOKING_VENDOR_SHARE_PERCENT',
+      '100',
+    );
+    const shareParsed = Number.parseFloat(String(shareRaw));
+    const sharePct =
+      Number.isFinite(shareParsed) && shareParsed >= 0 && shareParsed <= 100
+        ? shareParsed
+        : 100;
+    const vendorAmount =
+      Math.round(((total * sharePct) / 100) * 100) / 100;
+    if (vendorAmount < 0.01) {
+      return;
+    }
+    await this.payoutsService.createPayoutRequest({
+      vendorId: row.vendorId,
+      amount: vendorAmount,
+      idempotencyKey: `home_cooking_complete:${row.id}`,
+      sourceType: 'event_request',
+      sourceId: row.id,
+      meta: {
+        eventRequestId: row.id,
+        completionCertificateCode: row.completionCertificateCode,
+        quotedAmountTotal: total,
+        vendorSharePercent: sharePct,
+      },
+      requireVendorIban: false,
+    });
   }
 
   async findHomeCookingCompletedForAdmin(opts: {

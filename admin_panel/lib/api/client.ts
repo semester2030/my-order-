@@ -294,6 +294,26 @@ export function fetchPayments(params?: {
   );
 }
 
+/** إكمال دفع معلّق تجريبياً — الباك اند يرفض في production. */
+export function simulatePaymentComplete(
+  paymentId: string,
+): Promise<Record<string, unknown>> {
+  return adminPost(`/admin/payments/${paymentId}/simulate-complete`);
+}
+
+export function fetchPayoutRequests(params?: {
+  page?: number;
+  limit?: number;
+}): Promise<PaginatedResponse<Record<string, unknown>>> {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.limit) q.set('limit', String(params.limit));
+  const query = q.toString();
+  return adminFetch<PaginatedResponse<Record<string, unknown>>>(
+    `/admin/payout-requests${query ? `?${query}` : ''}`,
+  );
+}
+
 export function fetchAuditLogs(params?: {
   page?: number;
   limit?: number;

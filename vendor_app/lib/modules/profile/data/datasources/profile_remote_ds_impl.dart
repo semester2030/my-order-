@@ -23,10 +23,16 @@ class ProfileRemoteDsImpl implements ProfileRemoteDs {
   }
 
   @override
-  Future<VendorProfileDto> updateProfile(VendorProfileDto dto) async {
+  Future<VendorProfileDto> updateProfile(
+    VendorProfileDto dto, {
+    bool bankingFieldsOnly = false,
+  }) async {
+    final body = bankingFieldsOnly
+        ? dto.toBankingUpdatePayload()
+        : dto.toGeneralProfileUpdatePayload();
     final response = await _dio.put<Map<String, dynamic>>(
       Endpoints.vendorsProfile,
-      data: dto.toJson(),
+      data: body,
     );
     final data = response.data;
     if (data == null) {

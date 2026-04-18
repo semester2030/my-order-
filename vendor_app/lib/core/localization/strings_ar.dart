@@ -80,6 +80,16 @@ class StringsAr {
 
   static const String editProfile = 'تعديل البروفايل';
   static const String changePassword = 'تغيير كلمة المرور';
+  static const String payoutBankTitle = 'حساب التحويل البنكي';
+  static const String payoutBankSubtitle =
+      'تُحوَّل مستحقاتك إلى هذا الحساب (آيبان). دفعات العملاء تتم عبر المنصة بالبطاقة — لا نطلب بطاقة لاستلام أرباحك.';
+  static const String labelBankName = 'اسم البنك';
+  static const String labelBankAccountNumber = 'رقم الحساب';
+  static const String labelIban = 'الآيبان (IBAN)';
+  static const String labelAccountHolderName = 'اسم صاحب الحساب';
+  static const String labelSwiftCode = 'SWIFT (اختياري)';
+  static const String ibanHint = 'صيغة سعودية: SA متبوعاً بـ 22 رقماً (24 خانة).';
+  static const String savePayoutBank = 'حفظ بيانات التحويل';
   static const String verifyEmail = 'التحقق من البريد';
   static const String verifyEmailDescription =
       'بعد موافقة الإدارة، يجب تأكيد بريدك برمز يُرسل إلى نفس البريد المسجّل حتى تستطيع إضافة وجبات أو رفع فيديو.';

@@ -16,6 +16,7 @@ import '../../modules/profile/presentation/screens/change_password_screen.dart';
 import '../../modules/profile/presentation/screens/delete_account_screen.dart';
 import '../../modules/profile/presentation/screens/legal_content_screen.dart';
 import '../../modules/profile/presentation/screens/edit_profile_screen.dart';
+import '../../modules/profile/presentation/screens/payout_bank_screen.dart';
 import '../../modules/orders/presentation/screens/order_detail_screen.dart';
 import '../../modules/menu/presentation/screens/add_menu_item_screen.dart';
 import '../../modules/menu/presentation/screens/menu_offering_terms_screen.dart';
@@ -57,6 +58,7 @@ GoRouter createAppRouter(Ref ref) {
           path == RouteNames.analytics ||
           path == RouteNames.videos ||
           path == RouteNames.editProfile ||
+          path == RouteNames.payoutBank ||
           path == RouteNames.changePassword ||
           path == RouteNames.verifyEmail ||
           path == RouteNames.eventOffers ||
@@ -147,6 +149,14 @@ GoRouter createAppRouter(Ref ref) {
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
           child: const ChangePasswordScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.payoutBank,
+        name: 'payoutBank',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const PayoutBankScreen(),
         ),
       ),
       GoRoute(

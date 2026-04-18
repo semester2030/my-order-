@@ -20,10 +20,16 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     );
   }
 
-  Future<bool> updateProfile(VendorProfile profile) async {
+  Future<bool> updateProfile(
+    VendorProfile profile, {
+    bool bankingFieldsOnly = false,
+  }) async {
     final previous = state;
     state = const ProfileSaving();
-    final result = await _repo.updateProfile(profile);
+    final result = await _repo.updateProfile(
+      profile,
+      bankingFieldsOnly: bankingFieldsOnly,
+    );
     return result.when(
       success: (updated) {
         state = ProfileLoaded(updated);

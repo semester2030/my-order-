@@ -23,6 +23,7 @@ import { RejectReasonDto } from './dto/reject-reason.dto';
 import { ForceOrderStatusDto } from './dto/force-order-status.dto';
 import { EventRequestsService } from '../event-requests/event-requests.service';
 import { ServiceExperienceService } from '../service-experience/service-experience.service';
+import { PaymentsService } from '../payments/payments.service';
 import { AdminUpdateQualityTicketDto } from '../service-experience/dto/admin-update-quality-ticket.dto';
 import { QualityTicketStatus } from '../service-experience/service-experience.constants';
 
@@ -36,6 +37,7 @@ export class AdminController {
     private readonly auditService: AuditService,
     private readonly eventRequestsService: EventRequestsService,
     private readonly serviceExperienceService: ServiceExperienceService,
+    private readonly paymentsService: PaymentsService,
   ) {}
 
   @Get('dashboard')
@@ -142,6 +144,28 @@ export class AdminController {
     @Query('limit') limit?: string,
   ) {
     return this.adminService.getPaymentsList({
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
+  }
+
+  @Post('payments/:paymentId/simulate-complete')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'إكمال دفع معلّق تجريبياً (غير الإنتاج) — نفس أثر webhook بعد التحقق',
+  })
+  async adminSimulatePaymentComplete(@Param('paymentId') paymentId: string) {
+    return this.paymentsService.adminSimulateCompletePayment(paymentId);
+  }
+
+  @Get('payout-requests')
+  @ApiOperation({ summary: 'قائمة طلبات تحويل مستحقات مقدّمي الخدمة' })
+  async getPayoutRequests(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.adminService.getPayoutRequestsList({
       page: page ? parseInt(page, 10) : undefined,
       limit: limit ? parseInt(limit, 10) : undefined,
     });

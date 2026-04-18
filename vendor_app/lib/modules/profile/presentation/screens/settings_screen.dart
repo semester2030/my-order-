@@ -131,6 +131,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       if (_isApprovedVendor(state.profile.registrationStatus)) ...[
                         Divider(height: 1, color: AppColors.divider),
                         SettingsTile(
+                          title: l10n.payoutBankTitle,
+                          icon: Icons.account_balance_outlined,
+                          onTap: () => context.push(RouteNames.payoutBank),
+                        ),
+                        Divider(height: 1, color: AppColors.divider),
+                        SettingsTile(
                           title: l10n.verifyEmail,
                           icon: Icons.mark_email_unread_outlined,
                           onTap: () => context.push(RouteNames.verifyEmail),

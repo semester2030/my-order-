@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import {
   Injectable,
   NotFoundException,
@@ -151,12 +152,6 @@ export class PaymentsService {
     dto: PaymentWebhookDto,
   ) {
     const cfg = this.paymentConfig();
-    if (cfg.provider !== 'mock') {
-      throw new BadRequestException(
-        `Webhook غير مفعّل لهذا المزوّد (${cfg.provider})`,
-      );
-    }
-
     this.assertWebhookSignature(cfg, headerSig, dto);
 
     return this.paymentRepository.manager.transaction(async (em) => {
@@ -202,6 +197,57 @@ export class PaymentsService {
     });
   }
 
+  /**
+   * إكمال دفع معلّق للاختبار التجريبي — غير الإنتاج فقط.
+   * في الإنتاج: الإكمال عبر webhook شركة الدفع فقط.
+   */
+  async adminSimulateCompletePayment(paymentId: string) {
+    const cfg = this.paymentConfig();
+    if (cfg.nodeEnv === 'production') {
+      throw new ForbiddenException(
+        'إكمال الدفع التجريبي غير متاح في الإنتاج — الإكمال عبر webhook شركة الدفع فقط.',
+      );
+    }
+
+    return this.paymentRepository.manager.transaction(async (em) => {
+      const payRepo = em.getRepository(Payment);
+      const payment = await payRepo.findOne({
+        where: { id: paymentId },
+        relations: ['order', 'eventRequest'],
+      });
+
+      if (!payment) {
+        throw new NotFoundException('Payment not found');
+      }
+
+      if (payment.status === PaymentStatus.COMPLETED) {
+        return {
+          ok: true as const,
+          duplicate: true as const,
+          id: payment.id,
+          orderId: payment.orderId,
+          eventRequestId: payment.eventRequestId,
+          method: payment.method,
+          amount: parseFloat(String(payment.amount)),
+          status: payment.status,
+          transactionId: payment.transactionId,
+          message: 'Payment already completed',
+        };
+      }
+
+      if (payment.status === PaymentStatus.FAILED) {
+        throw new BadRequestException('Payment has failed');
+      }
+
+      const txId = `dev_admin_${randomUUID()}`;
+      const body = await this.applyVerifiedCompletion(em, payment, txId, {
+        path: 'admin_simulate_complete',
+        paymentProvider: cfg.provider,
+      });
+      return { ok: true as const, duplicate: false as const, ...body };
+    });
+  }
+
   private async persistGatewaySession(
     payment: Payment,
   ): Promise<Payment> {
@@ -225,13 +271,6 @@ export class PaymentsService {
   }
 
   async initiatePayment(userId: string, dto: InitiatePaymentDto) {
-    const cfg = this.paymentConfig();
-    if (cfg.provider !== 'mock') {
-      throw new BadRequestException(
-        `مزوّد الدفع (${cfg.provider}) غير مدعوم بعد لمسار السلة`,
-      );
-    }
-
     const { orderId, method } = dto;
 
     const order = await this.orderRepository.findOne({
@@ -281,7 +320,13 @@ export class PaymentsService {
     });
 
     const savedPayment = await this.paymentRepository.save(payment);
-    const withSession = await this.persistGatewaySession(savedPayment);
+    let withSession: Payment;
+    try {
+      withSession = await this.persistGatewaySession(savedPayment);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      throw new BadRequestException(`تعذّر بدء جلسة الدفع: ${msg}`);
+    }
 
     if (order.status === OrderStatus.PENDING) {
       order.status = OrderStatus.CONFIRMED;
@@ -317,13 +362,6 @@ export class PaymentsService {
     userId: string,
     dto: InitiateHomeCookingCardPaymentDto,
   ) {
-    const cfg = this.paymentConfig();
-    if (cfg.provider !== 'mock') {
-      throw new BadRequestException(
-        `مزوّد الدفع (${cfg.provider}) غير مدعوم بعد للطبخ المنزلي`,
-      );
-    }
-
     const { eventRequestId, method } = dto;
 
     const row = await this.eventRequestRepository.findOne({
@@ -392,7 +430,13 @@ export class PaymentsService {
       throw e;
     }
 
-    const withSession = await this.persistGatewaySession(savedPayment);
+    let withSession: Payment;
+    try {
+      withSession = await this.persistGatewaySession(savedPayment);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      throw new BadRequestException(`تعذّر بدء جلسة الدفع: ${msg}`);
+    }
 
     return {
       id: withSession.id,

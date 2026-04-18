@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import useSWR from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -16,7 +16,7 @@ import {
   TableCell,
 } from '@/components/ui/Table'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { fetchPayments } from '@/lib/api/client'
+import { fetchPayments, simulatePaymentComplete } from '@/lib/api/client'
 import { format } from 'date-fns'
 import { ar } from 'date-fns/locale'
 const methodLabel: Record<string, string> = {
@@ -34,10 +34,26 @@ const statusLabel: Record<string, string> = {
 
 export default function PaymentsPage() {
   const [page, setPage] = useState(1)
+  const [busyId, setBusyId] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const { mutate } = useSWRConfig()
   const { data, error, isLoading } = useSWR(
     ['/admin/payments', page],
     () => fetchPayments({ page, limit: 20 }),
   )
+
+  const handleSimulateComplete = async (paymentId: string) => {
+    setActionError(null)
+    setBusyId(paymentId)
+    try {
+      await simulatePaymentComplete(paymentId)
+      await mutate(['/admin/payments', page])
+    } catch (e: unknown) {
+      setActionError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setBusyId(null)
+    }
+  }
 
   if (error) {
     return (
@@ -52,7 +68,8 @@ export default function PaymentsPage() {
 
   const items = (data?.items ?? []) as Array<{
     id: string
-    orderId: string
+    orderId: string | null
+    eventRequestId: string | null
     method: string
     status: string
     amount: number
@@ -75,10 +92,15 @@ export default function PaymentsPage() {
           description={`إجمالي: ${total}`}
           action={
             <Link href="/payments/reconciliation">
-              <Button variant="outline" size="sm">المصالحة</Button>
+              <Button variant="outline" size="sm">تحويلات المزوّدين</Button>
             </Link>
           }
         />
+        {actionError ? (
+          <div className="border-b border-divider px-4 py-2 text-sm text-error">
+            {actionError}
+          </div>
+        ) : null}
         <div className="overflow-hidden rounded-b-card">
           {isLoading ? (
             <div className="flex h-48 items-center justify-center text-text-secondary">
@@ -95,15 +117,38 @@ export default function PaymentsPage() {
                   <TableHead>طريقة الدفع</TableHead>
                   <TableHead>الحالة</TableHead>
                   <TableHead>التاريخ</TableHead>
+                  <TableHead className="whitespace-nowrap">تجريبي</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {items.map((p) => (
                   <TableRow key={p.id}>
                     <TableCell className="font-semibold text-text-primary">
-                      <Link href={`/orders/${p.orderId}`} className="text-primary hover:underline">
-                        {p.orderId}
-                      </Link>
+                      {p.orderId ? (
+                        <Link
+                          href={`/orders/${p.orderId}`}
+                          className="text-primary hover:underline"
+                        >
+                          {p.orderId}
+                        </Link>
+                      ) : p.eventRequestId ? (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs font-normal text-text-secondary">
+                            طبخ منزلي
+                          </span>
+                          <code className="break-all text-xs font-mono text-text-primary">
+                            {p.eventRequestId}
+                          </code>
+                          <Link
+                            href="/home_cooking_completed"
+                            className="text-xs text-primary hover:underline"
+                          >
+                            أرشيف الطبخ المنزلي
+                          </Link>
+                        </div>
+                      ) : (
+                        <span className="text-text-secondary">—</span>
+                      )}
                     </TableCell>
                     <TableCell>{p.amount ?? 0} ر.س</TableCell>
                     <TableCell className="text-text-secondary">
@@ -126,6 +171,21 @@ export default function PaymentsPage() {
                       {p.createdAt
                         ? format(new Date(p.createdAt), 'yyyy/MM/dd HH:mm', { locale: ar })
                         : '-'}
+                    </TableCell>
+                    <TableCell>
+                      {p.status === 'pending' || p.status === 'processing' ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={busyId === p.id}
+                          onClick={() => void handleSimulateComplete(p.id)}
+                        >
+                          {busyId === p.id ? '…' : 'إكمال تجريبي'}
+                        </Button>
+                      ) : (
+                        <span className="text-text-tertiary text-sm">—</span>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

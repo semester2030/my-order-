@@ -5,12 +5,14 @@ import { EventRequestsController } from './event-requests.controller';
 import { EventRequestsService } from './event-requests.service';
 import { EventRequest } from './entities/event-request.entity';
 import { PaymentsModule } from '../payments/payments.module';
+import { PayoutsModule } from '../payouts/payouts.module';
 
 @Module({
   imports: [
     ConfigModule,
     TypeOrmModule.forFeature([EventRequest]),
     PaymentsModule,
+    PayoutsModule,
   ],
   controllers: [EventRequestsController],
   providers: [EventRequestsService],

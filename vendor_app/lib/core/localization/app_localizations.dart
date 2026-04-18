@@ -114,6 +114,18 @@ class AppLocalizations {
 
   String get editProfile => isAr ? StringsAr.editProfile : StringsEn.editProfile;
   String get changePassword => isAr ? StringsAr.changePassword : StringsEn.changePassword;
+  String get payoutBankTitle => isAr ? StringsAr.payoutBankTitle : StringsEn.payoutBankTitle;
+  String get payoutBankSubtitle =>
+      isAr ? StringsAr.payoutBankSubtitle : StringsEn.payoutBankSubtitle;
+  String get labelBankName => isAr ? StringsAr.labelBankName : StringsEn.labelBankName;
+  String get labelBankAccountNumber =>
+      isAr ? StringsAr.labelBankAccountNumber : StringsEn.labelBankAccountNumber;
+  String get labelIban => isAr ? StringsAr.labelIban : StringsEn.labelIban;
+  String get labelAccountHolderName =>
+      isAr ? StringsAr.labelAccountHolderName : StringsEn.labelAccountHolderName;
+  String get labelSwiftCode => isAr ? StringsAr.labelSwiftCode : StringsEn.labelSwiftCode;
+  String get ibanHint => isAr ? StringsAr.ibanHint : StringsEn.ibanHint;
+  String get savePayoutBank => isAr ? StringsAr.savePayoutBank : StringsEn.savePayoutBank;
   String get verifyEmail => isAr ? StringsAr.verifyEmail : StringsEn.verifyEmail;
   String get verifyEmailDescription =>
       isAr ? StringsAr.verifyEmailDescription : StringsEn.verifyEmailDescription;

@@ -14,6 +14,7 @@ import {
   ShoppingBag,
   Radio,
   CreditCard,
+  Landmark,
   UtensilsCrossed,
   Archive,
   MessageSquare,
@@ -36,6 +37,11 @@ const baseNavItems: { href: string; label: string; icon: React.ComponentType<{ c
   { href: '/orders', label: 'الطلبات', icon: ShoppingBag },
   { href: '/orders/live', label: 'طلبات حية', icon: Radio },
   { href: '/payments', label: 'المدفوعات', icon: CreditCard },
+  {
+    href: '/payments/reconciliation',
+    label: 'تحويلات المزوّدين',
+    icon: Landmark,
+  },
   {
     href: '/home_cooking_payments',
     label: 'تحقق طبخ منزلي',
@@ -104,9 +110,14 @@ export function Sidebar() {
       </div>
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
         {navItems.map((item) => {
-          const isActive =
-            pathname === item.href ||
-            (item.href !== '/dashboard' && pathname.startsWith(item.href))
+          const isActive = (() => {
+            if (pathname === item.href) return true
+            if (item.href === '/payments') return pathname === '/payments'
+            return (
+              item.href !== '/dashboard' &&
+              (pathname.startsWith(`${item.href}/`) || pathname.startsWith(`${item.href}?`))
+            )
+          })()
           const Icon = item.icon
           return (
             <Link

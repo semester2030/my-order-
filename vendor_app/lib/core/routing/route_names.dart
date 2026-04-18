@@ -27,6 +27,7 @@ class RouteNames {
   static const String videos = '/videos';
   static const String editProfile = '/edit-profile';
   static const String changePassword = '/change-password';
+  static const String payoutBank = '/payout-bank';
   static const String verifyEmail = '/verify-email';
   static const String deleteAccount = '/delete-account';
   /// نفس مسارات تطبيق العميل — محتوى قانوني داخل التطبيق.

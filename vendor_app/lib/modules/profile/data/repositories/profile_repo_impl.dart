@@ -25,10 +25,16 @@ class ProfileRepoImpl implements ProfileRepo {
   }
 
   @override
-  Future<res.Result<VendorProfile, Failure>> updateProfile(VendorProfile profile) async {
+  Future<res.Result<VendorProfile, Failure>> updateProfile(
+    VendorProfile profile, {
+    bool bankingFieldsOnly = false,
+  }) async {
     try {
       final dto = ProfileMapper.toDto(profile);
-      final updated = await _remoteDs.updateProfile(dto);
+      final updated = await _remoteDs.updateProfile(
+        dto,
+        bankingFieldsOnly: bankingFieldsOnly,
+      );
       return res.Success(ProfileMapper.toEntity(updated));
     } catch (e) {
       return res.Failure(ErrorMapper.toFailure(e));

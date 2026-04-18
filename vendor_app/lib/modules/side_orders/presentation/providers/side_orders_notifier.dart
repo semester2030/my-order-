@@ -74,6 +74,12 @@ class SideOrdersNotifier extends StateNotifier<SideOrdersState> {
       isActive: profile.isActive,
       isAcceptingOrders: profile.isAcceptingOrders,
       registrationStatus: profile.registrationStatus,
+      rejectionReason: profile.rejectionReason,
+      bankName: profile.bankName,
+      bankAccountNumber: profile.bankAccountNumber,
+      iban: profile.iban,
+      accountHolderName: profile.accountHolderName,
+      swiftCode: profile.swiftCode,
     );
     final result = await _profileRepo.updateProfile(updated);
     return result.when(

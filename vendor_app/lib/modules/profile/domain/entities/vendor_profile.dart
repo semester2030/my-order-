@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 /// Domain entity: vendor profile (أساس — Phase 5).
 class VendorProfile with EquatableMixin {
-    const VendorProfile({
+  const VendorProfile({
     required this.id,
     required this.name,
     this.tradeName,
@@ -17,6 +17,11 @@ class VendorProfile with EquatableMixin {
     this.isAcceptingOrders = true,
     this.registrationStatus,
     this.rejectionReason,
+    this.bankName,
+    this.bankAccountNumber,
+    this.iban,
+    this.accountHolderName,
+    this.swiftCode,
   });
 
   final String id;
@@ -37,6 +42,11 @@ class VendorProfile with EquatableMixin {
   final String? registrationStatus;
   /// سبب الرفض من الباك اند إن وُجد (Phase 17).
   final String? rejectionReason;
+  final String? bankName;
+  final String? bankAccountNumber;
+  final String? iban;
+  final String? accountHolderName;
+  final String? swiftCode;
 
   @override
   List<Object?> get props => [
@@ -54,5 +64,10 @@ class VendorProfile with EquatableMixin {
         isAcceptingOrders,
         registrationStatus,
         rejectionReason,
+        bankName,
+        bankAccountNumber,
+        iban,
+        accountHolderName,
+        swiftCode,
       ];
 }
