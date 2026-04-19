@@ -25,6 +25,7 @@ import '../../../modules/vendors/presentation/screens/request_chef_screen.dart';
 import '../../../modules/vendors/presentation/screens/request_private_event_screen.dart';
 import '../../../modules/vendors/presentation/screens/my_requests_hub_screen.dart';
 import '../../../modules/vendors/presentation/screens/my_chef_bookings_screen.dart';
+import '../../../modules/vendors/presentation/screens/chef_booking_request_detail_screen.dart';
 import '../../../modules/vendors/presentation/screens/my_home_cooking_requests_screen.dart';
 import '../../../modules/vendors/presentation/screens/home_cooking_request_detail_screen.dart';
 import '../../../modules/service_experience/presentation/screens/service_quality_ticket_screen.dart';
@@ -337,6 +338,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'my-chef-bookings',
         builder: (context, state) {
           return const MyChefBookingsScreen();
+        },
+        redirect: (context, state) async {
+          return await authGuard.redirectIfNotAuthenticated(context, state);
+        },
+      ),
+      GoRoute(
+        path: '${RouteNames.myChefBookings}/:id',
+        name: 'my-chef-booking-detail',
+        builder: (context, state) {
+          final id = state.pathParameters['id'] ?? '';
+          return ChefBookingRequestDetailScreen(requestId: id);
         },
         redirect: (context, state) async {
           return await authGuard.redirectIfNotAuthenticated(context, state);

@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/localization/app_localizations.dart';
-import '../../../../core/di/providers.dart';
 import '../../../../core/routing/route_names.dart';
 import '../providers/my_chef_bookings_notifier.dart';
 
@@ -50,10 +49,18 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
 
   String _statusLabel(AppLocalizations l10n, String? status) {
     switch (status) {
+      case 'quoted':
+        return l10n.homeCookingStatusQuoted;
+      case 'payment_pending':
+        return l10n.homeCookingStatusPaymentPending;
       case 'completed':
         return l10n.chefBookingStatusCompleted;
       case 'accepted':
-        return l10n.chefBookingStatusAccepted;
+        return l10n.homeCookingStatusAccepted;
+      case 'ready':
+        return l10n.homeCookingStatusReadyShort;
+      case 'handed_over':
+        return l10n.homeCookingStatusHandedOver;
       case 'rejected':
         return l10n.chefBookingStatusRejected;
       case 'cancelled':
@@ -83,21 +90,6 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
       if (n is String && n.isNotEmpty) return n;
     }
     return '—';
-  }
-
-  Future<void> _confirmChefCompletion(BuildContext context, String id) async {
-    final l10n = AppLocalizations.of(context);
-    try {
-      await ref.read(vendorsRepositoryProvider).confirmChefServiceCompletion(id);
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.chefBookingCompletionConfirmedSnack)),
-      );
-      await ref.read(myChefBookingsNotifierProvider.notifier).load();
-    } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-    }
   }
 
   Future<void> _confirmCancel(String id) async {
@@ -190,7 +182,11 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
                     Color statusColor;
                     switch (status) {
                       case 'completed':
+                        statusColor = SemanticColors.success;
+                        break;
                       case 'accepted':
+                      case 'ready':
+                      case 'handed_over':
                         statusColor = SemanticColors.success;
                         break;
                       case 'rejected':
@@ -244,11 +240,15 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
                                 child: Text(l10n.chefBookingCancelButton),
                               ),
                             ],
-                            if (status == 'accepted') ...[
+                            if (status != 'completed' &&
+                                status != 'cancelled' &&
+                                status != 'rejected') ...[
                               Gaps.mdV,
-                              FilledButton(
-                                onPressed: () => _confirmChefCompletion(context, id),
-                                child: Text(l10n.chefBookingConfirmCompletionButton),
+                              FilledButton.tonal(
+                                onPressed: () => context.push('${RouteNames.myChefBookings}/$id'),
+                                child: Text(
+                                  l10n.isAr ? 'التفاصيل والدفع' : 'Details & payment',
+                                ),
                               ),
                             ],
                             if (status == 'completed') ...[

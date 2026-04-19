@@ -9,6 +9,7 @@ import { SavedPaymentMethod } from './entities/saved-payment-method.entity';
 import { SavedPaymentMethodsService } from './saved-payment-methods.service';
 import { Order } from '../orders/entities/order.entity';
 import { EventRequest } from '../event-requests/entities/event-request.entity';
+import { Vendor } from '../vendors/entities/vendor.entity';
 import { PAYMENT_GATEWAY } from './gateway/payment-gateway.port';
 import { MockPaymentGateway } from './gateway/mock-payment.gateway';
 import { NotImplementedPaymentGateway } from './gateway/not-implemented-payment.gateway';
@@ -17,7 +18,13 @@ import type { PaymentConfig } from '../../config/payment.config';
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([Payment, Order, EventRequest, SavedPaymentMethod]),
+    TypeOrmModule.forFeature([
+      Payment,
+      Order,
+      EventRequest,
+      Vendor,
+      SavedPaymentMethod,
+    ]),
   ],
   controllers: [PaymentsController, PaymentsWebhookController],
   providers: [

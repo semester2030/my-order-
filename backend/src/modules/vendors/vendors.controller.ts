@@ -754,6 +754,74 @@ export class VendorsController {
     );
   }
 
+  @Post('chef-booking-requests/:requestId/quote')
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'عرض سعر لحجز ذبائح/شواء (قيد الانتظار) — نفس مسار الطبخ المنزلي',
+  })
+  @HttpCode(HttpStatus.OK)
+  async quoteChefBookingRequest(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+    @Body() dto: QuoteHomeCookingDto,
+  ) {
+    const vendorId = await this.resolveChefBookingVendorId(req);
+    return this.eventRequestsService.quoteHomeCookingByVendor(
+      vendorId,
+      requestId,
+      dto,
+    );
+  }
+
+  @Post('chef-booking-requests/:requestId/mark-ready')
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'تمييز حجز ذبائح/شواء كجاهز بعد تأكيد الدفع' })
+  @HttpCode(HttpStatus.OK)
+  async markChefBookingReady(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+  ) {
+    const vendorId = await this.resolveChefBookingVendorId(req);
+    return this.eventRequestsService.markHomeCookingReadyByVendor(
+      vendorId,
+      requestId,
+    );
+  }
+
+  @Post('chef-booking-requests/:requestId/mark-handed-over')
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'تأكيد تسليم حجز ذبائح/شواء للعميل — بعد حالة جاهز',
+  })
+  @HttpCode(HttpStatus.OK)
+  async markChefBookingHandedOver(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+    @Body() dto?: HandoverHomeCookingDto,
+  ) {
+    const vendorId = await this.resolveChefBookingVendorId(req);
+    return this.eventRequestsService.markHomeCookingHandedOverByVendor(
+      vendorId,
+      requestId,
+      dto,
+    );
+  }
+
   // ——— الطبخ المنزلي — عرض سعر / رفض / جاهز ———
   @Get('home-cooking-requests')
   @UseGuards(JwtAuthGuard, ApprovedVendorGuard)

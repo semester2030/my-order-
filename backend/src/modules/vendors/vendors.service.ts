@@ -1016,7 +1016,11 @@ export class VendorsService {
 
     const hcWhere: any = {
       vendorId,
-      requestType: EventRequestType.HOME_COOKING,
+      requestType: In([
+        EventRequestType.HOME_COOKING,
+        EventRequestType.POPULAR_COOKING,
+        EventRequestType.GRILLING,
+      ]),
     };
     if (startDate && endDate) {
       hcWhere.createdAt = Between(startDate, endDate);
@@ -1026,7 +1030,7 @@ export class VendorsService {
       hcWhere.createdAt = LessThanOrEqual(endDate);
     }
 
-    const homeCookingRows = await this.eventRequestRepository.find({
+    const paidServiceEventRows = await this.eventRequestRepository.find({
       where: hcWhere,
     });
 
@@ -1039,17 +1043,17 @@ export class VendorsService {
       (o) => o.status === OrderStatus.DELIVERED,
     ).length;
 
-    const hcCompleted = homeCookingRows.filter(
+    const paidCompleted = paidServiceEventRows.filter(
       (r) => r.status === EventRequestStatus.COMPLETED,
     );
-    const completedHomeCooking = hcCompleted.length;
-    const revenueHomeCooking = hcCompleted.reduce((sum, r) => {
+    const completedPaidServiceEvents = paidCompleted.length;
+    const revenuePaidServiceEvents = paidCompleted.reduce((sum, r) => {
       if (r.quotedAmount == null) return sum;
       const q = parseFloat(String(r.quotedAmount));
       return sum + (Number.isFinite(q) ? q : 0);
     }, 0);
 
-    const totalRevenue = revenueDelivered + revenueHomeCooking;
+    const totalRevenue = revenueDelivered + revenuePaidServiceEvents;
 
     /** طلبات السلة/التوصيل النشطة (قبل التسليم النهائي) */
     const pendingCartPipeline = orders.filter((o) =>
@@ -1063,7 +1067,7 @@ export class VendorsService {
     ).length;
 
     /** طلبات طبخ منزلي لم تُغلق بعد */
-    const pendingHomeCookingPipeline = homeCookingRows.filter((r) =>
+    const pendingPaidServicePipeline = paidServiceEventRows.filter((r) =>
       [
         EventRequestStatus.PENDING,
         EventRequestStatus.QUOTED,
@@ -1074,9 +1078,10 @@ export class VendorsService {
       ].includes(r.status),
     ).length;
 
-    const pendingOrders = pendingCartPipeline + pendingHomeCookingPipeline;
+    const pendingOrders = pendingCartPipeline + pendingPaidServicePipeline;
 
-    const completedOrders = completedDeliveryOrders + completedHomeCooking;
+    const completedOrders =
+      completedDeliveryOrders + completedPaidServiceEvents;
 
     const menuItemsCount = await this.menuItemRepository.count({
       where: { vendorId },

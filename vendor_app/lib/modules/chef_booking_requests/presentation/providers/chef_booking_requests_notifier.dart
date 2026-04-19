@@ -19,12 +19,16 @@ class ChefBookingRequestsNotifier extends StateNotifier<ChefBookingRequestsState
     }
   }
 
-  Future<bool> accept(String requestId) async {
+  Future<bool> quote(
+    String requestId, {
+    required double quotedAmount,
+    String? quoteNotes,
+  }) async {
     final prev = state is ChefBookingRequestsLoaded
         ? List<ChefBookingRequestDto>.from((state as ChefBookingRequestsLoaded).requests)
         : null;
     try {
-      await _ds.accept(requestId);
+      await _ds.quote(requestId, quotedAmount: quotedAmount, quoteNotes: quoteNotes);
       await load();
       return true;
     } catch (e) {
@@ -43,6 +47,45 @@ class ChefBookingRequestsNotifier extends StateNotifier<ChefBookingRequestsState
         : null;
     try {
       await _ds.reject(requestId);
+      await load();
+      return true;
+    } catch (e) {
+      if (prev != null) {
+        state = ChefBookingRequestsLoaded(prev);
+      } else {
+        state = ChefBookingRequestsError(e.toString());
+      }
+      return false;
+    }
+  }
+
+  Future<bool> markReady(String requestId) async {
+    final prev = state is ChefBookingRequestsLoaded
+        ? List<ChefBookingRequestDto>.from((state as ChefBookingRequestsLoaded).requests)
+        : null;
+    try {
+      await _ds.markReady(requestId);
+      await load();
+      return true;
+    } catch (e) {
+      if (prev != null) {
+        state = ChefBookingRequestsLoaded(prev);
+      } else {
+        state = ChefBookingRequestsError(e.toString());
+      }
+      return false;
+    }
+  }
+
+  Future<bool> markHandedOver(
+    String requestId, {
+    String? handoverNotes,
+  }) async {
+    final prev = state is ChefBookingRequestsLoaded
+        ? List<ChefBookingRequestDto>.from((state as ChefBookingRequestsLoaded).requests)
+        : null;
+    try {
+      await _ds.markHandedOver(requestId, handoverNotes: handoverNotes);
       await load();
       return true;
     } catch (e) {

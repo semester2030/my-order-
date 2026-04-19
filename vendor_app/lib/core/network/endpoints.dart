@@ -72,10 +72,14 @@ class Endpoints {
 
   /// طلبات حجز طبخ الذبائح والشواء (للمورّدين popular_cooking / grilling).
   static const String vendorsChefBookingRequests = '/vendors/chef-booking-requests';
-  static String vendorChefBookingRequestAccept(String id) =>
-      '/vendors/chef-booking-requests/$id/accept';
   static String vendorChefBookingRequestReject(String id) =>
       '/vendors/chef-booking-requests/$id/reject';
+  static String vendorChefBookingQuote(String id) =>
+      '/vendors/chef-booking-requests/$id/quote';
+  static String vendorChefBookingMarkReady(String id) =>
+      '/vendors/chef-booking-requests/$id/mark-ready';
+  static String vendorChefBookingMarkHandedOver(String id) =>
+      '/vendors/chef-booking-requests/$id/mark-handed-over';
 
   /// طلبات الطبخ المنزلي (عرض سعر / رفض / جاهز).
   static const String vendorsHomeCookingRequests = '/vendors/home-cooking-requests';

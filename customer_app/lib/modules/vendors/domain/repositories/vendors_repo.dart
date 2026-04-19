@@ -81,6 +81,8 @@ abstract class VendorsRepository {
   /// طلبات الطبخ المنزلي فقط (`request_type == home_cooking`).
   Future<List<Map<String, dynamic>>> getMyHomeCookingRequests();
   Future<Map<String, dynamic>> getMyHomeCookingRequestById(String requestId);
+  /// حجز ذبائح/شواء فقط — للتفاصيل والدفع.
+  Future<Map<String, dynamic>> getMyChefBookingRequestById(String requestId);
   /// أي طلب `event-requests` يخص العميل (طبخ منزلي أو ذبائح/شواء) — للتقييم الموحّد.
   Future<Map<String, dynamic>> getMyCustomerEventRequestById(String requestId);
   Future<Map<String, dynamic>> confirmChefServiceCompletion(String requestId);
@@ -89,7 +91,7 @@ abstract class VendorsRepository {
     required String paymentReference,
     String? notes,
   });
-  /// بدء دفع بالبطاقة لطلب طبخ منزلي بعد عرض السعر (`POST /payments/initiate-home-cooking`).
+  /// بدء دفع بالبطاقة بعد عرض السعر — طبخ منزلي أو ذبائح أو شواء (`POST /payments/initiate-home-cooking`).
   Future<Map<String, dynamic>> initiateHomeCookingCardPayment(
     String eventRequestId,
     String method,

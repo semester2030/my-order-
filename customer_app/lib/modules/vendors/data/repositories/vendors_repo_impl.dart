@@ -83,6 +83,16 @@ class VendorsRepositoryImpl implements VendorsRepository {
   }
 
   @override
+  Future<Map<String, dynamic>> getMyChefBookingRequestById(String requestId) async {
+    final row = await remoteDataSource.getMyEventRequestById(requestId);
+    final t = row['request_type'] ?? row['requestType'];
+    if (t != 'popular_cooking' && t != 'grilling') {
+      throw NetworkException.badRequest();
+    }
+    return row;
+  }
+
+  @override
   Future<Map<String, dynamic>> getMyCustomerEventRequestById(
     String requestId,
   ) async {

@@ -13,6 +13,9 @@ class ChefBookingRequestDto {
     this.user,
     this.address,
     this.addOns,
+    this.quotedAmount,
+    this.quoteNotes,
+    this.completionCertificateCode,
   });
 
   final String id;
@@ -27,6 +30,9 @@ class ChefBookingRequestDto {
   final ChefBookingUserDto? user;
   final ChefBookingAddressDto? address;
   final List<Map<String, dynamic>>? addOns;
+  final String? quotedAmount;
+  final String? quoteNotes;
+  final String? completionCertificateCode;
 
   factory ChefBookingRequestDto.fromJson(Map<String, dynamic> json) {
     List<Map<String, dynamic>>? addOnsList;
@@ -57,6 +63,10 @@ class ChefBookingRequestDto {
           ? ChefBookingAddressDto.fromJson(json['address'] as Map<String, dynamic>)
           : null,
       addOns: addOnsList,
+      quotedAmount: json['quotedAmount'] as String? ?? json['quoted_amount'] as String?,
+      quoteNotes: json['quoteNotes'] as String? ?? json['quote_notes'] as String?,
+      completionCertificateCode: json['completionCertificateCode'] as String? ??
+          json['completion_certificate_code'] as String?,
     );
   }
 }

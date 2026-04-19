@@ -13,6 +13,7 @@ import {
   EventRequest,
   EventRequestStatus,
   EventRequestType,
+  PAID_SERVICE_EVENT_REQUEST_TYPES,
 } from '../event-requests/entities/event-request.entity';
 import { PrivateEventRequest } from '../private-events/entities/private-event-request.entity';
 import { EventOffer } from '../private-events/entities/event-offer.entity';
@@ -329,7 +330,7 @@ export class AdminService {
     const limit = Math.min(100, Math.max(1, opts?.limit ?? 50));
     const items = await this.eventRequestRepo.find({
       where: {
-        requestType: EventRequestType.HOME_COOKING,
+        requestType: In(PAID_SERVICE_EVENT_REQUEST_TYPES),
         status: In([
           EventRequestStatus.ACCEPTED,
           EventRequestStatus.READY,

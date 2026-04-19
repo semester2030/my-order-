@@ -10,14 +10,17 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, QueryFailedError, Repository } from 'typeorm';
+import { EntityManager, In, Not, QueryFailedError, Repository } from 'typeorm';
 import { Payment, PaymentStatus } from './entities/payment.entity';
 import { Order, OrderStatus } from '../orders/entities/order.entity';
 import {
   EventRequest,
   EventRequestStatus,
-  EventRequestType,
+  CHEF_BOOKING_TYPES,
+  isChefBookingType,
+  isPaidServiceEventRequestType,
 } from '../event-requests/entities/event-request.entity';
+import { Vendor } from '../vendors/entities/vendor.entity';
 import type { PaymentConfig } from '../../config/payment.config';
 import { InitiatePaymentDto } from './dto/initiate-payment.dto';
 import { InitiateHomeCookingCardPaymentDto } from './dto/initiate-home-cooking-card-payment.dto';
@@ -50,6 +53,8 @@ export class PaymentsService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(EventRequest)
     private readonly eventRequestRepository: Repository<EventRequest>,
+    @InjectRepository(Vendor)
+    private readonly vendorRepository: Repository<Vendor>,
     private readonly configService: ConfigService,
     @Inject(PAYMENT_GATEWAY)
     private readonly paymentGateway: PaymentGatewayPort,
@@ -61,6 +66,61 @@ export class PaymentsService {
       throw new InternalServerErrorException('payment configuration is not loaded');
     }
     return cfg;
+  }
+
+  private async assertVendorIbanForEventRequestPayment(
+    vendorId: string,
+  ): Promise<void> {
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+      select: ['id', 'iban'],
+    });
+    const iban = vendor?.iban?.trim().toUpperCase() ?? '';
+    if (iban.length < 8) {
+      throw new BadRequestException(
+        'لا يمكن بدء الدفع: لم يُسجَّل لدى مقدّم الخدمة آيبان صالح للتحويل لاحقاً',
+      );
+    }
+  }
+
+  /**
+   * يمنع دفع حجز ذبائح/شواء إن وُجد طلب آخر لنفس الوجبة والتاريخ في مرحلة تنفيذ أو انتظار تحقق دفع.
+   */
+  private async assertChefSlotFreeForQuotedPayment(
+    em: EntityManager | null,
+    row: EventRequest,
+  ): Promise<void> {
+    if (!isChefBookingType(row.requestType)) {
+      return;
+    }
+    if (!row.mealSlot) {
+      throw new BadRequestException(
+        'طلب ذبائح/شواء بدون وجبة محددة — لا يمكن إتمام الدفع',
+      );
+    }
+    const repo = em
+      ? em.getRepository(EventRequest)
+      : this.eventRequestRepository;
+    const blocked = await repo.exists({
+      where: {
+        vendorId: row.vendorId,
+        scheduledDate: row.scheduledDate,
+        mealSlot: row.mealSlot,
+        requestType: In(CHEF_BOOKING_TYPES),
+        id: Not(row.id),
+        status: In([
+          EventRequestStatus.PAYMENT_PENDING,
+          EventRequestStatus.ACCEPTED,
+          EventRequestStatus.READY,
+          EventRequestStatus.HANDED_OVER,
+        ]),
+      },
+    });
+    if (blocked) {
+      throw new ConflictException(
+        'هذه الوجبة والتاريخ محجوزان لطلب آخر — تعذّر إتمام الدفع',
+      );
+    }
   }
 
   private parseStoredPaymentIntentId(payment: Payment): string | null {
@@ -371,8 +431,10 @@ export class PaymentsService {
     if (!row) {
       throw new NotFoundException('الطلب غير موجود');
     }
-    if (row.requestType !== EventRequestType.HOME_COOKING) {
-      throw new BadRequestException('هذا الدفع للطبخ المنزلي فقط');
+    if (!isPaidServiceEventRequestType(row.requestType)) {
+      throw new BadRequestException(
+        'هذا المسار لدفع طلبات الخدمة المدفوعة عبر المنصة فقط (طبخ منزلي أو ذبائح أو شواء)',
+      );
     }
     if (row.status === EventRequestStatus.PAYMENT_PENDING) {
       throw new ConflictException(
@@ -392,6 +454,9 @@ export class PaymentsService {
     if (!Number.isFinite(amount) || amount < 0.01) {
       throw new BadRequestException('المبلغ المعروض غير صالح');
     }
+
+    await this.assertVendorIbanForEventRequestPayment(row.vendorId);
+    await this.assertChefSlotFreeForQuotedPayment(null, row);
 
     const completed = await this.paymentRepository.exists({
       where: { eventRequestId: row.id, status: PaymentStatus.COMPLETED },
@@ -569,14 +634,15 @@ export class PaymentsService {
       }
     } else if (payment.eventRequestId && payment.eventRequest) {
       const er = payment.eventRequest;
-      if (er.requestType !== EventRequestType.HOME_COOKING) {
+      if (!isPaidServiceEventRequestType(er.requestType)) {
         throw new BadRequestException('Invalid event request type for payment');
       }
       if (er.status !== EventRequestStatus.QUOTED) {
         throw new ConflictException(
-          'لا يمكن تأكيد الدفع: حالة طلب الطبخ المنزلي غير مناسبة',
+          'لا يمكن تأكيد الدفع: حالة الطلب غير مناسبة',
         );
       }
+      await this.assertChefSlotFreeForQuotedPayment(em, er);
       er.status = EventRequestStatus.ACCEPTED;
       er.paymentVerifiedAt = new Date();
       er.paymentVerifiedByAdminId = null;

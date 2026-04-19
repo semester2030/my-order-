@@ -39,7 +39,8 @@ export class PaymentsController {
 
   @Post('initiate-home-cooking')
   @ApiOperation({
-    summary: 'Initiate card payment for a quoted home-cooking event_request',
+    summary:
+      'Initiate card payment for a quoted paid-service event_request (home_cooking, popular_cooking, grilling)',
   })
   async initiateHomeCookingCardPayment(
     @Request() req: { user: User },

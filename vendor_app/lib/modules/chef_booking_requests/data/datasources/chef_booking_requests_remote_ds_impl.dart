@@ -37,9 +37,50 @@ class ChefBookingRequestsRemoteDsImpl implements ChefBookingRequestsRemoteDs {
   }
 
   @override
-  Future<ChefBookingRequestDto> accept(String requestId) async {
+  Future<ChefBookingRequestDto> quote(
+    String requestId, {
+    required double quotedAmount,
+    String? quoteNotes,
+  }) async {
+    final body = <String, dynamic>{
+      'quotedAmount': quotedAmount,
+      if (quoteNotes != null && quoteNotes.trim().isNotEmpty) 'quoteNotes': quoteNotes.trim(),
+    };
     final response = await _dio.post<Map<String, dynamic>>(
-      Endpoints.vendorChefBookingRequestAccept(requestId),
+      Endpoints.vendorChefBookingQuote(requestId),
+      data: body,
+    );
+    final data = response.data;
+    if (data == null) {
+      throw NetworkException('استجابة فارغة من الخادم');
+    }
+    return ChefBookingRequestDto.fromJson(data);
+  }
+
+  @override
+  Future<ChefBookingRequestDto> markReady(String requestId) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      Endpoints.vendorChefBookingMarkReady(requestId),
+    );
+    final data = response.data;
+    if (data == null) {
+      throw NetworkException('استجابة فارغة من الخادم');
+    }
+    return ChefBookingRequestDto.fromJson(data);
+  }
+
+  @override
+  Future<ChefBookingRequestDto> markHandedOver(
+    String requestId, {
+    String? handoverNotes,
+  }) async {
+    final body = <String, dynamic>{
+      if (handoverNotes != null && handoverNotes.trim().isNotEmpty)
+        'handoverNotes': handoverNotes.trim(),
+    };
+    final response = await _dio.post<Map<String, dynamic>>(
+      Endpoints.vendorChefBookingMarkHandedOver(requestId),
+      data: body.isEmpty ? {} : body,
     );
     final data = response.data;
     if (data == null) {

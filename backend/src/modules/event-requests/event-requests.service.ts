@@ -9,6 +9,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Not, QueryFailedError, Repository } from 'typeorm';
+import { Vendor } from '../vendors/entities/vendor.entity';
 import {
   EventRequest,
   EventRequestType,
@@ -16,6 +17,8 @@ import {
   ChefMealSlot,
   CHEF_BOOKING_TYPES,
   isChefBookingType,
+  isPaidServiceEventRequestType,
+  PAID_SERVICE_EVENT_REQUEST_TYPES,
   scheduledTimeForChefMealSlot,
   scheduledTimeForHomeCookingPresetSlot,
 } from './entities/event-request.entity';
@@ -43,6 +46,8 @@ export class EventRequestsService {
   constructor(
     @InjectRepository(EventRequest)
     private readonly eventRequestRepository: Repository<EventRequest>,
+    @InjectRepository(Vendor)
+    private readonly vendorRepository: Repository<Vendor>,
     private readonly configService: ConfigService,
     private readonly paymentsService: PaymentsService,
     private readonly payoutsService: PayoutsService,
@@ -58,6 +63,58 @@ export class EventRequestsService {
       return 48;
     }
     return n;
+  }
+
+  /** قبل عرض السعر لأي طلب مدفوع عبر المنصة — يجب أن يكون للمزود آيبان صالح للتحويل لاحقاً. */
+  private async assertVendorIbanForPaidServiceQuote(vendorId: string): Promise<void> {
+    const vendor = await this.vendorRepository.findOne({
+      where: { id: vendorId },
+      select: ['id', 'iban'],
+    });
+    const iban = vendor?.iban?.trim().toUpperCase() ?? '';
+    if (iban.length < 8) {
+      throw new BadRequestException(
+        'أدخل رقم الآيبان في ملف المزود قبل عرض السعر — مطلوب لاحقاً لتحويل مستحقاتك بعد إتمام الخدمة',
+      );
+    }
+  }
+
+  /**
+   * منع حجز وجبة/تاريخ مزدوج لذبائح/شواء عند قبول دفع أو تحقق إداري.
+   */
+  private async assertNoChefBookingSlotConflict(
+    vendorId: string,
+    row: EventRequest,
+    excludeRequestId: string,
+  ): Promise<void> {
+    if (!isChefBookingType(row.requestType)) {
+      return;
+    }
+    if (!row.mealSlot) {
+      throw new BadRequestException(
+        'طلب ذبائح/شواء بدون وجبة محددة — لا يمكن المتابعة',
+      );
+    }
+    const blocked = await this.eventRequestRepository.exists({
+      where: {
+        vendorId,
+        scheduledDate: row.scheduledDate,
+        mealSlot: row.mealSlot,
+        requestType: In(CHEF_BOOKING_TYPES),
+        id: Not(excludeRequestId),
+        status: In([
+          EventRequestStatus.PAYMENT_PENDING,
+          EventRequestStatus.ACCEPTED,
+          EventRequestStatus.READY,
+          EventRequestStatus.HANDED_OVER,
+        ]),
+      },
+    });
+    if (blocked) {
+      throw new ConflictException(
+        'هذه الوجبة والتاريخ محجوزان لطلب آخر قيد التنفيذ أو بانتظار تحقق الدفع',
+      );
+    }
   }
 
   /** إلغاء تلقائي لطلبات ذبائح/شواء المعلّقة بعد انتهاء respond_by */
@@ -209,7 +266,8 @@ export class EventRequestsService {
     });
   }
 
-  private async loadHomeCookingForVendorOrThrow(
+  /** طلبات الخدمة المدفوعة (منزلي + ذبائح + شواء) — إجراءات المزود: عرض سعر / جاهز / تسليم. */
+  private async loadPaidServiceForVendorOrThrow(
     vendorId: string,
     requestId: string,
   ): Promise<EventRequest> {
@@ -221,8 +279,8 @@ export class EventRequestsService {
     if (!row) {
       throw new NotFoundException('الطلب غير موجود');
     }
-    if (row.requestType !== EventRequestType.HOME_COOKING) {
-      throw new BadRequestException('طلبات الطبخ المنزلي فقط');
+    if (!isPaidServiceEventRequestType(row.requestType)) {
+      throw new BadRequestException('هذا المسار لطلبات الخدمة المدفوعة فقط');
     }
     return row;
   }
@@ -232,7 +290,8 @@ export class EventRequestsService {
     requestId: string,
     dto: QuoteHomeCookingDto,
   ): Promise<EventRequest> {
-    await this.loadHomeCookingForVendorOrThrow(vendorId, requestId);
+    await this.assertVendorIbanForPaidServiceQuote(vendorId);
+    await this.loadPaidServiceForVendorOrThrow(vendorId, requestId);
     const amt = Number(dto.quotedAmount);
     if (!Number.isFinite(amt) || amt < 0.01) {
       throw new BadRequestException('المبلغ غير صالح');
@@ -241,7 +300,7 @@ export class EventRequestsService {
       {
         id: requestId,
         vendorId,
-        requestType: EventRequestType.HOME_COOKING,
+        requestType: In(PAID_SERVICE_EVENT_REQUEST_TYPES),
         status: EventRequestStatus.PENDING,
       },
       {
@@ -253,7 +312,7 @@ export class EventRequestsService {
     );
     if (!res.affected) {
       throw new ConflictException(
-        'لا يمكن عرض السعر: الطلب ليس قيد الانتظار أو ليس طبخاً منزلياً',
+        'لا يمكن عرض السعر: الطلب ليس قيد الانتظار أو لا يدخل في مسار الخدمة المدفوعة',
       );
     }
     return this.reloadEventRequestOrThrow(requestId);
@@ -263,7 +322,7 @@ export class EventRequestsService {
     vendorId: string,
     requestId: string,
   ): Promise<EventRequest> {
-    const row = await this.loadHomeCookingForVendorOrThrow(vendorId, requestId);
+    const row = await this.loadPaidServiceForVendorOrThrow(vendorId, requestId);
     const cancellable = new Set<EventRequestStatus>([
       EventRequestStatus.PENDING,
       EventRequestStatus.QUOTED,
@@ -280,10 +339,10 @@ export class EventRequestsService {
     vendorId: string,
     requestId: string,
   ): Promise<EventRequest> {
-    const row = await this.loadHomeCookingForVendorOrThrow(vendorId, requestId);
+    const row = await this.loadPaidServiceForVendorOrThrow(vendorId, requestId);
     if (row.status !== EventRequestStatus.ACCEPTED) {
       throw new ConflictException(
-        'يمكن تمييز «جاهز» بعد قبول الطلب وتأكيد الدفع فقط',
+        'يمكن تمييز «جاهز» بعد تأكيد الدفع فقط',
       );
     }
     row.status = EventRequestStatus.READY;
@@ -300,7 +359,7 @@ export class EventRequestsService {
     requestId: string,
     dto?: HandoverHomeCookingDto,
   ): Promise<EventRequest> {
-    const row = await this.loadHomeCookingForVendorOrThrow(vendorId, requestId);
+    const row = await this.loadPaidServiceForVendorOrThrow(vendorId, requestId);
     if (row.status !== EventRequestStatus.READY) {
       throw new ConflictException(
         'يمكن تأكيد التسليم بعد تمييز الطلب كجاهز فقط',
@@ -333,12 +392,12 @@ export class EventRequestsService {
     if (!row) {
       throw new NotFoundException('الطلب غير موجود');
     }
-    if (row.requestType !== EventRequestType.HOME_COOKING) {
-      throw new BadRequestException('هذا الإجراء للطبخ المنزلي فقط');
+    if (!isPaidServiceEventRequestType(row.requestType)) {
+      throw new BadRequestException('هذا الإجراء لطلبات الخدمة المدفوعة فقط');
     }
     if (row.status !== EventRequestStatus.HANDED_OVER) {
       throw new ConflictException(
-        'يمكن تأكيد الاستلام بعد أن يؤكد المطبخ التسليم فقط',
+        'يمكن تأكيد الاستلام بعد أن يؤكد مقدّم الخدمة التسليم فقط',
       );
     }
     for (let attempt = 0; attempt < 20; attempt++) {
@@ -374,7 +433,7 @@ export class EventRequestsService {
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         this.logger.warn(
-          `home_cooking vendor payout failed (eventRequest=${row.id}): ${msg}`,
+          `paid_service_event_request payout failed (eventRequest=${row.id}): ${msg}`,
         );
       }
     })();
@@ -383,7 +442,7 @@ export class EventRequestsService {
   private async recordVendorPayoutAfterHomeCookingCompleted(
     row: EventRequest,
   ): Promise<void> {
-    if (row.requestType !== EventRequestType.HOME_COOKING) {
+    if (!isPaidServiceEventRequestType(row.requestType)) {
       return;
     }
     if (!row.vendorId) {
@@ -410,19 +469,24 @@ export class EventRequestsService {
     if (vendorAmount < 0.01) {
       return;
     }
+    const idempotencyKey =
+      row.requestType === EventRequestType.HOME_COOKING
+        ? `home_cooking_complete:${row.id}`
+        : `chef_service_complete:${row.id}`;
     await this.payoutsService.createPayoutRequest({
       vendorId: row.vendorId,
       amount: vendorAmount,
-      idempotencyKey: `home_cooking_complete:${row.id}`,
+      idempotencyKey,
       sourceType: 'event_request',
       sourceId: row.id,
       meta: {
         eventRequestId: row.id,
+        requestType: row.requestType,
         completionCertificateCode: row.completionCertificateCode,
         quotedAmountTotal: total,
         vendorSharePercent: sharePct,
       },
-      requireVendorIban: false,
+      requireVendorIban: true,
     });
   }
 
@@ -434,7 +498,7 @@ export class EventRequestsService {
     const limit = Math.min(100, Math.max(1, opts.limit ?? 20));
     const [items, total] = await this.eventRequestRepository.findAndCount({
       where: {
-        requestType: EventRequestType.HOME_COOKING,
+        requestType: In(PAID_SERVICE_EVENT_REQUEST_TYPES),
         status: EventRequestStatus.COMPLETED,
       },
       relations: ['user', 'vendor', 'address'],
@@ -457,8 +521,8 @@ export class EventRequestsService {
     if (!row) {
       throw new NotFoundException('الطلب غير موجود');
     }
-    if (row.requestType !== EventRequestType.HOME_COOKING) {
-      throw new BadRequestException('هذا الإجراء للطبخ المنزلي فقط');
+    if (!isPaidServiceEventRequestType(row.requestType)) {
+      throw new BadRequestException('هذا الإجراء لطلبات الخدمة المدفوعة فقط');
     }
     if (row.status !== EventRequestStatus.QUOTED) {
       throw new ConflictException(
@@ -493,7 +557,7 @@ export class EventRequestsService {
     const limit = Math.min(100, Math.max(1, opts.limit ?? 20));
     const [items, total] = await this.eventRequestRepository.findAndCount({
       where: {
-        requestType: EventRequestType.HOME_COOKING,
+        requestType: In(PAID_SERVICE_EVENT_REQUEST_TYPES),
         status: EventRequestStatus.PAYMENT_PENDING,
       },
       relations: ['user', 'vendor', 'address'],
@@ -509,7 +573,7 @@ export class EventRequestsService {
     adminId: string,
   ): Promise<EventRequest> {
     const row = await this.eventRequestRepository.findOne({
-      where: { id: requestId, requestType: EventRequestType.HOME_COOKING },
+      where: { id: requestId, requestType: In(PAID_SERVICE_EVENT_REQUEST_TYPES) },
       relations: ['user', 'vendor', 'address'],
     });
     if (!row) {
@@ -518,6 +582,11 @@ export class EventRequestsService {
     if (row.status !== EventRequestStatus.PAYMENT_PENDING) {
       throw new ConflictException('الطلب ليس بانتظار تحقق الدفع');
     }
+    await this.assertNoChefBookingSlotConflict(
+      row.vendorId,
+      row,
+      row.id,
+    );
     row.status = EventRequestStatus.ACCEPTED;
     row.paymentVerifiedAt = new Date();
     row.paymentVerifiedByAdminId = adminId;
@@ -570,81 +639,32 @@ export class EventRequestsService {
     vendorId: string,
     requestId: string,
   ): Promise<EventRequest> {
-    const row = await this.loadChefBookingOrThrow(vendorId, requestId);
-    if (!row.mealSlot) {
-      throw new ConflictException(
-        'لا يمكن القبول: الطلب بدون وجبة محددة — يُرجى تحديث البيانات',
-      );
-    }
-    const otherAccepted = await this.eventRequestRepository.exists({
-      where: {
-        vendorId,
-        scheduledDate: row.scheduledDate,
-        mealSlot: row.mealSlot,
-        status: EventRequestStatus.ACCEPTED,
-        requestType: In(CHEF_BOOKING_TYPES),
-        id: Not(requestId),
-      },
-    });
-    if (otherAccepted) {
-      throw new ConflictException('هذه الوجبة محجوزة بالفعل لدى الطبّاخ');
-    }
-    try {
-      const res = await this.eventRequestRepository.update(
-        {
-          id: requestId,
-          vendorId,
-          status: EventRequestStatus.PENDING,
-          requestType: In(CHEF_BOOKING_TYPES),
-        },
-        { status: EventRequestStatus.ACCEPTED },
-      );
-      if (!res.affected) {
-        throw new ConflictException(
-          'لا يمكن القبول: الطلب ليس قيد الانتظار أو انتهت مهلته',
-        );
-      }
-    } catch (e) {
-      if (isPostgresUniqueViolation(e)) {
-        throw new ConflictException(
-          'لا يمكن القبول: توجد حجوزة أخرى لنفس الوجبة والتاريخ',
-        );
-      }
-      throw e;
-    }
-    const updated = await this.eventRequestRepository.findOne({
-      where: { id: requestId },
-      relations: ['user', 'address', 'vendor'],
-    });
-    if (!updated) throw new NotFoundException();
-    return updated;
+    await this.loadChefBookingOrThrow(vendorId, requestId);
+    throw new BadRequestException(
+      'لم يعد القبول المباشر متاحاً — أرسل عرض سعر من تطبيق الطبّاخ؛ يصبح الحجز مؤكداً بعد دفع العميل عبر التطبيق.',
+    );
   }
 
   async rejectChefBookingByVendor(
     vendorId: string,
     requestId: string,
   ): Promise<EventRequest> {
-    await this.loadChefBookingOrThrow(vendorId, requestId);
-    const res = await this.eventRequestRepository.update(
-      {
-        id: requestId,
-        vendorId,
-        status: EventRequestStatus.PENDING,
-        requestType: In(CHEF_BOOKING_TYPES),
-      },
-      { status: EventRequestStatus.REJECTED },
-    );
-    if (!res.affected) {
-      throw new ConflictException(
-        'لا يمكن الرفض: الطلب ليس قيد الانتظار أو انتهت مهلته',
+    const row = await this.loadPaidServiceForVendorOrThrow(vendorId, requestId);
+    if (!isChefBookingType(row.requestType)) {
+      throw new BadRequestException(
+        'هذا المسار مخصص لحجوزات طبخ الذبائح والشواء فقط',
       );
     }
-    const updated = await this.eventRequestRepository.findOne({
-      where: { id: requestId },
-      relations: ['user', 'address', 'vendor'],
-    });
-    if (!updated) throw new NotFoundException();
-    return updated;
+    const cancellable = new Set<EventRequestStatus>([
+      EventRequestStatus.PENDING,
+      EventRequestStatus.QUOTED,
+      EventRequestStatus.PAYMENT_PENDING,
+    ]);
+    if (!cancellable.has(row.status)) {
+      throw new ConflictException('لا يمكن الرفض في هذه الحالة');
+    }
+    row.status = EventRequestStatus.REJECTED;
+    return this.eventRequestRepository.save(row);
   }
 
   /** إلغاء من العميل — الطبخ المنزلي: قبل التحضير؛ الذبائح/الشوي: pending فقط */
@@ -668,8 +688,15 @@ export class EventRequestsService {
         );
       }
     } else if (isChefBookingType(row.requestType)) {
-      if (row.status !== EventRequestStatus.PENDING) {
-        throw new ConflictException('يمكن إلغاء الطلبات قيد الانتظار فقط');
+      const chefCancellable = new Set<EventRequestStatus>([
+        EventRequestStatus.PENDING,
+        EventRequestStatus.QUOTED,
+        EventRequestStatus.PAYMENT_PENDING,
+      ]);
+      if (!chefCancellable.has(row.status)) {
+        throw new ConflictException(
+          'يمكن إلغاء حجز الذبائح/الشواء قبل قبول الدفع أو بدء التنفيذ فقط',
+        );
       }
     } else if (row.status !== EventRequestStatus.PENDING) {
       throw new ConflictException('يمكن إلغاء الطلبات قيد الانتظار فقط');
@@ -705,6 +732,12 @@ export class EventRequestsService {
     if (row.status !== EventRequestStatus.ACCEPTED) {
       throw new ConflictException(
         'يمكن تأكيد إتمام الخدمة بعد قبول الطبّاخ فقط',
+      );
+    }
+    const quoted = row.quotedAmount != null && String(row.quotedAmount).trim() !== '';
+    if (quoted) {
+      throw new ConflictException(
+        'هذا الحجز يمر بمسار الدفع والتسليم — انتظر حتى يؤكد الطبّاخ التسليم ثم استخدم «تأكيد الاستلام» من تفاصيل الحجز',
       );
     }
     row.status = EventRequestStatus.COMPLETED;

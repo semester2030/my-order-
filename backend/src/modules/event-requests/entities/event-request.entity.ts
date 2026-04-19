@@ -52,6 +52,17 @@ export function isChefBookingType(t: EventRequestType): boolean {
   return CHEF_BOOKING_TYPES.includes(t);
 }
 
+/** طلبات تستخدم مسار العرض → الدفع → التنفيذ → الإتمام (منزلي + ذبائح + شواء). */
+export const PAID_SERVICE_EVENT_REQUEST_TYPES: EventRequestType[] = [
+  EventRequestType.HOME_COOKING,
+  EventRequestType.POPULAR_COOKING,
+  EventRequestType.GRILLING,
+];
+
+export function isPaidServiceEventRequestType(t: EventRequestType): boolean {
+  return PAID_SERVICE_EVENT_REQUEST_TYPES.includes(t);
+}
+
 /** وقت مرجعي لطبخ الذبائح/الشواء (النافذة الفعلية ثابتة في المنتج) */
 export function scheduledTimeForChefMealSlot(slot: ChefMealSlot): string {
   if (slot === ChefMealSlot.LUNCH) return '10:00:00';
