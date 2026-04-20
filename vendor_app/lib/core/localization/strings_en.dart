@@ -289,6 +289,10 @@ class StringsEn {
   static const String homeCookingQuoteAmountHint = 'Total amount';
   static const String homeCookingQuoteNotesHint = 'Notes for customer (optional)';
   static const String homeCookingSendQuote = 'Send quote';
+  static const String homeCookingQuoteSentSnackbar =
+      'Quote sent — the customer will see it after refresh';
+  static const String homeCookingMutationFailed =
+      'Could not complete the action — check the message or contact support';
   static const String homeCookingRejectRequest = 'Reject request';
   static const String homeCookingMarkReady = 'Mark ready for pickup';
   static const String homeCookingInvalidAmount = 'Enter a valid amount';

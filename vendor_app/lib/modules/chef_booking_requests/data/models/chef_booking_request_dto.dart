@@ -39,6 +39,19 @@ class ChefBookingRequestDto {
     return s.isEmpty ? 'pending' : s;
   }
 
+  static String? _parseQuotedAmount(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is num) return raw.toString();
+    final s = raw.toString().trim();
+    return s.isEmpty ? null : s;
+  }
+
+  static int _parseGuestsCount(dynamic raw) {
+    if (raw is int) return raw;
+    if (raw is num) return raw.round();
+    return int.tryParse(raw?.toString() ?? '') ?? 1;
+  }
+
   factory ChefBookingRequestDto.fromJson(Map<String, dynamic> json) {
     List<Map<String, dynamic>>? addOnsList;
     final rawAdd = json['addOns'] ?? json['add_ons'];
@@ -57,7 +70,7 @@ class ChefBookingRequestDto {
       scheduledTime:
           json['scheduledTime'] as String? ?? json['scheduled_time'] as String? ?? '',
       mealSlot: json['mealSlot'] as String? ?? json['meal_slot'] as String?,
-      guestsCount: json['guestsCount'] as int? ?? json['guests_count'] as int? ?? 1,
+      guestsCount: _parseGuestsCount(json['guestsCount'] ?? json['guests_count']),
       status: _normStatus(json['status']),
       respondBy: json['respondBy'] as String? ?? json['respond_by'] as String?,
       notes: json['notes'] as String?,
@@ -68,7 +81,7 @@ class ChefBookingRequestDto {
           ? ChefBookingAddressDto.fromJson(json['address'] as Map<String, dynamic>)
           : null,
       addOns: addOnsList,
-      quotedAmount: json['quotedAmount'] as String? ?? json['quoted_amount'] as String?,
+      quotedAmount: _parseQuotedAmount(json['quotedAmount'] ?? json['quoted_amount']),
       quoteNotes: json['quoteNotes'] as String? ?? json['quote_notes'] as String?,
       completionCertificateCode: json['completionCertificateCode'] as String? ??
           json['completion_certificate_code'] as String?,

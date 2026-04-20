@@ -288,6 +288,8 @@ class StringsAr {
   static const String homeCookingQuoteAmountHint = 'المبلغ الإجمالي';
   static const String homeCookingQuoteNotesHint = 'ملاحظات للعميل (اختياري)';
   static const String homeCookingSendQuote = 'إرسال السعر';
+  static const String homeCookingQuoteSentSnackbar = 'تم إرسال عرض السعر — سيظهر للعميل بعد التحديث';
+  static const String homeCookingMutationFailed = 'تعذّر إكمال الإجراء — راجع الرسالة أو اتصل بالدعم';
   static const String homeCookingRejectRequest = 'رفض الطلب';
   static const String homeCookingMarkReady = 'تعيين كجاهز للاستلام';
   static const String homeCookingInvalidAmount = 'أدخل مبلغاً صالحاً';

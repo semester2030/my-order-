@@ -294,6 +294,10 @@ class AppLocalizations {
       isAr ? StringsAr.homeCookingQuoteNotesHint : StringsEn.homeCookingQuoteNotesHint;
   String get homeCookingSendQuote =>
       isAr ? StringsAr.homeCookingSendQuote : StringsEn.homeCookingSendQuote;
+  String get homeCookingQuoteSentSnackbar =>
+      isAr ? StringsAr.homeCookingQuoteSentSnackbar : StringsEn.homeCookingQuoteSentSnackbar;
+  String get homeCookingMutationFailed =>
+      isAr ? StringsAr.homeCookingMutationFailed : StringsEn.homeCookingMutationFailed;
   String get homeCookingRejectRequest =>
       isAr ? StringsAr.homeCookingRejectRequest : StringsEn.homeCookingRejectRequest;
   String get homeCookingMarkReady =>

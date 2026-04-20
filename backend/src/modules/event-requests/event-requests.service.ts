@@ -311,8 +311,22 @@ export class EventRequestsService {
       },
     );
     if (!res.affected) {
+      const current = await this.eventRequestRepository.findOne({
+        where: { id: requestId, vendorId },
+        select: ['id', 'status', 'requestType'],
+      });
+      if (!current) {
+        throw new ConflictException(
+          'لا يمكن عرض السعر: الطلب غير موجود أو غير مرتبط بهذا المزوّد',
+        );
+      }
+      if (current.status !== EventRequestStatus.PENDING) {
+        throw new ConflictException(
+          `لا يمكن عرض السعر في الحالة الحالية (${current.status}) — يُقبل فقط من «قيد الانتظار»`,
+        );
+      }
       throw new ConflictException(
-        'لا يمكن عرض السعر: الطلب ليس قيد الانتظار أو لا يدخل في مسار الخدمة المدفوعة',
+        'لا يمكن عرض السعر: نوع الطلب لا يدخل في مسار الخدمة المدفوعة',
       );
     }
     return this.reloadEventRequestOrThrow(requestId);

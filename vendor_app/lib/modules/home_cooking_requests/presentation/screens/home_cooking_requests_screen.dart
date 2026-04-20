@@ -114,15 +114,17 @@ class _HomeCookingRequestsScreenState extends ConsumerState<HomeCookingRequestsS
       if (!mounted) return;
       if (ok) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.homeCookingSendQuote), backgroundColor: SemanticColors.success),
+          SnackBar(
+            content: Text(l10n.homeCookingQuoteSentSnackbar),
+            backgroundColor: SemanticColors.success,
+          ),
         );
       } else {
-        final st = ref.read(homeCookingRequestsNotifierProvider);
-        if (st is HomeCookingRequestsError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(st.message), backgroundColor: SemanticColors.error),
-          );
-        }
+        final raw = ref.read(homeCookingRequestsNotifierProvider.notifier).lastMutationMessage;
+        final msg = (raw != null && raw.trim().isNotEmpty) ? raw.trim() : l10n.homeCookingMutationFailed;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: SemanticColors.error),
+        );
       }
     } finally {
       amountCtrl.dispose();

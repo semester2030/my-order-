@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/errors/error_mapper.dart';
 import '../../data/datasources/home_cooking_requests_remote_ds.dart';
 import '../../data/models/home_cooking_request_dto.dart';
 import 'home_cooking_requests_state.dart';
@@ -9,13 +10,16 @@ class HomeCookingRequestsNotifier extends StateNotifier<HomeCookingRequestsState
 
   final HomeCookingRequestsRemoteDs _ds;
 
+  String? lastMutationMessage;
+
   Future<void> load() async {
+    lastMutationMessage = null;
     state = HomeCookingRequestsLoading();
     try {
       final requests = await _ds.getRequests();
       state = HomeCookingRequestsLoaded(requests);
     } catch (e) {
-      state = HomeCookingRequestsError(e.toString());
+      state = HomeCookingRequestsError(ErrorMapper.toFailure(e).message);
     }
   }
 
@@ -24,6 +28,7 @@ class HomeCookingRequestsNotifier extends StateNotifier<HomeCookingRequestsState
     required double quotedAmount,
     String? quoteNotes,
   }) async {
+    lastMutationMessage = null;
     final prev = state is HomeCookingRequestsLoaded
         ? List<HomeCookingRequestDto>.from((state as HomeCookingRequestsLoaded).requests)
         : null;
@@ -32,16 +37,18 @@ class HomeCookingRequestsNotifier extends StateNotifier<HomeCookingRequestsState
       await load();
       return true;
     } catch (e) {
+      lastMutationMessage = ErrorMapper.toFailure(e).message;
       if (prev != null) {
         state = HomeCookingRequestsLoaded(prev);
       } else {
-        state = HomeCookingRequestsError(e.toString());
+        state = HomeCookingRequestsError(lastMutationMessage!);
       }
       return false;
     }
   }
 
   Future<bool> reject(String requestId) async {
+    lastMutationMessage = null;
     final prev = state is HomeCookingRequestsLoaded
         ? List<HomeCookingRequestDto>.from((state as HomeCookingRequestsLoaded).requests)
         : null;
@@ -50,16 +57,18 @@ class HomeCookingRequestsNotifier extends StateNotifier<HomeCookingRequestsState
       await load();
       return true;
     } catch (e) {
+      lastMutationMessage = ErrorMapper.toFailure(e).message;
       if (prev != null) {
         state = HomeCookingRequestsLoaded(prev);
       } else {
-        state = HomeCookingRequestsError(e.toString());
+        state = HomeCookingRequestsError(lastMutationMessage!);
       }
       return false;
     }
   }
 
   Future<bool> markReady(String requestId) async {
+    lastMutationMessage = null;
     final prev = state is HomeCookingRequestsLoaded
         ? List<HomeCookingRequestDto>.from((state as HomeCookingRequestsLoaded).requests)
         : null;
@@ -68,10 +77,11 @@ class HomeCookingRequestsNotifier extends StateNotifier<HomeCookingRequestsState
       await load();
       return true;
     } catch (e) {
+      lastMutationMessage = ErrorMapper.toFailure(e).message;
       if (prev != null) {
         state = HomeCookingRequestsLoaded(prev);
       } else {
-        state = HomeCookingRequestsError(e.toString());
+        state = HomeCookingRequestsError(lastMutationMessage!);
       }
       return false;
     }
@@ -81,6 +91,7 @@ class HomeCookingRequestsNotifier extends StateNotifier<HomeCookingRequestsState
     String requestId, {
     String? handoverNotes,
   }) async {
+    lastMutationMessage = null;
     final prev = state is HomeCookingRequestsLoaded
         ? List<HomeCookingRequestDto>.from((state as HomeCookingRequestsLoaded).requests)
         : null;
@@ -89,10 +100,11 @@ class HomeCookingRequestsNotifier extends StateNotifier<HomeCookingRequestsState
       await load();
       return true;
     } catch (e) {
+      lastMutationMessage = ErrorMapper.toFailure(e).message;
       if (prev != null) {
         state = HomeCookingRequestsLoaded(prev);
       } else {
-        state = HomeCookingRequestsError(e.toString());
+        state = HomeCookingRequestsError(lastMutationMessage!);
       }
       return false;
     }

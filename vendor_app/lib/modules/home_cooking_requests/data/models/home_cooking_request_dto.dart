@@ -43,6 +43,12 @@ class HomeCookingRequestDto {
     return s.isEmpty ? 'pending' : s;
   }
 
+  static int _parseGuestsCount(dynamic raw) {
+    if (raw is int) return raw;
+    if (raw is num) return raw.round();
+    return int.tryParse(raw?.toString() ?? '') ?? 1;
+  }
+
   factory HomeCookingRequestDto.fromJson(Map<String, dynamic> json) {
     final rawQuoted = json['quotedAmount'] ?? json['quoted_amount'];
     String? quotedStr;
@@ -58,7 +64,7 @@ class HomeCookingRequestDto {
           json['scheduledDate'] as String? ?? json['scheduled_date'] as String? ?? '',
       scheduledTime:
           json['scheduledTime'] as String? ?? json['scheduled_time'] as String? ?? '',
-      guestsCount: json['guestsCount'] as int? ?? json['guests_count'] as int? ?? 1,
+      guestsCount: _parseGuestsCount(json['guestsCount'] ?? json['guests_count']),
       status: _normStatus(json['status']),
       notes: json['notes'] as String?,
       quotedAmount: quotedStr,
