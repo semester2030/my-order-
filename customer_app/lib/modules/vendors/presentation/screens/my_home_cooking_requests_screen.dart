@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/widgets/service_request_list_card.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/routing/route_names.dart';
 import '../providers/my_home_cooking_notifier.dart';
@@ -30,6 +31,11 @@ class _MyHomeCookingRequestsScreenState extends ConsumerState<MyHomeCookingReque
     final v = row[camel] ?? row[snake];
     if (v == null) return null;
     return v.toString();
+  }
+
+  String _normStatus(String? raw) {
+    final t = (raw ?? '').trim().toLowerCase();
+    return t.isEmpty ? 'pending' : t;
   }
 
   String _vendorName(Map<String, dynamic> row) {
@@ -112,13 +118,14 @@ class _MyHomeCookingRequestsScreenState extends ConsumerState<MyHomeCookingReque
             : RefreshIndicator(
                 onRefresh: () => ref.read(myHomeCookingNotifierProvider.notifier).load(),
                 child: ListView.separated(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(Insets.lg),
                   itemCount: items.length,
                   separatorBuilder: (_, __) => Gaps.mdV,
                   itemBuilder: (context, index) {
                     final row = items[index];
                     final id = _stringField(row, 'id', 'id') ?? '';
-                    final status = _stringField(row, 'status', 'status');
+                    final status = _normStatus(_stringField(row, 'status', 'status'));
                     final vendorName = _vendorName(row);
                     final guests = row['guestsCount'] ?? row['guests_count'];
                     final quoted = row['quotedAmount'] ?? row['quoted_amount'];
@@ -138,48 +145,51 @@ class _MyHomeCookingRequestsScreenState extends ConsumerState<MyHomeCookingReque
                         statusColor = AppColors.primary;
                     }
 
-                    return Card(
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: id.isEmpty
-                            ? null
-                            : () => context.push('${RouteNames.myHomeCookingRequests}/$id'),
-                        child: Padding(
-                          padding: const EdgeInsets.all(Insets.md),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(child: Text(vendorName, style: TextStyles.titleSmall)),
-                                  Icon(Icons.chevron_right, color: AppColors.textSecondary),
+                    return ServiceRequestListCard(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: AppRadius.lgAll,
+                          onTap: id.isEmpty
+                              ? null
+                              : () => context.push('${RouteNames.myHomeCookingRequests}/$id'),
+                          child: Padding(
+                            padding: const EdgeInsets.all(Insets.md),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(child: Text(vendorName, style: TextStyles.titleSmall)),
+                                    Icon(Icons.chevron_right, color: AppColors.textSecondary),
+                                  ],
+                                ),
+                                Gaps.smV,
+                                Text(
+                                  _scheduleLine(row),
+                                  style: TextStyles.bodyMedium,
+                                ),
+                                if (guests != null) ...[
+                                  Gaps.xsV,
+                                  Text(
+                                    '${l10n.guestsCount}: $guests',
+                                    style: TextStyles.bodySmall,
+                                  ),
                                 ],
-                              ),
-                              Gaps.smV,
-                              Text(
-                                _scheduleLine(row),
-                                style: TextStyles.bodyMedium,
-                              ),
-                              if (guests != null) ...[
-                                Gaps.xsV,
+                                if (quoted != null && quoted.toString().isNotEmpty) ...[
+                                  Gaps.xsV,
+                                  Text(
+                                    '${l10n.homeCookingQuotedAmount}: ${quoted.toString()} ر.س',
+                                    style: TextStyles.bodySmall,
+                                  ),
+                                ],
+                                Gaps.smV,
                                 Text(
-                                  '${l10n.guestsCount}: $guests',
-                                  style: TextStyles.bodySmall,
+                                  _statusLabel(l10n, status),
+                                  style: TextStyles.labelLarge.copyWith(color: statusColor),
                                 ),
                               ],
-                              if (quoted != null && quoted.toString().isNotEmpty) ...[
-                                Gaps.xsV,
-                                Text(
-                                  '${l10n.homeCookingQuotedAmount}: ${quoted.toString()} ر.س',
-                                  style: TextStyles.bodySmall,
-                                ),
-                              ],
-                              Gaps.smV,
-                              Text(
-                                _statusLabel(l10n, status),
-                                style: TextStyles.labelLarge.copyWith(color: statusColor),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),

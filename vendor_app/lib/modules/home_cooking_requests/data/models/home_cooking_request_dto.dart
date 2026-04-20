@@ -38,6 +38,11 @@ class HomeCookingRequestDto {
   final ChefBookingUserDto? user;
   final ChefBookingAddressDto? address;
 
+  static String _normStatus(dynamic v) {
+    final s = (v ?? 'pending').toString().trim().toLowerCase();
+    return s.isEmpty ? 'pending' : s;
+  }
+
   factory HomeCookingRequestDto.fromJson(Map<String, dynamic> json) {
     final rawQuoted = json['quotedAmount'] ?? json['quoted_amount'];
     String? quotedStr;
@@ -46,7 +51,7 @@ class HomeCookingRequestDto {
     }
     final del = json['delivery'];
     return HomeCookingRequestDto(
-      id: json['id'] as String? ?? '',
+      id: json['id']?.toString() ?? '',
       requestType:
           json['requestType'] as String? ?? json['request_type'] as String? ?? 'home_cooking',
       scheduledDate:
@@ -54,7 +59,7 @@ class HomeCookingRequestDto {
       scheduledTime:
           json['scheduledTime'] as String? ?? json['scheduled_time'] as String? ?? '',
       guestsCount: json['guestsCount'] as int? ?? json['guests_count'] as int? ?? 1,
-      status: json['status'] as String? ?? 'pending',
+      status: _normStatus(json['status']),
       notes: json['notes'] as String?,
       quotedAmount: quotedStr,
       quoteNotes: json['quoteNotes'] as String? ?? json['quote_notes'] as String?,

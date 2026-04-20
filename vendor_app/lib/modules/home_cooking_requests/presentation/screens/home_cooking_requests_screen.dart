@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vendor_app/core/di/providers.dart';
 import 'package:vendor_app/core/localization/app_localizations.dart';
 import 'package:vendor_app/core/theme/design_system.dart';
+import 'package:vendor_app/core/widgets/service_request_list_card.dart';
 import 'package:vendor_app/modules/home_cooking_requests/data/models/home_cooking_request_dto.dart';
 import 'package:vendor_app/modules/home_cooking_requests/presentation/providers/home_cooking_requests_state.dart';
 
@@ -59,30 +60,33 @@ class _HomeCookingRequestsScreenState extends ConsumerState<HomeCookingRequestsS
 
     final go = await showDialog<bool>(
       context: context,
+      useRootNavigator: true,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.homeCookingQuoteDialogTitle),
         content: Form(
           key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: amountCtrl,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: l10n.homeCookingQuoteAmountHint),
-                validator: (v) {
-                  final n = double.tryParse((v ?? '').trim().replaceAll(',', '.'));
-                  if (n == null || n < 0.01) return l10n.homeCookingInvalidAmount;
-                  return null;
-                },
-              ),
-              Gaps.smV,
-              TextFormField(
-                controller: notesCtrl,
-                decoration: InputDecoration(labelText: l10n.homeCookingQuoteNotesHint),
-                maxLines: 2,
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: amountCtrl,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(labelText: l10n.homeCookingQuoteAmountHint),
+                  validator: (v) {
+                    final n = double.tryParse((v ?? '').trim().replaceAll(',', '.'));
+                    if (n == null || n < 0.01) return l10n.homeCookingInvalidAmount;
+                    return null;
+                  },
+                ),
+                Gaps.smV,
+                TextFormField(
+                  controller: notesCtrl,
+                  decoration: InputDecoration(labelText: l10n.homeCookingQuoteNotesHint),
+                  maxLines: 2,
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -167,6 +171,7 @@ class _HomeCookingRequestsScreenState extends ConsumerState<HomeCookingRequestsS
     final notesCtrl = TextEditingController();
     final go = await showDialog<bool>(
       context: context,
+      useRootNavigator: true,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.homeCookingHandoverDialogTitle),
         content: SingleChildScrollView(
@@ -266,6 +271,7 @@ class _HomeCookingRequestsScreenState extends ConsumerState<HomeCookingRequestsS
             : RefreshIndicator(
                 onRefresh: () => ref.read(homeCookingRequestsNotifierProvider.notifier).load(),
                 child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: EdgeInsets.all(Insets.lg),
                   itemCount: requests.length,
                   itemBuilder: (context, index) {
@@ -320,7 +326,7 @@ class _HomeCookingTile extends StatelessWidget {
         ? '${request.address!.streetAddress ?? ''} ${request.address!.city ?? ''}'.trim()
         : '';
 
-    return Card(
+    return ServiceRequestListCard(
       child: Padding(
         padding: EdgeInsets.all(Insets.md),
         child: Column(

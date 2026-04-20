@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/widgets/service_request_list_card.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/routing/route_names.dart';
 import '../providers/my_chef_bookings_notifier.dart';
@@ -75,6 +76,11 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
     final v = row[camel] ?? row[snake];
     if (v == null) return null;
     return v.toString();
+  }
+
+  String _normStatus(String? raw) {
+    final t = (raw ?? '').trim().toLowerCase();
+    return t.isEmpty ? 'pending' : t;
   }
 
   String _formatDeadline(AppLocalizations l10n, String iso) {
@@ -160,13 +166,14 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
             : RefreshIndicator(
                 onRefresh: () => ref.read(myChefBookingsNotifierProvider.notifier).load(),
                 child: ListView.separated(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(Insets.lg),
                   itemCount: items.length,
                   separatorBuilder: (_, __) => Gaps.mdV,
                   itemBuilder: (context, index) {
                     final row = items[index];
                     final id = _stringField(row, 'id', 'id') ?? '';
-                    final status = _stringField(row, 'status', 'status');
+                    final status = _normStatus(_stringField(row, 'status', 'status'));
                     final reqType = _stringField(row, 'requestType', 'request_type');
                     final date = _stringField(row, 'scheduledDate', 'scheduled_date') ?? '';
                     final time = _stringField(row, 'scheduledTime', 'scheduled_time') ?? '';
@@ -197,7 +204,7 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
                         statusColor = AppColors.primary;
                     }
 
-                    return Card(
+                    return ServiceRequestListCard(
                       child: Padding(
                         padding: const EdgeInsets.all(Insets.md),
                         child: Column(

@@ -34,6 +34,11 @@ class ChefBookingRequestDto {
   final String? quoteNotes;
   final String? completionCertificateCode;
 
+  static String _normStatus(dynamic v) {
+    final s = (v ?? 'pending').toString().trim().toLowerCase();
+    return s.isEmpty ? 'pending' : s;
+  }
+
   factory ChefBookingRequestDto.fromJson(Map<String, dynamic> json) {
     List<Map<String, dynamic>>? addOnsList;
     final rawAdd = json['addOns'] ?? json['add_ons'];
@@ -45,7 +50,7 @@ class ChefBookingRequestDto {
     }
 
     return ChefBookingRequestDto(
-      id: json['id'] as String? ?? '',
+      id: json['id']?.toString() ?? '',
       requestType: json['requestType'] as String? ?? json['request_type'] as String? ?? '',
       scheduledDate:
           json['scheduledDate'] as String? ?? json['scheduled_date'] as String? ?? '',
@@ -53,7 +58,7 @@ class ChefBookingRequestDto {
           json['scheduledTime'] as String? ?? json['scheduled_time'] as String? ?? '',
       mealSlot: json['mealSlot'] as String? ?? json['meal_slot'] as String?,
       guestsCount: json['guestsCount'] as int? ?? json['guests_count'] as int? ?? 1,
-      status: json['status'] as String? ?? 'pending',
+      status: _normStatus(json['status']),
       respondBy: json['respondBy'] as String? ?? json['respond_by'] as String?,
       notes: json['notes'] as String?,
       user: json['user'] != null
