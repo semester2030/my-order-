@@ -27,6 +27,28 @@ class StringsAr {
   static const String haveAccountLogin = 'لديك حساب؟ تسجيل الدخول';
   static const String backToLogin = 'العودة لتسجيل الدخول';
   static const String welcomeBack = 'مرحباً بعودتك';
+  static const String exploreApp = 'استكشف التطبيق';
+  static const String exploreAppSubtitle =
+      'تعرّف على أدوات إدارة خدماتك قبل إنشاء حساب';
+  static const String vendorExploreTitle = 'منصة مقدّم الخدمة';
+  static const String vendorExploreSubtitle =
+      'إدارة الطلبات، الفيديوهات، الحجوزات، والتحليلات من مكان واحد';
+  static const String exploreFeatureOrdersTitle = 'إدارة الطلبات';
+  static const String exploreFeatureOrdersDesc =
+      'متابعة طلبات الطبخ المنزلي والحجوزات وتحديث حالتها';
+  static const String exploreFeatureVideosTitle = 'فيديوهات العرض';
+  static const String exploreFeatureVideosDesc =
+      'رفع مقاطع قصيرة لعرض أطباقك وخدماتك للعملاء';
+  static const String exploreFeatureMenuTitle = 'الأطباق والخدمات';
+  static const String exploreFeatureMenuDesc =
+      'إضافة الأطباق، الباقات، وعروض المناسبات';
+  static const String exploreFeatureBookingsTitle = 'حجوزات الطبّاخ';
+  static const String exploreFeatureBookingsDesc =
+      'استقبال طلبات الولائم والشواء والرد بعروض الأسعار';
+  static const String exploreFeatureAnalyticsTitle = 'التحليلات';
+  static const String exploreFeatureAnalyticsDesc =
+      'متابعة الأداء والطلبات لتحسين خدمتك';
+  static const String exploreReadyToJoin = 'جاهز للانضمام؟';
   static const String enterEmailPassword = 'أدخل البريد وكلمة المرور';
   static const String emailLabel = 'البريد الإلكتروني';
   static const String passwordLabel = 'كلمة المرور';

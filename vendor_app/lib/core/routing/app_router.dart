@@ -6,6 +6,7 @@ import 'route_names.dart';
 import '../storage/storage_keys.dart';
 import '../di/providers.dart';
 import '../../modules/auth/presentation/screens/login_screen.dart';
+import '../../modules/auth/presentation/screens/explore_app_screen.dart';
 import '../../modules/auth/presentation/screens/pending_screen.dart';
 import '../../modules/auth/presentation/screens/register_screen.dart';
 import '../../modules/auth/presentation/screens/vendor_forgot_password_screen.dart';
@@ -66,8 +67,7 @@ GoRouter createAppRouter(Ref ref) {
           path == RouteNames.eventRequests ||
           path == RouteNames.chefBookingRequests ||
           path == RouteNames.homeCookingRequests ||
-          path == RouteNames.privacyPolicy ||
-          path == RouteNames.terms;
+          path == RouteNames.deleteAccount;
       if (!isProtected) return null;
       try {
         final secureStorage = ref.read(secureStorageProvider);
@@ -93,6 +93,14 @@ GoRouter createAppRouter(Ref ref) {
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
           child: const LoginScreen(),
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.explore,
+        name: 'explore',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          key: state.pageKey,
+          child: const ExploreAppScreen(),
         ),
       ),
       GoRoute(

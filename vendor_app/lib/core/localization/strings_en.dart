@@ -27,6 +27,28 @@ class StringsEn {
   static const String haveAccountLogin = 'Have an account? Login';
   static const String backToLogin = 'Back to Login';
   static const String welcomeBack = 'Welcome back';
+  static const String exploreApp = 'Explore the app';
+  static const String exploreAppSubtitle =
+      'See how provider tools work before creating an account';
+  static const String vendorExploreTitle = 'Provider platform';
+  static const String vendorExploreSubtitle =
+      'Manage orders, videos, bookings, and analytics in one place';
+  static const String exploreFeatureOrdersTitle = 'Order management';
+  static const String exploreFeatureOrdersDesc =
+      'Track home-cooking requests and bookings with status updates';
+  static const String exploreFeatureVideosTitle = 'Showcase videos';
+  static const String exploreFeatureVideosDesc =
+      'Upload short clips so customers can discover your dishes and services';
+  static const String exploreFeatureMenuTitle = 'Dishes & services';
+  static const String exploreFeatureMenuDesc =
+      'Add menu items, packages, and private-event offers';
+  static const String exploreFeatureBookingsTitle = 'Chef bookings';
+  static const String exploreFeatureBookingsDesc =
+      'Receive feast and grilling requests and respond with quotes';
+  static const String exploreFeatureAnalyticsTitle = 'Analytics';
+  static const String exploreFeatureAnalyticsDesc =
+      'Monitor performance and demand to improve your service';
+  static const String exploreReadyToJoin = 'Ready to join?';
   static const String enterEmailPassword = 'Enter email and password';
   static const String emailLabel = 'Email';
   static const String passwordLabel = 'Password';

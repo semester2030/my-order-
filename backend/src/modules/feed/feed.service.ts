@@ -99,9 +99,10 @@ export class FeedService {
   }
 
   /**
-   * Get feed items with algorithm
+   * Get feed items with algorithm.
+   * @param userId null = تصفح عام بدون حساب (لا يُطلب عنوان).
    */
-  async getFeed(userId: string, query: GetFeedDto) {
+  async getFeed(userId: string | null, query: GetFeedDto) {
     const {
       page = 1,
       limit = 10,
@@ -123,17 +124,15 @@ export class FeedService {
       city,
     });
 
-    // Get user address
-    const userAddress = await this.getUserAddress(userId);
+    // Get user address (optional for public browse)
+    const userAddress = userId ? await this.getUserAddress(userId) : null;
 
-    if (!userAddress) {
+    if (userId && !userAddress) {
       console.log('No user address found');
       throw new NotFoundException(
         'No delivery address found. Please add an address first.',
       );
     }
-
-    console.log('User address:', userAddress);
 
     // معتمد + نشط فقط. لا نشترط isAcceptingOrders هنا حتى لا يُخفى الفيد بسبب حقل تشغيلي (مثلاً false بالخطأ أو بيانات قديمة)
     // بينما رفع الفيديو يتطلّب اعتماداً فقط — كان ينتج تناقض «معتمد + رفع ناجح لكن لا يظهر للعميل».
@@ -262,12 +261,14 @@ export class FeedService {
         const vendor = vendorMap.get(menuItem.vendorId);
         if (!vendor) return null;
 
-        const distance = this.calculateDistance(
-          vendor.latitude,
-          vendor.longitude,
-          userAddress.latitude,
-          userAddress.longitude,
-        );
+        const distance = userAddress
+          ? this.calculateDistance(
+              vendor.latitude,
+              vendor.longitude,
+              userAddress.latitude,
+              userAddress.longitude,
+            )
+          : 0;
 
         return {
           menuItem,

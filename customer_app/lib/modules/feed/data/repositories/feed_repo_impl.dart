@@ -16,6 +16,7 @@ class FeedRepositoryImpl implements FeedRepository {
     String? sortBy,
     String? city,
     int? maxDistance,
+    bool publicBrowse = false,
   }) async {
     final dto = await remoteDataSource.getFeed(
       page: page,
@@ -25,6 +26,7 @@ class FeedRepositoryImpl implements FeedRepository {
       sortBy: sortBy,
       city: city,
       maxDistance: maxDistance,
+      publicBrowse: publicBrowse,
     );
 
     return FeedPage(

@@ -1,15 +1,17 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/auth/require_customer_auth.dart';
 import '../../domain/entities/feed_item.dart';
 import 'view_chef_button.dart';
 
-class DishOverlay extends StatelessWidget {
+class DishOverlay extends ConsumerWidget {
   final FeedItem item;
   final VoidCallback? onAddToCart;
   /// إن كانت الطباخة تقبل "خدمات عند الطلب"؛ إن false يظهر الزر معطّلاً.
@@ -86,7 +88,9 @@ class DishOverlay extends StatelessWidget {
     return '';
   }
 
-  void _onPrimaryServiceCta(BuildContext context) {
+  Future<void> _onPrimaryServiceCta(BuildContext context, WidgetRef ref) async {
+    final ok = await requireCustomerAuth(context, ref);
+    if (!ok || !context.mounted) return;
     if (_isPrivateEvents) {
       context.push('${RouteNames.requestPrivateEvent}/${item.vendor.id}');
     } else {
@@ -105,7 +109,7 @@ class DishOverlay extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     return SafeArea(
       child: Padding(
@@ -350,7 +354,7 @@ class DishOverlay extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: acceptsCustomRequests
-                              ? () => _onPrimaryServiceCta(context)
+                              ? () => _onPrimaryServiceCta(context, ref)
                               : null,
                           style: VideoOverlayTheme.ctaButtonStyle,
                           child: Row(

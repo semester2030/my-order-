@@ -7,6 +7,8 @@ import '../../../../core/theme/design_system.dart';
 import '../../../../core/widgets/branded_logo.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/config/guest_mode_keys.dart';
+import '../../../../core/di/providers.dart';
 import '../providers/auth_notifier.dart';
 import '../../utils/navigation_helper.dart';
 
@@ -68,7 +70,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (isAuthenticated && mounted) {
       await navigateAfterAuth(context, ref);
     } else if (mounted) {
-      context.go(RouteNames.welcome);
+      final localStorage = ref.read(localStorageProvider);
+      final guestBrowsing =
+          await localStorage.getBool(GuestModeKeys.browsing) == true;
+      if (guestBrowsing) {
+        context.go(RouteNames.categories);
+      } else {
+        context.go(RouteNames.welcome);
+      }
     }
   }
 

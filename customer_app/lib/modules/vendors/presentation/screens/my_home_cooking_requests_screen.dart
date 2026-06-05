@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/config/service_request_ui.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/widgets/service_request_list_card.dart';
 import '../../../../core/localization/app_localizations.dart';
@@ -50,7 +51,7 @@ class _MyHomeCookingRequestsScreenState extends ConsumerState<MyHomeCookingReque
   String _statusLabel(AppLocalizations l10n, String? status) {
     switch (status) {
       case 'quoted':
-        return l10n.homeCookingStatusQuoted;
+        return quotedServiceStatusLabel(l10n);
       case 'payment_pending':
         return l10n.homeCookingStatusPaymentPending;
       case 'accepted':

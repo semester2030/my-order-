@@ -28,6 +28,10 @@ class StringsAr {
   static const String homeCookingStatusPending = 'بانتظار عرض السعر من المطبخ';
   static const String homeCookingStatusQuoted =
       'تم عرض السعر — ادفع بالبطاقة أو حوِّل ثم أعلن للإدارة';
+  static const String homeCookingStatusQuotedPaymentComingSoon =
+      'تم عرض السعر — الدفع الإلكتروني قريباً';
+  static const String electronicPaymentComingSoon =
+      'الدفع الإلكتروني قريباً — سيتم التواصل معك بعد عرض السعر';
   static const String homeCookingStatusPaymentPending = 'بانتظار تأكيد الإدارة للتحويل';
   static const String homeCookingStatusAccepted = 'قيد التحضير';
   static const String homeCookingStatusReady = 'جاهز للاستلام';
@@ -70,6 +74,8 @@ class StringsAr {
   static const String chefBookingTypePopularCooking = 'طبخ ذبائح';
   static const String chefBookingTypeGrilling = 'شواء خارجي';
   static const String chefBookingStatusPending = 'قيد انتظار رد الطبّاخ';
+  static const String chefBookingDetailsButton = 'التفاصيل';
+  static const String chefBookingDetailsAndPaymentButton = 'التفاصيل والدفع';
   static const String chefBookingStatusAccepted = 'مقبول';
   static const String chefBookingStatusRejected = 'مرفوض';
   static const String chefBookingStatusCancelled = 'ملغى';
@@ -191,13 +197,31 @@ class StringsAr {
   static const String registerSubtitle = 'الاسم، البريد الإلكتروني، والرمز السري';
   static const String name = 'الاسم';
   static const String nameHint = 'أدخل اسمك';
-  static const String passwordMinHint = '6 أحرف على الأقل';
+  static const String passwordMinHint = '6 أحرف على الأقل — حروف أو أرقام';
+  static const String passwordRequirementsNote =
+      'شروط الرمز السري:\n'
+      '• 6 أحرف على الأقل\n'
+      '• يمكنك كتابة حروف فقط، أو أرقام فقط، أو حروف وأرقام معاً\n'
+      '• اختر رمزاً تتذكّره ولا تشاركه مع أحد';
   static const String registerButton = 'تسجيل';
   static const String haveAccountLogin = 'لديك حساب؟ تسجيل الدخول';
   static const String welcomeTo = 'مرحباً بك في';
   static const String appName = 'مطبخ البيت';
   static const String premiumFoodDelivery = 'توصيل طعام منزلي أصيل';
   static const String splashTagline = 'طعام منزلي إلى بابك';
+  static const String browseAsGuest = 'تصفح بدون تسجيل';
+  static const String browseAsGuestSubtitle =
+      'اكتشف الخدمات ومقاطع الفيديو دون إنشاء حساب';
+  static const String guestExploreBanner =
+      'أنت تتصفح كزائر — سجّل الدخول عند الحجز أو الطلب';
+  static const String guestExploreBannerAction = 'دخول';
+  static const String guestAuthRequiredTitle = 'يلزم تسجيل الدخول';
+  static const String guestAuthRequiredMessage =
+      'لإكمال الحجز أو الطلب أنشئ حساباً أو سجّل الدخول. يمكنك مواصلة التصفح بدون حساب.';
+  static const String guestProfileTitle = 'حساب الزائر';
+  static const String guestProfileSubtitle =
+      'تصفح التطبيق واكتشف الخدمات. عند الاستعداد للحجز سجّل الدخول أو أنشئ حساباً.';
+  static const String guestExitBrowse = 'إيقاف التصفح كزائر';
 
   // Validators
   static const String validatorFieldRequired = 'هذا الحقل مطلوب';

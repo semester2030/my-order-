@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/config/service_request_ui.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/widgets/service_request_list_card.dart';
 import '../../../../core/localization/app_localizations.dart';
@@ -51,7 +52,7 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
   String _statusLabel(AppLocalizations l10n, String? status) {
     switch (status) {
       case 'quoted':
-        return l10n.homeCookingStatusQuoted;
+        return quotedServiceStatusLabel(l10n);
       case 'payment_pending':
         return l10n.homeCookingStatusPaymentPending;
       case 'completed':
@@ -253,9 +254,7 @@ class _MyChefBookingsScreenState extends ConsumerState<MyChefBookingsScreen> {
                               Gaps.mdV,
                               FilledButton.tonal(
                                 onPressed: () => context.push('${RouteNames.myChefBookings}/$id'),
-                                child: Text(
-                                  l10n.isAr ? 'التفاصيل والدفع' : 'Details & payment',
-                                ),
+                                child: Text(chefBookingListActionLabel(l10n)),
                               ),
                             ],
                             if (status == 'completed') ...[

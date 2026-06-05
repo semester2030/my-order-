@@ -1,16 +1,19 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
+import '../../../../core/widgets/guest_explore_banner.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../auth/presentation/providers/auth_notifier.dart';
+import '../../../auth/presentation/providers/guest_mode_notifier.dart';
 
 /// Single screen: four category icons. Tapping one opens Feed with that category.
-/// No duplicate screens or widgets — icons built inline.
-class CategoriesScreen extends StatelessWidget {
+class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
 
   void _openFeed(BuildContext context, String category) {
@@ -18,8 +21,15 @@ class CategoriesScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
+    final isGuest = ref.watch(guestModeProvider);
+    final isAuth = ref.watch(authNotifierProvider).maybeWhen(
+          authenticated: (_) => true,
+          orElse: () => false,
+        );
+    final showGuestBanner = isGuest && !isAuth;
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
@@ -30,50 +40,60 @@ class CategoriesScreen extends StatelessWidget {
         backgroundColor: AppColors.surface,
         elevation: 0,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: Insets.lg, vertical: Insets.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.primaryContainer.withValues(alpha: 0.55),
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.12),
-                ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Insets.md,
-                  vertical: Insets.sm + 2,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.play_circle_outline_rounded,
-                      size: 22,
-                      color: AppColors.primary,
-                    ),
-                    Gaps.smH,
-                    Expanded(
-                      child: Text(
-                        l.categoriesVideoHint,
-                        style: TextStyles.bodySmall.copyWith(
-                          color: AppColors.textPrimary.withValues(alpha: 0.82),
-                          height: 1.4,
-                          fontWeight: FontWeight.w500,
-                        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (showGuestBanner)
+            GuestExploreBanner(
+              message: l.guestExploreBanner,
+              actionLabel: l.guestExploreBannerAction,
+              onAction: () => context.push(RouteNames.login),
+            ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: Insets.lg, vertical: Insets.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryContainer.withValues(alpha: 0.55),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.12),
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-            Gaps.mdV,
-            Expanded(
-              child: GridView.count(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: Insets.md,
+                        vertical: Insets.sm + 2,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.play_circle_outline_rounded,
+                            size: 22,
+                            color: AppColors.primary,
+                          ),
+                          Gaps.smH,
+                          Expanded(
+                            child: Text(
+                              l.categoriesVideoHint,
+                              style: TextStyles.bodySmall.copyWith(
+                                color: AppColors.textPrimary.withValues(alpha: 0.82),
+                                height: 1.4,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Gaps.mdV,
+                  Expanded(
+                    child: GridView.count(
                 crossAxisCount: 2,
                 mainAxisSpacing: Insets.md,
                 crossAxisSpacing: Insets.md,
@@ -104,8 +124,11 @@ class CategoriesScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 0),
     );

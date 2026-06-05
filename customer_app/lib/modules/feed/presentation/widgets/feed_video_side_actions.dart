@@ -1,19 +1,18 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/constants/provider_categories.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/auth/require_customer_auth.dart';
 import '../../domain/entities/feed_item.dart';
 
 /// أزرار على يمين الفيديو (نمط تيك توك).
-/// — فئات البرومو (منزلي، ذبائح، شواء، مناسبات): زر حجز واحد بأيقونة مناسبة — صفحة الطبّاخ من الزر العريض أسفل المقطع.
-/// — غير ذلك: «عرض الطباخ / أطباق يتقنها» + زر الحجز إن وُجد.
-class FeedVideoSideActions extends StatelessWidget {
+class FeedVideoSideActions extends ConsumerWidget {
   final FeedItem item;
-  /// إن كانت الخدمة غير متاحة يظهر الزر معطّلاً مع توضيح.
   final bool acceptsCustomRequests;
 
   const FeedVideoSideActions({
@@ -25,7 +24,6 @@ class FeedVideoSideActions extends StatelessWidget {
   bool get _isPopularCooking =>
       item.vendor.providerCategory == ProviderCategories.popularCooking;
 
-  /// الطبخ المنزلي: "اطلب وجبتك المخصصة" | طبخ الذبائح + الشواء الخارجي: "احجز الطباخ" | مناسبات/بوفيه: "طلب مناسبة"
   bool get _showRequestChefButton {
     final cat = item.vendor.providerCategory;
     return cat == ProviderCategories.homeCooking ||
@@ -62,8 +60,26 @@ class FeedVideoSideActions extends StatelessWidget {
     }
   }
 
+  Future<void> _handleBookingTap(BuildContext context, WidgetRef ref) async {
+    final ok = await requireCustomerAuth(context, ref);
+    if (!ok || !context.mounted) return;
+    if (item.vendor.providerCategory == ProviderCategories.privateEvents) {
+      context.push('${RouteNames.requestPrivateEvent}/${item.vendor.id}');
+    } else if (item.vendor.isPopularCooking) {
+      context.push(
+        '${RouteNames.requestChef}/${item.vendor.id}?category=${ProviderCategories.popularCooking}',
+      );
+    } else if (item.vendor.isGrilling) {
+      context.push(
+        '${RouteNames.requestChef}/${item.vendor.id}?category=${ProviderCategories.grilling}',
+      );
+    } else {
+      context.push('${RouteNames.requestChef}/${item.vendor.id}');
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     return Positioned(
       right: Insets.sm,
@@ -89,26 +105,7 @@ class FeedVideoSideActions extends StatelessWidget {
               label: _getRequestLabel(l),
               tooltip: _usesFeedPromoLayout ? _promoSideBookingTooltip(l) : null,
               onTap: acceptsCustomRequests
-                  ? () {
-                      if (item.vendor.providerCategory ==
-                          ProviderCategories.privateEvents) {
-                        context.push(
-                          '${RouteNames.requestPrivateEvent}/${item.vendor.id}',
-                        );
-                      } else if (item.vendor.isPopularCooking) {
-                        context.push(
-                          '${RouteNames.requestChef}/${item.vendor.id}?category=${ProviderCategories.popularCooking}',
-                        );
-                      } else if (item.vendor.isGrilling) {
-                        context.push(
-                          '${RouteNames.requestChef}/${item.vendor.id}?category=${ProviderCategories.grilling}',
-                        );
-                      } else {
-                        context.push(
-                          '${RouteNames.requestChef}/${item.vendor.id}',
-                        );
-                      }
-                    }
+                  ? () => _handleBookingTap(context, ref)
                   : null,
               disabledTooltip: l.unavailableNow,
             ),
@@ -119,8 +116,10 @@ class FeedVideoSideActions extends StatelessWidget {
 
   String _getRequestLabel(AppLocalizations l) {
     final cat = item.vendor.providerCategory;
-    if (cat == ProviderCategories.homeCooking) return l.requestCooking; // اطلب وجبتك المخصصة
-    if (item.vendor.isPopularCooking || cat == ProviderCategories.grilling) return l.bookChef;
+    if (cat == ProviderCategories.homeCooking) return l.requestCooking;
+    if (item.vendor.isPopularCooking || cat == ProviderCategories.grilling) {
+      return l.bookChef;
+    }
     if (cat == ProviderCategories.privateEvents) return l.requestEvent;
     return l.requestCooking;
   }

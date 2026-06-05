@@ -160,6 +160,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 Gaps.lgV,
+                OutlinedButton.icon(
+                  onPressed: () => context.go(RouteNames.explore),
+                  icon: const Icon(Icons.explore_outlined),
+                  label: Text(AppLocalizations.of(context).exploreApp),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    side: BorderSide(color: AppColors.primary.withValues(alpha: 0.45)),
+                    padding: EdgeInsets.symmetric(vertical: Insets.md),
+                  ),
+                ),
+                Gaps.smV,
+                Text(
+                  AppLocalizations.of(context).exploreAppSubtitle,
+                  style: TextStyles.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.35,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Gaps.lgV,
                 TextButton(
                   onPressed: () => context.go(RouteNames.register),
                   child: Text(
@@ -171,18 +191,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 Gaps.mdV,
-                TextButton(
-                  onPressed: () {
-                    ref.read(sessionNotifierProvider.notifier).setAuthenticated();
-                    context.go(RouteNames.shell);
-                  },
-                  child: Text(
-                    'دخول تجريبي (بدون API)',
-                    style: TextStyles.bodySmall.copyWith(
-                      color: AppColors.textTertiary,
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../di/providers.dart';
 import 'route_names.dart';
 import 'guards.dart';
+import 'guest_routes.dart';
 import '../../../modules/auth/presentation/screens/splash_screen.dart';
 import '../../../modules/auth/presentation/screens/welcome_screen.dart';
 import '../../../modules/auth/presentation/screens/register_screen.dart';
@@ -41,7 +42,11 @@ import '../../../modules/search/presentation/screens/search_screen.dart';
 /// App router configuration
 final routerProvider = Provider<GoRouter>((ref) {
   final secureStorage = ref.watch(secureStorageProvider);
-  final authGuard = AuthGuard(secureStorage: secureStorage);
+  final localStorage = ref.watch(localStorageProvider);
+  final authGuard = AuthGuard(
+    secureStorage: secureStorage,
+    localStorage: localStorage,
+  );
 
   return GoRouter(
     initialLocation: RouteNames.splash,
@@ -49,12 +54,16 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) async {
       final path = state.uri.path;
       final isAuth = await authGuard.isAuthenticated();
+      final isGuest = await authGuard.isGuestBrowsing();
       final isSplash = path == RouteNames.splash;
       final isAuthRoute = path == RouteNames.welcome ||
           path == RouteNames.register ||
           path == RouteNames.login;
       if (isSplash || isAuthRoute) return null;
-      if (!isAuth) return RouteNames.splash;
+      if (!isAuth && !isGuest) return RouteNames.welcome;
+      if (isGuest && !GuestRoutes.isAllowed(path)) {
+        return RouteNames.categories;
+      }
       // السلة وطلبات السلة غير مستخدمة — الطلبات عبر الحجز فقط.
       if (path == RouteNames.cart || path == RouteNames.orders) {
         return RouteNames.categories;

@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/config/app_features.dart';
+import '../../../../core/config/service_request_ui.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/design_system.dart';
+import '../../../../core/widgets/electronic_payment_coming_soon.dart';
 import '../providers/my_home_cooking_notifier.dart';
 
 /// تفاصيل طلب طبخ منزلي + إعلان التحويل بعد عرض السعر.
@@ -73,7 +76,7 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
   String _statusLabel(AppLocalizations l10n, String? status) {
     switch (status) {
       case 'quoted':
-        return l10n.homeCookingStatusQuoted;
+        return quotedServiceStatusLabel(l10n);
       case 'payment_pending':
         return l10n.homeCookingStatusPaymentPending;
       case 'accepted':
@@ -438,35 +441,38 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
           ],
           if (status == 'quoted') ...[
             Gaps.lgV,
-            Text(l10n.homeCookingCardPaymentTitle, style: TextStyles.titleSmall),
-            Gaps.smV,
-            Text(l10n.homeCookingCardPaymentHint, style: TextStyles.bodySmall),
-            Gaps.mdV,
-            Wrap(
-              spacing: Insets.sm,
-              runSpacing: Insets.sm,
-              children: [
-                OutlinedButton(
-                  onPressed: _busy ? null : () => _completeHomeCookingCardPayment(id, 'mada'),
-                  child: Text(l10n.homeCookingCardPayMada),
-                ),
-                OutlinedButton(
-                  onPressed: _busy ? null : () => _completeHomeCookingCardPayment(id, 'apple_pay'),
-                  child: Text(l10n.homeCookingCardPayApple),
-                ),
-                OutlinedButton(
-                  onPressed: _busy ? null : () => _completeHomeCookingCardPayment(id, 'stc_pay'),
-                  child: Text(l10n.homeCookingCardPayStc),
-                ),
-              ],
-            ),
-            Gaps.lgV,
-            Text(l10n.homeCookingDeclarePaymentHint, style: TextStyles.bodySmall),
-            Gaps.mdV,
-            FilledButton(
-              onPressed: _busy ? null : () => _showDeclareDialog(id),
-              child: Text(l10n.homeCookingDeclarePayment),
-            ),
+            if (AppFeatures.electronicPaymentEnabled) ...[
+              Text(l10n.homeCookingCardPaymentTitle, style: TextStyles.titleSmall),
+              Gaps.smV,
+              Text(l10n.homeCookingCardPaymentHint, style: TextStyles.bodySmall),
+              Gaps.mdV,
+              Wrap(
+                spacing: Insets.sm,
+                runSpacing: Insets.sm,
+                children: [
+                  OutlinedButton(
+                    onPressed: _busy ? null : () => _completeHomeCookingCardPayment(id, 'mada'),
+                    child: Text(l10n.homeCookingCardPayMada),
+                  ),
+                  OutlinedButton(
+                    onPressed: _busy ? null : () => _completeHomeCookingCardPayment(id, 'apple_pay'),
+                    child: Text(l10n.homeCookingCardPayApple),
+                  ),
+                  OutlinedButton(
+                    onPressed: _busy ? null : () => _completeHomeCookingCardPayment(id, 'stc_pay'),
+                    child: Text(l10n.homeCookingCardPayStc),
+                  ),
+                ],
+              ),
+              Gaps.lgV,
+              Text(l10n.homeCookingDeclarePaymentHint, style: TextStyles.bodySmall),
+              Gaps.mdV,
+              FilledButton(
+                onPressed: _busy ? null : () => _showDeclareDialog(id),
+                child: Text(l10n.homeCookingDeclarePayment),
+              ),
+            ] else
+              ElectronicPaymentComingSoonBanner(message: l10n.electronicPaymentComingSoon),
           ],
           if (_canCancel(status) && id.isNotEmpty) ...[
             Gaps.mdV,

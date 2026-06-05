@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/design_system.dart';
 import '../routing/route_names.dart';
 import '../localization/app_localizations.dart';
+import '../auth/require_customer_auth.dart';
+import '../../modules/auth/presentation/providers/auth_notifier.dart';
+import '../../modules/auth/presentation/providers/guest_mode_notifier.dart';
 
-class AppBottomNavigationBar extends StatelessWidget {
+class AppBottomNavigationBar extends ConsumerWidget {
   final int currentIndex;
 
   const AppBottomNavigationBar({
@@ -13,7 +17,9 @@ class AppBottomNavigationBar extends StatelessWidget {
   });
 
   int _getIndexForRoute(String route) {
-    if (route == RouteNames.categories || route.startsWith(RouteNames.feed)) return 0;
+    if (route == RouteNames.categories || route.startsWith(RouteNames.feed)) {
+      return 0;
+    }
     if (route.startsWith(RouteNames.myRequestsHub) ||
         route.startsWith(RouteNames.myChefBookings) ||
         route.startsWith(RouteNames.myHomeCookingRequests)) {
@@ -37,7 +43,19 @@ class AppBottomNavigationBar extends StatelessWidget {
     return 0;
   }
 
-  void _onItemTapped(BuildContext context, int index) {
+  void _onItemTapped(BuildContext context, WidgetRef ref, int index) {
+    final isGuest = ref.read(guestModeProvider);
+    final isAuth = ref.read(authNotifierProvider).maybeWhen(
+          authenticated: (_) => true,
+          orElse: () => false,
+        );
+    final guestBrowsing = isGuest && !isAuth;
+
+    if (guestBrowsing && index != 0 && index != 3) {
+      requireCustomerAuth(context, ref);
+      return;
+    }
+
     switch (index) {
       case 0:
         context.go(RouteNames.categories);
@@ -55,14 +73,14 @@ class AppBottomNavigationBar extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final currentRoute = GoRouterState.of(context).uri.path;
     final selectedIndex = _getIndexForRoute(currentRoute);
 
     return BottomNavigationBar(
       currentIndex: selectedIndex,
-      onTap: (index) => _onItemTapped(context, index),
+      onTap: (index) => _onItemTapped(context, ref, index),
       type: BottomNavigationBarType.fixed,
       selectedItemColor: AppColors.primary,
       unselectedItemColor: AppColors.textTertiary,

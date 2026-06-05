@@ -62,6 +62,12 @@ class AppLocalizations {
       isAr ? StringsAr.homeCookingStatusPending : StringsEn.homeCookingStatusPending;
   String get homeCookingStatusQuoted =>
       isAr ? StringsAr.homeCookingStatusQuoted : StringsEn.homeCookingStatusQuoted;
+  String get homeCookingStatusQuotedPaymentComingSoon =>
+      isAr
+          ? StringsAr.homeCookingStatusQuotedPaymentComingSoon
+          : StringsEn.homeCookingStatusQuotedPaymentComingSoon;
+  String get electronicPaymentComingSoon =>
+      isAr ? StringsAr.electronicPaymentComingSoon : StringsEn.electronicPaymentComingSoon;
   String get homeCookingStatusPaymentPending =>
       isAr ? StringsAr.homeCookingStatusPaymentPending : StringsEn.homeCookingStatusPaymentPending;
   String get homeCookingStatusAccepted =>
@@ -134,6 +140,12 @@ class AppLocalizations {
       isAr ? StringsAr.chefBookingTypeGrilling : StringsEn.chefBookingTypeGrilling;
   String get chefBookingStatusPending =>
       isAr ? StringsAr.chefBookingStatusPending : StringsEn.chefBookingStatusPending;
+  String get chefBookingDetailsButton =>
+      isAr ? StringsAr.chefBookingDetailsButton : StringsEn.chefBookingDetailsButton;
+  String get chefBookingDetailsAndPaymentButton =>
+      isAr
+          ? StringsAr.chefBookingDetailsAndPaymentButton
+          : StringsEn.chefBookingDetailsAndPaymentButton;
   String get chefBookingStatusAccepted =>
       isAr ? StringsAr.chefBookingStatusAccepted : StringsEn.chefBookingStatusAccepted;
   String get chefBookingStatusRejected =>
@@ -316,6 +328,8 @@ class AppLocalizations {
   String get nameHint => isAr ? StringsAr.nameHint : StringsEn.nameHint;
   String get passwordMinHint =>
       isAr ? StringsAr.passwordMinHint : StringsEn.passwordMinHint;
+  String get passwordRequirementsNote =>
+      isAr ? StringsAr.passwordRequirementsNote : StringsEn.passwordRequirementsNote;
   String get registerButton => isAr ? StringsAr.registerButton : StringsEn.registerButton;
   String get haveAccountLogin =>
       isAr ? StringsAr.haveAccountLogin : StringsEn.haveAccountLogin;
@@ -325,6 +339,24 @@ class AppLocalizations {
       isAr ? StringsAr.premiumFoodDelivery : StringsEn.premiumFoodDelivery;
   String get splashTagline =>
       isAr ? StringsAr.splashTagline : StringsEn.splashTagline;
+  String get browseAsGuest =>
+      isAr ? StringsAr.browseAsGuest : StringsEn.browseAsGuest;
+  String get browseAsGuestSubtitle =>
+      isAr ? StringsAr.browseAsGuestSubtitle : StringsEn.browseAsGuestSubtitle;
+  String get guestExploreBanner =>
+      isAr ? StringsAr.guestExploreBanner : StringsEn.guestExploreBanner;
+  String get guestExploreBannerAction =>
+      isAr ? StringsAr.guestExploreBannerAction : StringsEn.guestExploreBannerAction;
+  String get guestAuthRequiredTitle =>
+      isAr ? StringsAr.guestAuthRequiredTitle : StringsEn.guestAuthRequiredTitle;
+  String get guestAuthRequiredMessage =>
+      isAr ? StringsAr.guestAuthRequiredMessage : StringsEn.guestAuthRequiredMessage;
+  String get guestProfileTitle =>
+      isAr ? StringsAr.guestProfileTitle : StringsEn.guestProfileTitle;
+  String get guestProfileSubtitle =>
+      isAr ? StringsAr.guestProfileSubtitle : StringsEn.guestProfileSubtitle;
+  String get guestExitBrowse =>
+      isAr ? StringsAr.guestExitBrowse : StringsEn.guestExitBrowse;
 
   // Validators
   String validatorFieldRequiredNamed(String f) =>

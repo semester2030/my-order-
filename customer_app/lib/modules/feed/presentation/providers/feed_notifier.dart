@@ -3,6 +3,8 @@ import '../../domain/repositories/feed_repo.dart';
 import '../../data/repositories/feed_repo_impl.dart';
 import '../../data/datasources/feed_remote_ds.dart';
 import '../../../../core/di/providers.dart';
+import '../../../auth/presentation/providers/auth_notifier.dart';
+import '../../../auth/presentation/providers/guest_mode_notifier.dart';
 import '../../domain/entities/feed_item.dart';
 import 'feed_state.dart';
 
@@ -15,7 +17,15 @@ final feedRepositoryProvider = Provider<FeedRepository>((ref) {
 final feedNotifierProvider =
     StateNotifierProvider<FeedNotifier, FeedState>((ref) {
   final repository = ref.watch(feedRepositoryProvider);
-  return FeedNotifier(repository);
+  final isGuest = ref.watch(guestModeProvider);
+  final isAuth = ref.watch(authNotifierProvider).maybeWhen(
+        authenticated: (_) => true,
+        orElse: () => false,
+      );
+  return FeedNotifier(
+    repository,
+    usePublicBrowse: isGuest && !isAuth,
+  );
 });
 
 /// Supported sort options for feed (must match backend: distance | rating | newest).
@@ -28,6 +38,7 @@ const List<int> kFeedMaxDistanceOptions = [5, 10, 15, 25];
 
 class FeedNotifier extends StateNotifier<FeedState> {
   final FeedRepository repository;
+  final bool usePublicBrowse;
   int _currentPage = 1;
   final int _limit = 10;
   String? _vendorType;
@@ -37,9 +48,11 @@ class FeedNotifier extends StateNotifier<FeedState> {
   int? _maxDistance;
   List<FeedItem> _items = [];
 
-  FeedNotifier(this.repository) : super(const FeedState.initial()) {
-    // Don't auto-load feed - let FeedScreen call loadFeed() explicitly
-    // This prevents loading feed when user doesn't have an address
+  FeedNotifier(this.repository, {this.usePublicBrowse = false})
+      : super(const FeedState.initial()) {
+    if (usePublicBrowse) {
+      _sortBy = kFeedSortNewest;
+    }
   }
 
   Future<void> loadFeed({bool refresh = false}) async {
@@ -67,7 +80,8 @@ class FeedNotifier extends StateNotifier<FeedState> {
         category: _category,
         sortBy: _sortBy,
         city: _city,
-        maxDistance: _maxDistance,
+        maxDistance: usePublicBrowse ? null : _maxDistance,
+        publicBrowse: usePublicBrowse,
       );
 
       if (refresh) {

@@ -10,9 +10,11 @@ import '../../../../core/widgets/loading_view.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_notifier.dart';
+import '../../../auth/presentation/providers/guest_mode_notifier.dart';
 import '../providers/profile_notifier.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_tile.dart';
+import 'guest_profile_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -20,6 +22,23 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final isGuest = ref.watch(guestModeProvider);
+    final isAuth = ref.watch(authNotifierProvider).maybeWhen(
+          authenticated: (_) => true,
+          orElse: () => false,
+        );
+
+    if (isGuest && !isAuth) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          title: Text(l10n.profile, style: TextStyles.titleLarge),
+        ),
+        bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 3),
+        body: const GuestProfileScreen(),
+      );
+    }
+
     final profileState = ref.watch(profileNotifierProvider);
 
     return Scaffold(

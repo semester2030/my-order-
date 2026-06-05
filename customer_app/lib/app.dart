@@ -9,6 +9,7 @@ import 'core/routing/route_names.dart';
 import 'core/di/providers.dart';
 import 'core/localization/app_localizations.dart';
 import 'modules/auth/presentation/providers/auth_notifier.dart';
+import 'modules/auth/presentation/providers/guest_mode_notifier.dart';
 
 class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
@@ -44,8 +45,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           error: (_) => false,
         );
         if (!isAuth) {
-          final router = ref.read(routerProvider);
-          router.go(RouteNames.splash);
+          final isGuest = ref.read(guestModeProvider);
+          if (!isGuest) {
+            final router = ref.read(routerProvider);
+            router.go(RouteNames.splash);
+          }
         }
       });
     }

@@ -29,6 +29,10 @@ class StringsEn {
   static const String homeCookingStatusPending = 'Awaiting quote from kitchen';
   static const String homeCookingStatusQuoted =
       'Quoted — pay by card or transfer, then declare if you used the bank';
+  static const String homeCookingStatusQuotedPaymentComingSoon =
+      'Quoted — electronic payment coming soon';
+  static const String electronicPaymentComingSoon =
+      'Electronic payment is coming soon — we will contact you after the quote';
   static const String homeCookingStatusPaymentPending = 'Awaiting admin payment verification';
   static const String homeCookingStatusAccepted = 'Being prepared';
   static const String homeCookingStatusReady = 'Ready for pickup';
@@ -73,6 +77,8 @@ class StringsEn {
   static const String chefBookingTypePopularCooking = 'Popular cooking';
   static const String chefBookingTypeGrilling = 'Outdoor grilling';
   static const String chefBookingStatusPending = 'Awaiting chef response';
+  static const String chefBookingDetailsButton = 'Details';
+  static const String chefBookingDetailsAndPaymentButton = 'Details & payment';
   static const String chefBookingStatusAccepted = 'Accepted';
   static const String chefBookingStatusRejected = 'Rejected';
   static const String chefBookingStatusCancelled = 'Cancelled';
@@ -195,13 +201,31 @@ class StringsEn {
   static const String registerSubtitle = 'Name, email, and password';
   static const String name = 'Name';
   static const String nameHint = 'Enter your name';
-  static const String passwordMinHint = 'At least 6 characters';
+  static const String passwordMinHint = 'At least 6 characters — letters or numbers';
+  static const String passwordRequirementsNote =
+      'Secret code requirements:\n'
+      '• At least 6 characters\n'
+      '• You may use letters only, numbers only, or both together\n'
+      '• Choose something you will remember and do not share it';
   static const String registerButton = 'Sign Up';
   static const String haveAccountLogin = 'Have an account? Login';
   static const String welcomeTo = 'Welcome to';
   static const String appName = 'Home Kitchen';
   static const String premiumFoodDelivery = 'Authentic Home Cooking Delivery';
   static const String splashTagline = 'Home-made food to your door';
+  static const String browseAsGuest = 'Browse without signing in';
+  static const String browseAsGuestSubtitle =
+      'Explore services and videos before creating an account';
+  static const String guestExploreBanner =
+      'You are browsing as a guest — sign in when you are ready to book';
+  static const String guestExploreBannerAction = 'Sign in';
+  static const String guestAuthRequiredTitle = 'Sign in required';
+  static const String guestAuthRequiredMessage =
+      'To complete a booking or request, create an account or sign in. You can keep browsing without one.';
+  static const String guestProfileTitle = 'Guest account';
+  static const String guestProfileSubtitle =
+      'Browse the app and discover services. Sign in or register when you are ready to book.';
+  static const String guestExitBrowse = 'Stop guest browsing';
 
   // Validators
   static const String validatorFieldRequired = 'This field is required';

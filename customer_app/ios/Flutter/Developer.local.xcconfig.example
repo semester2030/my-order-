@@ -1,0 +1,3 @@
+// انسخ هذا الملف إلى Developer.local.xcconfig (مُستثنى من Git) وضع Team ID من Xcode.
+// Xcode → Runner → Signing & Capabilities → انسخ Team ID (10 أحرف).
+// DEVELOPMENT_TEAM=XXXXXXXXXX

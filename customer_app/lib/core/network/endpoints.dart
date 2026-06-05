@@ -58,6 +58,7 @@ class Endpoints {
 
   // Feed
   static const String feed = '/feed';
+  static const String feedBrowse = '/feed/browse';
 
   // Cart
   static const String cart = '/cart';

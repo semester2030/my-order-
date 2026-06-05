@@ -39,6 +39,35 @@ class AppLocalizations {
   String get haveAccountLogin => isAr ? StringsAr.haveAccountLogin : StringsEn.haveAccountLogin;
   String get backToLogin => isAr ? StringsAr.backToLogin : StringsEn.backToLogin;
   String get welcomeBack => isAr ? StringsAr.welcomeBack : StringsEn.welcomeBack;
+  String get exploreApp => isAr ? StringsAr.exploreApp : StringsEn.exploreApp;
+  String get exploreAppSubtitle =>
+      isAr ? StringsAr.exploreAppSubtitle : StringsEn.exploreAppSubtitle;
+  String get vendorExploreTitle =>
+      isAr ? StringsAr.vendorExploreTitle : StringsEn.vendorExploreTitle;
+  String get vendorExploreSubtitle =>
+      isAr ? StringsAr.vendorExploreSubtitle : StringsEn.vendorExploreSubtitle;
+  String get exploreFeatureOrdersTitle =>
+      isAr ? StringsAr.exploreFeatureOrdersTitle : StringsEn.exploreFeatureOrdersTitle;
+  String get exploreFeatureOrdersDesc =>
+      isAr ? StringsAr.exploreFeatureOrdersDesc : StringsEn.exploreFeatureOrdersDesc;
+  String get exploreFeatureVideosTitle =>
+      isAr ? StringsAr.exploreFeatureVideosTitle : StringsEn.exploreFeatureVideosTitle;
+  String get exploreFeatureVideosDesc =>
+      isAr ? StringsAr.exploreFeatureVideosDesc : StringsEn.exploreFeatureVideosDesc;
+  String get exploreFeatureMenuTitle =>
+      isAr ? StringsAr.exploreFeatureMenuTitle : StringsEn.exploreFeatureMenuTitle;
+  String get exploreFeatureMenuDesc =>
+      isAr ? StringsAr.exploreFeatureMenuDesc : StringsEn.exploreFeatureMenuDesc;
+  String get exploreFeatureBookingsTitle =>
+      isAr ? StringsAr.exploreFeatureBookingsTitle : StringsEn.exploreFeatureBookingsTitle;
+  String get exploreFeatureBookingsDesc =>
+      isAr ? StringsAr.exploreFeatureBookingsDesc : StringsEn.exploreFeatureBookingsDesc;
+  String get exploreFeatureAnalyticsTitle =>
+      isAr ? StringsAr.exploreFeatureAnalyticsTitle : StringsEn.exploreFeatureAnalyticsTitle;
+  String get exploreFeatureAnalyticsDesc =>
+      isAr ? StringsAr.exploreFeatureAnalyticsDesc : StringsEn.exploreFeatureAnalyticsDesc;
+  String get exploreReadyToJoin =>
+      isAr ? StringsAr.exploreReadyToJoin : StringsEn.exploreReadyToJoin;
   String get enterEmailPassword => isAr ? StringsAr.enterEmailPassword : StringsEn.enterEmailPassword;
   String get emailLabel => isAr ? StringsAr.emailLabel : StringsEn.emailLabel;
   String get passwordLabel => isAr ? StringsAr.passwordLabel : StringsEn.passwordLabel;

@@ -13,6 +13,7 @@ abstract class FeedRemoteDataSource {
     String? sortBy,
     String? city,
     int? maxDistance,
+    bool publicBrowse = false,
   });
 }
 
@@ -30,6 +31,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     String? sortBy,
     String? city,
     int? maxDistance,
+    bool publicBrowse = false,
   }) async {
     try {
       final queryParameters = <String, dynamic>{
@@ -54,7 +56,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       }
 
       final response = await apiClient.get(
-        Endpoints.feed,
+        publicBrowse ? Endpoints.feedBrowse : Endpoints.feed,
         queryParameters: queryParameters,
       );
 

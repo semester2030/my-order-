@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/routing/route_names.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/routing/route_names.dart';
+import '../presentation/providers/guest_mode_notifier.dart';
 
 /// Helper function to navigate after authentication
 /// Checks if user has an address and navigates accordingly
@@ -11,6 +12,8 @@ Future<void> navigateAfterAuth(
   WidgetRef ref,
 ) async {
   if (!context.mounted) return;
+
+  await ref.read(guestModeProvider.notifier).disable();
 
   try {
     final addressesRepo = ref.read(addressesRepositoryProvider);

@@ -8,6 +8,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/widgets/branded_logo.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/password_requirements_note.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../providers/auth_notifier.dart';
@@ -127,6 +128,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
                 ),
                 Gaps.lgV,
+                PasswordRequirementsNote(message: l.passwordRequirementsNote),
+                Gaps.smV,
                 AppTextField(
                   controller: _passwordController,
                   label: l.password,
