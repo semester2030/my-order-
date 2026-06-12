@@ -146,6 +146,8 @@ class AppLocalizations {
   String get payoutBankTitle => isAr ? StringsAr.payoutBankTitle : StringsEn.payoutBankTitle;
   String get payoutBankSubtitle =>
       isAr ? StringsAr.payoutBankSubtitle : StringsEn.payoutBankSubtitle;
+  String get vendorPhoneStcReceiveHint =>
+      isAr ? StringsAr.vendorPhoneStcReceiveHint : StringsEn.vendorPhoneStcReceiveHint;
   String get labelBankName => isAr ? StringsAr.labelBankName : StringsEn.labelBankName;
   String get labelBankAccountNumber =>
       isAr ? StringsAr.labelBankAccountNumber : StringsEn.labelBankAccountNumber;

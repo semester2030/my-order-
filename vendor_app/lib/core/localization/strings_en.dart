@@ -103,7 +103,9 @@ class StringsEn {
   static const String changePassword = 'Change Password';
   static const String payoutBankTitle = 'Bank payout details';
   static const String payoutBankSubtitle =
-      'Your earnings are transferred to this account (IBAN). Customers pay through the platform by card — you do not add a card to receive payouts.';
+      'Optional for now — used later for your earnings payout. Customers currently pay via STC Bank mobile transfer to your profile phone number.';
+  static const String vendorPhoneStcReceiveHint =
+      'Customers see this number for STC Bank mobile transfer after they accept your quote';
   static const String labelBankName = 'Bank name';
   static const String labelBankAccountNumber = 'Account number';
   static const String labelIban = 'IBAN';

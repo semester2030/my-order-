@@ -24,6 +24,7 @@ import {
 } from './entities/event-request.entity';
 import { CreateEventRequestDto } from './dto/create-event-request.dto';
 import { QuoteHomeCookingDto } from './dto/quote-home-cooking.dto';
+import { PlatformFeatures } from '../../common/platform-features';
 import { DeclareHomeCookingPaymentDto } from './dto/declare-home-cooking-payment.dto';
 import { HandoverHomeCookingDto } from './dto/handover-home-cooking.dto';
 import { PaymentsService } from '../payments/payments.service';
@@ -65,8 +66,11 @@ export class EventRequestsService {
     return n;
   }
 
-  /** قبل عرض السعر لأي طلب مدفوع عبر المنصة — يجب أن يكون للمزود آيبان صالح للتحويل لاحقاً. */
+  /** قبل عرض السعر لأي طلب مدفوع عبر المنصة — يمكن تعطيله مؤقتاً عبر PlatformFeatures. */
   private async assertVendorIbanForPaidServiceQuote(vendorId: string): Promise<void> {
+    if (!PlatformFeatures.requireVendorIbanForQuotes) {
+      return;
+    }
     const vendor = await this.vendorRepository.findOne({
       where: { id: vendorId },
       select: ['id', 'iban'],
@@ -500,7 +504,7 @@ export class EventRequestsService {
         quotedAmountTotal: total,
         vendorSharePercent: sharePct,
       },
-      requireVendorIban: true,
+      requireVendorIban: PlatformFeatures.requireVendorIbanForPayout,
     });
   }
 

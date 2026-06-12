@@ -104,7 +104,9 @@ class StringsAr {
   static const String changePassword = 'تغيير كلمة المرور';
   static const String payoutBankTitle = 'حساب التحويل البنكي';
   static const String payoutBankSubtitle =
-      'تُحوَّل مستحقاتك إلى هذا الحساب (آيبان). دفعات العملاء تتم عبر المنصة بالبطاقة — لا نطلب بطاقة لاستلام أرباحك.';
+      'اختياري حالياً — يُستخدم لاحقاً لتحويل مستحقاتك. حالياً يدفع العملاء عبر STC Bank برقم جوالك المسجّل في البروفايل.';
+  static const String vendorPhoneStcReceiveHint =
+      'يُعرض هذا الرقم للعميل لتحويل STC Bank برقم الجوال بعد موافقته على السعر';
   static const String labelBankName = 'اسم البنك';
   static const String labelBankAccountNumber = 'رقم الحساب';
   static const String labelIban = 'الآيبان (IBAN)';

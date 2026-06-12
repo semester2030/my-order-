@@ -23,15 +23,38 @@ class StringsAr {
   static const String myChefBookingsSubtitle = 'متابعة طلبات طبخ الذبائح والشواء الخارجي';
   static const String myHomeCookingRequests = 'طلبات الطبخ المنزلي';
   static const String myHomeCookingRequestsSubtitle =
-      'عرض السعر والتحويل البنكي ومتابعة الجاهزية — منفصلة عن طلبات الوجبات';
+      'عرض السعر والتحويل عبر STC Bank برقم الجوال ومتابعة الجاهزية — منفصلة عن طلبات الوجبات';
   static const String noHomeCookingRequests = 'لا توجد طلبات طبخ منزلي بعد';
   static const String homeCookingStatusPending = 'بانتظار عرض السعر من المطبخ';
   static const String homeCookingStatusQuoted =
       'تم عرض السعر — ادفع بالبطاقة أو حوِّل ثم أعلن للإدارة';
   static const String homeCookingStatusQuotedPaymentComingSoon =
       'تم عرض السعر — الدفع الإلكتروني قريباً';
+  static const String homeCookingStatusQuotedStcTransfer =
+      'تم عرض السعر — حوِّل عبر STC Bank برقم الجوال';
   static const String electronicPaymentComingSoon =
       'الدفع الإلكتروني قريباً — سيتم التواصل معك بعد عرض السعر';
+  static const String stcBankTransferTitle = 'التحويل عبر STC Bank';
+  static const String stcBankTransferIntro =
+      'الدفع الإلكتروني متوقف مؤقتاً. بعد موافقتك على السعر، حوِّل المبلغ عبر تطبيق STC Bank باستخدام «تحويل برقم الجوال» فقط.';
+  static const String stcBankTransferAmountLabel = 'المبلغ المطلوب';
+  static const String stcBankTransferStepsTitle = 'خطوات التحويل';
+  static const String stcBankTransferStep1 = 'افتح تطبيق STC Bank على جوالك';
+  static const String stcBankTransferStep2 = 'اختر «تحويل» ثم «برقم الجوال»';
+  static const String stcBankTransferStep3 = 'أدخل رقم جوال مقدّم الخدمة أدناه والمبلغ المعروض';
+  static const String stcBankTransferStep4 =
+      'بعد إتمام التحويل، اضغط «أكّد التحويل» وأدخل مرجع العملية';
+  static const String stcBankTransferVendorLabel = 'مقدّم الخدمة';
+  static const String stcBankTransferMobileLabel = 'رقم الجوال (STC Bank)';
+  static const String stcBankTransferMobileMissing =
+      'رقم الجوال غير متوفر — تواصل مع مقدّم الخدمة عبر الدعم قبل التحويل.';
+  static const String stcBankTransferCopy = 'نسخ';
+  static const String stcBankMobileCopied = 'تم نسخ رقم الجوال';
+  static const String stcBankTransferBeforeConfirm =
+      'قبل تأكيد التحويل: تأكد أنك حوّلت المبلغ عبر STC Bank برقم الجوال فقط، ثم أدخل مرجع العملية.';
+  static const String stcBankTransferConfirmButton = 'أكّد التحويل عبر STC Bank';
+  static const String stcBankTransferDeclareHint =
+      'بعد التحويل عبر STC Bank برقم الجوال، أدخل مرجع العملية كما يظهر في التطبيق (3 أحرف على الأقل).';
   static const String homeCookingStatusPaymentPending = 'بانتظار تأكيد الإدارة للتحويل';
   static const String homeCookingStatusAccepted = 'قيد التحضير';
   static const String homeCookingStatusReady = 'جاهز للاستلام';

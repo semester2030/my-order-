@@ -10,7 +10,8 @@ import '../../../../core/di/providers.dart';
 import '../../../../core/routing/route_names.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/design_system.dart';
-import '../../../../core/widgets/electronic_payment_coming_soon.dart';
+import '../../../../core/utils/vendor_contact_helpers.dart';
+import '../../../../core/widgets/stc_bank_mobile_transfer_panel.dart';
 import '../providers/my_home_cooking_notifier.dart';
 
 /// تفاصيل طلب طبخ منزلي + إعلان التحويل بعد عرض السعر.
@@ -228,7 +229,7 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: Text(l10n.homeCookingDeclarePayment),
+        title: Text(manualTransferDeclareTitle(l10n)),
         content: SingleChildScrollView(
           child: Form(
             key: formKey,
@@ -236,7 +237,7 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(l10n.homeCookingDeclarePaymentHint, style: TextStyles.bodySmall),
+                Text(manualTransferDeclareHint(l10n), style: TextStyles.bodySmall),
                 Gaps.mdV,
                 TextFormField(
                   controller: refCtrl,
@@ -471,8 +472,21 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
                 onPressed: _busy ? null : () => _showDeclareDialog(id),
                 child: Text(l10n.homeCookingDeclarePayment),
               ),
-            ] else
-              ElectronicPaymentComingSoonBanner(message: l10n.electronicPaymentComingSoon),
+            ] else ...[
+              StcBankMobileTransferPanel(
+                l10n: l10n,
+                vendorName: vendorNameFromRow(row),
+                vendorMobile: vendorMobileFromRow(row),
+                amountLabel: quoted != null && quoted.toString().isNotEmpty
+                    ? '${quoted.toString()} ر.س'
+                    : null,
+              ),
+              Gaps.mdV,
+              FilledButton(
+                onPressed: _busy ? null : () => _showDeclareDialog(id),
+                child: Text(manualTransferDeclareTitle(l10n)),
+              ),
+            ],
           ],
           if (_canCancel(status) && id.isNotEmpty) ...[
             Gaps.mdV,

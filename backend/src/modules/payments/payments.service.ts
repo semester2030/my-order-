@@ -22,6 +22,7 @@ import {
 } from '../event-requests/entities/event-request.entity';
 import { Vendor } from '../vendors/entities/vendor.entity';
 import type { PaymentConfig } from '../../config/payment.config';
+import { PlatformFeatures } from '../../common/platform-features';
 import { InitiatePaymentDto } from './dto/initiate-payment.dto';
 import { InitiateHomeCookingCardPaymentDto } from './dto/initiate-home-cooking-card-payment.dto';
 import { ConfirmPaymentDto } from './dto/confirm-payment.dto';
@@ -71,6 +72,9 @@ export class PaymentsService {
   private async assertVendorIbanForEventRequestPayment(
     vendorId: string,
   ): Promise<void> {
+    if (!PlatformFeatures.requireVendorIbanForCardPayment) {
+      return;
+    }
     const vendor = await this.vendorRepository.findOne({
       where: { id: vendorId },
       select: ['id', 'iban'],

@@ -24,15 +24,39 @@ class StringsEn {
       'Track popular cooking and outdoor grilling requests';
   static const String myHomeCookingRequests = 'Home cooking requests';
   static const String myHomeCookingRequestsSubtitle =
-      'Quotes, bank transfer confirmation, and pickup — separate from meal orders';
+      'Quotes, STC Bank mobile transfer, and pickup — separate from meal orders';
   static const String noHomeCookingRequests = 'No home cooking requests yet';
   static const String homeCookingStatusPending = 'Awaiting quote from kitchen';
   static const String homeCookingStatusQuoted =
       'Quoted — pay by card or transfer, then declare if you used the bank';
   static const String homeCookingStatusQuotedPaymentComingSoon =
       'Quoted — electronic payment coming soon';
+  static const String homeCookingStatusQuotedStcTransfer =
+      'Quoted — transfer via STC Bank mobile number';
   static const String electronicPaymentComingSoon =
       'Electronic payment is coming soon — we will contact you after the quote';
+  static const String stcBankTransferTitle = 'STC Bank transfer';
+  static const String stcBankTransferIntro =
+      'Electronic payment is temporarily disabled. After you accept the quoted price, transfer the amount in the STC Bank app using mobile-number transfer only.';
+  static const String stcBankTransferAmountLabel = 'Amount to transfer';
+  static const String stcBankTransferStepsTitle = 'How to transfer';
+  static const String stcBankTransferStep1 = 'Open the STC Bank app on your phone';
+  static const String stcBankTransferStep2 = 'Choose Transfer, then By mobile number';
+  static const String stcBankTransferStep3 =
+      'Enter the provider mobile number below and the quoted amount';
+  static const String stcBankTransferStep4 =
+      'After the transfer completes, tap Confirm STC transfer and enter the transaction reference';
+  static const String stcBankTransferVendorLabel = 'Service provider';
+  static const String stcBankTransferMobileLabel = 'Mobile number (STC Bank)';
+  static const String stcBankTransferMobileMissing =
+      'Mobile number unavailable — contact support before transferring.';
+  static const String stcBankTransferCopy = 'Copy';
+  static const String stcBankMobileCopied = 'Mobile number copied';
+  static const String stcBankTransferBeforeConfirm =
+      'Before confirming: make sure you transferred the amount via STC Bank mobile transfer only, then enter the transaction reference.';
+  static const String stcBankTransferConfirmButton = 'Confirm STC Bank transfer';
+  static const String stcBankTransferDeclareHint =
+      'After transferring via STC Bank mobile number, enter the transaction reference from the app (at least 3 characters).';
   static const String homeCookingStatusPaymentPending = 'Awaiting admin payment verification';
   static const String homeCookingStatusAccepted = 'Being prepared';
   static const String homeCookingStatusReady = 'Ready for pickup';

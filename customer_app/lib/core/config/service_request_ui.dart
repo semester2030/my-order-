@@ -6,7 +6,23 @@ String quotedServiceStatusLabel(AppLocalizations l10n) {
   if (AppFeatures.electronicPaymentEnabled) {
     return l10n.homeCookingStatusQuoted;
   }
-  return l10n.homeCookingStatusQuotedPaymentComingSoon;
+  return l10n.homeCookingStatusQuotedStcTransfer;
+}
+
+/// عنوان زر إعلان التحويل اليدوي.
+String manualTransferDeclareTitle(AppLocalizations l10n) {
+  if (AppFeatures.electronicPaymentEnabled) {
+    return l10n.homeCookingDeclarePayment;
+  }
+  return l10n.stcBankTransferConfirmButton;
+}
+
+/// تلميح حوار إعلان التحويل اليدوي.
+String manualTransferDeclareHint(AppLocalizations l10n) {
+  if (AppFeatures.electronicPaymentEnabled) {
+    return l10n.homeCookingDeclarePaymentHint;
+  }
+  return l10n.stcBankTransferDeclareHint;
 }
 
 /// زر الدخول لتفاصيل الحجز من القائمة.

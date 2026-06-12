@@ -66,8 +66,44 @@ class AppLocalizations {
       isAr
           ? StringsAr.homeCookingStatusQuotedPaymentComingSoon
           : StringsEn.homeCookingStatusQuotedPaymentComingSoon;
+  String get homeCookingStatusQuotedStcTransfer =>
+      isAr
+          ? StringsAr.homeCookingStatusQuotedStcTransfer
+          : StringsEn.homeCookingStatusQuotedStcTransfer;
   String get electronicPaymentComingSoon =>
       isAr ? StringsAr.electronicPaymentComingSoon : StringsEn.electronicPaymentComingSoon;
+  String get stcBankTransferTitle =>
+      isAr ? StringsAr.stcBankTransferTitle : StringsEn.stcBankTransferTitle;
+  String get stcBankTransferIntro =>
+      isAr ? StringsAr.stcBankTransferIntro : StringsEn.stcBankTransferIntro;
+  String get stcBankTransferAmountLabel =>
+      isAr ? StringsAr.stcBankTransferAmountLabel : StringsEn.stcBankTransferAmountLabel;
+  String get stcBankTransferStepsTitle =>
+      isAr ? StringsAr.stcBankTransferStepsTitle : StringsEn.stcBankTransferStepsTitle;
+  String get stcBankTransferStep1 =>
+      isAr ? StringsAr.stcBankTransferStep1 : StringsEn.stcBankTransferStep1;
+  String get stcBankTransferStep2 =>
+      isAr ? StringsAr.stcBankTransferStep2 : StringsEn.stcBankTransferStep2;
+  String get stcBankTransferStep3 =>
+      isAr ? StringsAr.stcBankTransferStep3 : StringsEn.stcBankTransferStep3;
+  String get stcBankTransferStep4 =>
+      isAr ? StringsAr.stcBankTransferStep4 : StringsEn.stcBankTransferStep4;
+  String get stcBankTransferVendorLabel =>
+      isAr ? StringsAr.stcBankTransferVendorLabel : StringsEn.stcBankTransferVendorLabel;
+  String get stcBankTransferMobileLabel =>
+      isAr ? StringsAr.stcBankTransferMobileLabel : StringsEn.stcBankTransferMobileLabel;
+  String get stcBankTransferMobileMissing =>
+      isAr ? StringsAr.stcBankTransferMobileMissing : StringsEn.stcBankTransferMobileMissing;
+  String get stcBankTransferCopy =>
+      isAr ? StringsAr.stcBankTransferCopy : StringsEn.stcBankTransferCopy;
+  String get stcBankMobileCopied =>
+      isAr ? StringsAr.stcBankMobileCopied : StringsEn.stcBankMobileCopied;
+  String get stcBankTransferBeforeConfirm =>
+      isAr ? StringsAr.stcBankTransferBeforeConfirm : StringsEn.stcBankTransferBeforeConfirm;
+  String get stcBankTransferConfirmButton =>
+      isAr ? StringsAr.stcBankTransferConfirmButton : StringsEn.stcBankTransferConfirmButton;
+  String get stcBankTransferDeclareHint =>
+      isAr ? StringsAr.stcBankTransferDeclareHint : StringsEn.stcBankTransferDeclareHint;
   String get homeCookingStatusPaymentPending =>
       isAr ? StringsAr.homeCookingStatusPaymentPending : StringsEn.homeCookingStatusPaymentPending;
   String get homeCookingStatusAccepted =>

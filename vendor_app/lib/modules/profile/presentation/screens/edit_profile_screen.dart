@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:vendor_app/core/theme/design_system.dart';
+import 'package:vendor_app/core/localization/app_localizations.dart';
 import 'package:vendor_app/core/utils/validators.dart';
 import 'package:vendor_app/core/widgets/app_text_field.dart';
 import 'package:vendor_app/core/widgets/primary_button.dart';
@@ -169,6 +170,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   validator: Validators.phone,
                   decoration: InputDecoration(
                     labelText: 'رقم الهاتف',
+                    helperText: AppLocalizations.of(context).vendorPhoneStcReceiveHint,
+                    helperMaxLines: 2,
                     border: OutlineInputBorder(borderRadius: AppRadius.mdAll),
                     filled: true,
                     fillColor: AppColors.surface,
