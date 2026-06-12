@@ -56,4 +56,11 @@ extension ProfileStateHomeCookingX on ProfileState {
       _ => false,
     };
   }
+
+  String? get providerCategory {
+    return switch (this) {
+      ProfileLoaded(:final profile) => profile.providerCategory,
+      _ => null,
+    };
+  }
 }

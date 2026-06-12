@@ -223,6 +223,11 @@ class StringsAr {
   static const String kitchenPromoHeadlineLabel = 'عنوان الإعلان';
   static const String kitchenPromoDescriptionChipsTitle = 'عبارات جاهزة — اضغط للاختيار أو اكتب ما تريدين';
   static const String kitchenPromoImageOptionalHint = 'صورة الغلاف اختيارية؛ يمكن الاكتفاء بالفيديو والوصف.';
+  static const String dishPhotoPromptGuideTitle = 'دليل تصوير احترافي للوجبة';
+  static const String dishPhotoPromptGuideSubtitle =
+      'انسخ البرومت واستخدمه في أداة توليد الصور (ChatGPT وغيرها) ثم ارفع الصورة هنا';
+  static const String dishPhotoPromptCopy = 'نسخ البرومت';
+  static const String dishPhotoPromptCopied = 'تم نسخ برومت التصوير';
   static const String editMeal = 'تعديل الوجبة';
   static const String mealName = 'اسم الوجبة';
   static const String description = 'الوصف';

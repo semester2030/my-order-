@@ -215,6 +215,14 @@ class AppLocalizations {
       isAr ? StringsAr.kitchenPromoDescriptionChipsTitle : StringsEn.kitchenPromoDescriptionChipsTitle;
   String get kitchenPromoImageOptionalHint =>
       isAr ? StringsAr.kitchenPromoImageOptionalHint : StringsEn.kitchenPromoImageOptionalHint;
+  String get dishPhotoPromptGuideTitle =>
+      isAr ? StringsAr.dishPhotoPromptGuideTitle : StringsEn.dishPhotoPromptGuideTitle;
+  String get dishPhotoPromptGuideSubtitle =>
+      isAr ? StringsAr.dishPhotoPromptGuideSubtitle : StringsEn.dishPhotoPromptGuideSubtitle;
+  String get dishPhotoPromptCopy =>
+      isAr ? StringsAr.dishPhotoPromptCopy : StringsEn.dishPhotoPromptCopy;
+  String get dishPhotoPromptCopied =>
+      isAr ? StringsAr.dishPhotoPromptCopied : StringsEn.dishPhotoPromptCopied;
   String get addMealForMenu => isAr ? StringsAr.addMealForMenu : StringsEn.addMealForMenu;
   String get editMeal => isAr ? StringsAr.editMeal : StringsEn.editMeal;
   String get mealName => isAr ? StringsAr.mealName : StringsEn.mealName;

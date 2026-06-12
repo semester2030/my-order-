@@ -7,6 +7,7 @@ import 'package:vendor_app/core/localization/app_localizations.dart';
 import 'package:vendor_app/core/utils/validators.dart';
 import 'package:vendor_app/core/widgets/app_text_field.dart';
 import 'package:vendor_app/core/widgets/primary_button.dart';
+import 'package:vendor_app/core/widgets/dish_photo_prompt_guide.dart';
 import 'package:vendor_app/core/di/providers.dart';
 import 'package:vendor_app/modules/profile/presentation/providers/profile_state.dart';
 import 'package:vendor_app/modules/services/domain/entities/service_item.dart';
@@ -151,6 +152,10 @@ class _AddServiceScreenState extends ConsumerState<AddServiceScreen> {
                   ),
                 ),
                 Gaps.mdV,
+                DishPhotoPromptGuide(
+                  providerCategory: ref.watch(profileNotifierProvider).providerCategory,
+                ),
+                Gaps.smV,
                 OutlinedButton.icon(
                   onPressed: () => VideoPickerSheet.show(
                     context,

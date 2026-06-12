@@ -223,6 +223,11 @@ class StringsEn {
       'Suggested phrases — tap to insert or edit below';
   static const String kitchenPromoImageOptionalHint =
       'Cover image is optional; video and text are enough.';
+  static const String dishPhotoPromptGuideTitle = 'Professional dish photo guide';
+  static const String dishPhotoPromptGuideSubtitle =
+      'Copy this prompt into your AI image tool (ChatGPT, etc.), then upload the result here';
+  static const String dishPhotoPromptCopy = 'Copy prompt';
+  static const String dishPhotoPromptCopied = 'Photo prompt copied';
   static const String editMeal = 'Edit Meal';
   static const String mealName = 'Meal Name';
   static const String description = 'Description';

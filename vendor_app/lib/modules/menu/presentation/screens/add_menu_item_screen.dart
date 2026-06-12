@@ -8,6 +8,7 @@ import 'package:vendor_app/core/utils/result.dart';
 import 'package:vendor_app/core/utils/validators.dart';
 import 'package:vendor_app/core/widgets/app_text_field.dart';
 import 'package:vendor_app/core/widgets/primary_button.dart';
+import 'package:vendor_app/core/widgets/dish_photo_prompt_guide.dart';
 import 'package:vendor_app/core/di/providers.dart';
 import 'package:vendor_app/core/routing/route_names.dart';
 import 'package:vendor_app/core/widgets/loading_view.dart';
@@ -409,6 +410,10 @@ class _AddMenuItemScreenState extends ConsumerState<AddMenuItemScreen> {
                   },
                 ),
                 Gaps.mdV,
+                DishPhotoPromptGuide(
+                  providerCategory: ref.watch(profileNotifierProvider).providerCategory,
+                ),
+                Gaps.smV,
                 if (isHome)
                   Padding(
                     padding: EdgeInsets.only(bottom: Insets.sm),
