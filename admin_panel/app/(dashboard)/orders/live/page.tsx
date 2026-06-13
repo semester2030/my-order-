@@ -15,6 +15,11 @@ import {
   TableCell,
 } from '@/components/ui/Table'
 import { EmptyState } from '@/components/ui/EmptyState'
+import {
+  EventRequestProgressSteps,
+  parseProgressSteps,
+  paymentMethodLabel,
+} from '@/components/event-request/EventRequestProgressSteps'
 import { fetchOrders, fetchHomeCookingLive } from '@/lib/api/client'
 import { format } from 'date-fns'
 import { ar } from 'date-fns/locale'
@@ -30,7 +35,8 @@ const statusLabel: Record<string, string> = {
 }
 
 const hcStatusLabel: Record<string, string> = {
-  accepted: 'مقبول',
+  payment_pending: 'بانتظار تأكيد الدفع',
+  accepted: 'قيد التنفيذ',
   ready: 'جاهز',
   handed_over: 'مُسلَّم',
 }
@@ -67,8 +73,12 @@ export default function OrdersLivePage() {
     status: string
     vendorName: string | null
     quotedAmount: number | null
+    paymentMethod?: string | null
+    progressSteps?: unknown
     scheduledDate: string
     scheduledTime: string
+    paymentVerifiedAt?: string | null
+    readyAt?: string | null
     createdAt: string
   }>
 
@@ -124,12 +134,16 @@ export default function OrdersLivePage() {
                   <TableHead>المعرف</TableHead>
                   <TableHead>المطبخ</TableHead>
                   <TableHead>الحالة</TableHead>
+                  <TableHead>الدفع</TableHead>
                   <TableHead>المبلغ</TableHead>
                   <TableHead>الموعد</TableHead>
+                  <TableHead>المتابعة</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {hcItems.map((r) => (
+                {hcItems.map((r) => {
+                  const steps = parseProgressSteps(r.progressSteps)
+                  return (
                   <TableRow key={r.id}>
                     <TableCell className="max-w-[120px] break-all font-mono text-xs">
                       {r.id}
@@ -138,14 +152,20 @@ export default function OrdersLivePage() {
                     <TableCell>
                       <Badge variant="info">{hcStatusLabel[r.status] ?? r.status}</Badge>
                     </TableCell>
+                    <TableCell className="text-sm">
+                      {paymentMethodLabel(r.paymentMethod)}
+                    </TableCell>
                     <TableCell>
                       {r.quotedAmount != null ? `${r.quotedAmount} ر.س` : '—'}
                     </TableCell>
                     <TableCell className="text-text-secondary text-sm">
                       {r.scheduledDate} {r.scheduledTime}
                     </TableCell>
+                    <TableCell className="min-w-[160px]">
+                      <EventRequestProgressSteps steps={steps} compact />
+                    </TableCell>
                   </TableRow>
-                ))}
+                )})}
               </TableBody>
             </Table>
           )}

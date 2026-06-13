@@ -323,6 +323,28 @@ class AppLocalizations {
       isAr ? StringsAr.homeCookingStatusPaymentPending : StringsEn.homeCookingStatusPaymentPending;
   String get homeCookingStatusAccepted =>
       isAr ? StringsAr.homeCookingStatusAccepted : StringsEn.homeCookingStatusAccepted;
+  String get homeCookingConfirmPaymentReceived =>
+      isAr ? StringsAr.homeCookingConfirmPaymentReceived : StringsEn.homeCookingConfirmPaymentReceived;
+  String get homeCookingConfirmPaymentSuccess =>
+      isAr ? StringsAr.homeCookingConfirmPaymentSuccess : StringsEn.homeCookingConfirmPaymentSuccess;
+  String get serviceProgressTitle =>
+      isAr ? StringsAr.serviceProgressTitle : StringsEn.serviceProgressTitle;
+  String get serviceProgressCreated =>
+      isAr ? StringsAr.serviceProgressCreated : StringsEn.serviceProgressCreated;
+  String get serviceProgressQuoted =>
+      isAr ? StringsAr.serviceProgressQuoted : StringsEn.serviceProgressQuoted;
+  String get serviceProgressPaymentDeclared =>
+      isAr ? StringsAr.serviceProgressPaymentDeclared : StringsEn.serviceProgressPaymentDeclared;
+  String get serviceProgressPaymentReceived =>
+      isAr ? StringsAr.serviceProgressPaymentReceived : StringsEn.serviceProgressPaymentReceived;
+  String get serviceProgressPreparing =>
+      isAr ? StringsAr.serviceProgressPreparing : StringsEn.serviceProgressPreparing;
+  String get serviceProgressReady =>
+      isAr ? StringsAr.serviceProgressReady : StringsEn.serviceProgressReady;
+  String get serviceProgressHandedOver =>
+      isAr ? StringsAr.serviceProgressHandedOver : StringsEn.serviceProgressHandedOver;
+  String get serviceProgressCompleted =>
+      isAr ? StringsAr.serviceProgressCompleted : StringsEn.serviceProgressCompleted;
   String get homeCookingStatusReady =>
       isAr ? StringsAr.homeCookingStatusReady : StringsEn.homeCookingStatusReady;
   String get homeCookingQuoteDialogTitle =>

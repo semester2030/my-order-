@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MenuItem } from './entities/menu-item.entity';
 import { VideoAsset } from './entities/video-asset.entity';
+import { toPublicMenuItems } from './menu-item.presenter';
 
 @Injectable()
 export class MenuService {
@@ -13,17 +14,17 @@ export class MenuService {
     private readonly videoAssetRepository: Repository<VideoAsset>,
   ) {}
 
-  async getVendorMenu(vendorId: string): Promise<MenuItem[]> {
-    return this.menuItemRepository.find({
+  async getVendorMenu(vendorId: string) {
+    const items = await this.menuItemRepository.find({
       where: { vendorId, isAvailable: true },
-      relations: ['videoAssets'],
     });
+    return toPublicMenuItems(items);
   }
 
-  async getSignatureItems(vendorId: string): Promise<MenuItem[]> {
-    return this.menuItemRepository.find({
+  async getSignatureItems(vendorId: string) {
+    const items = await this.menuItemRepository.find({
       where: { vendorId, isSignature: true, isAvailable: true },
-      relations: ['videoAssets'],
     });
+    return toPublicMenuItems(items);
   }
 }

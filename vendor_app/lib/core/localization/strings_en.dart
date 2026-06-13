@@ -311,8 +311,20 @@ class StringsEn {
   static const String noHomeCookingRequests = 'No home cooking requests yet';
   static const String homeCookingStatusQuoted = 'Quoted — awaiting customer';
   static const String homeCookingStatusPaymentPending =
-      'Customer declared transfer — pending verification';
-  static const String homeCookingStatusAccepted = 'Payment verified — preparing';
+      'Customer declared payment — confirm receipt to start';
+  static const String homeCookingStatusAccepted = 'Payment confirmed — in progress';
+  static const String homeCookingConfirmPaymentReceived = 'Payment received — start execution';
+  static const String homeCookingConfirmPaymentSuccess =
+      'Payment confirmed — you can start preparing';
+  static const String serviceProgressTitle = 'Order progress';
+  static const String serviceProgressCreated = 'Request created';
+  static const String serviceProgressQuoted = 'Price quoted';
+  static const String serviceProgressPaymentDeclared = 'Payment declared';
+  static const String serviceProgressPaymentReceived = 'Payment received';
+  static const String serviceProgressPreparing = 'In progress';
+  static const String serviceProgressReady = 'Ready';
+  static const String serviceProgressHandedOver = 'Handed over';
+  static const String serviceProgressCompleted = 'Completed';
   static const String homeCookingStatusReady = 'Ready for pickup';
   static const String homeCookingQuoteDialogTitle = 'Quote (SAR)';
   static const String homeCookingQuoteAmountHint = 'Total amount';

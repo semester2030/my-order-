@@ -17,6 +17,8 @@ class HomeCookingRequestDto {
     this.handedOverAt,
     this.handoverNotes,
     this.completionCertificateCode,
+    this.paymentMethod,
+    this.progressSteps = const [],
     this.user,
     this.address,
   });
@@ -35,6 +37,8 @@ class HomeCookingRequestDto {
   final String? handedOverAt;
   final String? handoverNotes;
   final String? completionCertificateCode;
+  final String? paymentMethod;
+  final List<Map<String, dynamic>> progressSteps;
   final ChefBookingUserDto? user;
   final ChefBookingAddressDto? address;
 
@@ -56,6 +60,13 @@ class HomeCookingRequestDto {
       quotedStr = rawQuoted is num ? rawQuoted.toString() : rawQuoted.toString();
     }
     final del = json['delivery'];
+    final rawSteps = json['progressSteps'];
+    final steps = rawSteps is List
+        ? rawSteps
+            .whereType<Map>()
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList()
+        : <Map<String, dynamic>>[];
     return HomeCookingRequestDto(
       id: json['id']?.toString() ?? '',
       requestType:
@@ -76,6 +87,9 @@ class HomeCookingRequestDto {
       handoverNotes: json['handoverNotes'] as String? ?? json['handover_notes'] as String?,
       completionCertificateCode: json['completionCertificateCode'] as String? ??
           json['completion_certificate_code'] as String?,
+      paymentMethod:
+          json['paymentMethod'] as String? ?? json['payment_method'] as String?,
+      progressSteps: steps,
       user: json['user'] != null
           ? ChefBookingUserDto.fromJson(json['user'] as Map<String, dynamic>)
           : null,

@@ -109,11 +109,13 @@ class VendorsRepositoryImpl implements VendorsRepository {
   @override
   Future<void> declareHomeCookingPayment(
     String requestId, {
-    required String paymentReference,
+    required String paymentMethod,
+    String? paymentReference,
     String? notes,
   }) async {
     await remoteDataSource.declareHomeCookingPayment(
       requestId,
+      paymentMethod: paymentMethod,
       paymentReference: paymentReference,
       notes: notes,
     );

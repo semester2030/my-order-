@@ -164,6 +164,9 @@ export class EventRequest {
   @Column({ name: 'quoted_at', type: 'timestamptz', nullable: true })
   quotedAt: Date | null;
 
+  @Column({ type: 'varchar', length: 32, nullable: true, name: 'payment_method' })
+  paymentMethod: string | null;
+
   @Column({ type: 'text', nullable: true, name: 'payment_reference' })
   paymentReference: string | null;
 

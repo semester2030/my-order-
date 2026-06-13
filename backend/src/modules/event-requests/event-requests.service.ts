@@ -25,10 +25,15 @@ import {
 import { CreateEventRequestDto } from './dto/create-event-request.dto';
 import { QuoteHomeCookingDto } from './dto/quote-home-cooking.dto';
 import { PlatformFeatures } from '../../common/platform-features';
-import { DeclareHomeCookingPaymentDto } from './dto/declare-home-cooking-payment.dto';
+import { DeclareHomeCookingPaymentDto, ServicePaymentMethod } from './dto/declare-home-cooking-payment.dto';
 import { HandoverHomeCookingDto } from './dto/handover-home-cooking.dto';
 import { PaymentsService } from '../payments/payments.service';
 import { PayoutsService } from '../payouts/payouts.service';
+import {
+  presentEventRequest,
+  presentEventRequests,
+  PresentedEventRequest,
+} from './event-request.presenter';
 
 const PG_UNIQUE_VIOLATION = '23505';
 
@@ -64,6 +69,20 @@ export class EventRequestsService {
       return 48;
     }
     return n;
+  }
+
+  /** STC أو كاش — من paymentMethod أو من paymentReference (توافق API قديم) */
+  private resolveServicePaymentMethod(
+    dto: DeclareHomeCookingPaymentDto,
+  ): ServicePaymentMethod {
+    if (dto.paymentMethod) {
+      return dto.paymentMethod;
+    }
+    const ref = dto.paymentReference?.trim().toLowerCase();
+    if (ref === 'cash') {
+      return ServicePaymentMethod.CASH;
+    }
+    return ServicePaymentMethod.STC_BANK;
   }
 
   /** قبل عرض السعر لأي طلب مدفوع عبر المنصة — يمكن تعطيله مؤقتاً عبر PlatformFeatures. */
@@ -239,16 +258,17 @@ export class EventRequestsService {
     }
   }
 
-  async findByUser(userId: string): Promise<EventRequest[]> {
+  async findByUser(userId: string): Promise<PresentedEventRequest[]> {
     await this.expireStaleChefBookingRequests();
-    return this.eventRequestRepository.find({
+    const rows = await this.eventRequestRepository.find({
       where: { userId },
       relations: ['vendor', 'address'],
       order: { createdAt: 'DESC' },
     });
+    return presentEventRequests(rows);
   }
 
-  async findOneByUser(userId: string, id: string): Promise<EventRequest> {
+  async findOneByUser(userId: string, id: string): Promise<PresentedEventRequest> {
     await this.expireStaleChefBookingRequests();
     const row = await this.eventRequestRepository.findOne({
       where: { id, userId },
@@ -257,17 +277,20 @@ export class EventRequestsService {
     if (!row) {
       throw new NotFoundException('الطلب غير موجود');
     }
-    return row;
+    return presentEventRequest(row);
   }
 
   /** طلبات الطبخ المنزلي الواردة للمطبخ */
-  async findHomeCookingRequestsForVendor(vendorId: string): Promise<EventRequest[]> {
+  async findHomeCookingRequestsForVendor(
+    vendorId: string,
+  ): Promise<PresentedEventRequest[]> {
     await this.expireStaleChefBookingRequests();
-    return this.eventRequestRepository.find({
+    const rows = await this.eventRequestRepository.find({
       where: { vendorId, requestType: EventRequestType.HOME_COOKING },
       relations: ['user', 'address', 'vendor'],
       order: { createdAt: 'DESC' },
     });
+    return presentEventRequests(rows);
   }
 
   /** طلبات الخدمة المدفوعة (منزلي + ذبائح + شواء) — إجراءات المزود: عرض سعر / جاهز / تسليم. */
@@ -531,7 +554,17 @@ export class EventRequestsService {
     userId: string,
     requestId: string,
     dto: DeclareHomeCookingPaymentDto,
-  ): Promise<EventRequest> {
+  ): Promise<PresentedEventRequest> {
+    if (!PlatformFeatures.servicePaymentEnabled) {
+      throw new BadRequestException('خدمة الدفع متوقفة مؤقتاً');
+    }
+    const method = this.resolveServicePaymentMethod(dto);
+    if (
+      method === ServicePaymentMethod.STC_BANK &&
+      !PlatformFeatures.stcBankMobileTransferEnabled
+    ) {
+      throw new BadRequestException('تحويل STC Bank متوقف مؤقتاً');
+    }
     const row = await this.eventRequestRepository.findOne({
       where: { id: requestId, userId },
       relations: ['vendor', 'address'],
@@ -544,18 +577,23 @@ export class EventRequestsService {
     }
     if (row.status !== EventRequestStatus.QUOTED) {
       throw new ConflictException(
-        'يمكن إعلان التحويل بعد استلام عرض السعر فقط',
+        'يمكن إعلان الدفع بعد استلام عرض السعر فقط',
       );
     }
     if (row.quotedAmount == null) {
       throw new ConflictException('لا يوجد سعر معروض');
     }
     await this.paymentsService.assertNoBlockingHomeCookingCardPayment(row.id);
-    const ref = dto.paymentReference.trim();
-    if (ref.length < 3) {
-      throw new BadRequestException('أدخل مرجع التحويل (3 أحرف على الأقل)');
+
+    let ref: string;
+    if (method === ServicePaymentMethod.CASH) {
+      ref = 'cash';
+    } else {
+      const trimmed = dto.paymentReference?.trim();
+      ref = trimmed && trimmed.length > 0 ? trimmed : 'stc_bank';
     }
-    row.status = EventRequestStatus.PAYMENT_PENDING;
+
+    row.paymentMethod = method;
     row.paymentReference = ref;
     row.paymentDeclaredAt = new Date();
     const extra = dto.notes?.trim();
@@ -564,7 +602,35 @@ export class EventRequestsService {
         ? `${row.notes}\n[إعلان دفع]: ${extra}`
         : `[إعلان دفع]: ${extra}`;
     }
-    return this.eventRequestRepository.save(row);
+
+    if (PlatformFeatures.autoAcceptDeclaredBankTransfer) {
+      await this.assertNoChefBookingSlotConflict(row.vendorId, row, row.id);
+      row.status = EventRequestStatus.ACCEPTED;
+      row.paymentVerifiedAt = new Date();
+      row.paymentVerifiedByAdminId = null;
+    } else {
+      row.status = EventRequestStatus.PAYMENT_PENDING;
+    }
+
+    const saved = await this.eventRequestRepository.save(row);
+    return presentEventRequest(saved);
+  }
+
+  /** المزوّد يؤكد استلام الدفع (STC أو كاش) — يبدأ التنفيذ */
+  async confirmServicePaymentByVendor(
+    vendorId: string,
+    requestId: string,
+  ): Promise<PresentedEventRequest> {
+    const row = await this.loadPaidServiceForVendorOrThrow(vendorId, requestId);
+    if (row.status !== EventRequestStatus.PAYMENT_PENDING) {
+      throw new ConflictException('الطلب ليس بانتظار تأكيد استلام الدفع');
+    }
+    await this.assertNoChefBookingSlotConflict(row.vendorId, row, row.id);
+    row.status = EventRequestStatus.ACCEPTED;
+    row.paymentVerifiedAt = new Date();
+    row.paymentVerifiedByAdminId = null;
+    const saved = await this.eventRequestRepository.save(row);
+    return presentEventRequest(saved);
   }
 
   async findHomeCookingPaymentPendingForAdmin(opts: {

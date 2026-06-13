@@ -16,6 +16,11 @@ import {
 } from '@/components/ui/Table'
 import { EmptyState } from '@/components/ui/EmptyState'
 import {
+  EventRequestProgressSteps,
+  parseProgressSteps,
+  paymentMethodLabel,
+} from '@/components/event-request/EventRequestProgressSteps'
+import {
   fetchHomeCookingPaymentQueue,
   verifyHomeCookingPayment,
 } from '@/lib/api/client'
@@ -81,7 +86,7 @@ export default function HomeCookingPaymentsPage() {
     <>
       <PageHeader
         title="تحقق طبخ منزلي"
-        description="بعد التأكيد يُبلّغ المطبخ ببدء التحضير — منفصل عن طلبات الوجبات الجاهزة"
+        description="بانتظار تأكيد المزوّد أو الإدارة — STC Bank أو كاش"
       />
       <Card>
         <CardHeader
@@ -106,7 +111,9 @@ export default function HomeCookingPaymentsPage() {
                   <TableHead>المطبخ</TableHead>
                   <TableHead>العميل</TableHead>
                   <TableHead>المبلغ المعروض</TableHead>
+                  <TableHead>طريقة الدفع</TableHead>
                   <TableHead>مرجع التحويل</TableHead>
+                  <TableHead>المتابعة</TableHead>
                   <TableHead>التاريخ</TableHead>
                   <TableHead>إجراء</TableHead>
                 </TableRow>
@@ -118,6 +125,10 @@ export default function HomeCookingPaymentsPage() {
                     row.quotedAmount ?? row.quoted_amount ?? '—'
                   const ref =
                     row.paymentReference ?? row.payment_reference ?? '—'
+                  const method = paymentMethodLabel(
+                    row.paymentMethod ?? row.payment_method,
+                  )
+                  const steps = parseProgressSteps(row.progressSteps)
                   const created =
                     (row.paymentDeclaredAt ??
                       row.payment_declared_at ??
@@ -143,8 +154,14 @@ export default function HomeCookingPaymentsPage() {
                       <TableCell>
                         {String(quoted)} ر.س
                       </TableCell>
+                      <TableCell>
+                        <Badge variant="default">{method}</Badge>
+                      </TableCell>
                       <TableCell className="max-w-[200px] break-all text-sm">
                         {String(ref)}
+                      </TableCell>
+                      <TableCell className="min-w-[180px]">
+                        <EventRequestProgressSteps steps={steps} compact />
                       </TableCell>
                       <TableCell className="text-text-secondary text-sm">
                         {createdLabel ?? '—'}

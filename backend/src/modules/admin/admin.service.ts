@@ -26,6 +26,7 @@ import { PaymentStatus } from '../payments/entities/payment.entity';
 import { PayoutRequest } from '../payouts/entities/payout-request.entity';
 import { AuditService } from './audit.service';
 import { VendorsService } from '../vendors/vendors.service';
+import { presentEventRequest } from '../event-requests/event-request.presenter';
 
 type ReqForAudit = { ip?: string; headers?: { 'user-agent'?: string } };
 
@@ -332,6 +333,7 @@ export class AdminService {
       where: {
         requestType: In(PAID_SERVICE_EVENT_REQUEST_TYPES),
         status: In([
+          EventRequestStatus.PAYMENT_PENDING,
           EventRequestStatus.ACCEPTED,
           EventRequestStatus.READY,
           EventRequestStatus.HANDED_OVER,
@@ -342,22 +344,31 @@ export class AdminService {
       take: limit,
     });
     return {
-      items: items.map((r) => ({
-        id: r.id,
-        status: r.status,
-        vendorId: r.vendorId,
-        vendorName:
-          r.vendor?.tradeName?.trim() ||
-          r.vendor?.name?.trim() ||
-          null,
-        userPhone: r.user?.phone ?? null,
-        userEmail: r.user?.email ?? null,
-        quotedAmount:
-          r.quotedAmount != null ? Number.parseFloat(String(r.quotedAmount)) : null,
-        scheduledDate: r.scheduledDate,
-        scheduledTime: r.scheduledTime,
-        createdAt: r.createdAt,
-      })),
+      items: items.map((r) => {
+        const presented = presentEventRequest(r);
+        return {
+          id: r.id,
+          status: r.status,
+          vendorId: r.vendorId,
+          vendorName:
+            r.vendor?.tradeName?.trim() ||
+            r.vendor?.name?.trim() ||
+            null,
+          userPhone: r.user?.phone ?? null,
+          userEmail: r.user?.email ?? null,
+          quotedAmount:
+            r.quotedAmount != null ? Number.parseFloat(String(r.quotedAmount)) : null,
+          paymentMethod: presented.paymentMethod,
+          progressSteps: presented.progressSteps,
+          scheduledDate: r.scheduledDate,
+          scheduledTime: r.scheduledTime,
+          paymentDeclaredAt: r.paymentDeclaredAt,
+          paymentVerifiedAt: r.paymentVerifiedAt,
+          readyAt: r.readyAt,
+          handedOverAt: r.handedOverAt,
+          createdAt: r.createdAt,
+        };
+      }),
     };
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/config/app_features.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../core/errors/network_exceptions.dart';
 import '../../../../core/theme/design_system.dart';
@@ -162,6 +163,25 @@ class _AddCardScreenState extends ConsumerState<AddCardScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    if (!AppFeatures.madaPaymentEnabled) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          title: Text(l.addPaymentCardTitle, style: TextStyles.titleLarge),
+        ),
+        bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 2),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(Insets.lg),
+            child: Text(
+              l.comingSoon,
+              style: TextStyles.titleMedium.copyWith(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(

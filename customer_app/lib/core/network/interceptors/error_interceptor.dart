@@ -3,6 +3,16 @@ import '../../errors/network_exceptions.dart';
 
 /// Interceptor for handling and transforming errors
 class ErrorInterceptor extends Interceptor {
+  static String messageFromBody(dynamic data, {String fallback = 'An error occurred.'}) {
+    if (data is! Map) return fallback;
+    final msg = data['message'];
+    if (msg is String && msg.trim().isNotEmpty) return msg;
+    if (msg is List && msg.isNotEmpty) {
+      return msg.map((e) => e.toString()).join('\n');
+    }
+    return fallback;
+  }
+
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final networkException = _handleDioError(err);
@@ -51,45 +61,45 @@ class ErrorInterceptor extends Interceptor {
     switch (statusCode) {
       case 400:
         return NetworkException.badRequest(
-          message: data?['message'] ?? 'Bad request.',
+          message: messageFromBody(data, fallback: 'Bad request.'),
         );
 
       case 401:
         return NetworkException.unauthorized(
-          message: data?['message'] ?? 'Unauthorized. Please login again.',
+          message: messageFromBody(data, fallback: 'Unauthorized. Please login again.'),
         );
 
       case 403:
         return NetworkException.forbidden(
-          message: data?['message'] ?? 'Access forbidden.',
+          message: messageFromBody(data, fallback: 'Access forbidden.'),
         );
 
       case 404:
         return NetworkException.notFound(
-          message: data?['message'] ?? 'Resource not found.',
+          message: messageFromBody(data, fallback: 'Resource not found.'),
         );
 
       case 409:
         return NetworkException.conflict(
-          message: data?['message'] ?? 'Conflict occurred.',
+          message: messageFromBody(data, fallback: 'Conflict occurred.'),
         );
 
       case 422:
         return NetworkException.validationError(
-          message: data?['message'] ?? 'Validation error.',
-          errors: data?['errors'],
+          message: messageFromBody(data, fallback: 'Validation error.'),
+          errors: data is Map ? data['errors'] : null,
         );
 
       case 500:
       case 502:
       case 503:
         return NetworkException.serverError(
-          message: data?['message'] ?? 'Server error. Please try again later.',
+          message: messageFromBody(data, fallback: 'Server error. Please try again later.'),
         );
 
       default:
         return NetworkException.unknown(
-          message: data?['message'] ?? 'An error occurred.',
+          message: messageFromBody(data),
         );
     }
   }

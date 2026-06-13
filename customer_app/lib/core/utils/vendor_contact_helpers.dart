@@ -4,11 +4,16 @@ String? vendorMobileFromRow(Map<String, dynamic> row) {
   if (vendor is! Map<String, dynamic>) return null;
   final raw = vendor['phoneNumber'] ??
       vendor['phone_number'] ??
+      vendor['ownerPhone'] ??
+      vendor['owner_phone'] ??
       vendor['mobile'] ??
       vendor['phone'];
   if (raw == null) return null;
   final s = raw.toString().trim();
-  return s.isEmpty ? null : s;
+  if (s.isEmpty) return null;
+  // لا نعرض بريداً كرقم جوال
+  if (s.contains('@')) return null;
+  return s;
 }
 
 String? vendorNameFromRow(Map<String, dynamic> row) {

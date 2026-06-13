@@ -10,4 +10,13 @@ export const PlatformFeatures = {
 
   /** يطلب آيبان عند إنشاء طلب تحويل مستحقات للمزوّد. */
   requireVendorIbanForPayout: false,
+
+  /** دفع الخدمة (STC + كاش) */
+  servicePaymentEnabled: true,
+
+  /** تحويل STC Bank برقم الجوال */
+  stcBankMobileTransferEnabled: true,
+
+  /** false = المزوّد يؤكد استلام الدفع قبل التنفيذ */
+  autoAcceptDeclaredBankTransfer: false,
 } as const;

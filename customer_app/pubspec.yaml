@@ -71,6 +71,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/categories/
     - assets/images/icons/
     - assets/icons/app_icons/
     - assets/icons/custom_icons/

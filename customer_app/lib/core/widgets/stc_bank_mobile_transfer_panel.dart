@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import '../localization/app_localizations.dart';
 import '../theme/design_system.dart';
 
-/// تعليمات التحويل اليدوي عبر STC Bank برقم الجوال (بديل مؤقت عن الدفع الإلكتروني).
+/// التحويل عبر STC Bank برقم الجوال — نص مختصر بدون خطوات تفصيلية.
 class StcBankMobileTransferPanel extends StatelessWidget {
   const StcBankMobileTransferPanel({
     super.key,
@@ -43,18 +43,9 @@ class StcBankMobileTransferPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.account_balance_outlined, color: AppColors.primary, size: IconSizes.lg),
-              Gaps.smH,
-              Expanded(
-                child: Text(
-                  l10n.stcBankTransferTitle,
-                  style: TextStyles.titleSmall.copyWith(fontWeight: FontWeight.w700),
-                ),
-              ),
-            ],
+          Text(
+            l10n.stcBankTransferTitle,
+            style: TextStyles.titleSmall.copyWith(fontWeight: FontWeight.w700),
           ),
           Gaps.smV,
           Text(
@@ -73,13 +64,6 @@ class StcBankMobileTransferPanel extends StatelessWidget {
               ),
             ),
           ],
-          Gaps.mdV,
-          Text(l10n.stcBankTransferStepsTitle, style: TextStyles.labelLarge),
-          Gaps.smV,
-          _StepLine(number: '1', text: l10n.stcBankTransferStep1),
-          _StepLine(number: '2', text: l10n.stcBankTransferStep2),
-          _StepLine(number: '3', text: l10n.stcBankTransferStep3),
-          _StepLine(number: '4', text: l10n.stcBankTransferStep4),
           Gaps.mdV,
           if (vendorName != null && vendorName!.isNotEmpty) ...[
             Text(l10n.stcBankTransferVendorLabel, style: TextStyles.labelMedium),
@@ -128,57 +112,6 @@ class StcBankMobileTransferPanel extends StatelessWidget {
               l10n.stcBankTransferMobileMissing,
               style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
             ),
-          Gaps.mdV,
-          Container(
-            padding: const EdgeInsets.all(Insets.sm + 2),
-            decoration: BoxDecoration(
-              color: AppColors.warning.withValues(alpha: 0.12),
-              borderRadius: AppRadius.mdAll,
-              border: Border.all(color: AppColors.warning.withValues(alpha: 0.35)),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.info_outline, color: AppColors.warning, size: IconSizes.md),
-                Gaps.smH,
-                Expanded(
-                  child: Text(
-                    l10n.stcBankTransferBeforeConfirm,
-                    style: TextStyles.bodySmall.copyWith(height: 1.4),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StepLine extends StatelessWidget {
-  const _StepLine({required this.number, required this.text});
-
-  final String number;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: Insets.xs),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 22,
-            child: Text(
-              '$number.',
-              style: TextStyles.bodySmall.copyWith(fontWeight: FontWeight.w700),
-            ),
-          ),
-          Expanded(
-            child: Text(text, style: TextStyles.bodySmall.copyWith(height: 1.4)),
-          ),
         ],
       ),
     );

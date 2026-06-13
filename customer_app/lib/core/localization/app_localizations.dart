@@ -78,16 +78,10 @@ class AppLocalizations {
       isAr ? StringsAr.stcBankTransferIntro : StringsEn.stcBankTransferIntro;
   String get stcBankTransferAmountLabel =>
       isAr ? StringsAr.stcBankTransferAmountLabel : StringsEn.stcBankTransferAmountLabel;
-  String get stcBankTransferStepsTitle =>
-      isAr ? StringsAr.stcBankTransferStepsTitle : StringsEn.stcBankTransferStepsTitle;
-  String get stcBankTransferStep1 =>
-      isAr ? StringsAr.stcBankTransferStep1 : StringsEn.stcBankTransferStep1;
-  String get stcBankTransferStep2 =>
-      isAr ? StringsAr.stcBankTransferStep2 : StringsEn.stcBankTransferStep2;
-  String get stcBankTransferStep3 =>
-      isAr ? StringsAr.stcBankTransferStep3 : StringsEn.stcBankTransferStep3;
-  String get stcBankTransferStep4 =>
-      isAr ? StringsAr.stcBankTransferStep4 : StringsEn.stcBankTransferStep4;
+  String get paymentTransferTemporarilyDisabled =>
+      isAr
+          ? StringsAr.paymentTransferTemporarilyDisabled
+          : StringsEn.paymentTransferTemporarilyDisabled;
   String get stcBankTransferVendorLabel =>
       isAr ? StringsAr.stcBankTransferVendorLabel : StringsEn.stcBankTransferVendorLabel;
   String get stcBankTransferMobileLabel =>
@@ -98,10 +92,10 @@ class AppLocalizations {
       isAr ? StringsAr.stcBankTransferCopy : StringsEn.stcBankTransferCopy;
   String get stcBankMobileCopied =>
       isAr ? StringsAr.stcBankMobileCopied : StringsEn.stcBankMobileCopied;
-  String get stcBankTransferBeforeConfirm =>
-      isAr ? StringsAr.stcBankTransferBeforeConfirm : StringsEn.stcBankTransferBeforeConfirm;
   String get stcBankTransferConfirmButton =>
       isAr ? StringsAr.stcBankTransferConfirmButton : StringsEn.stcBankTransferConfirmButton;
+  String get stcBankTransferConfirmDialogMessage =>
+      isAr ? StringsAr.stcBankTransferConfirmDialogMessage : StringsEn.stcBankTransferConfirmDialogMessage;
   String get stcBankTransferDeclareHint =>
       isAr ? StringsAr.stcBankTransferDeclareHint : StringsEn.stcBankTransferDeclareHint;
   String get homeCookingStatusPaymentPending =>
@@ -134,6 +128,38 @@ class AppLocalizations {
       isAr ? StringsAr.homeCookingSubmitDeclaration : StringsEn.homeCookingSubmitDeclaration;
   String get homeCookingDeclareSuccess =>
       isAr ? StringsAr.homeCookingDeclareSuccess : StringsEn.homeCookingDeclareSuccess;
+  String get homeCookingPayCash =>
+      isAr ? StringsAr.homeCookingPayCash : StringsEn.homeCookingPayCash;
+  String get homeCookingCashDeclareTitle =>
+      isAr ? StringsAr.homeCookingCashDeclareTitle : StringsEn.homeCookingCashDeclareTitle;
+  String get homeCookingCashDeclareMessage =>
+      isAr ? StringsAr.homeCookingCashDeclareMessage : StringsEn.homeCookingCashDeclareMessage;
+  String get homeCookingCashDeclareSuccess =>
+      isAr ? StringsAr.homeCookingCashDeclareSuccess : StringsEn.homeCookingCashDeclareSuccess;
+  String get homeCookingPaymentMethodLabel =>
+      isAr ? StringsAr.homeCookingPaymentMethodLabel : StringsEn.homeCookingPaymentMethodLabel;
+  String get homeCookingPaymentMethodStc =>
+      isAr ? StringsAr.homeCookingPaymentMethodStc : StringsEn.homeCookingPaymentMethodStc;
+  String get homeCookingPaymentMethodCash =>
+      isAr ? StringsAr.homeCookingPaymentMethodCash : StringsEn.homeCookingPaymentMethodCash;
+  String get serviceProgressTitle =>
+      isAr ? StringsAr.serviceProgressTitle : StringsEn.serviceProgressTitle;
+  String get serviceProgressCreated =>
+      isAr ? StringsAr.serviceProgressCreated : StringsEn.serviceProgressCreated;
+  String get serviceProgressQuoted =>
+      isAr ? StringsAr.serviceProgressQuoted : StringsEn.serviceProgressQuoted;
+  String get serviceProgressPaymentDeclared =>
+      isAr ? StringsAr.serviceProgressPaymentDeclared : StringsEn.serviceProgressPaymentDeclared;
+  String get serviceProgressPaymentReceived =>
+      isAr ? StringsAr.serviceProgressPaymentReceived : StringsEn.serviceProgressPaymentReceived;
+  String get serviceProgressPreparing =>
+      isAr ? StringsAr.serviceProgressPreparing : StringsEn.serviceProgressPreparing;
+  String get serviceProgressReady =>
+      isAr ? StringsAr.serviceProgressReady : StringsEn.serviceProgressReady;
+  String get serviceProgressHandedOver =>
+      isAr ? StringsAr.serviceProgressHandedOver : StringsEn.serviceProgressHandedOver;
+  String get serviceProgressCompleted =>
+      isAr ? StringsAr.serviceProgressCompleted : StringsEn.serviceProgressCompleted;
   String get homeCookingCardPaymentTitle =>
       isAr ? StringsAr.homeCookingCardPaymentTitle : StringsEn.homeCookingCardPaymentTitle;
   String get homeCookingCardPaymentHint =>

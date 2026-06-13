@@ -22,6 +22,7 @@ import { OrderStatus } from '../orders/entities/order.entity';
 import { RejectReasonDto } from './dto/reject-reason.dto';
 import { ForceOrderStatusDto } from './dto/force-order-status.dto';
 import { EventRequestsService } from '../event-requests/event-requests.service';
+import { presentEventRequests } from '../event-requests/event-request.presenter';
 import { ServiceExperienceService } from '../service-experience/service-experience.service';
 import { PaymentsService } from '../payments/payments.service';
 import { AdminUpdateQualityTicketDto } from '../service-experience/dto/admin-update-quality-ticket.dto';
@@ -339,7 +340,7 @@ export class AdminController {
         limit: limit ? parseInt(limit, 10) : undefined,
       });
     return {
-      items,
+      items: presentEventRequests(items),
       total,
       page: page ? parseInt(page, 10) : 1,
       limit: limit ? parseInt(limit, 10) : 20,

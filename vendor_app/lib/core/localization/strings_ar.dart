@@ -310,8 +310,20 @@ class StringsAr {
   static const String homeCookingRequests = 'طلبات الطبخ المنزلي';
   static const String noHomeCookingRequests = 'لا توجد طلبات طبخ منزلي';
   static const String homeCookingStatusQuoted = 'تم عرض السعر — انتظار العميل';
-  static const String homeCookingStatusPaymentPending = 'أعلن العميل عن التحويل — بانتظار التحقق';
-  static const String homeCookingStatusAccepted = 'مؤكد الدفع — قيد التحضير';
+  static const String homeCookingStatusPaymentPending =
+      'أعلن العميل عن الدفع — أكّد الاستلام لبدء التنفيذ';
+  static const String homeCookingStatusAccepted = 'تم تأكيد الدفع — قيد التنفيذ';
+  static const String homeCookingConfirmPaymentReceived = 'استلمت الدفع — ابدأ التنفيذ';
+  static const String homeCookingConfirmPaymentSuccess = 'تم تأكيد استلام الدفع — يمكنك البدء بالتنفيذ';
+  static const String serviceProgressTitle = 'متابعة الطلب';
+  static const String serviceProgressCreated = 'إنشاء الطلب';
+  static const String serviceProgressQuoted = 'عرض السعر';
+  static const String serviceProgressPaymentDeclared = 'إعلان الدفع';
+  static const String serviceProgressPaymentReceived = 'تأكيد استلام الدفع';
+  static const String serviceProgressPreparing = 'قيد التنفيذ';
+  static const String serviceProgressReady = 'جاهز';
+  static const String serviceProgressHandedOver = 'تم التسليم';
+  static const String serviceProgressCompleted = 'مكتمل';
   static const String homeCookingStatusReady = 'جاهز للاستلام';
   static const String homeCookingQuoteDialogTitle = 'عرض السعر (ر.س)';
   static const String homeCookingQuoteAmountHint = 'المبلغ الإجمالي';

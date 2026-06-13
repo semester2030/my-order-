@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/errors/network_exceptions.dart';
 import '../../../../core/config/app_features.dart';
 import '../../../../core/config/service_request_ui.dart';
 import '../../../../core/di/providers.dart';
@@ -11,6 +13,7 @@ import '../../../../core/routing/route_names.dart';
 import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/utils/vendor_contact_helpers.dart';
+import '../../../../core/widgets/event_request_progress_timeline.dart';
 import '../../../../core/widgets/stc_bank_mobile_transfer_panel.dart';
 import '../providers/my_home_cooking_notifier.dart';
 
@@ -219,87 +222,88 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
     }
   }
 
-  Future<void> _showDeclareDialog(String id) async {
+  Future<void> _declarePayment(
+    String id, {
+    required String paymentMethod,
+    String? paymentReference,
+    String? notes,
+  }) async {
     final l10n = AppLocalizations.of(context);
-    final refCtrl = TextEditingController();
-    final notesCtrl = TextEditingController();
-    final formKey = GlobalKey<FormState>();
+    setState(() => _busy = true);
+    try {
+      await ref.read(vendorsRepositoryProvider).declareHomeCookingPayment(
+            id,
+            paymentMethod: paymentMethod,
+            paymentReference: paymentReference,
+            notes: notes,
+          );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            paymentMethod == 'cash' ? l10n.homeCookingCashDeclareSuccess : l10n.homeCookingDeclareSuccess,
+          ),
+        ),
+      );
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e is NetworkException
+          ? e.message
+          : (e is DioException && e.error is NetworkException)
+              ? (e.error as NetworkException).message
+              : e.toString();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
 
+  Future<void> _confirmStcPayment(String id) async {
+    final l10n = AppLocalizations.of(context);
     final go = await showDialog<bool>(
       context: context,
-      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: Text(manualTransferDeclareTitle(l10n)),
-        content: SingleChildScrollView(
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(manualTransferDeclareHint(l10n), style: TextStyles.bodySmall),
-                Gaps.mdV,
-                TextFormField(
-                  controller: refCtrl,
-                  decoration: InputDecoration(labelText: l10n.homeCookingPaymentReferenceLabel),
-                  validator: (v) {
-                    if (v == null || v.trim().length < 3) {
-                      return l10n.isAr ? 'ثلاثة أحرف على الأقل' : 'At least 3 characters';
-                    }
-                    return null;
-                  },
-                ),
-                Gaps.smV,
-                TextFormField(
-                  controller: notesCtrl,
-                  decoration: InputDecoration(labelText: l10n.homeCookingPaymentNotesOptional),
-                  maxLines: 2,
-                ),
-              ],
-            ),
-          ),
+        content: Text(
+          l10n.stcBankTransferConfirmDialogMessage,
+          style: TextStyles.bodyMedium,
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
           FilledButton(
-            onPressed: () {
-              if (formKey.currentState?.validate() ?? false) {
-                Navigator.pop(ctx, true);
-              }
-            },
-            child: Text(l10n.homeCookingSubmitDeclaration),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(manualTransferSubmitLabel(l10n)),
           ),
         ],
       ),
     );
+    if (go != true || !mounted) return;
+    await _declarePayment(id, paymentMethod: 'stc_bank');
+  }
 
-    try {
-      if (go != true || !mounted) return;
+  Future<void> _showDeclareCashDialog(String id) async {
+    final l10n = AppLocalizations.of(context);
+    final go = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.homeCookingCashDeclareTitle),
+        content: Text(l10n.homeCookingCashDeclareMessage, style: TextStyles.bodyMedium),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.homeCookingPayCash)),
+        ],
+      ),
+    );
+    if (go != true || !mounted) return;
+    await _declarePayment(id, paymentMethod: 'cash');
+  }
 
-      setState(() => _busy = true);
-      try {
-        await ref.read(vendorsRepositoryProvider).declareHomeCookingPayment(
-              id,
-              paymentReference: refCtrl.text.trim(),
-              notes: notesCtrl.text.trim().isEmpty ? null : notesCtrl.text.trim(),
-            );
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.homeCookingDeclareSuccess)),
-        );
-        await _load();
-      } catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
-      } finally {
-        if (mounted) setState(() => _busy = false);
-      }
-    } finally {
-      refCtrl.dispose();
-      notesCtrl.dispose();
-    }
+  String? _paymentMethodLabel(AppLocalizations l10n, dynamic method) {
+    final m = method?.toString().toLowerCase();
+    if (m == 'stc_bank') return l10n.homeCookingPaymentMethodStc;
+    if (m == 'cash') return l10n.homeCookingPaymentMethodCash;
+    return null;
   }
 
   @override
@@ -343,6 +347,8 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
     final delivery = row['delivery'];
     final custom = row['customDishNames'] ?? row['custom_dish_names'];
     final payRef = row['paymentReference'] ?? row['payment_reference'];
+    final paymentMethod = row['paymentMethod'] ?? row['payment_method'];
+    final progressSteps = EventRequestProgressTimeline.parseSteps(row['progressSteps']);
     final handoverNotes = row['handoverNotes'] ?? row['handover_notes'];
     final completionCode =
         row['completionCertificateCode'] ?? row['completion_certificate_code'];
@@ -389,9 +395,22 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
             Gaps.xsV,
             Text('${l10n.homeCookingQuoteNotes}: ${quoteNotes.toString()}', style: TextStyles.bodySmall),
           ],
-          if (status == 'payment_pending' && payRef != null) ...[
+          if (_paymentMethodLabel(l10n, paymentMethod) != null) ...[
             Gaps.mdV,
+            Text(
+              '${l10n.homeCookingPaymentMethodLabel}: ${_paymentMethodLabel(l10n, paymentMethod)}',
+              style: TextStyles.bodySmall,
+            ),
+          ],
+          if (payRef != null &&
+              payRef.toString().trim().isNotEmpty &&
+              paymentMethod?.toString().toLowerCase() != 'cash') ...[
+            Gaps.xsV,
             Text('${l10n.homeCookingPaymentReferenceLabel}: $payRef', style: TextStyles.bodySmall),
+          ],
+          if (progressSteps.isNotEmpty) ...[
+            Gaps.lgV,
+            EventRequestProgressTimeline(steps: progressSteps, l10n: l10n),
           ],
           if (handoverNotes != null && handoverNotes.toString().trim().isNotEmpty) ...[
             Gaps.mdV,
@@ -469,10 +488,10 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
               Text(l10n.homeCookingDeclarePaymentHint, style: TextStyles.bodySmall),
               Gaps.mdV,
               FilledButton(
-                onPressed: _busy ? null : () => _showDeclareDialog(id),
+                onPressed: _busy ? null : () => _confirmStcPayment(id),
                 child: Text(l10n.homeCookingDeclarePayment),
               ),
-            ] else ...[
+            ] else if (AppFeatures.useStcBankMobileTransfer) ...[
               StcBankMobileTransferPanel(
                 l10n: l10n,
                 vendorName: vendorNameFromRow(row),
@@ -483,8 +502,18 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
               ),
               Gaps.mdV,
               FilledButton(
-                onPressed: _busy ? null : () => _showDeclareDialog(id),
+                onPressed: _busy ? null : () => _confirmStcPayment(id),
                 child: Text(manualTransferDeclareTitle(l10n)),
+              ),
+              Gaps.smV,
+              OutlinedButton(
+                onPressed: _busy ? null : () => _showDeclareCashDialog(id),
+                child: Text(l10n.homeCookingPayCash),
+              ),
+            ] else ...[
+              Text(
+                l10n.paymentTransferTemporarilyDisabled,
+                style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
               ),
             ],
           ],

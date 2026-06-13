@@ -100,4 +100,16 @@ class HomeCookingRequestsRemoteDsImpl implements HomeCookingRequestsRemoteDs {
     }
     return HomeCookingRequestDto.fromJson(data);
   }
+
+  @override
+  Future<HomeCookingRequestDto> confirmPaymentReceived(String requestId) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      Endpoints.vendorHomeCookingConfirmPayment(requestId),
+    );
+    final data = response.data;
+    if (data == null) {
+      throw NetworkException('استجابة فارغة من الخادم');
+    }
+    return HomeCookingRequestDto.fromJson(data);
+  }
 }

@@ -1,10 +1,20 @@
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
+
+export enum ServicePaymentMethod {
+  STC_BANK = 'stc_bank',
+  CASH = 'cash',
+}
 
 export class DeclareHomeCookingPaymentDto {
+  @IsOptional()
+  @IsEnum(ServicePaymentMethod)
+  paymentMethod?: ServicePaymentMethod;
+
+  /** اختياري — لا يُطلب من العميل؛ يُستخدم للأرشفة فقط إن وُجد */
+  @IsOptional()
   @IsString()
-  @MinLength(3)
   @MaxLength(500)
-  paymentReference: string;
+  paymentReference?: string;
 
   @IsOptional()
   @IsString()

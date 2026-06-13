@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/config/app_features.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../core/errors/network_exceptions.dart';
 import '../../../../core/theme/design_system.dart';
@@ -26,7 +27,11 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadMadaCards();
+    if (AppFeatures.madaPaymentEnabled) {
+      _loadMadaCards();
+    } else {
+      _loading = false;
+    }
   }
 
   Future<void> _loadMadaCards() async {
@@ -51,8 +56,22 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
   }
 
   Future<void> _openAddCard() async {
+    if (!AppFeatures.madaPaymentEnabled) {
+      _showComingSoon();
+      return;
+    }
     await context.push(RouteNames.addCard);
     if (mounted) await _loadMadaCards();
+  }
+
+  void _showComingSoon() {
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.comingSoon),
+        backgroundColor: AppColors.info,
+      ),
+    );
   }
 
   Future<void> _confirmDelete(SavedPaymentMethod card) async {
@@ -102,59 +121,81 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ElevatedButton.icon(
-              onPressed: _openAddCard,
-              icon: Icon(Icons.add_card),
-              label: Text(l10n.addPaymentCard),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Insets.lg,
-                  vertical: Insets.md,
-                ),
-                backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.textOnPrimary,
-              ),
-            ),
-            Gaps.xlV,
-            Text(
-              l10n.madaSavedCardsTitle,
-              style: TextStyles.titleMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            Gaps.mdV,
-            if (_loading)
-              const Center(child: Padding(padding: EdgeInsets.all(Insets.lg), child: CircularProgressIndicator()))
-            else if (_loadError != null)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n.loadSavedCardsFailed,
-                    style: TextStyles.bodyMedium.copyWith(color: SemanticColors.error),
+            if (AppFeatures.madaPaymentEnabled) ...[
+              ElevatedButton.icon(
+                onPressed: _openAddCard,
+                icon: Icon(Icons.add_card),
+                label: Text(l10n.addPaymentCard),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Insets.lg,
+                    vertical: Insets.md,
                   ),
-                  Gaps.mdV,
-                  OutlinedButton(onPressed: _loadMadaCards, child: Text(l10n.retry)),
-                ],
-              )
-            else if (_madaCards.isEmpty)
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.textOnPrimary,
+                ),
+              ),
+              Gaps.xlV,
+              Text(
+                l10n.madaSavedCardsTitle,
+                style: TextStyles.titleMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              Gaps.mdV,
+              if (_loading)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(Insets.lg),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              else if (_loadError != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n.loadSavedCardsFailed,
+                      style: TextStyles.bodyMedium.copyWith(color: SemanticColors.error),
+                    ),
+                    Gaps.mdV,
+                    OutlinedButton(onPressed: _loadMadaCards, child: Text(l10n.retry)),
+                  ],
+                )
+              else if (_madaCards.isEmpty)
+                _PaymentMethodCard(
+                  icon: Icons.credit_card,
+                  title: 'Mada',
+                  subtitle: l10n.noCardsSaved,
+                  onTap: _openAddCard,
+                )
+              else
+                ..._madaCards.map(
+                  (c) => Padding(
+                    padding: const EdgeInsets.only(bottom: Insets.sm),
+                    child: _SavedMadaCardTile(
+                      card: c,
+                      onDelete: () => _confirmDelete(c),
+                    ),
+                  ),
+                ),
+              Gaps.xlV,
+            ] else ...[
+              Text(
+                l10n.madaSavedCardsTitle,
+                style: TextStyles.titleMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              Gaps.mdV,
               _PaymentMethodCard(
                 icon: Icons.credit_card,
                 title: 'Mada',
-                subtitle: l10n.noCardsSaved,
-                onTap: _openAddCard,
-              )
-            else
-              ..._madaCards.map(
-                (c) => Padding(
-                  padding: const EdgeInsets.only(bottom: Insets.sm),
-                  child: _SavedMadaCardTile(
-                    card: c,
-                    onDelete: () => _confirmDelete(c),
-                  ),
-                ),
+                subtitle: l10n.comingSoon,
+                onTap: _showComingSoon,
               ),
-            Gaps.xlV,
+              Gaps.xlV,
+            ],
             Text(
               l10n.savedPaymentMethods,
               style: TextStyles.titleMedium.copyWith(
@@ -165,22 +206,15 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
             _PaymentMethodCard(
               icon: Icons.apple,
               title: 'Apple Pay',
-              subtitle: l10n.connected,
-              onTap: () {},
+              subtitle: l10n.comingSoon,
+              onTap: _showComingSoon,
             ),
             Gaps.smV,
             _PaymentMethodCard(
               icon: Icons.account_balance_wallet,
               title: 'STC Pay',
-              subtitle: l10n.notConnected,
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.comingSoon),
-                    backgroundColor: AppColors.info,
-                  ),
-                );
-              },
+              subtitle: l10n.comingSoon,
+              onTap: _showComingSoon,
             ),
           ],
         ),

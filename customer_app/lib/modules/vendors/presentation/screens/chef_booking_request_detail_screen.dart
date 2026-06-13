@@ -308,7 +308,7 @@ class _ChefBookingRequestDetailScreenState extends ConsumerState<ChefBookingRequ
                 Navigator.pop(ctx, true);
               }
             },
-            child: Text(l10n.homeCookingSubmitDeclaration),
+            child: Text(manualTransferSubmitLabel(l10n)),
           ),
         ],
       ),
@@ -321,6 +321,7 @@ class _ChefBookingRequestDetailScreenState extends ConsumerState<ChefBookingRequ
       try {
         await ref.read(vendorsRepositoryProvider).declareHomeCookingPayment(
               id,
+              paymentMethod: 'stc_bank',
               paymentReference: refCtrl.text.trim(),
               notes: notesCtrl.text.trim().isEmpty ? null : notesCtrl.text.trim(),
             );
@@ -512,7 +513,7 @@ class _ChefBookingRequestDetailScreenState extends ConsumerState<ChefBookingRequ
                 onPressed: _busy ? null : () => _showDeclareDialog(id),
                 child: Text(l10n.homeCookingDeclarePayment),
               ),
-            ] else ...[
+            ] else if (AppFeatures.useStcBankMobileTransfer) ...[
               StcBankMobileTransferPanel(
                 l10n: l10n,
                 vendorName: vendorNameFromRow(row),
@@ -525,6 +526,11 @@ class _ChefBookingRequestDetailScreenState extends ConsumerState<ChefBookingRequ
               FilledButton(
                 onPressed: _busy ? null : () => _showDeclareDialog(id),
                 child: Text(manualTransferDeclareTitle(l10n)),
+              ),
+            ] else ...[
+              Text(
+                l10n.paymentTransferTemporarilyDisabled,
+                style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
               ),
             ],
           ],

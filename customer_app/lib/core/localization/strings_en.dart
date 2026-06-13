@@ -24,7 +24,7 @@ class StringsEn {
       'Track popular cooking and outdoor grilling requests';
   static const String myHomeCookingRequests = 'Home cooking requests';
   static const String myHomeCookingRequestsSubtitle =
-      'Quotes, STC Bank mobile transfer, and pickup — separate from meal orders';
+      'Quotes and pickup tracking — separate from meal orders';
   static const String noHomeCookingRequests = 'No home cooking requests yet';
   static const String homeCookingStatusPending = 'Awaiting quote from kitchen';
   static const String homeCookingStatusQuoted =
@@ -32,33 +32,28 @@ class StringsEn {
   static const String homeCookingStatusQuotedPaymentComingSoon =
       'Quoted — electronic payment coming soon';
   static const String homeCookingStatusQuotedStcTransfer =
-      'Quoted — transfer via STC Bank mobile number';
+      'Quoted — transfer via STC mobile number';
+  static const String paymentTransferTemporarilyDisabled =
+      'Transfer service is temporarily disabled — coming soon';
   static const String electronicPaymentComingSoon =
-      'Electronic payment is coming soon — we will contact you after the quote';
-  static const String stcBankTransferTitle = 'STC Bank transfer';
-  static const String stcBankTransferIntro =
-      'Electronic payment is temporarily disabled. After you accept the quoted price, transfer the amount in the STC Bank app using mobile-number transfer only.';
-  static const String stcBankTransferAmountLabel = 'Amount to transfer';
-  static const String stcBankTransferStepsTitle = 'How to transfer';
-  static const String stcBankTransferStep1 = 'Open the STC Bank app on your phone';
-  static const String stcBankTransferStep2 = 'Choose Transfer, then By mobile number';
-  static const String stcBankTransferStep3 =
-      'Enter the provider mobile number below and the quoted amount';
-  static const String stcBankTransferStep4 =
-      'After the transfer completes, tap Confirm STC transfer and enter the transaction reference';
+      'Payment is temporarily disabled — we will contact you after the quote';
+  static const String stcBankTransferTitle = 'STC Bank';
+  static const String stcBankTransferIntro = 'Transfer via STC Bank mobile number';
+  static const String stcBankTransferAmountLabel = 'Amount';
   static const String stcBankTransferVendorLabel = 'Service provider';
-  static const String stcBankTransferMobileLabel = 'Mobile number (STC Bank)';
+  static const String stcBankTransferMobileLabel = 'Mobile number';
   static const String stcBankTransferMobileMissing =
-      'Mobile number unavailable — contact support before transferring.';
+      'Mobile number unavailable — contact the provider.';
   static const String stcBankTransferCopy = 'Copy';
   static const String stcBankMobileCopied = 'Mobile number copied';
-  static const String stcBankTransferBeforeConfirm =
-      'Before confirming: make sure you transferred the amount via STC Bank mobile transfer only, then enter the transaction reference.';
-  static const String stcBankTransferConfirmButton = 'Confirm STC Bank transfer';
+  static const String stcBankTransferConfirmButton = 'Confirm transfer';
+  static const String stcBankTransferConfirmDialogMessage =
+      'After transferring via STC Bank to the mobile number, tap confirm — the provider will be notified to confirm receipt and start preparing.';
   static const String stcBankTransferDeclareHint =
-      'After transferring via STC Bank mobile number, enter the transaction reference from the app (at least 3 characters).';
-  static const String homeCookingStatusPaymentPending = 'Awaiting admin payment verification';
-  static const String homeCookingStatusAccepted = 'Being prepared';
+      'Enter the transfer reference (at least 3 characters).';
+  static const String homeCookingStatusPaymentPending =
+      'Awaiting provider payment confirmation';
+  static const String homeCookingStatusAccepted = 'In progress';
   static const String homeCookingStatusReady = 'Ready for pickup';
   static const String homeCookingStatusRejected = 'Declined by kitchen';
   static const String homeCookingStatusCancelled = 'Cancelled';
@@ -66,14 +61,32 @@ class StringsEn {
   static const String homeCookingQuoteNotes = 'Kitchen notes';
   static const String homeCookingDeliveryYes = 'Delivery';
   static const String homeCookingDeliveryNo = 'Pickup from kitchen';
-  static const String homeCookingDeclarePayment = 'Declare bank transfer';
+  static const String homeCookingDeclarePayment = 'Confirm transfer';
   static const String homeCookingDeclarePaymentHint =
-      'After you transfer, enter the reference as it appears on your statement.';
+      'After transferring, enter the transaction reference.';
   static const String homeCookingPaymentReferenceLabel = 'Transfer reference';
   static const String homeCookingPaymentNotesOptional = 'Notes (optional)';
-  static const String homeCookingSubmitDeclaration = 'Submit declaration';
+  static const String homeCookingSubmitDeclaration = 'Confirm transfer';
   static const String homeCookingDeclareSuccess =
-      'Declaration sent. We will verify shortly.';
+      'Payment declared — awaiting provider confirmation';
+  static const String homeCookingPayCash = 'Pay cash';
+  static const String homeCookingCashDeclareTitle = 'Confirm cash payment';
+  static const String homeCookingCashDeclareMessage =
+      'The provider will be notified. Confirm you will pay cash on pickup or service.';
+  static const String homeCookingCashDeclareSuccess =
+      'Cash payment declared — awaiting provider confirmation';
+  static const String homeCookingPaymentMethodLabel = 'Payment method';
+  static const String homeCookingPaymentMethodStc = 'STC Bank';
+  static const String homeCookingPaymentMethodCash = 'Cash';
+  static const String serviceProgressTitle = 'Order progress';
+  static const String serviceProgressCreated = 'Request created';
+  static const String serviceProgressQuoted = 'Price quoted';
+  static const String serviceProgressPaymentDeclared = 'Payment declared';
+  static const String serviceProgressPaymentReceived = 'Payment received';
+  static const String serviceProgressPreparing = 'In progress';
+  static const String serviceProgressReady = 'Ready';
+  static const String serviceProgressHandedOver = 'Handed over';
+  static const String serviceProgressCompleted = 'Completed';
   static const String homeCookingCardPaymentTitle = 'Card payment';
   static const String homeCookingCardPaymentHint =
       'Mada, Apple Pay, or STC Pay — same flow as cart checkout. In test mode tap Complete payment after the session starts.';

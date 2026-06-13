@@ -88,7 +88,8 @@ abstract class VendorsRepository {
   Future<Map<String, dynamic>> confirmChefServiceCompletion(String requestId);
   Future<void> declareHomeCookingPayment(
     String requestId, {
-    required String paymentReference,
+    required String paymentMethod,
+    String? paymentReference,
     String? notes,
   });
   /// بدء دفع بالبطاقة بعد عرض السعر — طبخ منزلي أو ذبائح أو شواء (`POST /payments/initiate-home-cooking`).

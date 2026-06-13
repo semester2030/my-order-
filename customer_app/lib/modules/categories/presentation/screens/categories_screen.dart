@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/category_cover_assets.dart';
 import '../../../../core/theme/design_system.dart';
 import '../../../../core/widgets/app_bottom_navigation_bar.dart';
 import '../../../../core/widgets/guest_explore_banner.dart';
@@ -12,7 +13,7 @@ import '../../../../core/localization/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_notifier.dart';
 import '../../../auth/presentation/providers/guest_mode_notifier.dart';
 
-/// Single screen: four category icons. Tapping one opens Feed with that category.
+/// شاشة اختيار الخدمة — أربع بطاقات بصور احترافية تمثل كل فئة.
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
 
@@ -94,36 +95,30 @@ class CategoriesScreen extends ConsumerWidget {
                   Gaps.mdV,
                   Expanded(
                     child: GridView.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: Insets.md,
-                crossAxisSpacing: Insets.md,
-                childAspectRatio: 0.88,
-                children: [
-                  _CategoryTile(
-                    category: ProviderCategories.homeCooking,
-                    icon: Icons.dinner_dining_rounded,
-                    onTap: () => _openFeed(context, ProviderCategories.homeCooking),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: Insets.md,
+                      crossAxisSpacing: Insets.md,
+                      childAspectRatio: 0.78,
+                      children: [
+                        _CategoryCoverTile(
+                          category: ProviderCategories.homeCooking,
+                          onTap: () => _openFeed(context, ProviderCategories.homeCooking),
+                        ),
+                        _CategoryCoverTile(
+                          category: ProviderCategories.popularCooking,
+                          onTap: () => _openFeed(context, ProviderCategories.popularCooking),
+                        ),
+                        _CategoryCoverTile(
+                          category: ProviderCategories.privateEvents,
+                          onTap: () => _openFeed(context, ProviderCategories.privateEvents),
+                        ),
+                        _CategoryCoverTile(
+                          category: ProviderCategories.grilling,
+                          onTap: () => _openFeed(context, ProviderCategories.grilling),
+                        ),
+                      ],
+                    ),
                   ),
-                  _CategoryTile(
-                    category: ProviderCategories.popularCooking,
-                    // طبخ ميداني / ولائم وقدور — أقرب من «طبق صحي» لـ set_meal
-                    icon: Icons.soup_kitchen_rounded,
-                    onTap: () => _openFeed(context, ProviderCategories.popularCooking),
-                  ),
-                  _CategoryTile(
-                    category: ProviderCategories.privateEvents,
-                    // بوفيه وموائد مناسبات — أدق من حفلة (celebration) أو مجرد تقويم
-                    icon: Icons.brunch_dining_rounded,
-                    onTap: () => _openFeed(context, ProviderCategories.privateEvents),
-                  ),
-                  _CategoryTile(
-                    category: ProviderCategories.grilling,
-                    icon: Icons.outdoor_grill_rounded,
-                    onTap: () => _openFeed(context, ProviderCategories.grilling),
-                  ),
-                ],
-              ),
-            ),
                 ],
               ),
             ),
@@ -135,134 +130,108 @@ class CategoriesScreen extends ConsumerWidget {
   }
 }
 
-class _CategoryTile extends StatelessWidget {
-  const _CategoryTile({
+class _CategoryCoverTile extends StatelessWidget {
+  const _CategoryCoverTile({
     required this.category,
-    required this.icon,
     required this.onTap,
   });
 
   final String category;
-  final IconData icon;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final label = l.categoryLabel(category);
+    final imagePath = CategoryCoverAssets.pathFor(category);
+
     return Semantics(
       button: true,
       label: label,
       hint: l.categoriesVideoHint,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
-          borderRadius: BorderRadius.circular(AppRadius.md + 2),
-          border: Border.all(color: AppColors.warmDivider.withValues(alpha: 0.85)),
-          boxShadow: const [AppShadows.sm],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(AppRadius.md + 2),
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(AppRadius.md + 2),
-            splashColor: AppColors.primary.withValues(alpha: 0.09),
-            highlightColor: AppColors.primary.withValues(alpha: 0.05),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: Insets.sm + 2,
-                vertical: Insets.md,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        clipBehavior: Clip.antiAlias,
+        elevation: 2,
+        shadowColor: AppColors.primary.withValues(alpha: 0.18),
+        child: InkWell(
+          onTap: onTap,
+          child: Ink(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              border: Border.all(
+                color: AppColors.warmDivider.withValues(alpha: 0.55),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 84,
-                    height: 84,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          width: 78,
-                          height: 78,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AppColors.primaryContainer,
-                                AppColors.primaryContainer.withValues(alpha: 0.65),
-                              ],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primary.withValues(alpha: 0.14),
-                                blurRadius: 14,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.65),
-                              width: 1.5,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Icon(
-                            icon,
-                            size: IconSizes.xxl - 2,
-                            color: AppColors.primary,
-                            shadows: [
-                              Shadow(
-                                color: AppColors.primaryDark.withValues(alpha: 0.18),
-                                blurRadius: 6,
-                                offset: const Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                        ),
-                        PositionedDirectional(
-                          end: -1,
-                          bottom: 0,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceElevated,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: AppColors.primaryContainer,
-                                width: 2,
-                              ),
-                              boxShadow: const [AppShadows.sm],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(1),
-                              child: Icon(
-                                Icons.play_circle_filled_rounded,
-                                size: 24,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ),
-                        ),
+            ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => ColoredBox(
+                    color: AppColors.primaryContainer.withValues(alpha: 0.45),
+                    child: Icon(Icons.restaurant_menu, color: AppColors.primary, size: 48),
+                  ),
+                ),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.08),
+                        Colors.black.withValues(alpha: 0.22),
+                        Colors.black.withValues(alpha: 0.72),
                       ],
+                      stops: const [0.0, 0.45, 1.0],
                     ),
                   ),
-                  Gaps.smV,
-                  Text(
+                ),
+                PositionedDirectional(
+                  top: Insets.sm,
+                  end: Insets.sm,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.42),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.play_circle_filled_rounded,
+                        color: Colors.white,
+                        size: 26,
+                      ),
+                    ),
+                  ),
+                ),
+                PositionedDirectional(
+                  start: Insets.md,
+                  end: Insets.md,
+                  bottom: Insets.md,
+                  child: Text(
                     label,
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyles.titleMedium.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                      height: 1.25,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      height: 1.2,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withValues(alpha: 0.55),
+                          blurRadius: 8,
+                          offset: Offset(0, 1),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

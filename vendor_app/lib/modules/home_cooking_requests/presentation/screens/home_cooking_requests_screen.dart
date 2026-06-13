@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vendor_app/core/di/providers.dart';
 import 'package:vendor_app/core/localization/app_localizations.dart';
 import 'package:vendor_app/core/theme/design_system.dart';
+import 'package:vendor_app/core/widgets/event_request_progress_timeline.dart';
 import 'package:vendor_app/core/widgets/service_request_list_card.dart';
 import 'package:vendor_app/modules/home_cooking_requests/data/models/home_cooking_request_dto.dart';
 import 'package:vendor_app/modules/home_cooking_requests/presentation/providers/home_cooking_requests_state.dart';
@@ -150,6 +151,26 @@ class _HomeCookingRequestsScreenState extends ConsumerState<HomeCookingRequestsS
     }
   }
 
+  Future<void> _confirmPaymentReceived(String id) async {
+    final l10n = AppLocalizations.of(context);
+    final ok = await ref.read(homeCookingRequestsNotifierProvider.notifier).confirmPaymentReceived(id);
+    if (!mounted) return;
+    if (ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.homeCookingConfirmPaymentSuccess),
+          backgroundColor: SemanticColors.success,
+        ),
+      );
+    } else {
+      final raw = ref.read(homeCookingRequestsNotifierProvider.notifier).lastMutationMessage;
+      final msg = (raw != null && raw.trim().isNotEmpty) ? raw.trim() : l10n.homeCookingMutationFailed;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), backgroundColor: SemanticColors.error),
+      );
+    }
+  }
+
   Future<void> _markReady(String id) async {
     final l10n = AppLocalizations.of(context);
     final ok = await ref.read(homeCookingRequestsNotifierProvider.notifier).markReady(id);
@@ -286,6 +307,7 @@ class _HomeCookingRequestsScreenState extends ConsumerState<HomeCookingRequestsS
                         guestsLabel: l10n.guestsCount(req.guestsCount),
                         onQuote: () => _showQuoteDialog(req.id),
                         onReject: () => _reject(req.id),
+                        onConfirmPayment: () => _confirmPaymentReceived(req.id),
                         onMarkReady: () => _markReady(req.id),
                         onMarkHandedOver: () => _showHandoverDialog(req.id),
                       ),
@@ -305,6 +327,7 @@ class _HomeCookingTile extends StatelessWidget {
     required this.guestsLabel,
     required this.onQuote,
     required this.onReject,
+    required this.onConfirmPayment,
     required this.onMarkReady,
     required this.onMarkHandedOver,
   });
@@ -314,6 +337,7 @@ class _HomeCookingTile extends StatelessWidget {
   final String guestsLabel;
   final VoidCallback onQuote;
   final VoidCallback onReject;
+  final VoidCallback onConfirmPayment;
   final VoidCallback onMarkReady;
   final VoidCallback onMarkHandedOver;
 
@@ -321,6 +345,7 @@ class _HomeCookingTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final pending = request.status == 'pending';
+    final paymentPending = request.status == 'payment_pending';
     final accepted = request.status == 'accepted';
     final ready = request.status == 'ready';
     final userName = request.user?.name ?? request.user?.phone ?? '—';
@@ -374,6 +399,10 @@ class _HomeCookingTile extends StatelessWidget {
             ],
             Gaps.smV,
             Text(statusLabel, style: TextStyles.labelLarge),
+            if (request.progressSteps.isNotEmpty) ...[
+              Gaps.mdV,
+              EventRequestProgressTimeline(steps: request.progressSteps, l10n: l10n),
+            ],
             if (pending) ...[
               Gaps.mdV,
               Row(
@@ -392,6 +421,13 @@ class _HomeCookingTile extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ],
+            if (paymentPending) ...[
+              Gaps.mdV,
+              FilledButton(
+                onPressed: onConfirmPayment,
+                child: Text(l10n.homeCookingConfirmPaymentReceived),
               ),
             ],
             if (accepted) ...[

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import '../../../../core/config/app_features.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/endpoints.dart';
 import '../../../../core/errors/network_exceptions.dart';
@@ -15,7 +16,8 @@ abstract class VendorsRemoteDataSource {
   Future<Map<String, dynamic>> confirmChefServiceCompletion(String requestId);
   Future<void> declareHomeCookingPayment(
     String requestId, {
-    required String paymentReference,
+    required String paymentMethod,
+    String? paymentReference,
     String? notes,
   });
   Future<Map<String, dynamic>> initiateHomeCookingCardPayment(
@@ -171,16 +173,27 @@ class VendorsRemoteDataSourceImpl implements VendorsRemoteDataSource {
   @override
   Future<void> declareHomeCookingPayment(
     String requestId, {
-    required String paymentReference,
+    required String paymentMethod,
+    String? paymentReference,
     String? notes,
   }) async {
     try {
+      // مرجع ثابت: stc_bank | cash — متوافق مع API القديم والجديد
+      final ref = paymentReference?.trim().isNotEmpty == true
+          ? paymentReference!.trim()
+          : (paymentMethod == 'cash' ? 'cash' : 'stc_bank');
+
+      final body = <String, dynamic>{
+        'paymentReference': ref,
+        if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
+      };
+      if (AppFeatures.declarePaymentMethodFieldEnabled) {
+        body['paymentMethod'] = paymentMethod;
+      }
+
       await apiClient.post(
         Endpoints.declareHomeCookingPayment(requestId),
-        data: <String, dynamic>{
-          'paymentReference': paymentReference,
-          if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
-        },
+        data: body,
       );
     } on DioException catch (e) {
       if (e.error is NetworkException) {

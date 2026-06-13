@@ -874,6 +874,26 @@ export class VendorsController {
     );
   }
 
+  @Post('home-cooking-requests/:requestId/confirm-payment-received')
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'تأكيد استلام الدفع (STC أو كاش) — بدء التنفيذ' })
+  @HttpCode(HttpStatus.OK)
+  async confirmHomeCookingPaymentReceived(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+  ) {
+    const vendorId = await this.resolveHomeCookingVendorId(req);
+    return this.eventRequestsService.confirmServicePaymentByVendor(
+      vendorId,
+      requestId,
+    );
+  }
+
   @Post('home-cooking-requests/:requestId/mark-ready')
   @UseGuards(
     JwtAuthGuard,
