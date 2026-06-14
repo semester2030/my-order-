@@ -94,6 +94,18 @@ class AppLocalizations {
       isAr ? StringsAr.stcBankMobileCopied : StringsEn.stcBankMobileCopied;
   String get stcBankTransferConfirmButton =>
       isAr ? StringsAr.stcBankTransferConfirmButton : StringsEn.stcBankTransferConfirmButton;
+  String get homeCookingTransferDeclaredButton =>
+      isAr ? StringsAr.homeCookingTransferDeclaredButton : StringsEn.homeCookingTransferDeclaredButton;
+  String get homeCookingCashPaidButton =>
+      isAr ? StringsAr.homeCookingCashPaidButton : StringsEn.homeCookingCashPaidButton;
+  String get homeCookingTransferDeclaredSuccess =>
+      isAr ? StringsAr.homeCookingTransferDeclaredSuccess : StringsEn.homeCookingTransferDeclaredSuccess;
+  String get homeCookingCashPaidSuccess =>
+      isAr ? StringsAr.homeCookingCashPaidSuccess : StringsEn.homeCookingCashPaidSuccess;
+  String get homeCookingCashAwaitingVendorAccept =>
+      isAr ? StringsAr.homeCookingCashAwaitingVendorAccept : StringsEn.homeCookingCashAwaitingVendorAccept;
+  String get homeCookingCashOpenUntilPaid =>
+      isAr ? StringsAr.homeCookingCashOpenUntilPaid : StringsEn.homeCookingCashOpenUntilPaid;
   String get stcBankTransferConfirmDialogMessage =>
       isAr ? StringsAr.stcBankTransferConfirmDialogMessage : StringsEn.stcBankTransferConfirmDialogMessage;
   String get stcBankTransferDeclareHint =>

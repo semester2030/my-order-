@@ -57,6 +57,16 @@ export class EventRequestsController {
     );
   }
 
+  @Post(':id/declare-cash-paid')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'كاش — العميل يعلن «تم الدفع» (لا يوقف التجهيز)' })
+  async declareCashPaid(
+    @Request() req: { user: User },
+    @Param('id') id: string,
+  ) {
+    return this.eventRequestsService.declareCashPaidByCustomer(req.user.id, id);
+  }
+
   @Post(':id/confirm-home-cooking-receipt')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({

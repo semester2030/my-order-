@@ -20,6 +20,7 @@ abstract class VendorsRemoteDataSource {
     String? paymentReference,
     String? notes,
   });
+  Future<void> declareCashPaid(String requestId);
   Future<Map<String, dynamic>> initiateHomeCookingCardPayment(
     String eventRequestId,
     String method,
@@ -178,10 +179,12 @@ class VendorsRemoteDataSourceImpl implements VendorsRemoteDataSource {
     String? notes,
   }) async {
     try {
-      // مرجع ثابت: stc_bank | cash — متوافق مع API القديم والجديد
+      // STC: «تم التحويل» — كاش: cash (متوافق مع API القديم والجديد)
       final ref = paymentReference?.trim().isNotEmpty == true
           ? paymentReference!.trim()
-          : (paymentMethod == 'cash' ? 'cash' : 'stc_bank');
+          : (paymentMethod == 'cash'
+              ? 'cash'
+              : AppFeatures.paymentRefTransferDeclared);
 
       final body = <String, dynamic>{
         'paymentReference': ref,
@@ -195,6 +198,18 @@ class VendorsRemoteDataSourceImpl implements VendorsRemoteDataSource {
         Endpoints.declareHomeCookingPayment(requestId),
         data: body,
       );
+    } on DioException catch (e) {
+      if (e.error is NetworkException) {
+        throw e.error as NetworkException;
+      }
+      throw NetworkException.unknown(message: e.message ?? 'Unknown error');
+    }
+  }
+
+  @override
+  Future<void> declareCashPaid(String requestId) async {
+    try {
+      await apiClient.post(Endpoints.declareCashPaid(requestId));
     } on DioException catch (e) {
       if (e.error is NetworkException) {
         throw e.error as NetworkException;

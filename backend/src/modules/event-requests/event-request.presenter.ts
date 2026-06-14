@@ -203,6 +203,7 @@ export function presentEventRequest(row: EventRequest): PresentedEventRequest {
     paymentDeclaredAt: iso(row.paymentDeclaredAt),
     paymentVerifiedAt: iso(row.paymentVerifiedAt),
     paymentVerifiedByAdminId: row.paymentVerifiedByAdminId,
+    cashPaidDeclaredAt: iso(row.cashPaidDeclaredAt),
     readyAt: iso(row.readyAt),
     handedOverAt: iso(row.handedOverAt),
     handoverNotes: row.handoverNotes,

@@ -45,7 +45,17 @@ class StringsAr {
       'رقم الجوال غير متوفر — تواصل مع مقدّم الخدمة.';
   static const String stcBankTransferCopy = 'نسخ';
   static const String stcBankMobileCopied = 'تم نسخ رقم الجوال';
-  static const String stcBankTransferConfirmButton = 'تأكيد التحويل';
+  static const String stcBankTransferConfirmButton = 'تم التحويل';
+  static const String homeCookingTransferDeclaredButton = 'تم التحويل';
+  static const String homeCookingCashPaidButton = 'تم الدفع';
+  static const String homeCookingTransferDeclaredSuccess =
+      'تم إعلان التحويل — بانتظار تأكيد المزوّd';
+  static const String homeCookingCashPaidSuccess =
+      'تم إعلان الدفع نقداً — بانتظار تأكيد المزوّd';
+  static const String homeCookingCashAwaitingVendorAccept =
+      'بانتظار قبول المزوّd للدفع نقداً — يمكنه البدء بالتجهيز بعد القبول';
+  static const String homeCookingCashOpenUntilPaid =
+      'الطلب قيد التنفيذ — سجّل «تم الدفع» عند دفعك نقداً';
   static const String stcBankTransferConfirmDialogMessage =
       'بعد التحويل عبر STC Bank برقم الجوال اضغط تأكيد — سيصل إشعار لمقدّم الخدمة لاستلام المبلغ وبدء التنفيذ.';
   static const String stcBankTransferDeclareHint =

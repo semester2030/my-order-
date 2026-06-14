@@ -26,6 +26,12 @@ import { CreateEventRequestDto } from './dto/create-event-request.dto';
 import { QuoteHomeCookingDto } from './dto/quote-home-cooking.dto';
 import { PlatformFeatures } from '../../common/platform-features';
 import { DeclareHomeCookingPaymentDto, ServicePaymentMethod } from './dto/declare-home-cooking-payment.dto';
+import {
+  isCashPaymentReference,
+  PAYMENT_REF_CASH_PAID,
+  PAYMENT_REF_CASH_SELECTED,
+  PAYMENT_REF_TRANSFER_DECLARED,
+} from './payment-reference.constants';
 import { HandoverHomeCookingDto } from './dto/handover-home-cooking.dto';
 import { PaymentsService } from '../payments/payments.service';
 import { PayoutsService } from '../payouts/payouts.service';
@@ -78,8 +84,21 @@ export class EventRequestsService {
     if (dto.paymentMethod) {
       return dto.paymentMethod;
     }
-    const ref = dto.paymentReference?.trim().toLowerCase();
-    if (ref === 'cash') {
+    const ref = dto.paymentReference?.trim().toLowerCase() ?? '';
+    if (ref === 'cash' || ref === PAYMENT_REF_CASH_PAID.toLowerCase()) {
+      return ServicePaymentMethod.CASH;
+    }
+    return ServicePaymentMethod.STC_BANK;
+  }
+
+  private rowPaymentMethod(row: EventRequest): ServicePaymentMethod {
+    if (row.paymentMethod === ServicePaymentMethod.CASH) {
+      return ServicePaymentMethod.CASH;
+    }
+    if (row.paymentMethod === ServicePaymentMethod.STC_BANK) {
+      return ServicePaymentMethod.STC_BANK;
+    }
+    if (isCashPaymentReference(row.paymentReference)) {
       return ServicePaymentMethod.CASH;
     }
     return ServicePaymentMethod.STC_BANK;
@@ -587,15 +606,19 @@ export class EventRequestsService {
 
     let ref: string;
     if (method === ServicePaymentMethod.CASH) {
-      ref = 'cash';
+      ref = PAYMENT_REF_CASH_SELECTED;
     } else {
       const trimmed = dto.paymentReference?.trim();
-      ref = trimmed && trimmed.length > 0 ? trimmed : 'stc_bank';
+      ref =
+        trimmed && trimmed.length > 0
+          ? trimmed
+          : PAYMENT_REF_TRANSFER_DECLARED;
     }
 
     row.paymentMethod = method;
     row.paymentReference = ref;
     row.paymentDeclaredAt = new Date();
+    row.cashPaidDeclaredAt = null;
     const extra = dto.notes?.trim();
     if (extra) {
       row.notes = row.notes
@@ -617,13 +640,87 @@ export class EventRequestsService {
   }
 
   /** المزوّد يؤكد استلام الدفع (STC أو كاش) — يبدأ التنفيذ */
+  async acceptCashOrderByVendor(
+    vendorId: string,
+    requestId: string,
+  ): Promise<PresentedEventRequest> {
+    const row = await this.loadPaidServiceForVendorOrThrow(vendorId, requestId);
+    if (this.rowPaymentMethod(row) !== ServicePaymentMethod.CASH) {
+      throw new BadRequestException('هذا الإجراء لطلبات الدفع نقداً فقط');
+    }
+    if (row.status !== EventRequestStatus.PAYMENT_PENDING) {
+      throw new ConflictException('الطلب ليس بانتظار قبول الدفع نقداً');
+    }
+    await this.assertNoChefBookingSlotConflict(row.vendorId, row, row.id);
+    row.status = EventRequestStatus.ACCEPTED;
+    const saved = await this.eventRequestRepository.save(row);
+    return presentEventRequest(saved);
+  }
+
+  async declareCashPaidByCustomer(
+    userId: string,
+    requestId: string,
+  ): Promise<PresentedEventRequest> {
+    const row = await this.eventRequestRepository.findOne({
+      where: { id: requestId, userId },
+      relations: ['vendor', 'address'],
+    });
+    if (!row) {
+      throw new NotFoundException('الطلب غير موجود');
+    }
+    if (this.rowPaymentMethod(row) !== ServicePaymentMethod.CASH) {
+      throw new BadRequestException('هذا الإجراء لطلبات الدفع نقداً فقط');
+    }
+    const allowed: EventRequestStatus[] = [
+      EventRequestStatus.ACCEPTED,
+      EventRequestStatus.READY,
+      EventRequestStatus.HANDED_OVER,
+    ];
+    if (!allowed.includes(row.status)) {
+      throw new ConflictException(
+        'يمكن إعلان تم الدفع بعد قبول المزود للطلب وبدء التنفيذ',
+      );
+    }
+    if (row.cashPaidDeclaredAt) {
+      throw new ConflictException('تم إعلان الدفع نقداً مسبقاً');
+    }
+    row.cashPaidDeclaredAt = new Date();
+    row.paymentReference = PAYMENT_REF_CASH_PAID;
+    const saved = await this.eventRequestRepository.save(row);
+    return presentEventRequest(saved);
+  }
+
   async confirmServicePaymentByVendor(
     vendorId: string,
     requestId: string,
   ): Promise<PresentedEventRequest> {
     const row = await this.loadPaidServiceForVendorOrThrow(vendorId, requestId);
+    const method = this.rowPaymentMethod(row);
+
+    if (method === ServicePaymentMethod.CASH) {
+      const allowed: EventRequestStatus[] = [
+        EventRequestStatus.ACCEPTED,
+        EventRequestStatus.READY,
+        EventRequestStatus.HANDED_OVER,
+        EventRequestStatus.COMPLETED,
+      ];
+      if (!allowed.includes(row.status)) {
+        throw new ConflictException('الطلب لم يُقبل للتنفيذ بعد');
+      }
+      if (!row.cashPaidDeclaredAt) {
+        throw new ConflictException('بانتظار إعلان العميل تم الدفع');
+      }
+      if (row.paymentVerifiedAt) {
+        throw new ConflictException('تم تأكيد استلام الكاش مسبقاً');
+      }
+      row.paymentVerifiedAt = new Date();
+      row.paymentVerifiedByAdminId = null;
+      const saved = await this.eventRequestRepository.save(row);
+      return presentEventRequest(saved);
+    }
+
     if (row.status !== EventRequestStatus.PAYMENT_PENDING) {
-      throw new ConflictException('الطلب ليس بانتظار تأكيد استلام الدفع');
+      throw new ConflictException('الطلب ليس بانتظار تأكيد استلام التحويل');
     }
     await this.assertNoChefBookingSlotConflict(row.vendorId, row, row.id);
     row.status = EventRequestStatus.ACCEPTED;

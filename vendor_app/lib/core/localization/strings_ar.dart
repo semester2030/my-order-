@@ -313,7 +313,8 @@ class StringsAr {
   static const String homeCookingStatusPaymentPending =
       'أعلن العميل عن الدفع — أكّد الاستلام لبدء التنفيذ';
   static const String homeCookingStatusAccepted = 'تم تأكيد الدفع — قيد التنفيذ';
-  static const String homeCookingConfirmPaymentReceived = 'استلمت الدفع — ابدأ التنفيذ';
+  static const String homeCookingConfirmPaymentReceived = 'تم الاستلام';
+  static const String homeCookingAcceptCashOrder = 'قبلت الدفع كاش — ابدأ التنفيذ';
   static const String homeCookingConfirmPaymentSuccess = 'تم تأكيد استلام الدفع — يمكنك البدء بالتنفيذ';
   static const String serviceProgressTitle = 'متابعة الطلب';
   static const String serviceProgressCreated = 'إنشاء الطلب';

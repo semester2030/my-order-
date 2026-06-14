@@ -179,6 +179,10 @@ export class EventRequest {
   @Column({ name: 'payment_verified_by_admin_id', type: 'uuid', nullable: true })
   paymentVerifiedByAdminId: string | null;
 
+  /** كاش — العميل أعلن «تم الدفع» (لا يوقف التجهيز) */
+  @Column({ name: 'cash_paid_declared_at', type: 'timestamptz', nullable: true })
+  cashPaidDeclaredAt: Date | null;
+
   @Column({ name: 'ready_at', type: 'timestamptz', nullable: true })
   readyAt: Date | null;
 

@@ -16,7 +16,9 @@ abstract final class AppFeatures {
   static bool get useStcBankMobileTransfer =>
       servicePaymentEnabled && stcBankMobileTransferEnabled;
 
-  /// `false` = الطلب يرسل `paymentReference` فقط (متوافق مع API قديم على Render).
-  /// بعد نشر الباكند الجديد غيّرها إلى `true`.
+  /// مرجع إعلان STC — بدون إثبات
+  static const String paymentRefTransferDeclared = 'تم التحويل';
+
+  /// `false` = يرسل paymentReference فقط (متوافق مع API على Render).
   static const bool declarePaymentMethodFieldEnabled = false;
 }

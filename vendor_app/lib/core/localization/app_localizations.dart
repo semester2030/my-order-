@@ -325,6 +325,8 @@ class AppLocalizations {
       isAr ? StringsAr.homeCookingStatusAccepted : StringsEn.homeCookingStatusAccepted;
   String get homeCookingConfirmPaymentReceived =>
       isAr ? StringsAr.homeCookingConfirmPaymentReceived : StringsEn.homeCookingConfirmPaymentReceived;
+  String get homeCookingAcceptCashOrder =>
+      isAr ? StringsAr.homeCookingAcceptCashOrder : StringsEn.homeCookingAcceptCashOrder;
   String get homeCookingConfirmPaymentSuccess =>
       isAr ? StringsAr.homeCookingConfirmPaymentSuccess : StringsEn.homeCookingConfirmPaymentSuccess;
   String get serviceProgressTitle =>

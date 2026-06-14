@@ -108,6 +108,7 @@ class Endpoints {
   static String eventRequestById(String id) => '$eventRequests/$id';
   static String declareHomeCookingPayment(String id) =>
       '$eventRequests/$id/declare-home-cooking-payment';
+  static String declareCashPaid(String id) => '$eventRequests/$id/declare-cash-paid';
   static String confirmHomeCookingReceipt(String id) =>
       '$eventRequests/$id/confirm-home-cooking-receipt';
   static String cancelEventRequest(String id) => '$eventRequests/$id/cancel';

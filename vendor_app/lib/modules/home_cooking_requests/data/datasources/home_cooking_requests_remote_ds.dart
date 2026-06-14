@@ -15,4 +15,5 @@ abstract class HomeCookingRequestsRemoteDs {
     String? handoverNotes,
   });
   Future<HomeCookingRequestDto> confirmPaymentReceived(String requestId);
+  Future<HomeCookingRequestDto> acceptCash(String requestId);
 }

@@ -151,6 +151,26 @@ class _HomeCookingRequestsScreenState extends ConsumerState<HomeCookingRequestsS
     }
   }
 
+  Future<void> _acceptCash(String id) async {
+    final l10n = AppLocalizations.of(context);
+    final ok = await ref.read(homeCookingRequestsNotifierProvider.notifier).acceptCash(id);
+    if (!mounted) return;
+    if (ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.homeCookingMarkReady),
+          backgroundColor: SemanticColors.success,
+        ),
+      );
+    } else {
+      final raw = ref.read(homeCookingRequestsNotifierProvider.notifier).lastMutationMessage;
+      final msg = (raw != null && raw.trim().isNotEmpty) ? raw.trim() : l10n.homeCookingMutationFailed;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), backgroundColor: SemanticColors.error),
+      );
+    }
+  }
+
   Future<void> _confirmPaymentReceived(String id) async {
     final l10n = AppLocalizations.of(context);
     final ok = await ref.read(homeCookingRequestsNotifierProvider.notifier).confirmPaymentReceived(id);
@@ -308,6 +328,7 @@ class _HomeCookingRequestsScreenState extends ConsumerState<HomeCookingRequestsS
                         onQuote: () => _showQuoteDialog(req.id),
                         onReject: () => _reject(req.id),
                         onConfirmPayment: () => _confirmPaymentReceived(req.id),
+                        onAcceptCash: () => _acceptCash(req.id),
                         onMarkReady: () => _markReady(req.id),
                         onMarkHandedOver: () => _showHandoverDialog(req.id),
                       ),
@@ -328,6 +349,7 @@ class _HomeCookingTile extends StatelessWidget {
     required this.onQuote,
     required this.onReject,
     required this.onConfirmPayment,
+    required this.onAcceptCash,
     required this.onMarkReady,
     required this.onMarkHandedOver,
   });
@@ -338,6 +360,7 @@ class _HomeCookingTile extends StatelessWidget {
   final VoidCallback onQuote;
   final VoidCallback onReject;
   final VoidCallback onConfirmPayment;
+  final VoidCallback onAcceptCash;
   final VoidCallback onMarkReady;
   final VoidCallback onMarkHandedOver;
 
@@ -423,7 +446,24 @@ class _HomeCookingTile extends StatelessWidget {
                 ],
               ),
             ],
-            if (paymentPending) ...[
+            if (paymentPending && request.isCashPayment) ...[
+              Gaps.mdV,
+              FilledButton(
+                onPressed: onAcceptCash,
+                child: Text(l10n.homeCookingAcceptCashOrder),
+              ),
+            ],
+            if (paymentPending && !request.isCashPayment) ...[
+              Gaps.mdV,
+              FilledButton(
+                onPressed: onConfirmPayment,
+                child: Text(l10n.homeCookingConfirmPaymentReceived),
+              ),
+            ],
+            if ((accepted || ready || request.status == 'handed_over') &&
+                request.isCashPayment &&
+                request.cashPaidDeclaredAt != null &&
+                request.paymentVerifiedAt == null) ...[
               Gaps.mdV,
               FilledButton(
                 onPressed: onConfirmPayment,

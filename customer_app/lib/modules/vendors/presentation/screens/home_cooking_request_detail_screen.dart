@@ -241,7 +241,7 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            paymentMethod == 'cash' ? l10n.homeCookingCashDeclareSuccess : l10n.homeCookingDeclareSuccess,
+            paymentMethod == 'cash' ? l10n.homeCookingCashDeclareSuccess : l10n.homeCookingTransferDeclaredSuccess,
           ),
         ),
       );
@@ -264,7 +264,7 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
     final go = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(manualTransferDeclareTitle(l10n)),
+        title: Text(l10n.homeCookingTransferDeclaredButton),
         content: Text(
           l10n.stcBankTransferConfirmDialogMessage,
           style: TextStyles.bodyMedium,
@@ -273,13 +273,63 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(manualTransferSubmitLabel(l10n)),
+            child: Text(l10n.homeCookingTransferDeclaredButton),
           ),
         ],
       ),
     );
     if (go != true || !mounted) return;
-    await _declarePayment(id, paymentMethod: 'stc_bank');
+    await _declarePayment(
+      id,
+      paymentMethod: 'stc_bank',
+      paymentReference: AppFeatures.paymentRefTransferDeclared,
+    );
+  }
+
+  Future<void> _declareCashPaid(String id) async {
+    final l10n = AppLocalizations.of(context);
+    final go = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.homeCookingCashPaidButton),
+        content: Text(l10n.homeCookingCashOpenUntilPaid, style: TextStyles.bodyMedium),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.homeCookingCashPaidButton),
+          ),
+        ],
+      ),
+    );
+    if (go != true || !mounted) return;
+    setState(() => _busy = true);
+    try {
+      await ref.read(vendorsRepositoryProvider).declareCashPaid(id);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.homeCookingCashPaidSuccess)),
+      );
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e is NetworkException
+          ? e.message
+          : (e is DioException && e.error is NetworkException)
+              ? (e.error as NetworkException).message
+              : e.toString();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  bool _isCashPayment(Map<String, dynamic> row) {
+    final method = row['paymentMethod'] ?? row['payment_method'];
+    if (method?.toString().toLowerCase() == 'cash') return true;
+    final ref = row['paymentReference'] ?? row['payment_reference'];
+    final r = ref?.toString().toLowerCase() ?? '';
+    return r == 'cash' || r == 'تم الدفع';
   }
 
   Future<void> _showDeclareCashDialog(String id) async {
@@ -349,6 +399,8 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
     final payRef = row['paymentReference'] ?? row['payment_reference'];
     final paymentMethod = row['paymentMethod'] ?? row['payment_method'];
     final progressSteps = EventRequestProgressTimeline.parseSteps(row['progressSteps']);
+    final cashPaidDeclared = row['cashPaidDeclaredAt'] ?? row['cash_paid_declared_at'];
+    final isCash = _isCashPayment(row);
     final handoverNotes = row['handoverNotes'] ?? row['handover_notes'];
     final completionCode =
         row['completionCertificateCode'] ?? row['completion_certificate_code'];
@@ -503,7 +555,7 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
               Gaps.mdV,
               FilledButton(
                 onPressed: _busy ? null : () => _confirmStcPayment(id),
-                child: Text(manualTransferDeclareTitle(l10n)),
+                child: Text(l10n.homeCookingTransferDeclaredButton),
               ),
               Gaps.smV,
               OutlinedButton(
@@ -516,6 +568,24 @@ class _HomeCookingRequestDetailScreenState extends ConsumerState<HomeCookingRequ
                 style: TextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
               ),
             ],
+          ],
+          if (status == 'payment_pending' && isCash) ...[
+            Gaps.mdV,
+            Text(
+              l10n.homeCookingCashAwaitingVendorAccept,
+              style: TextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+            ),
+          ],
+          if (isCash &&
+              (status == 'accepted' || status == 'ready' || status == 'handed_over') &&
+              cashPaidDeclared == null) ...[
+            Gaps.lgV,
+            Text(l10n.homeCookingCashOpenUntilPaid, style: TextStyles.bodySmall),
+            Gaps.smV,
+            FilledButton(
+              onPressed: _busy ? null : () => _declareCashPaid(id),
+              child: Text(l10n.homeCookingCashPaidButton),
+            ),
           ],
           if (_canCancel(status) && id.isNotEmpty) ...[
             Gaps.mdV,

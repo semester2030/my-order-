@@ -122,6 +122,11 @@ class VendorsRepositoryImpl implements VendorsRepository {
   }
 
   @override
+  Future<void> declareCashPaid(String requestId) async {
+    await remoteDataSource.declareCashPaid(requestId);
+  }
+
+  @override
   Future<Map<String, dynamic>> initiateHomeCookingCardPayment(
     String eventRequestId,
     String method,

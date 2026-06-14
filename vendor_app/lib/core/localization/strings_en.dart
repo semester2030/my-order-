@@ -313,7 +313,8 @@ class StringsEn {
   static const String homeCookingStatusPaymentPending =
       'Customer declared payment — confirm receipt to start';
   static const String homeCookingStatusAccepted = 'Payment confirmed — in progress';
-  static const String homeCookingConfirmPaymentReceived = 'Payment received — start execution';
+  static const String homeCookingConfirmPaymentReceived = 'Received';
+  static const String homeCookingAcceptCashOrder = 'Accept cash — start execution';
   static const String homeCookingConfirmPaymentSuccess =
       'Payment confirmed — you can start preparing';
   static const String serviceProgressTitle = 'Order progress';

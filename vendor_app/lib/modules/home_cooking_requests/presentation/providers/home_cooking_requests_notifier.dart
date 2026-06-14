@@ -129,4 +129,24 @@ class HomeCookingRequestsNotifier extends StateNotifier<HomeCookingRequestsState
       return false;
     }
   }
+
+  Future<bool> acceptCash(String requestId) async {
+    lastMutationMessage = null;
+    final prev = state is HomeCookingRequestsLoaded
+        ? List<HomeCookingRequestDto>.from((state as HomeCookingRequestsLoaded).requests)
+        : null;
+    try {
+      await _ds.acceptCash(requestId);
+      await load();
+      return true;
+    } catch (e) {
+      lastMutationMessage = ErrorMapper.toFailure(e).message;
+      if (prev != null) {
+        state = HomeCookingRequestsLoaded(prev);
+      } else {
+        state = HomeCookingRequestsError(lastMutationMessage!);
+      }
+      return false;
+    }
+  }
 }

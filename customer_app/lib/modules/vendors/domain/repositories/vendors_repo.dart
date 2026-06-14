@@ -92,6 +92,7 @@ abstract class VendorsRepository {
     String? paymentReference,
     String? notes,
   });
+  Future<void> declareCashPaid(String requestId);
   /// بدء دفع بالبطاقة بعد عرض السعر — طبخ منزلي أو ذبائح أو شواء (`POST /payments/initiate-home-cooking`).
   Future<Map<String, dynamic>> initiateHomeCookingCardPayment(
     String eventRequestId,

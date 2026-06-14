@@ -874,6 +874,26 @@ export class VendorsController {
     );
   }
 
+  @Post('home-cooking-requests/:requestId/accept-cash')
+  @UseGuards(
+    JwtAuthGuard,
+    ApprovedVendorGuard,
+    VendorOperationalComplianceGuard,
+  )
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'قبول الدفع نقداً — بدء التنفيذ دون انتظار استلام المبلغ' })
+  @HttpCode(HttpStatus.OK)
+  async acceptHomeCookingCash(
+    @Request() req: { user: User },
+    @Param('requestId') requestId: string,
+  ) {
+    const vendorId = await this.resolveHomeCookingVendorId(req);
+    return this.eventRequestsService.acceptCashOrderByVendor(
+      vendorId,
+      requestId,
+    );
+  }
+
   @Post('home-cooking-requests/:requestId/confirm-payment-received')
   @UseGuards(
     JwtAuthGuard,

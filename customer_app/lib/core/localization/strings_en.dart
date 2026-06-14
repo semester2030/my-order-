@@ -46,7 +46,17 @@ class StringsEn {
       'Mobile number unavailable — contact the provider.';
   static const String stcBankTransferCopy = 'Copy';
   static const String stcBankMobileCopied = 'Mobile number copied';
-  static const String stcBankTransferConfirmButton = 'Confirm transfer';
+  static const String stcBankTransferConfirmButton = 'Transfer done';
+  static const String homeCookingTransferDeclaredButton = 'Transfer done';
+  static const String homeCookingCashPaidButton = 'Paid cash';
+  static const String homeCookingTransferDeclaredSuccess =
+      'Transfer declared — awaiting provider confirmation';
+  static const String homeCookingCashPaidSuccess =
+      'Cash payment declared — awaiting provider confirmation';
+  static const String homeCookingCashAwaitingVendorAccept =
+      'Awaiting provider to accept cash — preparation can start after acceptance';
+  static const String homeCookingCashOpenUntilPaid =
+      'Order in progress — tap when you pay cash';
   static const String stcBankTransferConfirmDialogMessage =
       'After transferring via STC Bank to the mobile number, tap confirm — the provider will be notified to confirm receipt and start preparing.';
   static const String stcBankTransferDeclareHint =

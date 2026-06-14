@@ -93,6 +93,8 @@ class Endpoints {
       '/vendors/home-cooking-requests/$id/mark-handed-over';
   static String vendorHomeCookingConfirmPayment(String id) =>
       '/vendors/home-cooking-requests/$id/confirm-payment-received';
+  static String vendorHomeCookingAcceptCash(String id) =>
+      '/vendors/home-cooking-requests/$id/accept-cash';
 
   // Health (optional)
   static const String health = '/health';

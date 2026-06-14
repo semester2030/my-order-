@@ -18,6 +18,9 @@ class HomeCookingRequestDto {
     this.handoverNotes,
     this.completionCertificateCode,
     this.paymentMethod,
+    this.paymentReference,
+    this.cashPaidDeclaredAt,
+    this.paymentVerifiedAt,
     this.progressSteps = const [],
     this.user,
     this.address,
@@ -38,9 +41,18 @@ class HomeCookingRequestDto {
   final String? handoverNotes;
   final String? completionCertificateCode;
   final String? paymentMethod;
+  final String? paymentReference;
+  final String? cashPaidDeclaredAt;
+  final String? paymentVerifiedAt;
   final List<Map<String, dynamic>> progressSteps;
   final ChefBookingUserDto? user;
   final ChefBookingAddressDto? address;
+
+  bool get isCashPayment {
+    if (paymentMethod?.toLowerCase() == 'cash') return true;
+    final r = paymentReference?.toLowerCase() ?? '';
+    return r == 'cash' || r == 'تم الدفع';
+  }
 
   static String _normStatus(dynamic v) {
     final s = (v ?? 'pending').toString().trim().toLowerCase();
@@ -89,6 +101,12 @@ class HomeCookingRequestDto {
           json['completion_certificate_code'] as String?,
       paymentMethod:
           json['paymentMethod'] as String? ?? json['payment_method'] as String?,
+      paymentReference:
+          json['paymentReference'] as String? ?? json['payment_reference'] as String?,
+      cashPaidDeclaredAt:
+          json['cashPaidDeclaredAt'] as String? ?? json['cash_paid_declared_at'] as String?,
+      paymentVerifiedAt:
+          json['paymentVerifiedAt'] as String? ?? json['payment_verified_at'] as String?,
       progressSteps: steps,
       user: json['user'] != null
           ? ChefBookingUserDto.fromJson(json['user'] as Map<String, dynamic>)
