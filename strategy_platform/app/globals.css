@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased scroll-smooth;
+  }
+  body {
+    @apply bg-[#FAFAFA] text-ink font-sans;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-glass backdrop-blur-glass border border-glass-border shadow-glass rounded-2xl;
+  }
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/60 shadow-card rounded-xl;
+  }
+  .brand-gradient {
+    background: linear-gradient(135deg, #FF6A33 0%, #FF8A5C 100%);
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #FF6A33, #E55A28);
+  }
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+}

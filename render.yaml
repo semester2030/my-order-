@@ -1,0 +1,19 @@
+# Render Blueprint — مطبخ البيت Strategy Launch OS
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: matbakh-strategy
+    runtime: node
+    region: frankfurt
+    plan: free
+    rootDir: strategy_platform
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
