@@ -1,5 +1,7 @@
 # Render Blueprint — مطبخ البيت Strategy Launch OS
 # https://render.com/docs/blueprint-spec
+#
+# IMPORTANT: Web Service (not Static Site). Root Directory: strategy_platform
 
 services:
   - type: web
@@ -8,7 +10,7 @@ services:
     region: frankfurt
     plan: free
     rootDir: strategy_platform
-    buildCommand: npm install && npm run build
+    buildCommand: npm ci && npm run build
     startCommand: npm start
     healthCheckPath: /
     autoDeployTrigger: commit
@@ -17,3 +19,5 @@ services:
         value: "20"
       - key: NODE_ENV
         value: production
+      - key: HOSTNAME
+        value: "0.0.0.0"
